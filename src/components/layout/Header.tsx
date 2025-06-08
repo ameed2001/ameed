@@ -37,7 +37,7 @@ const Header = () => {
         second: "2-digit",
         hour12: true,
       };
-      setCurrentTime(new Intl.DateTimeFormat("ar-EG", options).format(now));
+      setCurrentTime(new Intl.DateTimeFormat("en-US", options).format(now));
     };
 
     updateTime();
@@ -103,7 +103,7 @@ const Header = () => {
         <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3">
           <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 shadow-md">
             <Clock size={16} />
-            <span>{currentTime || 'تحميل الوقت...'}</span>
+            <span>{currentTime || 'Loading time...'}</span>
           </div>
 
           <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md">

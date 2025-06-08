@@ -2,13 +2,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation';
 
 const HeroSection = () => {
-  const scrollToCalculators = () => {
-    const calculatorsSection = document.getElementById('calculators-section');
-    if (calculatorsSection) {
-      calculatorsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  const router = useRouter();
+
+  const handleStartClick = () => {
+    router.push('/login');
   };
 
   return (
@@ -22,10 +22,10 @@ const HeroSection = () => {
             هذا الموقع مختص في حساب الكميات لكل من الحديد والباطون للأبنية الإنشائية والأبار والجدران الإستنادية
           </p>
           <Button 
-            onClick={scrollToCalculators}
+            onClick={handleStartClick}
             className="bg-app-gold hover:bg-yellow-500 text-gray-900 font-bold py-3 px-8 text-lg rounded-lg shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-75"
           >
-            ابدأ الحساب الآن
+            ابدء معنا
           </Button>
         </div>
       </div>

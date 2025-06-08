@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -20,7 +19,6 @@ import { sendContactMessageAction, type SendContactMessageResponse } from './act
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
@@ -73,7 +71,6 @@ const socialLinks = [
   { name: "Facebook", icon: Facebook, href: "https://www.facebook.com/a.w.samarah4", colorClass: "hover:text-blue-600", dataAiHint: "facebook page" },
 ];
 
-
 export default function ContactPageEnhanced() {
   const { toast } = useToast();
   const [isFormLoading, setIsFormLoading] = useState(false);
@@ -91,28 +88,34 @@ export default function ContactPageEnhanced() {
 
   const onFormSubmit: SubmitHandler<ContactFormValues> = async (data) => {
     setIsFormLoading(true);
+    console.log("Contact form data (simulation):", data);
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Simulate calling the (now dummy) server action
     try {
       const result: SendContactMessageResponse = await sendContactMessageAction(data);
 
       if (result.success) {
         toast({
-          title: "تم إرسال رسالتك بنجاح!",
-          description: result.message || "سيتواصل معك فريقنا في أقرب وقت ممكن.",
+          title: "تم إرسال رسالتك (محاكاة)",
+          description: result.message || "تم استلام بيانات النموذج.",
           variant: "default",
         });
         form.reset();
       } else {
         toast({
-          title: "خطأ في الإرسال",
+          title: "خطأ في الإرسال (محاكاة)",
           description: result.error || "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
           variant: "destructive",
         });
       }
     } catch (error) {
-      console.error("Error submitting contact form via server action:", error);
+      console.error("Error submitting contact form (simulation):", error);
       toast({
-        title: "خطأ في الإرسال",
-        description: "حدث خطأ غير متوقع أثناء محاولة إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+        title: "خطأ في الإرسال (محاكاة)",
+        description: "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
         variant: "destructive",
       });
     } finally {
@@ -323,5 +326,3 @@ export default function ContactPageEnhanced() {
     </AppLayout>
   );
 }
-
-    

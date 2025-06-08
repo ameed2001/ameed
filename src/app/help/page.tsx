@@ -2,6 +2,7 @@
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import Link from "next/link";
 
 const faqs = [
   {
@@ -23,7 +24,10 @@ const faqs = [
   {
     question: "لمن هذا الموقع موجه؟",
     answer: "الموقع مخصص للمهندسين، المقاولين، الطلاب، وأي شخص يعمل في مجال البناء ويحتاج إلى أدوات سريعة ودقيقة لحساب الكميات والتكاليف."
-  },
+  }
+];
+
+const helpCenterFaqs = [
   {
     question: "هل يمكنني استخدام الموقع بدون تسجيل؟",
     answer: "نعم، يمكنك إجراء الحسابات الأساسية بدون تسجيل، لكن التسجيل يمنحك ميزات إضافية مثل حفظ المشاريع وتتبعها."
@@ -56,20 +60,35 @@ export default function HelpPage() {
           </CardHeader>
           <CardContent className="text-lg text-gray-700 space-y-6 text-right">
             <p className="mb-8 text-center">
-              تجد هنا إجابات على الأسئلة المتكررة. إذا لم تجد ما تبحث عنه، لا تتردد في التواصل معنا من خلال <a href="/contact" className="text-app-gold hover:underline">نموذج الاتصال</a> أو مركز المساعدة.
+              تجد هنا إجابات على الأسئلة المتكررة. إذا لم تجد ما تبحث عنه، لا تتردد في التواصل معنا من خلال <Link href="/contact" className="text-app-gold hover:underline">نموذج الاتصال</Link> أو مركز المساعدة.
             </p>
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq, index) => (
                 <AccordionItem value={`item-${index}`} key={index} className="border-b border-gray-300">
                   <AccordionTrigger className="py-4 text-xl font-semibold hover:no-underline text-right hover:text-app-gold transition-colors">
-                    {faq.question}
+                    🔹 {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="pb-4 pt-2 text-gray-600 leading-relaxed">
+                  <AccordionContent className="pb-4 pt-2 text-gray-600 leading-relaxed text-base">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
+
+            <h3 className="text-2xl font-bold text-app-red text-center mt-12 mb-6 pt-6 border-t border-gray-300">🆘 أسئلة مركز المساعدة</h3>
+            <Accordion type="single" collapsible className="w-full">
+              {helpCenterFaqs.map((faq, index) => (
+                <AccordionItem value={`help-item-${index}`} key={`help-${index}`} className="border-b border-gray-300">
+                  <AccordionTrigger className="py-4 text-xl font-semibold hover:no-underline text-right hover:text-app-gold transition-colors">
+                    🔹 {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-4 pt-2 text-gray-600 leading-relaxed text-base">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+
           </CardContent>
         </Card>
       </div>

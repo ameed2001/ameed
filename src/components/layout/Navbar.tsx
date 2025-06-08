@@ -8,10 +8,9 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', label: 'الرئيسية', icon: Home },
-  { href: '/concrete-estimator', label: 'الحاسبات', icon: Calculator },
-  { href: '/documents', label: 'المكتبة', icon: LibraryIcon },
   { href: '/about', label: 'عن الموقع', icon: Info },
-  { href: '/contact', label: 'اتصل بنا', icon: Phone },
+  { href: '/help', label: 'المساعدة', icon: HelpCircle },
+  { href: '/contact', label: 'تواصل معنا', icon: Phone },
 ];
 
 // Auth items are not currently displayed as per user's direction to remove them from navbar.
@@ -42,12 +41,10 @@ const Navbar = () => {
               <Link
                 href={item.href}
                 className={cn(
-                  // Base styles for all buttons
                   "flex items-center justify-center min-w-[90px] md:min-w-[110px] px-2 py-2 text-center font-medium text-sm md:text-base rounded-md transition-colors",
-                  // Conditional styling
                   isActive
-                    ? "bg-app-red text-white hover:text-app-gold" // Active button: red bg, white text. Hover: text gold (bg stays red)
-                    : "bg-transparent text-white hover:bg-transparent hover:text-app-gold" // Non-active button: transparent bg, white text. Hover: transparent bg, text gold
+                    ? "bg-app-red text-white hover:text-app-gold" 
+                    : "bg-transparent text-white hover:bg-transparent hover:text-app-gold" 
                 )}
               >
                 <item.icon size={18} className="ml-1.5 md:ml-2" />

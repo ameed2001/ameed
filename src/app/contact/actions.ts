@@ -1,4 +1,3 @@
-
 // app/contact/actions.ts
 "use server";
 
@@ -67,6 +66,10 @@ let cachedTransporter: nodemailer.Transporter | null = null;
 function getTransporter() {
   if (cachedTransporter) return cachedTransporter;
 
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+    throw new Error("بيانات اعتماد البريد الإلكتروني (EMAIL_USER, EMAIL_PASSWORD) غير معرفة في متغيرات البيئة.");
+  }
+
   cachedTransporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE || 'gmail',
     host: process.env.EMAIL_HOST, // smtp.gmail.com for gmail if EMAIL_SERVICE is gmail
@@ -89,6 +92,11 @@ function getTransporter() {
 export async function sendContactMessageAction(
   formData: ContactFormData
 ): Promise<SendContactMessageResponse> {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+    console.error("EMAIL_USER or EMAIL_PASSWORD is not set in environment variables.");
+    return { success: false, error: "خطأ في إعدادات الخادم لإرسال البريد. يرجى مراجعة المسؤول." };
+  }
+
   try {
     // التحقق من الصحة
     const validatedData = contactFormSchema.safeParse(formData);
@@ -122,13 +130,8 @@ export async function sendContactMessageAction(
       minute: '2-digit'
     });
     
-    // Corrected 'from' address construction
-    const fromEmailAddress = process.env.EMAIL_USER; // Should be just the email address
-    if (!fromEmailAddress) {
-        console.error("EMAIL_USER environment variable is not set.");
-        return { success: false, error: "خطأ في إعدادات الخادم لإرسال البريد." };
-    }
-    const fromName = "موقع MediaPlus"; // Or use another env var for the name if needed
+    const fromEmailAddress = process.env.EMAIL_USER;
+    const fromName = "موقع MediaPlus"; 
 
     // 5. إعداد البريد الأساسي
     const mailOptions = {
@@ -187,9 +190,16 @@ export async function sendContactMessageAction(
   } catch (error) {
     console.error('فشل إرسال الرسالة:', error);
     
+    if (error instanceof z.ZodError) { // Should not happen if safeParse is used above, but as a safeguard.
+      return {
+        success: false,
+        error: "خطأ في البيانات المدخلة: " + error.errors.map(e => e.message).join(', '),
+      };
+    }
+    
     // Improved error handling for nodemailer
     if (error instanceof Error) {
-      const nodemailerError = error as any; // Use any for simplicity if SMTPError type is not directly available
+      const nodemailerError = error as any; 
       if (nodemailerError.code === 'EAUTH') {
         return { success: false, error: "خطأ في مصادقة البريد الإلكتروني. يرجى التحقق من بيانات اعتماد البريد (EMAIL_USER, EMAIL_PASSWORD)." };
       }
@@ -198,6 +208,10 @@ export async function sendContactMessageAction(
       }
        if (nodemailerError.responseCode === 550) {
         return { success: false, error: "رفض خادم البريد الرسالة (خطأ 550). قد يكون البريد الإلكتروني للمستلم غير صحيح أو محظور."};
+       }
+       // Catch specific error from getTransporter if env vars are missing
+       if (error.message.includes("بيانات اعتماد البريد الإلكتروني")) {
+         return { success: false, error: error.message };
        }
     }
     
@@ -332,9 +346,7 @@ function renderTextConfirmationTemplate(data: {
 البريد الإلكتروني: mediaplus64@gmail.com
 الهاتف: +972 59 437 1424
 
-مع أطيب التحيات,
+مع أطيب التحيات،
 فريق MediaPlus
   `;
 }
-
-    

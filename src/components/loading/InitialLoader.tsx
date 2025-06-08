@@ -19,7 +19,8 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
   const particles3dRef = useRef<HTMLDivElement>(null);
   const loadingContainerRef = useRef<HTMLDivElement>(null);
 
-  const [logoDisplayUrl, setLogoDisplayUrl] = useState('https://i.imgur.com/79bO3U2.png');
+  // State for logo URL and fallback visibility
+  const [logoDisplayUrl, setLogoDisplayUrl] = useState('https://i.imgur.com/79bO3U2.png'); // Primary URL
   const [showTextFallback, setShowTextFallback] = useState(false);
   const logoErrorCount = useRef(0);
   
@@ -28,25 +29,15 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     'https://i.imgur.com/79bO3U2.jpg', // Fallback
   ];
 
+  // This function will be called by the onError prop of the Next.js Image component
   const handleLogoError = () => {
     logoErrorCount.current++;
     if (logoErrorCount.current < logoUrls.length) {
       setLogoDisplayUrl(logoUrls[logoErrorCount.current]);
     } else {
-      setShowTextFallback(true);
+      setShowTextFallback(true); // Show text fallback if all URLs fail
     }
   };
-
-
-  const loadingMessages = [
-    'جاري تهيئة النظام المتقدم',
-    'جاري تحميل الذكاء الاصطناعي',
-    'جاري تجهيز قاعدة البيانات السحابية',
-    'جاري تحضير واجهة المستخدم',
-    'جاري التحقق من الأمان المتقدم',
-    'جاري تفعيل التحليلات الذكية',
-    'تم التحميل بنجاح! مرحباً بك'
-  ];
 
   // Effect for 3D particles
   useEffect(() => {
@@ -57,7 +48,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     const particleCount = 60;
     for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement('div');
-      particle.className = 'particle-3d-loader';
+      particle.className = 'particle-3d-loader'; // Ensure class name matches globals.css
       particle.style.left = Math.random() * 100 + '%';
       particle.style.top = Math.random() * 100 + '%';
       particle.style.animationDelay = Math.random() * 8 + 's';
@@ -74,6 +65,16 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     if (!isLoading) return;
     let currentPercentage = 0;
     let localCurrentMessageIndex = 0;
+    
+    const loadingMessages = [
+        'جاري تهيئة النظام المتقدم',
+        'جاري تحميل الذكاء الاصطناعي',
+        'جاري تجهيز قاعدة البيانات السحابية',
+        'جاري تحضير واجهة المستخدم',
+        'جاري التحقق من الأمان المتقدم',
+        'جاري تفعيل التحليلات الذكية',
+        'تم التحميل بنجاح! مرحباً بك'
+    ];
 
     const updateLoadingTextInternal = (messageIndex: number) => {
         setCurrentLoadingText(loadingMessages[messageIndex]);
@@ -113,11 +114,10 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
             percentageElementRef.current.style.webkitBackgroundClip = 'text';
             percentageElementRef.current.style.webkitTextFillColor = 'transparent';
           }
-          // Update to final message
           updateLoadingTextInternal(loadingMessages.length - 1);
           setTimeout(() => {
             setIsLoading(false);
-          }, 1500); // Delay before hiding loader
+          }, 1500); 
         }
       }
     }, 80);
@@ -147,17 +147,17 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
 
     const handleMouseLeaveContainer = () => {
       if (loadingContainerRef.current) {
-        // Reset to the floating animation style
-        loadingContainerRef.current.style.transform = ''; // Let CSS animation take over
+        loadingContainerRef.current.style.transform = ''; 
       }
     };
     
     const createClickRipple = (x:number, y:number) => {
       const ripple = document.createElement('div');
-      ripple.className = 'ripple-loader';
+      ripple.className = 'ripple-loader'; // Ensure class name matches globals.css
       ripple.style.left = x + 'px';
       ripple.style.top = y + 'px';
-      document.body.appendChild(ripple);
+      // Append to body or a specific positioned container if body causes issues
+      document.body.appendChild(ripple); 
       setTimeout(() => ripple.remove(), 1000);
     };
 

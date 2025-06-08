@@ -101,7 +101,7 @@ const Header = () => {
         
         {/* Left Section: Info (Time, Currency, Social) (RTL) */}
         <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3">
-          <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 shadow-md">
+          <div className="text-white text-sm flex items-center gap-2"> {/* Removed bg-header-info-bg, px-3, py-1.5, rounded-lg, shadow-md */}
             <Clock size={16} />
             <span>{currentTime || 'Loading time...'}</span>
           </div>

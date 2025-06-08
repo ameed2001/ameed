@@ -82,7 +82,7 @@ export default {
         'card-content-hover-fg': 'hsl(var(--card-content-hover-fg-hsl))',
         'currency-jod': '#2ecc71', // Green for JOD lozenge
         'currency-eur': '#3498db', // Blue for EUR lozenge
-        'currency-usd': '#f1c40f', // Yellow/Gold for USD lozenge
+        'currency-usd': '#B40404', // Red for USD lozenge (Changed from yellow)
         'social-whatsapp': '#25D366',
         'social-instagram': '#E4405F', // Simplified pink/red for Instagram
         'social-facebook': '#1877F2',

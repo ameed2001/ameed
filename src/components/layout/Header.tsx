@@ -109,9 +109,9 @@ const Header = () => {
           <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md">
             <span className="text-xs block mb-0.5 text-gray-300">أسعار العملات:</span>
             <div className="flex items-center gap-2">
-              <span className="bg-currency-jod px-2 py-0.5 rounded-full text-xs text-white">JOD: {currencyRates.JOD}</span>
-              <span className="bg-currency-eur px-2 py-0.5 rounded-full text-xs text-white">EUR: {currencyRates.EUR}</span>
-              <span className="bg-currency-usd px-2 py-0.5 rounded-full text-xs text-white">USD: {currencyRates.USD}</span>
+              <span className="bg-currency-jod px-2 py-0.5 rounded-full text-xs text-gray-900 font-semibold">JOD: {currencyRates.JOD}</span>
+              <span className="bg-currency-eur px-2 py-0.5 rounded-full text-xs text-gray-900 font-semibold">EUR: {currencyRates.EUR}</span>
+              <span className="bg-currency-usd px-2 py-0.5 rounded-full text-xs text-gray-900 font-semibold">USD: {currencyRates.USD}</span>
             </div>
           </div>
           

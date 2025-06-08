@@ -8,7 +8,7 @@ import GuidelinesModal from '@/components/modals/GuidelinesModal';
 import PriceCalculationModal from '@/components/modals/PriceCalculationModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Calculator, DraftingCompass, UserCheck, FileText, DollarSign, MessageSquare, Info } from 'lucide-react'; // Added more icons
+import { X, Calculator, DraftingCompass, UserCheck, FileText, DollarSign, MessageSquare, Info, Handshake, ListChecks } from 'lucide-react';
 
 type ModalType = 
   'concrete_options' | 'steel_options' | 
@@ -30,7 +30,7 @@ const MainDashboardClient = () => {
   const [priceCalculatorOpen, setPriceCalculatorOpen] = useState(false);
 
   const handleCardClick = (modalType: ModalType) => {
-    setActiveModal(modalType); // This will open the respective options/info modal
+    setActiveModal(modalType); 
     if (modalType === 'engineer_guidelines') {
       setGuidelinesType('engineer');
       setGuidelinesModalOpen(true);
@@ -40,13 +40,12 @@ const MainDashboardClient = () => {
     } else if (modalType === 'price_calculator') {
       setPriceCalculatorOpen(true);
     }
-    // For concrete_options and steel_options, the Dialog below with `open={activeModal === '...'}` will handle it.
   };
 
   const openCalculationForm = (type: 'concrete' | 'steel', category: CalculationCategory) => {
     setCalculationType(type);
     setCalculationCategory(category);
-    setActiveModal(null); // Close the options modal
+    setActiveModal(null); 
     setCalculationFormOpen(true);
   };
 
@@ -73,13 +72,13 @@ const MainDashboardClient = () => {
     { title: "حساب كميات الباطون", modalType: 'concrete_options' as ModalType, icon: <DraftingCompass size={48} /> },
     { title: "حساب كميات الحديد", modalType: 'steel_options' as ModalType, icon: <Calculator size={48} /> },
     { title: "إرشادات للمهندس", modalType: 'engineer_guidelines' as ModalType, icon: <UserCheck size={48} /> },
-    { title: "إرشادات لصاحب المبنى", modalType: 'owner_guidelines' as ModalType, icon: <Info size={48} /> },
+    { title: "إرشادات لصاحب المبنى", modalType: 'owner_guidelines' as ModalType, icon: <Handshake size={48} /> },
     { title: "حساب الأسعار", modalType: 'price_calculator' as ModalType, icon: <DollarSign size={48} /> },
   ];
 
   return (
     <>
-      <div className="text-lg md:text-xl font-bold text-[#FF0000] bg-[rgba(250,172,88,0.8)] p-4 my-6 md:my-8 rounded-[30px] shadow-message max-w-3xl mx-auto backdrop-blur-sm">
+      <div className="text-lg md:text-xl font-bold text-[#FF0000] bg-[rgba(250,172,88,0.8)] p-4 my-5 mx-auto rounded-[30px] shadow-message w-[90%] max-w-[800px] backdrop-blur-sm">
         <p>
           هذا الموقع مختص في حساب الكميات لكل من الحديد والباطون للأبنية الانشائية والأبار والجدران الإستنادية
         </p>
@@ -169,5 +168,3 @@ const MainDashboardClient = () => {
 };
 
 export default MainDashboardClient;
-
-    

@@ -1,3 +1,4 @@
+
 // app/contact/actions.ts
 "use server";
 
@@ -73,7 +74,7 @@ function getTransporter() {
     secure: process.env.EMAIL_SECURE === 'true',
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD, // Changed from EMAIL_PASS to EMAIL_PASSWORD to match user's .env example
+      pass: process.env.EMAIL_PASSWORD, // Ensure this matches your .env variable name
     },
     tls: {
       rejectUnauthorized: process.env.NODE_ENV === 'production',
@@ -106,8 +107,8 @@ export async function sendContactMessageAction(
     // الحصول على تفاصيل نوع الرسالة
     const messageTypeInfo = MESSAGE_TYPES[messageType as keyof typeof MESSAGE_TYPES] || {
       label: messageType,
-      email: 'mediaplus64@gmail.com', // Fallback email
-      color: '#607D8B'
+      email: 'mediaplus64@gmail.com', // Fallback email if type is not in MESSAGE_TYPES
+      color: '#607D8B' // Fallback color
     };
 
     const transporter = getTransporter();
@@ -120,10 +121,13 @@ export async function sendContactMessageAction(
       minute: '2-digit'
     });
 
+    const emailFromName = process.env.EMAIL_FROM_NAME || "موقع MediaPlus";
+    const emailFromAddress = process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER;
+
     // 5. إعداد البريد الأساسي
     const mailOptions = {
-      from: `${process.env.EMAIL_FROM_NAME || "موقع MediaPlus"} <${process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER}>`,
-      to: messageTypeInfo.email, // Uses specific email based on type or fallback
+      from: `"${emailFromName}" <${emailFromAddress}>`,
+      to: messageTypeInfo.email, 
       replyTo: email,
       subject: `[${messageTypeInfo.label}] ${subject}`,
       html: renderMainEmailTemplate({
@@ -150,7 +154,7 @@ export async function sendContactMessageAction(
 
     // 7. إرسال بريد التأكيد
     const confirmationMailOptions = {
-      from: `${process.env.EMAIL_FROM_NAME || "MediaPlus"} <${process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER}>`,
+      from: `"${emailFromName}" <${emailFromAddress}>`,
       to: email,
       subject: 'تم استلام رسالتك بنجاح',
       html: renderConfirmationTemplate({
@@ -176,6 +180,17 @@ export async function sendContactMessageAction(
 
   } catch (error) {
     console.error('فشل إرسال الرسالة:', error);
+    
+    // Check if the error is from nodemailer for more specific messages
+    if (error instanceof Error && 'code' in error) {
+        const nodemailerError = error as nodemailer.SMTPError;
+        if (nodemailerError.code === 'EAUTH') {
+            return { success: false, error: "خطأ في مصادقة البريد الإلكتروني. يرجى التحقق من بيانات اعتماد البريد." };
+        }
+        if (nodemailerError.code === 'ECONNECTION') {
+            return { success: false, error: "فشل الاتصال بخادم البريد. يرجى التحقق من اتصال الشبكة وإعدادات الخادم." };
+        }
+    }
     
     return {
       success: false,
@@ -312,3 +327,5 @@ function renderTextConfirmationTemplate(data: {
 فريق MediaPlus
   `;
 }
+
+    

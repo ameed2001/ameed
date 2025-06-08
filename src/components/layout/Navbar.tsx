@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, Info, Phone, HelpCircle, UserPlus, LogIn, ListChecks, PlusSquare, Settings, Briefcase, FileText as LibraryIcon, Calculator } from 'lucide-react';
+import { Home, Info, Phone, HelpCircle, UserPlus, LogIn, Settings, Briefcase, FileText as LibraryIcon, Calculator } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -14,13 +14,19 @@ const navItems = [
   { href: '/contact', label: 'اتصل بنا', icon: Phone },
 ];
 
+// Auth items are not currently displayed as per user's direction to remove them from navbar.
+// If they were to be added back, they would be merged into allNavItems.
+/*
 const authNavItems = [
   { href: '/login', label: 'تسجيل الدخول', icon: LogIn },
   { href: '/signup', label: 'إنشاء حساب', icon: UserPlus },
 ];
+*/
 
+// Admin nav item is also not currently displayed in the main navbar.
+/*
 const adminNavItem = { href: '/admin', label: 'لوحة التحكم', icon: Settings };
-
+*/
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -37,13 +43,12 @@ const Navbar = () => {
                 href={item.href}
                 className={cn(
                   "flex items-center justify-center min-w-[90px] md:min-w-[110px] px-2 py-2 text-center font-medium text-sm md:text-base rounded-md transition-colors",
-                  // Default text color for all buttons
-                  "text-white",
-                  // Hover text color for all buttons
-                  "hover:text-app-gold",
-                  isActive
-                    ? "bg-app-red hover:bg-app-red" // Active button: red background, stays red on hover. Hover text is yellow (from above)
-                    : "bg-app-gold hover:bg-app-red" // Inactive button: yellow background, turns red on hover. Hover text is yellow (from above)
+                  // Default state for non-active buttons
+                  !isActive && "bg-app-gold text-white",
+                  // Default state for active buttons
+                  isActive && "bg-app-red text-app-red",
+                  // Hover state for ALL buttons (active or non-active)
+                  "hover:bg-app-red hover:text-app-gold"
                 )}
               >
                 <item.icon size={18} className="ml-1.5 md:ml-2" />
@@ -58,3 +63,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

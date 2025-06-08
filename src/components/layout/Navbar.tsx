@@ -42,12 +42,16 @@ const Navbar = () => {
               <Link
                 href={item.href}
                 className={cn(
+                  // Base styles for all buttons
                   "flex items-center justify-center min-w-[90px] md:min-w-[110px] px-2 py-2 text-center font-medium text-sm md:text-base rounded-md transition-colors",
-                  // Default state for non-active buttons
-                  !isActive && "bg-app-gold text-white",
-                  // Default state for active buttons
-                  isActive && "bg-app-red text-app-red",
-                  // Hover state for ALL buttons (active or non-active)
+
+                  // Default state for NON-ACTIVE buttons: transparent background, white text
+                  !isActive && "bg-transparent text-white",
+
+                  // Styles for ACTIVE buttons: red background, white text
+                  isActive && "bg-app-red text-white",
+
+                  // Hover styles for ALL buttons: red background, gold text
                   "hover:bg-app-red hover:text-app-gold"
                 )}
               >
@@ -63,4 +67,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

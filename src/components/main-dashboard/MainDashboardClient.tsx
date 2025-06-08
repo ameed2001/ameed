@@ -2,27 +2,33 @@
 "use client";
 
 import InfoCard from '@/components/ui/InfoCard';
-import { Box, BarChart3, DollarSign } from 'lucide-react'; // Removed LogIn, UserPlus
+import { Box, BarChart3, DollarSign, LogIn, UserPlus } from 'lucide-react';
 import { useState } from 'react';
-import CalculationModal from '@/components/modals/CalculationModal';
-import PriceCalculationModal from '@/components/modals/PriceCalculationModal';
+import AuthRequiredModal from '@/components/modals/AuthRequiredModal'; // Import the new modal
 
 const MainDashboardClient = () => {
-  const [isConcreteModalOpen, setIsConcreteModalOpen] = useState(false);
-  const [concreteModalCategory, setConcreteModalCategory] = useState('');
-  const [isSteelModalOpen, setIsSteelModalOpen] = useState(false);
-  const [steelModalCategory, setSteelModalCategory] = useState('');
-  const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const handleOpenConcreteModal = (category: string) => {
-    setConcreteModalCategory(category);
-    setIsConcreteModalOpen(true);
+  // Remove states for individual calculation modals as they are now handled by AuthRequiredModal first
+  // const [isConcreteModalOpen, setIsConcreteModalOpen] = useState(false);
+  // const [concreteModalCategory, setConcreteModalCategory] = useState('');
+  // const [isSteelModalOpen, setIsSteelModalOpen] = useState(false);
+  // const [steelModalCategory, setSteelModalCategory] = useState('');
+  // const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
+
+  // const handleOpenConcreteModal = (category: string) => {
+  //   setConcreteModalCategory(category);
+  //   setIsConcreteModalOpen(true);
+  // };
+  // const handleOpenSteelModal = (category: string) => {
+  //   setSteelModalCategory(category);
+  //   setIsSteelModalOpen(true);
+  // };
+  // const handleOpenPriceModal = () => setIsPriceModalOpen(true);
+  
+  const handleFeatureClick = () => {
+    setIsAuthModalOpen(true);
   };
-  const handleOpenSteelModal = (category: string) => {
-    setSteelModalCategory(category);
-    setIsSteelModalOpen(true);
-  };
-  const handleOpenPriceModal = () => setIsPriceModalOpen(true);
 
   const dashboardCards = [
     {
@@ -31,7 +37,7 @@ const MainDashboardClient = () => {
       icon: <Box />, 
       iconWrapperClass: "bg-red-100 dark:bg-red-900",
       iconColorClass: "text-red-500 dark:text-red-400",
-      onClick: () => handleOpenConcreteModal("القواعد"), 
+      onClick: handleFeatureClick, // Updated onClick
       dataAiHint: "concrete calculation",
       cardHeightClass: "h-72",
       applyFlipEffect: false,
@@ -42,7 +48,7 @@ const MainDashboardClient = () => {
       icon: <BarChart3 />,
       iconWrapperClass: "bg-blue-100 dark:bg-blue-900",
       iconColorClass: "text-blue-500 dark:text-blue-400",
-      onClick: () => handleOpenSteelModal("الأعمدة"), 
+      onClick: handleFeatureClick, // Updated onClick
       dataAiHint: "steel calculation",
       cardHeightClass: "h-72",
       applyFlipEffect: false,
@@ -53,18 +59,17 @@ const MainDashboardClient = () => {
       icon: <DollarSign />,
       iconWrapperClass: "bg-yellow-100 dark:bg-yellow-700",
       iconColorClass: "text-yellow-500 dark:text-yellow-400",
-      onClick: handleOpenPriceModal,
+      onClick: handleFeatureClick, // Updated onClick
       dataAiHint: "cost estimation",
       cardHeightClass: "h-72",
       applyFlipEffect: false,
     },
-    // Login and Signup cards removed from here
   ];
 
   return (
     <>
       <div 
-        className="container mx-auto px-4 py-16 text-center" // ID removed as it's now on page.tsx
+        className="container mx-auto px-4 py-16 text-center"
       >
         <h2 className="text-3xl md:text-4xl font-bold text-app-red mb-12">أدواتك الأساسية للحسابات</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
@@ -77,6 +82,18 @@ const MainDashboardClient = () => {
         </div>
       </div>
 
+      <AuthRequiredModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      {/* 
+        The following modals are no longer directly triggered by these cards.
+        They can be removed if not used elsewhere or kept if other parts of the app
+        (e.g., authenticated sections) might trigger them.
+        For this request, they are effectively replaced by AuthRequiredModal for these dashboard cards.
+      */}
+      {/*
       <CalculationModal
         isOpen={isConcreteModalOpen}
         onClose={() => setIsConcreteModalOpen(false)}
@@ -93,6 +110,7 @@ const MainDashboardClient = () => {
         isOpen={isPriceModalOpen}
         onClose={() => setIsPriceModalOpen(false)}
       />
+      */}
     </>
   );
 };

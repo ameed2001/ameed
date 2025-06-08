@@ -53,7 +53,7 @@ const Navbar = () => {
                 href={item.href}
                 className={cn(
                   "flex items-center justify-center min-w-[90px] md:min-w-[110px] px-2 py-2 text-center font-medium text-sm md:text-base rounded-md",
-                  "text-white hover:bg-sky-500 hover:text-white transition-colors", // Updated hover effect
+                  "text-white hover:bg-app-red hover:text-white transition-colors", // Updated hover effect to app-red
                   isActive ? "text-app-gold font-semibold" : "" 
                 )}
               >

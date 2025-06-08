@@ -19,8 +19,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
   const particles3dRef = useRef<HTMLDivElement>(null);
   const loadingContainerRef = useRef<HTMLDivElement>(null);
 
-  // State for logo URL and fallback visibility
-  const [logoDisplayUrl, setLogoDisplayUrl] = useState('https://i.imgur.com/79bO3U2.png'); // Primary URL
+  const [logoDisplayUrl, setLogoDisplayUrl] = useState('https://i.imgur.com/79bO3U2.png');
   const [showTextFallback, setShowTextFallback] = useState(false);
   const logoErrorCount = useRef(0);
   
@@ -107,7 +106,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           clearInterval(progressInterval);
           if (percentageElementRef.current) {
             percentageElementRef.current.style.animation = 'none'; 
-            percentageElementRef.current.style.color = '#00f2fe'; // Solid color on completion
+            percentageElementRef.current.style.color = '#00f2fe';
           }
           updateLoadingTextInternal(loadingMessages.length - 1);
           setTimeout(() => {
@@ -212,7 +211,9 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           
           <div className="progress-section-loader">
               <div className="circular-progress-loader">
-                 <div className="percentage-display-loader" ref={percentageElementRef}>{percentage}%</div>
+                <div className="percentage-container-non-rotating">
+                  <div className="percentage-display-loader" ref={percentageElementRef}>{percentage}%</div>
+                </div>
               </div>
               
               <div className="multi-progress-loader">
@@ -231,4 +232,3 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
 };
 
 export default InitialLoader;
-    

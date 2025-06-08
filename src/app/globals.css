@@ -474,18 +474,13 @@
 }
 
 .percentage-display-loader {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3.5rem; /* Adjusted to fit better */
+    font-size: 3.5rem; 
     font-weight: 900;
-    color: #00f2fe; /* Bright cyan/blue color */
+    color: #00f2fe; 
     text-shadow: 0 0 20px rgba(0, 242, 254, 0.7);
     animation: percentageGlowLoader 2s ease-in-out infinite alternate;
     font-family: 'Cairo', monospace;
     transition: transform 0.2s ease;
-    z-index: 2; /* Ensure it's above the ::before pseudo-element */
 }
 
 
@@ -498,14 +493,11 @@
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    margin: 0 auto 2rem; /* Centered and provides space below */
+    margin: 0 auto 2rem; 
     position: relative;
     background: conic-gradient(from 0deg, var(--loader-accent-gradient), transparent);
     animation: rotateLoader 3s linear infinite;
-    padding: 10px;
-    display: flex; /* For centering the percentage text if not absolutely positioned */
-    align-items: center; /* For centering the percentage text */
-    justify-content: center; /* For centering the percentage text */
+    padding: 10px; 
 }
 
 .circular-progress-loader::before {
@@ -525,11 +517,32 @@
     100% { transform: rotate(360deg); }
 }
 
+/* New container for non-rotating percentage */
+.percentage-container-non-rotating {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: counterRotateLoader 3s linear infinite;
+    transform-origin: center center;
+    z-index: 2; /* Above the black circle pseudo-element */
+}
+
+@keyframes counterRotateLoader {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+
 .multi-progress-loader {
     display: flex;
     justify-content: center;
     gap: 1rem;
-    margin: 2rem 0; /* Re-added margin for spacing below circular progress */
+    margin: 2rem 0; 
 }
 
 .progress-bar-loader {
@@ -566,19 +579,19 @@
     color: var(--loader-text-primary);
     font-weight: 600;
     margin: 2rem 0;
-    opacity: 0; /* Initial state for JS animation */
+    opacity: 0; 
     animation: fadeInUpLoader 1.5s ease-out 1s forwards;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .typing-dots-loader {
     display: inline-block;
-    width: 30px; /* Adjusted for typical dot widths */
+    width: 30px; 
     text-align: left;
 }
 
 .typing-dots-loader::after {
-    content: '.'; /* Start with one dot */
+    content: '.'; 
     animation: dotsLoader 2s infinite;
 }
 
@@ -670,7 +683,7 @@
     z-index: 1;
 }
 
-.particle-3d-loader { /* Changed class name */
+.particle-3d-loader { 
     position: absolute;
     width: 6px;
     height: 6px;
@@ -712,7 +725,7 @@
     100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-.ripple-loader { /* Changed class name */
+.ripple-loader { 
     position: absolute;
     width: 100px;
     height: 100px;
@@ -756,7 +769,7 @@
     }
     
     .percentage-display-loader {
-        font-size: 3rem; /* Adjusted for smaller screens */
+        font-size: 3rem; 
     }
     
     .circular-progress-loader {
@@ -788,7 +801,7 @@
     }
     
     .percentage-display-loader {
-        font-size: 2.5rem; /* Further adjusted for very small screens */
+        font-size: 2.5rem; 
     }
 }
 
@@ -804,7 +817,7 @@
     z-index: 0;
 }
 
-@keyframes fadeInLoader { /* Renamed animation */
+@keyframes fadeInLoader { 
     from { opacity: 0; }
     to { opacity: 1; }
 }

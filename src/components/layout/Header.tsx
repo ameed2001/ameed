@@ -1,9 +1,10 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Facebook, Instagram } from 'lucide-react';
+import { Facebook, Instagram, Linkedin } from 'lucide-react'; // Added Linkedin as an example, adjust as needed
 
 interface CurrencyRates {
   USD: number | string;
@@ -37,17 +38,20 @@ const Header = () => {
 
     const fetchCurrencyRates = async () => {
       try {
-        // API key from user's prototype
         const apiKey = "e256bd321903a099d3e8e81e"; 
         const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/ILS`);
+        if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+        }
         const data = await response.json();
-        if (data.conversion_rates) {
+        if (data.result === "success" && data.conversion_rates) {
           setCurrencyRates({
             USD: (1 / data.conversion_rates.USD).toFixed(3),
             EUR: (1 / data.conversion_rates.EUR).toFixed(3),
             JOD: (1 / data.conversion_rates.JOD).toFixed(3),
           });
         } else {
+          console.error("Error in currency data:", data.result, data['error-type']);
           setCurrencyRates({ USD: "خطأ", EUR: "خطأ", JOD: "خطأ" });
         }
       } catch (error) {
@@ -57,13 +61,17 @@ const Header = () => {
     };
 
     fetchCurrencyRates();
+    const currencyTimerId = setInterval(fetchCurrencyRates, 3600000); // Update every hour
 
-    return () => clearInterval(timerId);
+    return () => {
+      clearInterval(timerId);
+      clearInterval(currencyTimerId);
+    }
   }, []);
 
   return (
-    <header className="bg-header-bg text-header-fg py-3 px-5 border-b-2 border-app-gold shadow-header-footer">
-      <div className="container mx-auto flex flex-wrap justify-between items-center">
+    <header className="bg-header-bg text-header-fg py-3 px-4 md:px-5 border-b-2 border-app-gold shadow-header-footer">
+      <div className="container mx-auto flex flex-wrap justify-between items-center gap-y-3">
         <div className="flex items-center">
           <Image 
             src="https://i.imgur.com/79bO3U2.jpg" 
@@ -72,31 +80,37 @@ const Header = () => {
             height={80} 
             className="rounded-full border-2 border-app-gold"
             data-ai-hint="logo construction"
+            priority
           />
-          <h1 className="logo-text text-gradient-logo text-2xl md:text-3xl font-bold mx-4">
+          <h1 className="logo-text text-gradient-logo text-2xl md:text-3xl font-bold mx-2 sm:mx-4">
             المحترف لحساب الكميات
           </h1>
         </div>
         
-        <div className="flex flex-col md:flex-row items-center gap-3 mt-3 md:mt-0">
-          <div className="time text-lg font-bold text-orange-500 bg-yellow-100/80 px-4 py-1 rounded-lg shadow-sm">
-            {currentTime}
+        <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-2">
+          <div className="time text-lg font-bold text-orange-500 bg-yellow-100/80 px-3 py-1 rounded-lg shadow-sm">
+            {currentTime || 'تحميل الوقت...'}
           </div>
-          <div className="currency-rates text-sm font-bold text-app-red bg-white/70 px-3 py-2 rounded-lg shadow-md hover:bg-white/90 transition-all">
-            <p className="mb-1">أسعار العملات مقابل الشيكل</p>
-            <span> USD: <span className="text-blue-700">{currencyRates.USD}</span></span> | 
-            <span> EUR: <span className="text-green-700">{currencyRates.EUR}</span></span> | 
-            <span> JOD: <span className="text-purple-700">{currencyRates.JOD}</span></span> 
+          <div className="currency-rates text-sm font-bold text-app-red bg-white/70 px-3 py-1.5 rounded-lg shadow-md hover:bg-white/90 transition-all hover:translate-y-[-2px]">
+            <p className="mb-0.5 text-xs">أسعار العملات مقابل الشيكل:</p>
+            <span className="whitespace-nowrap"> USD: <span className="text-blue-700">{currencyRates.USD}</span></span> | 
+            <span className="whitespace-nowrap"> EUR: <span className="text-green-700">{currencyRates.EUR}</span></span> | 
+            <span className="whitespace-nowrap"> JOD: <span className="text-purple-700">{currencyRates.JOD}</span></span> 
           </div>
-          <div className="social-icons flex gap-3">
+          <div className="social-icons flex gap-3 items-center">
             <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" 
-                  className="p-2 rounded-full bg-white/20 hover:bg-app-gold/80 transition-all transform hover:scale-110 shadow-sm">
-              <Facebook size={24} className="text-header-fg" />
+                  className="p-2 rounded-full bg-white/20 hover:bg-app-gold/80 transition-all transform hover:scale-110 shadow-sm text-header-fg">
+              <Facebook size={20} />
             </Link>
             <Link href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer"
-                  className="p-2 rounded-full bg-white/20 hover:bg-app-gold/80 transition-all transform hover:scale-110 shadow-sm">
-              <Instagram size={24} className="text-header-fg" />
+                  className="p-2 rounded-full bg-white/20 hover:bg-app-gold/80 transition-all transform hover:scale-110 shadow-sm text-header-fg">
+              <Instagram size={20} />
             </Link>
+            {/* Example for another icon if needed */}
+            {/* <Link href="#" target="_blank" rel="noopener noreferrer"
+                  className="p-2 rounded-full bg-white/20 hover:bg-app-gold/80 transition-all transform hover:scale-110 shadow-sm text-header-fg">
+              <Linkedin size={20} />
+            </Link> */}
           </div>
         </div>
       </div>
@@ -105,3 +119,5 @@ const Header = () => {
 };
 
 export default Header;
+
+    

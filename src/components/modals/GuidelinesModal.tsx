@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
@@ -38,18 +39,18 @@ const GuidelinesModal = ({ isOpen, onClose, type }: GuidelinesModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="modal-content-gradient text-white sm:max-w-lg animate-modal-fade-in custom-dialog-overlay">
-        <DialogHeader>
-          <DialogTitle className="text-white text-2xl">{title}</DialogTitle>
+      <DialogContent className="modal-content-gradient text-white sm:max-w-lg animate-modal-fade-in custom-dialog-overlay p-6">
+        <DialogHeader className="relative">
+          <DialogTitle className="text-white text-2xl text-center mb-4">{title}</DialogTitle>
            <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-white hover:bg-white/20 hover:text-app-gold">
-                <X className="h-6 w-6" />
-              </Button>
-            </DialogClose>
+            <button className="html-modal-close-btn" aria-label="Close">
+              &times;
+            </button>
+          </DialogClose>
         </DialogHeader>
         <DialogDescription asChild>
-          <div className="py-4 text-right text-white/90">
-            <ol className="list-decimal list-inside space-y-2 pr-5">
+          <div className="py-2 text-right text-white/95 text-base leading-relaxed">
+            <ol className="list-decimal list-inside space-y-2.5 pr-4">
               {guidelines.map((guideline, index) => (
                 <li key={index}>{guideline}</li>
               ))}
@@ -62,3 +63,5 @@ const GuidelinesModal = ({ isOpen, onClose, type }: GuidelinesModalProps) => {
 };
 
 export default GuidelinesModal;
+
+    

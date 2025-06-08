@@ -13,47 +13,59 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, LogIn } from 'lucide-react';
+import { loginUserAction, type LoginActionResponse } from './actions';
+import { useRouter } from 'next/navigation';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  password: z.string().min(1, { message: "كلمة المرور مطلوبة." }),
+  password: z.string().min(1, { message: "كلمة المرور مطلوبة." }), // Min 1 for required, actual length check on server
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<LoginFormValues>({
+  const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     setIsLoading(true);
-    console.log("Login data:", data); // Simulate API call
+    const result: LoginActionResponse = await loginUserAction(data);
+    setIsLoading(false);
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Simulate login success/failure
-    if (data.email === "test@example.com" && data.password === "password") {
+    if (result.success) {
       toast({
-        title: "تم تسجيل الدخول بنجاح",
-        description: "مرحباً بعودتك!",
+        title: "تسجيل الدخول",
+        description: result.message || "مرحباً بعودتك!",
         variant: "default",
       });
-      // In a real app, you would set auth state and redirect
-      // router.push('/'); 
+      reset();
+      if (result.redirectTo) {
+        router.push(result.redirectTo);
+      } else {
+        router.push('/'); // Default redirect if not specified
+      }
     } else {
       toast({
         title: "خطأ في تسجيل الدخول",
-        description: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+        description: result.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
         variant: "destructive",
       });
+      if (result.fieldErrors) {
+         for (const [fieldName, fieldErrorMessages] of Object.entries(result.fieldErrors)) {
+          if (fieldErrorMessages && fieldErrorMessages.length > 0) {
+            setError(fieldName as keyof LoginFormValues, {
+              type: "server",
+              message: fieldErrorMessages.join(", "),
+            });
+          }
+        }
+      }
     }
-    reset(); // Reset form, or conditionally based on success
-    setIsLoading(false);
   };
 
   return (

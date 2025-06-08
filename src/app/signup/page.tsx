@@ -14,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, UserPlus } from 'lucide-react';
+import { signupUserAction, type SignupActionResponse } from './actions';
+import { useRouter } from 'next/navigation';
 
 const signupSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
@@ -30,35 +32,46 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<SignupFormValues>({
+  const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
   });
 
   const onSubmit: SubmitHandler<SignupFormValues> = async (data) => {
     setIsLoading(true);
-    console.log("Signup data:", data); // Simulate API call
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const result: SignupActionResponse = await signupUserAction(data);
+    setIsLoading(false);
 
-    if (data.role === "engineer") {
+    if (result.success) {
       toast({
         title: "تم إنشاء الحساب",
-        description: "حسابك كمهندس قيد المراجعة وسيتم تفعيله قريباً.",
+        description: result.message,
         variant: "default",
       });
+      reset();
+      if (!result.isPendingApproval) {
+        // Redirect to login if account is immediately active (e.g., owner)
+        router.push('/login');
+      }
     } else {
       toast({
-        title: "تم إنشاء الحساب بنجاح",
-        description: "يمكنك الآن تسجيل الدخول.",
-        variant: "default",
+        title: "خطأ في إنشاء الحساب",
+        description: result.message || "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
       });
+      if (result.fieldErrors) {
+        for (const [fieldName, fieldErrorMessages] of Object.entries(result.fieldErrors)) {
+          if (fieldErrorMessages && fieldErrorMessages.length > 0) {
+            setError(fieldName as keyof SignupFormValues, {
+              type: "server",
+              message: fieldErrorMessages.join(", "),
+            });
+          }
+        }
+      }
     }
-    reset();
-    setIsLoading(false);
-    // In a real app, you would redirect or handle login state here
   };
 
   return (

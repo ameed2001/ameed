@@ -17,6 +17,7 @@ interface Project {
   description: string;
   imageUrl?: string;
   dataAiHint?: string;
+  linkedOwnerEmail?: string; // Added for owner filtering
 }
 
 // Mock data for projects
@@ -27,7 +28,8 @@ const initialMockProjects: Project[] = [
     status: 'قيد التنفيذ',
     description: 'فيلا سكنية فاخرة مكونة من طابقين وحديقة واسعة في حي النرجس.',
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'modern villa'
+    dataAiHint: 'modern villa',
+    linkedOwnerEmail: "owner@example.com"
   },
   {
     id: '2',
@@ -35,7 +37,8 @@ const initialMockProjects: Project[] = [
     status: 'مكتمل',
     description: 'تطوير شامل لمجمع سكني يضم 5 مباني و مرافق ترفيهية.',
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'residential complex'
+    dataAiHint: 'residential complex',
+    linkedOwnerEmail: "anotherowner@example.com"
   },
   {
     id: '3',
@@ -43,16 +46,29 @@ const initialMockProjects: Project[] = [
     status: 'مخطط له',
     description: 'برج تجاري متعدد الاستخدامات بارتفاع 20 طابقًا في قلب المدينة.',
     imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'commercial tower'
+    dataAiHint: 'commercial tower',
+    // No linked owner, or could be linked to admin/engineer for their view
+  },
+  {
+    id: '4',
+    name: 'مشروع فيلا المالك الخاصة',
+    status: 'قيد التنفيذ',
+    description: 'مشروع خاص للمالك owner@example.com.',
+    imageUrl: 'https://placehold.co/600x400.png',
+    dataAiHint: 'private villa',
+    linkedOwnerEmail: "owner@example.com"
   },
 ];
+
+// Simulate logged-in user - replace with actual auth context in a real app
+const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Owner"; // Change to "Engineer" or "Admin" to test
+const MOCK_CURRENT_USER_EMAIL: string = "owner@example.com"; // Change if MOCK_CURRENT_USER_ROLE is different
 
 export default function MyProjectsPage() {
   const { toast } = useToast();
   const [projects, setProjects] = useState<Project[]>(initialMockProjects);
 
   const handleArchiveProject = (projectId: string, projectName: string) => {
-    // Simulate API call for archiving
     setProjects(prevProjects => 
       prevProjects.map(p => p.id === projectId ? {...p, status: 'مؤرشف'} : p)
     );
@@ -63,9 +79,18 @@ export default function MyProjectsPage() {
       variant: "default",
     });
   };
+  
+  let displayedActiveProjects: Project[];
+  let displayedArchivedProjects: Project[];
 
-  const activeProjects = projects.filter(p => p.status !== 'مؤرشف');
-  const archivedProjects = projects.filter(p => p.status === 'مؤرشف');
+  if (MOCK_CURRENT_USER_ROLE === "Owner") {
+    displayedActiveProjects = projects.filter(p => p.linkedOwnerEmail === MOCK_CURRENT_USER_EMAIL && p.status !== 'مؤرشف');
+    displayedArchivedProjects = projects.filter(p => p.linkedOwnerEmail === MOCK_CURRENT_USER_EMAIL && p.status === 'مؤرشف');
+  } else { // Engineer or Admin sees all projects (adjust logic as needed for admin)
+    displayedActiveProjects = projects.filter(p => p.status !== 'مؤرشف');
+    displayedArchivedProjects = projects.filter(p => p.status === 'مؤرشف');
+  }
+
 
   return (
     <AppLayout>
@@ -74,29 +99,43 @@ export default function MyProjectsPage() {
           <div className="text-center sm:text-right mb-6 sm:mb-0">
             <Briefcase className="mx-auto sm:mx-0 h-16 w-16 text-app-gold mb-4" />
             <h1 className="text-4xl font-bold text-app-red">مشاريعي</h1>
-            <p className="text-lg text-gray-600 mt-2">نظرة عامة على جميع مشاريعك الإنشائية.</p>
+            <p className="text-lg text-gray-600 mt-2">
+              {MOCK_CURRENT_USER_ROLE === "Owner" 
+                ? "نظرة عامة على مشاريعك الإنشائية المرتبطة بحسابك."
+                : "نظرة عامة على جميع مشاريعك الإنشائية."
+              }
+            </p>
           </div>
-          <Button asChild className="bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold py-3 px-6 text-lg">
-            <Link href="/engineer/create-project">
-              <PlusSquare className="ms-2 h-5 w-5" />
-              إنشاء مشروع جديد
-            </Link>
-          </Button>
+          {MOCK_CURRENT_USER_ROLE === "Engineer" && (
+            <Button asChild className="bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold py-3 px-6 text-lg">
+              <Link href="/engineer/create-project">
+                <PlusSquare className="ms-2 h-5 w-5" />
+                إنشاء مشروع جديد
+              </Link>
+            </Button>
+          )}
         </div>
 
-        {projects.length === 0 ? (
+        {(displayedActiveProjects.length === 0 && displayedArchivedProjects.length === 0) ? (
           <Card className="max-w-2xl mx-auto bg-white/90 shadow-lg">
             <CardContent className="text-center py-10">
-              <p className="text-xl text-gray-700">لا توجد لديك مشاريع حالياً.</p>
-              <p className="text-sm text-gray-500 mt-2">قم بإنشاء مشروع جديد للبدء.</p>
+              <p className="text-xl text-gray-700">
+                {MOCK_CURRENT_USER_ROLE === "Owner" 
+                  ? "لا توجد مشاريع مرتبطة بحسابك حالياً."
+                  : "لا توجد لديك مشاريع حالياً."
+                }
+              </p>
+              {MOCK_CURRENT_USER_ROLE === "Engineer" && (
+                <p className="text-sm text-gray-500 mt-2">قم بإنشاء مشروع جديد للبدء.</p>
+              )}
             </CardContent>
           </Card>
         ) : (
           <>
             <h2 className="text-2xl font-bold text-app-red mb-6 text-right">المشاريع النشطة والحالية</h2>
-            {activeProjects.length > 0 ? (
+            {displayedActiveProjects.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                {activeProjects.map((project) => (
+                {displayedActiveProjects.map((project) => (
                   <Card key={project.id} className="bg-white/95 shadow-xl hover:shadow-2xl transition-shadow duration-300 flex flex-col text-right">
                     {project.imageUrl && (
                       <div className="relative h-48 w-full">
@@ -116,7 +155,7 @@ export default function MyProjectsPage() {
                         project.status === 'مكتمل' ? 'text-green-600' :
                         project.status === 'قيد التنفيذ' ? 'text-yellow-600' :
                         project.status === 'مخطط له' ? 'text-blue-600' :
-                        'text-gray-500' // Archived
+                        'text-gray-500'
                       }`}>
                         الحالة: {project.status}
                       </CardDescription>
@@ -131,7 +170,7 @@ export default function MyProjectsPage() {
                           عرض التفاصيل
                         </Link>
                       </Button>
-                      {project.status !== 'مؤرشف' && (
+                      {MOCK_CURRENT_USER_ROLE === "Engineer" && project.status !== 'مؤرشف' && (
                         <Button 
                           variant="outline" 
                           className="w-full border-app-red text-app-red hover:bg-app-red/10"
@@ -149,11 +188,11 @@ export default function MyProjectsPage() {
               <p className="text-gray-600 text-right mb-12">لا توجد مشاريع نشطة حالياً.</p>
             )}
 
-            {archivedProjects.length > 0 && (
+            {displayedArchivedProjects.length > 0 && (
               <>
                 <h2 className="text-2xl font-bold text-gray-700 mb-6 text-right">المشاريع المؤرشفة</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {archivedProjects.map((project) => (
+                  {displayedArchivedProjects.map((project) => (
                     <Card key={project.id} className="bg-gray-100/80 shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col text-right opacity-75">
                       {project.imageUrl && (
                         <div className="relative h-48 w-full">
@@ -183,7 +222,6 @@ export default function MyProjectsPage() {
                             عرض التفاصيل
                           </Link>
                         </Button>
-                        {/* Option to unarchive can be added here */}
                       </CardFooter>
                     </Card>
                   ))}
@@ -196,3 +234,5 @@ export default function MyProjectsPage() {
     </AppLayout>
   );
 }
+
+    

@@ -60,13 +60,13 @@ interface Project {
   endDate: string;
   location?: string;
   engineer?: string;
-  clientName?: string; // New field
-  budget?: number; // New field
+  clientName?: string; 
+  budget?: number; 
   quantitySummary?: string;
   photos?: ProjectPhoto[];
   timelineTasks?: TimelineTask[];
   comments?: ProjectComment[];
-  linkedOwnerEmail?: string; // New field
+  linkedOwnerEmail?: string; 
 }
 
 const mockProjects: Project[] = [
@@ -102,7 +102,35 @@ const mockProjects: Project[] = [
     ],
     linkedOwnerEmail: "owner@example.com"
   },
+   {
+    id: '4', // Project from my-projects/page.tsx linked to owner@example.com
+    name: 'مشروع فيلا المالك الخاصة',
+    status: 'قيد التنفيذ',
+    overallProgress: 30,
+    description: 'مشروع خاص للمالك owner@example.com قيد التنفيذ حالياً.',
+    startDate: '2024-05-01',
+    endDate: '2025-01-31',
+    location: "حي الأمانة، جدة",
+    engineer: "م. سارة عبدالله",
+    clientName: "مالك المشروع (نفسه)", // Or the actual name
+    budget: 2500000,
+    quantitySummary: 'تم البدء في أعمال الحفر والأساسات.',
+    photos: [
+      { id: 'pv1', src: 'https://placehold.co/600x400.png', alt: 'موقع المشروع قبل البدء', dataAiHint: 'land plot', caption: 'قطعة الأرض قبل بدء الأعمال' },
+    ],
+    timelineTasks: [
+      { id: 'pt1', name: "التراخيص النهائية", startDate: "2024-05-01", endDate: "2024-05-15", status: 'مكتمل', progress: 100, color: "bg-green-500" },
+      { id: 'pt2', name: "الحفر", startDate: "2024-05-16", endDate: "2024-06-15", status: 'قيد التنفيذ', progress: 40, color: "bg-yellow-500" },
+    ],
+    comments: [],
+    linkedOwnerEmail: "owner@example.com"
+  },
 ];
+
+// Simulate logged-in user - replace with actual auth context in a real app
+const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Owner"; // Change to "Engineer" to test
+const MOCK_CURRENT_USER_EMAIL: string = "owner@example.com"; // Change if MOCK_CURRENT_USER_ROLE is different
+
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -116,8 +144,17 @@ export default function ProjectDetailPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
 
+  const isOwnerView = MOCK_CURRENT_USER_ROLE === "Owner";
+
   useEffect(() => {
     const foundProject = mockProjects.find(p => p.id === projectId);
+    // For Owner, ensure they can only see projects linked to them (or if admin, they see all)
+    if (isOwnerView && foundProject && foundProject.linkedOwnerEmail !== MOCK_CURRENT_USER_EMAIL) {
+        setProject(null); // Owner trying to access unlinked project
+        toast({ title: "غير مصرح به", description: "ليس لديك صلاحية لعرض هذا المشروع.", variant: "destructive" });
+        return;
+    }
+
     setProject(foundProject || null);
     if (foundProject?.linkedOwnerEmail) {
       setLinkedOwnerEmailInput(foundProject.linkedOwnerEmail);
@@ -125,7 +162,7 @@ export default function ProjectDetailPage() {
     if (foundProject?.overallProgress) {
       setProgressUpdate(prev => ({ ...prev, percentage: foundProject.overallProgress.toString() }));
     }
-  }, [projectId]);
+  }, [projectId, isOwnerView, toast]);
 
   const handleCommentSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -133,7 +170,12 @@ export default function ProjectDetailPage() {
     setIsSubmittingComment(true);
     setTimeout(() => {
       const commentToAdd: ProjectComment = {
-        id: crypto.randomUUID(), user: "المهندس (أنت)", text: newComment, date: new Date().toISOString().split('T')[0], avatar: "https://placehold.co/40x40.png?text=ME", dataAiHintAvatar: "my avatar"
+        id: crypto.randomUUID(), 
+        user: isOwnerView ? "المالك" : "المهندس (أنت)", 
+        text: newComment, 
+        date: new Date().toISOString().split('T')[0], 
+        avatar: isOwnerView ? "https://placehold.co/40x40.png?text=OW" : "https://placehold.co/40x40.png?text=ME", 
+        dataAiHintAvatar: isOwnerView ? "owner avatar" : "my avatar"
       };
       setProject(prev => prev ? { ...prev, comments: [...(prev.comments || []), commentToAdd] } : null);
       setNewComment('');
@@ -154,7 +196,7 @@ export default function ProjectDetailPage() {
       return;
     }
     console.log("Progress Update:", progressUpdate);
-    setProject(prev => prev ? { ...prev, overallProgress: newProgress, quantitySummary: prev.quantitySummary + ` (ملاحظة تقدم: ${progressUpdate.notes || 'لا يوجد'})` } : null);
+    setProject(prev => prev ? { ...prev, overallProgress: newProgress, quantitySummary: (prev.quantitySummary || '') + ` (ملاحظة تقدم: ${progressUpdate.notes || 'لا يوجد'})` } : null);
     toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%. ${progressUpdate.notes ? 'الملاحظات: ' + progressUpdate.notes : ''}` });
     setProgressUpdate(prev => ({ ...prev, notes: '' }));
   };
@@ -184,10 +226,10 @@ export default function ProjectDetailPage() {
       return;
     }
     setIsUploadingFile(true);
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate upload
+    await new Promise(resolve => setTimeout(resolve, 1500)); 
     const newPhoto: ProjectPhoto = {
       id: crypto.randomUUID(),
-      src: URL.createObjectURL(selectedFile), // Temporary URL for display
+      src: URL.createObjectURL(selectedFile), 
       alt: `Uploaded: ${selectedFile.name}`,
       dataAiHint: "uploaded image",
       caption: `تم الرفع: ${selectedFile.name}`
@@ -201,9 +243,9 @@ export default function ProjectDetailPage() {
   };
 
 
-  const projectStartDate = project?.timelineTasks ? new Date(Math.min(...project.timelineTasks.map(task => new Date(task.startDate).getTime()))) : new Date();
-  const projectEndDate = project?.timelineTasks ? new Date(Math.max(...project.timelineTasks.map(task => new Date(task.endDate).getTime()))) : new Date();
-  let totalProjectDurationDays = Math.ceil((projectEndDate.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const projectStartDate = project?.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.min(...project.timelineTasks.map(task => new Date(task.startDate).getTime()))) : new Date();
+  const projectEndDate = project?.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.max(...project.timelineTasks.map(task => new Date(task.endDate).getTime()))) : new Date();
+  let totalProjectDurationDays = project?.timelineTasks && project.timelineTasks.length > 0 ? Math.ceil((projectEndDate.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1 : 30;
   if (totalProjectDurationDays <= 0) totalProjectDurationDays = 30;
 
   const getTaskPositionAndWidth = (task: TimelineTask) => {
@@ -225,8 +267,8 @@ export default function ProjectDetailPage() {
         <div className="container mx-auto py-10 px-4 text-center">
           <Alert variant="destructive">
             <FileText className="h-5 w-5" />
-            <AlertTitle>المشروع غير موجود</AlertTitle>
-            <AlertDescription>لم يتم العثور على تفاصيل المشروع المطلوب.</AlertDescription>
+            <AlertTitle>المشروع غير موجود أو غير مصرح لك بعرضه</AlertTitle>
+            <AlertDescription>لم يتم العثور على تفاصيل المشروع المطلوب أو لا تملك الصلاحية اللازمة.</AlertDescription>
           </Alert>
            <Button asChild className="mt-6 bg-app-gold hover:bg-yellow-600 text-primary-foreground">
              <Link href="/my-projects">العودة إلى قائمة المشاريع</Link>
@@ -242,9 +284,8 @@ export default function ProjectDetailPage() {
 
   return (
     <AppLayout>
-      <Dialog> {/* Moved Dialog to wrap sections that might use DialogTrigger */}
+      <Dialog> 
         <div className="container mx-auto py-8 px-4 text-right">
-          {/* Project Header Card */}
           <Card className="bg-white/95 shadow-xl mb-8">
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -252,9 +293,11 @@ export default function ProjectDetailPage() {
                       <CardTitle className="text-3xl font-bold text-app-red">{project.name}</CardTitle>
                       <CardDescription className="text-gray-700 mt-1">{project.description}</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل تفاصيل المشروع")}>
-                      <FileEdit size={18} className="ms-1.5" /> تعديل التفاصيل
-                  </Button>
+                  {!isOwnerView && (
+                    <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل تفاصيل المشروع")}>
+                        <FileEdit size={18} className="ms-1.5" /> تعديل التفاصيل
+                    </Button>
+                  )}
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-sm text-gray-600 mt-3">
                   <span><strong>الموقع:</strong> {project.location || 'غير محدد'}</span>
@@ -283,48 +326,50 @@ export default function ProjectDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Engineer Actions Section */}
-          <Card className="bg-white/95 shadow-lg mb-8">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                <Settings2 size={28}/> لوحة تحكم المهندس
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الباطون")}>
-                  <HardHat size={18} className="ms-2"/> حساب كميات الباطون
-              </Button>
-              <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الحديد")}>
-                  <BarChart3 size={18} className="ms-2"/> حساب كميات الحديد
-              </Button>
-               <DialogTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10">
-                      <UploadCloud size={18} className="ms-2"/> رفع صورة/فيديو
+          {!isOwnerView && (
+            <Card className="bg-white/95 shadow-lg mb-8">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                  <Settings2 size={28}/> لوحة تحكم المهندس
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الباطون")}>
+                    <HardHat size={18} className="ms-2"/> حساب كميات الباطون
+                </Button>
+                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الحديد")}>
+                    <BarChart3 size={18} className="ms-2"/> حساب كميات الحديد
+                </Button>
+                 <DialogTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10">
+                        <UploadCloud size={18} className="ms-2"/> رفع صورة/فيديو
+                    </Button>
+                  </DialogTrigger>
+                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تحديث تقدم الإنشاء")}>
+                      <Percent size={18} className="ms-2"/> تحديث التقدم
                   </Button>
-                </DialogTrigger>
-                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تحديث تقدم الإنشاء")}>
-                    <Percent size={18} className="ms-2"/> تحديث التقدم
-                </Button>
-                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("إدارة مراحل المشروع")}>
-                    <GanttChartSquare size={18} className="ms-2"/> إدارة المراحل
-                </Button>
-                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقرير الكميات")}>
-                    <Download size={18} className="ms-2"/> تصدير التقارير
-                </Button>
-            </CardContent>
-          </Card>
+                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("إدارة مراحل المشروع")}>
+                      <GanttChartSquare size={18} className="ms-2"/> إدارة المراحل
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقرير الكميات")}>
+                      <Download size={18} className="ms-2"/> تصدير التقارير
+                  </Button>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
-              {/* Project Timeline Section */}
               <Card className="bg-white/95 shadow-lg">
                 <CardHeader className="flex flex-row justify-between items-center">
                   <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
                     <GanttChartSquare size={28} /> الجدول الزمني للمشروع
                   </CardTitle>
-                  <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل مراحل الإنشاء")}>
-                      <CalendarDays size={18} className="ms-1.5" /> تعديل المراحل
-                  </Button>
+                  {!isOwnerView && (
+                    <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل مراحل الإنشاء")}>
+                        <CalendarDays size={18} className="ms-1.5" /> تعديل المراحل
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardContent>
                   {project.timelineTasks && project.timelineTasks.length > 0 ? (
@@ -344,12 +389,13 @@ export default function ProjectDetailPage() {
                           <div key={task.id} className="relative h-12 flex items-center text-right pr-3 group" style={{ zIndex: index + 1 }}>
                             <div 
                               className={cn(
-                                "absolute h-8 rounded-md shadow-sm flex items-center justify-between px-2.5 text-white transition-all duration-300 ease-in-out hover:opacity-90 text-xs cursor-pointer",
-                                task.color, "group-hover:ring-2 group-hover:ring-app-gold"
+                                "absolute h-8 rounded-md shadow-sm flex items-center justify-between px-2.5 text-white transition-all duration-300 ease-in-out hover:opacity-90 text-xs",
+                                !isOwnerView && "cursor-pointer group-hover:ring-2 group-hover:ring-app-gold",
+                                task.color
                               )}
                               style={{ left, width, right: 'auto' }}
                               title={`${task.name} (من ${task.startDate} إلى ${task.endDate}) - ${task.status} ${task.progress !== undefined ? task.progress + '%' : ''}`}
-                              onClick={() => simulateAction(`تعديل مهمة: ${task.name}`)}
+                              onClick={!isOwnerView ? () => simulateAction(`تعديل مهمة: ${task.name}`) : undefined}
                             >
                               <span className="font-medium truncate">{task.name}</span>
                               {task.status === 'مكتمل' && <CheckCircle2 size={14} className="text-white/90 shrink-0 ml-1.5"/>}
@@ -365,7 +411,6 @@ export default function ProjectDetailPage() {
                 </CardContent>
               </Card>
 
-              {/* Progress Photos/Videos Section */}
               <Card className="bg-white/95 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
@@ -398,87 +443,90 @@ export default function ProjectDetailPage() {
             </div>
 
             <div className="space-y-8">
-              {/* Update Construction Progress Section */}
-              <Card className="bg-white/95 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                    <Percent size={28} /> تحديث تقدم الإنشاء
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleProgressSubmit} className="space-y-4">
-                    <div>
-                      <Label htmlFor="progressPercentage" className="font-semibold text-gray-700">نسبة التقدم الإجمالية (%):</Label>
-                      <Input 
-                        id="progressPercentage" type="number" min="0" max="100"
-                        value={progressUpdate.percentage}
-                        onChange={(e) => setProgressUpdate({...progressUpdate, percentage: e.target.value})}
-                        className="mt-1 bg-white focus:border-app-gold" placeholder="مثال: 75"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="progressNotes" className="font-semibold text-gray-700">ملاحظات التقدم:</Label>
-                      <Textarea 
-                        id="progressNotes" rows={3}
-                        value={progressUpdate.notes}
-                        onChange={(e) => setProgressUpdate({...progressUpdate, notes: e.target.value})}
-                        className="mt-1 bg-white focus:border-app-gold" placeholder="أضف ملاحظات حول التقدم المحرز..."
-                      />
-                    </div>
-                    <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-semibold">
-                      <Send size={18} className="ms-2"/> إرسال تحديث التقدم
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
+              {!isOwnerView && (
+                <>
+                  <Card className="bg-white/95 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                        <Percent size={28} /> تحديث تقدم الإنشاء
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <form onSubmit={handleProgressSubmit} className="space-y-4">
+                        <div>
+                          <Label htmlFor="progressPercentage" className="font-semibold text-gray-700">نسبة التقدم الإجمالية (%):</Label>
+                          <Input 
+                            id="progressPercentage" type="number" min="0" max="100"
+                            value={progressUpdate.percentage}
+                            onChange={(e) => setProgressUpdate({...progressUpdate, percentage: e.target.value})}
+                            className="mt-1 bg-white focus:border-app-gold" placeholder="مثال: 75"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="progressNotes" className="font-semibold text-gray-700">ملاحظات التقدم:</Label>
+                          <Textarea 
+                            id="progressNotes" rows={3}
+                            value={progressUpdate.notes}
+                            onChange={(e) => setProgressUpdate({...progressUpdate, notes: e.target.value})}
+                            className="mt-1 bg-white focus:border-app-gold" placeholder="أضف ملاحظات حول التقدم المحرز..."
+                          />
+                        </div>
+                        <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-semibold">
+                          <Send size={18} className="ms-2"/> إرسال تحديث التقدم
+                        </Button>
+                      </form>
+                    </CardContent>
+                  </Card>
+                
+                  <Card className="bg-white/95 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                        <Users size={28} /> ربط المالك بالمشروع
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <form onSubmit={handleLinkOwnerSubmit} className="space-y-4">
+                        <div>
+                          <Label htmlFor="ownerEmail" className="font-semibold text-gray-700">البريد الإلكتروني للمالك:</Label>
+                          <Input 
+                            id="ownerEmail" type="email"
+                            value={linkedOwnerEmailInput}
+                            onChange={(e) => setLinkedOwnerEmailInput(e.target.value)}
+                            className="mt-1 bg-white focus:border-app-gold" placeholder="owner@example.com"
+                          />
+                        </div>
+                        <Button type="submit" className="w-full bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold">
+                          <Link2 size={18} className="ms-2"/> {project.linkedOwnerEmail ? "تحديث ربط المالك" : "ربط المالك"}
+                        </Button>
+                      </form>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
               
-              {/* Summarized Quantity Reports Section */}
               <Card className="bg-white/95 shadow-lg">
                 <CardHeader className="flex flex-row justify-between items-center">
                   <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
                     <FileText size={28} /> تقارير الكميات
                   </CardTitle>
-                   <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقرير الكميات PDF/Excel")}>
-                      <Download size={18} className="ms-1.5" /> تصدير
-                  </Button>
+                   {!isOwnerView && (
+                     <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقرير الكميات PDF/Excel")}>
+                        <Download size={18} className="ms-1.5" /> تصدير
+                    </Button>
+                   )}
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-700 leading-relaxed">
                     {project.quantitySummary || "لا توجد تقارير كميات ملخصة متاحة حالياً."}
                   </p>
-                  {/* Placeholder for report customization */}
-                  <div className="mt-4 text-sm text-gray-500 italic">
-                    (سيتم إضافة خيارات لتخصيص عرض التقرير هنا لاحقًا)
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Link Owner to Project Section */}
-              <Card className="bg-white/95 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                    <Users size={28} /> ربط المالك بالمشروع
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleLinkOwnerSubmit} className="space-y-4">
-                    <div>
-                      <Label htmlFor="ownerEmail" className="font-semibold text-gray-700">البريد الإلكتروني للمالك:</Label>
-                      <Input 
-                        id="ownerEmail" type="email"
-                        value={linkedOwnerEmailInput}
-                        onChange={(e) => setLinkedOwnerEmailInput(e.target.value)}
-                        className="mt-1 bg-white focus:border-app-gold" placeholder="owner@example.com"
-                      />
+                   {!isOwnerView && (
+                    <div className="mt-4 text-sm text-gray-500 italic">
+                      (سيتم إضافة خيارات لتخصيص عرض التقرير هنا لاحقًا)
                     </div>
-                    <Button type="submit" className="w-full bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold">
-                      <Link2 size={18} className="ms-2"/> {project.linkedOwnerEmail ? "تحديث ربط المالك" : "ربط المالك"}
-                    </Button>
-                  </form>
+                   )}
                 </CardContent>
               </Card>
               
-              {/* Comments/Inquiries Section */}
               <Card className="bg-white/95 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
@@ -537,10 +585,11 @@ export default function ProjectDetailPage() {
                   <Input id="projectFileUpload" type="file" onChange={handleFileChange} className="bg-white focus:border-app-gold"/>
                   {selectedFile && <p className="text-xs text-gray-500 mt-1">الملف المختار: {selectedFile.name}</p>}
               </div>
-              <Button onClick={handleFileUpload} disabled={isUploadingFile || !selectedFile} className="w-full bg-app-red hover:bg-red-700">
+              <Button onClick={handleFileUpload} disabled={isUploadingFile || !selectedFile || isOwnerView} className="w-full bg-app-red hover:bg-red-700">
                   {isUploadingFile ? <Loader2 className="ms-2 h-5 w-5 animate-spin"/> : <UploadCloud size={18} className="ms-2"/>}
                   {isUploadingFile ? 'جاري الرفع...' : 'رفع الملف'}
               </Button>
+              {isOwnerView && <p className="text-xs text-red-500 text-center">المالك لا يمكنه رفع الملفات.</p>}
           </div>
           <DialogClose asChild>
               <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-app-red"><X size={20}/></Button>
@@ -556,7 +605,5 @@ const Loader2 = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
   </svg>
 );
-
-    
 
     

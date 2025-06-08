@@ -39,7 +39,7 @@ const Footer = () => {
             <h4 className="text-lg font-semibold text-white mb-4 border-b-2 border-app-gold pb-2 inline-block">روابط سريعة</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/about" className="hover:text-app-gold transition-colors duration-200">عن الموقع</Link></li>
-              <li><Link href="/contact" className="hover:text-app-gold transition-colors duration-200">اتصل بنا</Link></li>
+              <li><Link href="/contact" className="hover:text-app-gold transition-colors duration-200">تواصل معنا</Link></li>
               <li><Link href="/help" className="hover:text-app-gold transition-colors duration-200">مركز المساعدة</Link></li>
               <li><Link href="/login" className="hover:text-app-gold transition-colors duration-200">تسجيل الدخول</Link></li>
                <li><Link href="/signup" className="hover:text-app-gold transition-colors duration-200">إنشاء حساب</Link></li>
@@ -51,15 +51,15 @@ const Footer = () => {
             <h4 className="text-lg font-semibold text-white mb-4 border-b-2 border-app-gold pb-2 inline-block">معلومات الاتصال</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center justify-end sm:justify-start gap-3">
-                <a href="mailto:info@proqscpm.com" className="hover:text-app-gold transition-colors duration-200">info@proqscpm.com</a>
+                <a href="mailto:mediaplus64@gmail.com" className="hover:text-app-gold transition-colors duration-200">mediaplus64@gmail.com</a>
                 <Mail size={18} className="text-app-gold shrink-0" />
               </li>
               <li className="flex items-center justify-end sm:justify-start gap-3">
-                <span>+970 59 552 8080</span>
+                <span>+972594371424</span>
                 <Phone size={18} className="text-app-gold shrink-0" />
               </li>
               <li className="flex items-center justify-end sm:justify-start gap-3">
-                <span>جامعة فلسطين التقنية - خضوري، طولكرم</span>
+                <span>سلفيت فلسطين</span>
                 <MapPin size={18} className="text-app-gold shrink-0" />
               </li>
             </ul>
@@ -69,7 +69,7 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold text-white mb-4 border-b-2 border-app-gold pb-2 inline-block">تابعنا</h4>
             <div className="flex justify-end sm:justify-start gap-3">
-              <Link href="https://wa.me/970595528080" target="_blank" rel="noopener noreferrer" title="WhatsApp"
+              <Link href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" title="WhatsApp"
                     className="p-2.5 rounded-full bg-gray-700 hover:bg-social-whatsapp text-white hover:text-white transition-all duration-300 transform hover:scale-110">
                 <WhatsAppIcon className="h-5 w-5" />
               </Link>

@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
+        body: ['Tajawal', 'sans-serif'],
+        headline: ['Tajawal', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
@@ -65,33 +65,53 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        // Custom colors based on user's CSS & HSL variables
+        'header-bg': 'rgba(var(--header-bg-rgb), 0.9)',
+        'header-fg': 'hsl(var(--header-fg-hsl))',
+        'nav-link': 'hsl(var(--nav-link-hsl))',
+        'nav-link-hover': 'hsl(var(--nav-link-hover-hsl))',
+        'nav-link-border': 'hsl(var(--nav-link-border-hsl))',
+        'app-red': '#B40404', // For direct use if needed
+        'app-gold': '#f1c40f', // For direct use if needed
+        'gradient-pink': '#ff007f',
+        'gradient-orange': '#ff7f00',
+        'gradient-purple': '#ff00ff',
+        'card-content-bg': 'rgba(var(--card-content-bg-rgb), 0.9)',
+        'card-content-bg-hover': 'rgba(var(--card-content-bg-rgb), 0.95)',
+        'card-content-fg': 'hsl(var(--card-content-fg-hsl))',
+        'card-content-hover-fg': 'hsl(var(--card-content-hover-fg-hsl))',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      boxShadow: {
+        'header-footer': '0 4px 12px rgba(0, 0, 0, 0.3)',
+        'nav': '0 4px 8px rgba(0, 0, 0, 0.2)',
+        'message': '0 4px 8px rgba(0, 0, 0, 0.2)',
+        'card-main': '0 15px 30px -5px rgba(151, 65, 252, 0.2)', // Example, adjust to match user's card shadow
+        'card-main-hover': '0 20px 40px rgba(151, 65, 252, 0.3)', // Example
+        'form-container': '0 10px 25px rgba(0, 0, 0, 0.2)',
+      },
       keyframes: {
         'accordion-down': {
-          from: {
-            height: '0',
-          },
-          to: {
-            height: 'var(--radix-accordion-content-height)',
-          },
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
-          from: {
-            height: 'var(--radix-accordion-content-height)',
-          },
-          to: {
-            height: '0',
-          },
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
         },
+        modalFadeIn: { 
+          'from': { opacity: '0', transform: 'translateY(-50px)' },
+          'to': { opacity: '1', transform: 'translateY(0)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'modal-fade-in': 'modalFadeIn 0.4s ease-out',
       },
     },
   },

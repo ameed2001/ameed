@@ -16,7 +16,7 @@ export async function loginUserAction(data: { email: string; password: string; }
 
   const user = findUserByEmail(data.email);
 
-  if (!user || user.password !== data.password) {
+  if (!user || user.password !== data.password) { // In real app, use hashed password comparison
     console.log(`Login failed for ${data.email}. Invalid credentials.`);
     return { 
       success: false, 
@@ -46,6 +46,8 @@ export async function loginUserAction(data: { email: string; password: string; }
     redirectTo = "/my-projects"; 
   } else if (user.role === "Admin") {
     redirectTo = "/admin"; 
+  } else if (user.role === "Owner") {
+    redirectTo = "/owner/dashboard"; // Redirect Owner to their new dashboard
   }
 
   console.log(`User ${data.email} (Role: ${user.role}) logged in successfully. Redirecting to ${redirectTo}`);

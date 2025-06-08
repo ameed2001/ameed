@@ -16,33 +16,34 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-card text-card-foreground sm:max-w-md custom-dialog-overlay animate-modal-fade-in p-6">
-        <DialogHeader className="relative text-right">
-          <DialogTitle className="text-app-red text-2xl font-bold mb-2">الوصول يتطلب تسجيل الدخول</DialogTitle>
+      <DialogContent className="bg-card text-card-foreground sm:max-w-md custom-dialog-overlay animate-modal-fade-in p-6 rounded-lg shadow-xl">
+        <DialogHeader className="relative text-right mb-4">
+          <DialogTitle className="text-app-red text-2xl font-bold text-center">الوصول يتطلب تسجيل الدخول</DialogTitle>
           <DialogClose asChild>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute top-[-10px] left-[-10px] z-10 text-gray-600 hover:text-app-red hover:bg-gray-200/70 rounded-full w-8 h-8 p-1.5"
+              className="absolute top-[-8px] left-[-8px] sm:top-0 sm:left-0 z-10 text-gray-500 hover:text-app-red hover:bg-red-100/50 rounded-full w-8 h-8 p-1.5"
               aria-label="Close"
+              onClick={onClose}
             >
               <X size={20} />
             </Button>
           </DialogClose>
         </DialogHeader>
-        <DialogDescription className="text-gray-700 text-right text-base leading-relaxed mt-1 mb-6">
+        <DialogDescription className="text-gray-700 text-right text-base leading-relaxed mb-6">
           لاستخدام هذه الميزة وغيرها من الميزات المتقدمة في منصة "المحترف لحساب الكميات"، يرجى تسجيل الدخول إلى حسابك أو إنشاء حساب جديد إذا لم تكن مسجلاً بعد.
         </DialogDescription>
         <DialogFooter className="flex flex-col sm:flex-row-reverse gap-3 pt-2">
-          <Button asChild className="w-full sm:w-auto bg-app-red hover:bg-red-700 text-white">
+          <Button asChild className="w-full sm:flex-1 bg-app-red hover:bg-red-700 text-white font-semibold py-2.5 text-base">
             <Link href="/login" onClick={onClose}>
-              <LogIn className="ms-2 h-4 w-4" />
+              <LogIn className="ms-2 h-5 w-5" />
               تسجيل الدخول
             </Link>
           </Button>
-          <Button asChild variant="outline" className="w-full sm:w-auto border-app-gold text-app-gold hover:bg-app-gold/10">
+          <Button asChild variant="outline" className="w-full sm:flex-1 border-app-gold text-app-gold hover:bg-app-gold/10 hover:text-app-gold font-semibold py-2.5 text-base">
             <Link href="/signup" onClick={onClose}>
-              <UserPlus className="ms-2 h-4 w-4" />
+              <UserPlus className="ms-2 h-5 w-5" />
               إنشاء حساب جديد
             </Link>
           </Button>

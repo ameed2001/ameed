@@ -2,13 +2,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from 'next/navigation';
+// useRouter is no longer needed for this specific button's action
+// import { useRouter } from 'next/navigation'; 
 
 const HeroSection = () => {
-  const router = useRouter();
+  // const router = useRouter(); // No longer needed here
 
   const handleStartClick = () => {
-    router.push('/login');
+    // Instead of navigating, scroll to the section with auth cards
+    const authSection = document.getElementById('auth-cards-section');
+    if (authSection) {
+      authSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    // If you still want a fallback or a direct link for non-JS, consider an href on the button or a link elsewhere.
   };
 
   return (

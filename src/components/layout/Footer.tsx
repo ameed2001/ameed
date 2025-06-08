@@ -51,16 +51,16 @@ const Footer = () => {
             <h4 className="text-lg font-semibold text-white mb-4 border-b-2 border-app-gold pb-2 inline-block">معلومات الاتصال</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-center justify-end sm:justify-start gap-3">
-                <Mail size={18} className="text-app-gold shrink-0" />
                 <a href="mailto:mediaplus64@gmail.com" className="hover:text-app-gold transition-colors duration-200">mediaplus64@gmail.com</a>
+                <Mail size={18} className="text-app-gold shrink-0" />
               </li>
               <li className="flex items-center justify-end sm:justify-start gap-3">
-                <Phone size={18} className="text-app-gold shrink-0" />
                 <span>+972594371424</span>
+                <Phone size={18} className="text-app-gold shrink-0" />
               </li>
               <li className="flex items-center justify-end sm:justify-start gap-3">
-                <MapPin size={18} className="text-app-gold shrink-0" />
                 <span>سلفيت فلسطين</span>
+                <MapPin size={18} className="text-app-gold shrink-0" />
               </li>
             </ul>
           </div>

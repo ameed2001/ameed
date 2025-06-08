@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,47 +9,38 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Search, Eye, Trash2, Filter } from 'lucide-react';
+import { Search, Eye, Trash2 } from 'lucide-react'; // Filter icon removed
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-type ProjectStatus = 'مكتمل' | 'قيد التنفيذ' | 'مخطط له' | 'مؤرشف';
-
-interface AdminProject {
-  id: string;
-  name: string;
-  engineer: string;
-  owner: string;
-  status: ProjectStatus;
-}
-
-const mockAdminProjects: AdminProject[] = [
-  { id: '1', name: 'مشروع بناء فيلا النرجس', engineer: 'م. خالد الأحمدي', owner: 'السيد عبدالله الراجحي', status: 'قيد التنفيذ' },
-  { id: '2', name: 'تطوير مجمع الياسمين السكني', engineer: 'م. سارة إبراهيم', owner: 'شركة التطوير العقاري', status: 'مكتمل' },
-  { id: '3', name: 'إنشاء برج الأندلس التجاري', engineer: 'م. عمر حسن', owner: 'مستثمرون الخليج', status: 'مخطط له' },
-  { id: '4', name: 'تجديد فندق الواحة', engineer: 'م. ليلى العلي', owner: 'مجموعة فنادق عالمية', status: 'مؤرشف' },
-];
-
+import { dbProjects, type Project, type ProjectStatusType, deleteProject as dbDeleteProject } from '@/lib/mock-db';
 
 export default function AdminProjectsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
-  const [projects, setProjects] = useState<AdminProject[]>(mockAdminProjects);
+  const [projects, setProjectsState] = useState<Project[]>(dbProjects);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  const refreshProjectsFromDb = () => setProjectsState([...dbProjects]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
-  const filteredProjects = projects.filter(project =>
-    (project.name.toLowerCase().includes(searchTerm) ||
-    project.engineer.toLowerCase().includes(searchTerm) ||
-    project.owner.toLowerCase().includes(searchTerm)) &&
-    (statusFilter === 'all' || project.status === statusFilter)
-  );
+  const filteredProjects = useMemo(() => {
+    return projects.filter(project =>
+        (project.name.toLowerCase().includes(searchTerm) ||
+        (project.engineer && project.engineer.toLowerCase().includes(searchTerm)) ||
+        (project.clientName && project.clientName.toLowerCase().includes(searchTerm))) &&
+        (statusFilter === 'all' || project.status === statusFilter)
+    );
+  }, [projects, searchTerm, statusFilter]);
 
   const handleDeleteProject = (projectId: string, projectName: string) => {
-    setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
-    toast({ title: "تم حذف المشروع", description: `تم حذف المشروع "${projectName}" بنجاح (محاكاة).`, variant: "destructive" });
+    if (dbDeleteProject(projectId)) {
+        refreshProjectsFromDb();
+        toast({ title: "تم حذف المشروع", description: `تم حذف المشروع "${projectName}" بنجاح.`, variant: "destructive" });
+    } else {
+        toast({ title: "خطأ", description: `فشل حذف المشروع "${projectName}".`, variant: "destructive" });
+    }
   };
 
   return (
@@ -82,7 +73,6 @@ export default function AdminProjectsPage() {
               <SelectItem value="مؤرشف">مؤرشف</SelectItem>
             </SelectContent>
           </Select>
-          {/* Potentially an "Add New Project" button here if admin can create them directly */}
         </div>
 
         <div className="overflow-x-auto rounded-lg border">
@@ -102,14 +92,14 @@ export default function AdminProjectsPage() {
                   <TableCell className="font-medium text-app-red hover:underline">
                      <Link href={`/my-projects/${project.id}`}>{project.name}</Link>
                   </TableCell>
-                  <TableCell>{project.engineer}</TableCell>
-                  <TableCell>{project.owner}</TableCell>
+                  <TableCell>{project.engineer || 'غير محدد'}</TableCell>
+                  <TableCell>{project.clientName || 'غير محدد'}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                       project.status === 'مكتمل' ? 'bg-green-100 text-green-700' :
                       project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-700' :
                       project.status === 'مخطط له' ? 'bg-blue-100 text-blue-700' :
-                      'bg-gray-100 text-gray-700' // Archived
+                      'bg-gray-100 text-gray-700' 
                     }`}>
                       {project.status}
                     </span>

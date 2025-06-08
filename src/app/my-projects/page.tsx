@@ -8,76 +8,36 @@ import Link from "next/link";
 import { Briefcase, Eye, PlusSquare, Archive } from "lucide-react";
 import Image from 'next/image';
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { dbProjects, type Project, updateProject as dbUpdateProject } from '@/lib/mock-db';
 
-interface Project {
-  id: string;
-  name: string;
-  status: 'مكتمل' | 'قيد التنفيذ' | 'مخطط له' | 'مؤرشف';
-  description: string;
-  imageUrl?: string;
-  dataAiHint?: string;
-  linkedOwnerEmail?: string; // Added for owner filtering
-}
-
-// Mock data for projects
-const initialMockProjects: Project[] = [
-  {
-    id: '1',
-    name: 'مشروع بناء فيلا النرجس',
-    status: 'قيد التنفيذ',
-    description: 'فيلا سكنية فاخرة مكونة من طابقين وحديقة واسعة في حي النرجس.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'modern villa',
-    linkedOwnerEmail: "owner@example.com"
-  },
-  {
-    id: '2',
-    name: 'تطوير مجمع الياسمين السكني',
-    status: 'مكتمل',
-    description: 'تطوير شامل لمجمع سكني يضم 5 مباني و مرافق ترفيهية.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'residential complex',
-    linkedOwnerEmail: "anotherowner@example.com"
-  },
-  {
-    id: '3',
-    name: 'إنشاء برج الأندلس التجاري',
-    status: 'مخطط له',
-    description: 'برج تجاري متعدد الاستخدامات بارتفاع 20 طابقًا في قلب المدينة.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'commercial tower',
-    // No linked owner, or could be linked to admin/engineer for their view
-  },
-  {
-    id: '4',
-    name: 'مشروع فيلا المالك الخاصة',
-    status: 'قيد التنفيذ',
-    description: 'مشروع خاص للمالك owner@example.com.',
-    imageUrl: 'https://placehold.co/600x400.png',
-    dataAiHint: 'private villa',
-    linkedOwnerEmail: "owner@example.com"
-  },
-];
 
 // Simulate logged-in user - replace with actual auth context in a real app
-const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Owner"; // Change to "Engineer" or "Admin" to test
-const MOCK_CURRENT_USER_EMAIL: string = "owner@example.com"; // Change if MOCK_CURRENT_USER_ROLE is different
+const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Owner"; 
+const MOCK_CURRENT_USER_EMAIL: string = "owner@example.com"; 
 
 export default function MyProjectsPage() {
   const { toast } = useToast();
-  const [projects, setProjects] = useState<Project[]>(initialMockProjects);
+  // Initialize component state with data from mock DB
+  const [projects, setProjectsState] = useState<Project[]>(dbProjects);
+
+  const refreshProjectsFromDb = () => setProjectsState([...dbProjects]);
 
   const handleArchiveProject = (projectId: string, projectName: string) => {
-    setProjects(prevProjects => 
-      prevProjects.map(p => p.id === projectId ? {...p, status: 'مؤرشف'} : p)
-    );
-    console.log(`Archiving project ${projectId}`);
-    toast({
-      title: "أرشفة المشروع",
-      description: `تم نقل المشروع "${projectName}" إلى الأرشيف بنجاح (محاكاة).`,
-      variant: "default",
-    });
+    if (dbUpdateProject(projectId, { status: 'مؤرشف' })) {
+        refreshProjectsFromDb();
+        toast({
+          title: "أرشفة المشروع",
+          description: `تم نقل المشروع "${projectName}" إلى الأرشيف بنجاح.`,
+          variant: "default",
+        });
+    } else {
+        toast({
+          title: "خطأ",
+          description: `فشل أرشفة المشروع "${projectName}".`,
+          variant: "destructive",
+        });
+    }
   };
   
   let displayedActiveProjects: Project[];
@@ -86,7 +46,7 @@ export default function MyProjectsPage() {
   if (MOCK_CURRENT_USER_ROLE === "Owner") {
     displayedActiveProjects = projects.filter(p => p.linkedOwnerEmail === MOCK_CURRENT_USER_EMAIL && p.status !== 'مؤرشف');
     displayedArchivedProjects = projects.filter(p => p.linkedOwnerEmail === MOCK_CURRENT_USER_EMAIL && p.status === 'مؤرشف');
-  } else { // Engineer or Admin sees all projects (adjust logic as needed for admin)
+  } else { 
     displayedActiveProjects = projects.filter(p => p.status !== 'مؤرشف');
     displayedArchivedProjects = projects.filter(p => p.status === 'مؤرشف');
   }
@@ -137,15 +97,15 @@ export default function MyProjectsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {displayedActiveProjects.map((project) => (
                   <Card key={project.id} className="bg-white/95 shadow-xl hover:shadow-2xl transition-shadow duration-300 flex flex-col text-right">
-                    {project.imageUrl && (
+                    {project.photos && project.photos.length > 0 && project.photos[0].src && (
                       <div className="relative h-48 w-full">
                         <Image 
-                            src={project.imageUrl} 
-                            alt={project.name} 
+                            src={project.photos[0].src} 
+                            alt={project.photos[0].alt || project.name} 
                             width={600}
                             height={400}
                             className="object-cover w-full h-full rounded-t-lg"
-                            data-ai-hint={project.dataAiHint || "building construction"}
+                            data-ai-hint={project.photos[0].dataAiHint || "building construction"}
                         />
                       </div>
                     )}
@@ -155,7 +115,7 @@ export default function MyProjectsPage() {
                         project.status === 'مكتمل' ? 'text-green-600' :
                         project.status === 'قيد التنفيذ' ? 'text-yellow-600' :
                         project.status === 'مخطط له' ? 'text-blue-600' :
-                        'text-gray-500'
+                        'text-gray-500' // for 'مؤرشف'
                       }`}>
                         الحالة: {project.status}
                       </CardDescription>
@@ -194,15 +154,15 @@ export default function MyProjectsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {displayedArchivedProjects.map((project) => (
                     <Card key={project.id} className="bg-gray-100/80 shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col text-right opacity-75">
-                      {project.imageUrl && (
+                      {project.photos && project.photos.length > 0 && project.photos[0].src && (
                         <div className="relative h-48 w-full">
                           <Image 
-                              src={project.imageUrl} 
-                              alt={project.name} 
+                              src={project.photos[0].src} 
+                              alt={project.photos[0].alt || project.name} 
                               width={600}
                               height={400}
                               className="object-cover w-full h-full rounded-t-lg filter grayscale"
-                              data-ai-hint={project.dataAiHint || "building construction"}
+                              data-ai-hint={project.photos[0].dataAiHint || "building construction"}
                           />
                         </div>
                       )}
@@ -234,5 +194,3 @@ export default function MyProjectsPage() {
     </AppLayout>
   );
 }
-
-    

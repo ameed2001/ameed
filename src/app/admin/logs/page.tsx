@@ -8,50 +8,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from '@/components/ui/button';
-import { ScrollText, Search, CalendarIcon, Download } from 'lucide-react'; // Removed Filter icon as Select is used
+import { ScrollText, Search, Download } from 'lucide-react'; 
 import { format } from 'date-fns';
-import { arSA } from 'date-fns/locale'; // For Arabic date formatting
+import { arSA } from 'date-fns/locale'; 
 import { useToast } from "@/hooks/use-toast";
+import { dbLogs, type LogEntry, type LogLevel } from '@/lib/mock-db';
 
-
-interface LogEntry {
-  id: string;
-  timestamp: Date;
-  level: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
-  message: string;
-  user?: string; // Optional user associated with the log
-}
-
-const mockLogs: LogEntry[] = [
-  { id: 'log1', timestamp: new Date(2024, 5, 8, 10, 30, 0), level: 'INFO', message: 'المستخدم "admin@example.com" قام بتسجيل الدخول.', user: 'admin@example.com' },
-  { id: 'log2', timestamp: new Date(2024, 5, 8, 10, 35, 12), level: 'SUCCESS', message: 'تمت الموافقة على المهندس "أحمد محمود".', user: 'admin@example.com' },
-  { id: 'log3', timestamp: new Date(2024, 5, 8, 11, 0, 5), level: 'INFO', message: 'تم إنشاء مشروع جديد: "مشروع بناء فيلا النرجس".', user: 'م. خالد الأحمدي' },
-  { id: 'log4', timestamp: new Date(2024, 5, 8, 11, 15, 45), level: 'WARNING', message: 'محاولة تسجيل دخول فاشلة للحساب "user@test.com".' },
-  { id: 'log5', timestamp: new Date(2024, 5, 8, 12, 5, 22), level: 'ERROR', message: 'فشل في الاتصال بخادم قاعدة البيانات (محاكاة).', },
-  { id: 'log6', timestamp: new Date(2024, 5, 7, 15, 0, 0), level: 'INFO', message: 'تم تحديث إعدادات النظام.', user: 'admin@example.com' },
-  { id: 'log7', timestamp: new Date(2024, 5, 7, 16, 20, 30), level: 'SUCCESS', message: 'تم حذف المستخدم "suspended@example.com".', user: 'admin@example.com' },
-];
 
 export default function AdminLogsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [logLevelFilter, setLogLevelFilter] = useState<string>('all');
-  // Add date filter states if needed: const [dateFilter, setDateFilter] = useState<Date | undefined>();
+  // const [logs, setLogsState] = useState<LogEntry[]>(dbLogs); // If manipulation needed
 
   const filteredLogs = useMemo(() => {
-    return mockLogs
+    return dbLogs // Directly use dbLogs if no client-side manipulation before filtering
       .filter(log => {
         const matchesSearch = searchTerm === '' || 
                               log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               (log.user && log.user.toLowerCase().includes(searchTerm.toLowerCase()));
         const matchesLevel = logLevelFilter === 'all' || log.level === logLevelFilter;
-        // Add date filter logic here if implementing
         return matchesSearch && matchesLevel;
       })
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()); // Sort by newest first
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }, [searchTerm, logLevelFilter]);
 
-  const getLogLevelStyles = (level: LogEntry['level']) => {
+  const getLogLevelStyles = (level: LogLevel) => {
     switch (level) {
       case 'ERROR': return 'bg-red-100 text-red-700 border-red-500';
       case 'WARNING': return 'bg-yellow-100 text-yellow-700 border-yellow-500';
@@ -62,7 +44,6 @@ export default function AdminLogsPage() {
   };
   
   const handleExportLogs = () => {
-    // Simulate log export
     const logData = filteredLogs.map(log => `${format(log.timestamp, "yyyy/MM/dd HH:mm:ss", { locale: arSA })} | ${log.level} | ${log.user || 'N/A'} | ${log.message}`).join("\n");
     const blob = new Blob([logData], { type: 'text/plain;charset=utf-8' });
     const link = document.createElement('a');
@@ -70,7 +51,7 @@ export default function AdminLogsPage() {
     link.download = 'system_logs.txt';
     link.click();
     URL.revokeObjectURL(link.href);
-    toast({ title: "تم تصدير السجلات", description: "تم بدء تنزيل ملف السجلات المصفاة (محاكاة)." });
+    toast({ title: "تم تصدير السجلات", description: "تم بدء تنزيل ملف السجلات المصفاة." });
   };
 
 
@@ -111,12 +92,6 @@ export default function AdminLogsPage() {
               <SelectItem value="ERROR">خطأ (ERROR)</SelectItem>
             </SelectContent>
           </Select>
-          {/* Placeholder for Date Filter
-          <Button variant="outline" className="w-full md:w-auto justify-start text-left font-normal">
-            <CalendarIcon className="ml-2 h-4 w-4" />
-            تاريخ (قريبًا)
-          </Button>
-          */}
         </div>
 
         <ScrollArea className="h-[500px] rounded-lg border">
@@ -154,7 +129,7 @@ export default function AdminLogsPage() {
           </Table>
         </ScrollArea>
         {filteredLogs.length > 0 && (
-            <p className="text-xs text-gray-500 text-center">يتم عرض {filteredLogs.length} من إجمالي {mockLogs.length} سجل.</p>
+            <p className="text-xs text-gray-500 text-center">يتم عرض {filteredLogs.length} من إجمالي {dbLogs.length} سجل.</p>
         )}
       </CardContent>
     </Card>

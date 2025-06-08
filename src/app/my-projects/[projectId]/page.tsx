@@ -14,122 +14,18 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Edit, Send, Palette, CheckCircle2, 
-  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2
-} from "lucide-react";
+  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2, Loader2 as LoaderIcon
+} from "lucide-react"; // Renamed Loader2 to avoid conflict
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
-
-
-interface ProjectPhoto {
-  id: string;
-  src: string;
-  alt: string;
-  dataAiHint: string;
-  caption?: string;
-}
-
-interface TimelineTask {
-  id: string;
-  name: string;
-  status: 'مكتمل' | 'قيد التنفيذ' | 'مخطط له';
-  startDate: string;
-  endDate: string;
-  progress?: number; 
-  color: string; 
-}
-
-interface ProjectComment {
-  id: string;
-  user: string;
-  text: string;
-  date: string;
-  avatar?: string; 
-  dataAiHintAvatar?: string;
-}
-
-interface Project {
-  id: string;
-  name: string;
-  status: 'مكتمل' | 'قيد التنفيذ' | 'مخطط له';
-  overallProgress: number; 
-  description: string;
-  startDate: string;
-  endDate: string;
-  location?: string;
-  engineer?: string;
-  clientName?: string; 
-  budget?: number; 
-  quantitySummary?: string;
-  photos?: ProjectPhoto[];
-  timelineTasks?: TimelineTask[];
-  comments?: ProjectComment[];
-  linkedOwnerEmail?: string; 
-}
-
-const mockProjects: Project[] = [
-  {
-    id: '1',
-    name: 'مشروع بناء فيلا النرجس',
-    status: 'قيد التنفيذ',
-    overallProgress: 65,
-    description: 'فيلا سكنية فاخرة مكونة من طابقين وحديقة واسعة، تقع في حي النرجس الراقي. يتميز المشروع بتصميم معماري حديث واستخدام مواد بناء عالية الجودة.',
-    startDate: '2024-03-01',
-    endDate: '2024-12-31',
-    location: "حي النرجس، الرياض",
-    engineer: "م. خالد الأحمدي",
-    clientName: "السيد عبدالله الراجحي",
-    budget: 1200000,
-    quantitySummary: 'تم استهلاك 120 متر مكعب من الباطون و 15 طن من حديد التسليح حتى الآن. تم الانتهاء من 80% من أعمال الهيكل الخرساني.',
-    photos: [
-      { id: 'p1', src: 'https://placehold.co/600x400.png', alt: 'أعمال الأساسات', dataAiHint: 'building foundation', caption: 'صب قواعد الأساسات بتاريخ 15 مارس 2024' },
-      { id: 'p2', src: 'https://placehold.co/600x400.png', alt: 'أعمدة الطابق الأرضي', dataAiHint: 'concrete columns', caption: 'الانتهاء من أعمدة الطابق الأرضي بتاريخ 10 أبريل 2024' },
-      { id: 'p3', src: 'https://placehold.co/600x400.png', alt: 'تقدم الهيكل', dataAiHint: 'construction site', caption: 'نظرة عامة على تقدم الهيكل الخرساني بتاريخ 1 مايو 2024' },
-    ],
-    timelineTasks: [
-      { id: 't1', name: "التخطيط والتراخيص", startDate: "2024-03-01", endDate: "2024-03-15", status: 'مكتمل', progress: 100, color: "bg-green-500" },
-      { id: 't2', name: "أعمال الحفر والأساسات", startDate: "2024-03-16", endDate: "2024-04-30", status: 'مكتمل', progress: 100, color: "bg-green-500" },
-      { id: 't3', name: "الهيكل الخرساني للطابق الأرضي", startDate: "2024-05-01", endDate: "2024-06-30", status: 'قيد التنفيذ', progress: 80, color: "bg-yellow-500" },
-      { id: 't4', name: "الهيكل الخرساني للطابق الأول", startDate: "2024-07-01", endDate: "2024-08-31", status: 'قيد التنفيذ', progress: 30, color: "bg-yellow-500" },
-      { id: 't5', name: "أعمال التشطيبات الأولية", startDate: "2024-09-01", endDate: "2024-10-31", status: 'مخطط له', progress: 0, color: "bg-blue-500" },
-      { id: 't6', name: "التشطيبات النهائية والتسليم", startDate: "2024-11-01", endDate: "2024-12-31", status: 'مخطط له', progress: 0, color: "bg-blue-500" },
-    ],
-    comments: [
-      { id: 'c1', user: "م. خالد الأحمدي", text: "تم الانتهاء من صب سقف الطابق الأرضي اليوم. كل شيء يسير وفق الجدول.", date: "2024-06-20", avatar: "https://placehold.co/40x40.png?text=EN", dataAiHintAvatar: "engineer avatar" },
-      { id: 'c2', user: "المالك", text: "عمل رائع! متى يمكنني زيارة الموقع للاطلاع على آخر التطورات؟", date: "2024-06-21", avatar: "https://placehold.co/40x40.png?text=OW", dataAiHintAvatar: "owner avatar" },
-    ],
-    linkedOwnerEmail: "owner@example.com"
-  },
-   {
-    id: '4', // Project from my-projects/page.tsx linked to owner@example.com
-    name: 'مشروع فيلا المالك الخاصة',
-    status: 'قيد التنفيذ',
-    overallProgress: 30,
-    description: 'مشروع خاص للمالك owner@example.com قيد التنفيذ حالياً.',
-    startDate: '2024-05-01',
-    endDate: '2025-01-31',
-    location: "حي الأمانة، جدة",
-    engineer: "م. سارة عبدالله",
-    clientName: "مالك المشروع (نفسه)", // Or the actual name
-    budget: 2500000,
-    quantitySummary: 'تم البدء في أعمال الحفر والأساسات.',
-    photos: [
-      { id: 'pv1', src: 'https://placehold.co/600x400.png', alt: 'موقع المشروع قبل البدء', dataAiHint: 'land plot', caption: 'قطعة الأرض قبل بدء الأعمال' },
-    ],
-    timelineTasks: [
-      { id: 'pt1', name: "التراخيص النهائية", startDate: "2024-05-01", endDate: "2024-05-15", status: 'مكتمل', progress: 100, color: "bg-green-500" },
-      { id: 'pt2', name: "الحفر", startDate: "2024-05-16", endDate: "2024-06-15", status: 'قيد التنفيذ', progress: 40, color: "bg-yellow-500" },
-    ],
-    comments: [],
-    linkedOwnerEmail: "owner@example.com"
-  },
-];
+import { dbProjects, findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask } from '@/lib/mock-db';
 
 // Simulate logged-in user - replace with actual auth context in a real app
-const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Owner"; // Change to "Engineer" to test
-const MOCK_CURRENT_USER_EMAIL: string = "owner@example.com"; // Change if MOCK_CURRENT_USER_ROLE is different
+const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Owner";
+const MOCK_CURRENT_USER_EMAIL: string = "owner@example.com";
 
 
 export default function ProjectDetailPage() {
@@ -146,42 +42,53 @@ export default function ProjectDetailPage() {
 
   const isOwnerView = MOCK_CURRENT_USER_ROLE === "Owner";
 
-  useEffect(() => {
-    const foundProject = mockProjects.find(p => p.id === projectId);
-    // For Owner, ensure they can only see projects linked to them (or if admin, they see all)
-    if (isOwnerView && foundProject && foundProject.linkedOwnerEmail !== MOCK_CURRENT_USER_EMAIL) {
-        setProject(null); // Owner trying to access unlinked project
+  const refreshProjectFromDb = () => {
+    const currentProject = findProjectById(projectId);
+     if (isOwnerView && currentProject && currentProject.linkedOwnerEmail !== MOCK_CURRENT_USER_EMAIL) {
+        setProject(null);
         toast({ title: "غير مصرح به", description: "ليس لديك صلاحية لعرض هذا المشروع.", variant: "destructive" });
         return;
     }
+    setProject(currentProject ? {...currentProject} : null); // Create a new object to trigger re-render
+    if (currentProject?.linkedOwnerEmail) {
+      setLinkedOwnerEmailInput(currentProject.linkedOwnerEmail);
+    }
+    if (currentProject?.overallProgress) {
+      setProgressUpdate(prev => ({ ...prev, percentage: currentProject.overallProgress.toString() }));
+    }
+  };
 
-    setProject(foundProject || null);
-    if (foundProject?.linkedOwnerEmail) {
-      setLinkedOwnerEmailInput(foundProject.linkedOwnerEmail);
-    }
-    if (foundProject?.overallProgress) {
-      setProgressUpdate(prev => ({ ...prev, percentage: foundProject.overallProgress.toString() }));
-    }
+  useEffect(() => {
+    refreshProjectFromDb();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, isOwnerView, toast]);
 
   const handleCommentSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !project) return;
     setIsSubmittingComment(true);
-    setTimeout(() => {
-      const commentToAdd: ProjectComment = {
-        id: crypto.randomUUID(), 
-        user: isOwnerView ? "المالك" : "المهندس (أنت)", 
-        text: newComment, 
-        date: new Date().toISOString().split('T')[0], 
-        avatar: isOwnerView ? "https://placehold.co/40x40.png?text=OW" : "https://placehold.co/40x40.png?text=ME", 
-        dataAiHintAvatar: isOwnerView ? "owner avatar" : "my avatar"
-      };
-      setProject(prev => prev ? { ...prev, comments: [...(prev.comments || []), commentToAdd] } : null);
-      setNewComment('');
-      setIsSubmittingComment(false);
-      toast({ title: "تم إضافة التعليق", description: "تم نشر تعليقك بنجاح." });
-    }, 1000);
+    
+    const commentToAdd: ProjectComment = {
+      id: crypto.randomUUID(), 
+      user: isOwnerView ? "المالك" : "المهندس (أنت)", 
+      text: newComment, 
+      date: new Date().toISOString().split('T')[0], 
+      avatar: isOwnerView ? "https://placehold.co/40x40.png?text=OW" : "https://placehold.co/40x40.png?text=ME", 
+      dataAiHintAvatar: isOwnerView ? "owner avatar" : "my avatar"
+    };
+    
+    const updatedProject = dbUpdateProject(project.id, {
+        comments: [...(project.comments || []), commentToAdd]
+    });
+
+    if (updatedProject) {
+        refreshProjectFromDb();
+        setNewComment('');
+        toast({ title: "تم إضافة التعليق", description: "تم نشر تعليقك بنجاح." });
+    } else {
+        toast({ title: "خطأ", description: "فشل إضافة التعليق.", variant: "destructive" });
+    }
+    setIsSubmittingComment(false);
   };
 
   const handleProgressSubmit = (e: FormEvent) => {
@@ -195,10 +102,19 @@ export default function ProjectDetailPage() {
       toast({ title: "خطأ", description: "الرجاء إدخال نسبة تقدم صالحة (0-100).", variant: "destructive"});
       return;
     }
-    console.log("Progress Update:", progressUpdate);
-    setProject(prev => prev ? { ...prev, overallProgress: newProgress, quantitySummary: (prev.quantitySummary || '') + ` (ملاحظة تقدم: ${progressUpdate.notes || 'لا يوجد'})` } : null);
-    toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%. ${progressUpdate.notes ? 'الملاحظات: ' + progressUpdate.notes : ''}` });
-    setProgressUpdate(prev => ({ ...prev, notes: '' }));
+    
+    const updatedProject = dbUpdateProject(project.id, {
+        overallProgress: newProgress,
+        quantitySummary: (project.quantitySummary || '') + ` (ملاحظة تقدم: ${progressUpdate.notes || 'لا يوجد'})`
+    });
+
+    if (updatedProject) {
+        refreshProjectFromDb();
+        toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%. ${progressUpdate.notes ? 'الملاحظات: ' + progressUpdate.notes : ''}` });
+        setProgressUpdate(prev => ({ ...prev, notes: '' })); // Clear only notes
+    } else {
+        toast({ title: "خطأ", description: "فشل تحديث التقدم.", variant: "destructive" });
+    }
   };
 
   const handleLinkOwnerSubmit = (e: FormEvent) => {
@@ -207,9 +123,14 @@ export default function ProjectDetailPage() {
       toast({ title: "خطأ", description: "يرجى إدخال بريد إلكتروني للمالك.", variant: "destructive"});
       return;
     }
-    console.log("Linking owner:", linkedOwnerEmailInput);
-    setProject(prev => prev ? { ...prev, linkedOwnerEmail: linkedOwnerEmailInput } : null);
-    toast({ title: "تم ربط المالك", description: `تم ربط المالك بالبريد الإلكتروني: ${linkedOwnerEmailInput} (محاكاة).` });
+    
+    const updatedProject = dbUpdateProject(project.id, { linkedOwnerEmail: linkedOwnerEmailInput });
+    if (updatedProject) {
+        refreshProjectFromDb();
+        toast({ title: "تم ربط المالك", description: `تم ربط المالك بالبريد الإلكتروني: ${linkedOwnerEmailInput}.` });
+    } else {
+        toast({ title: "خطأ", description: "فشل ربط المالك.", variant: "destructive" });
+    }
   };
   
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -234,14 +155,22 @@ export default function ProjectDetailPage() {
       dataAiHint: "uploaded image",
       caption: `تم الرفع: ${selectedFile.name}`
     };
-    setProject(prev => prev ? { ...prev, photos: [...(prev.photos || []), newPhoto] } : null);
-    setSelectedFile(null);
-    setIsUploadingFile(false);
-    const fileInput = document.getElementById('projectFileUpload') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
-    toast({ title: "تم رفع الملف بنجاح", description: `${selectedFile.name} جاهز الآن (محاكاة).` });
-  };
+    
+    const updatedProject = dbUpdateProject(project.id, {
+        photos: [...(project.photos || []), newPhoto]
+    });
 
+    if (updatedProject) {
+        refreshProjectFromDb();
+        setSelectedFile(null);
+        const fileInput = document.getElementById('projectFileUpload') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+        toast({ title: "تم رفع الملف بنجاح", description: `${selectedFile.name} جاهز الآن.` });
+    } else {
+        toast({ title: "خطأ", description: "فشل رفع الملف.", variant: "destructive" });
+    }
+    setIsUploadingFile(false);
+  };
 
   const projectStartDate = project?.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.min(...project.timelineTasks.map(task => new Date(task.startDate).getTime()))) : new Date();
   const projectEndDate = project?.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.max(...project.timelineTasks.map(task => new Date(task.endDate).getTime()))) : new Date();
@@ -280,6 +209,9 @@ export default function ProjectDetailPage() {
 
   const simulateAction = (actionName: string) => {
     toast({ title: "محاكاة إجراء", description: `تم تنفيذ "${actionName}" (محاكاة).` });
+    // For actual actions like editing project details, you'd open a form, then:
+    // dbUpdateProject(project.id, { ... updated data ... });
+    // refreshProjectFromDb();
   };
 
   return (
@@ -318,7 +250,7 @@ export default function ProjectDetailPage() {
                 <p className={`text-sm font-semibold mt-1.5 ${
                       project.status === 'مكتمل' ? 'text-green-600' :
                       project.status === 'قيد التنفيذ' ? 'text-yellow-600' :
-                      'text-blue-600'
+                      'text-blue-600' // for 'مخطط له' and 'مؤرشف' (though 'مؤرشف' has its own styling elsewhere)
                     }`}>
                       الحالة الحالية: {project.status}
                 </p>
@@ -345,9 +277,10 @@ export default function ProjectDetailPage() {
                         <UploadCloud size={18} className="ms-2"/> رفع صورة/فيديو
                     </Button>
                   </DialogTrigger>
-                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تحديث تقدم الإنشاء")}>
+                  {/* Actual form for progress update is below, this button can be removed or repurposed */}
+                  {/* <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تحديث تقدم الإنشاء")}>
                       <Percent size={18} className="ms-2"/> تحديث التقدم
-                  </Button>
+                  </Button> */}
                   <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("إدارة مراحل المشروع")}>
                       <GanttChartSquare size={18} className="ms-2"/> إدارة المراحل
                   </Button>
@@ -543,7 +476,7 @@ export default function ProjectDetailPage() {
                       />
                     </div>
                     <Button type="submit" className="bg-app-red hover:bg-red-700 text-white font-semibold" disabled={isSubmittingComment || !newComment.trim()}>
-                      {isSubmittingComment ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <Send size={18} className="ms-2"/>}
+                      {isSubmittingComment ? <LoaderIcon className="ms-2 h-5 w-5 animate-spin" /> : <Send size={18} className="ms-2"/>}
                       إرسال
                     </Button>
                   </form>
@@ -586,7 +519,7 @@ export default function ProjectDetailPage() {
                   {selectedFile && <p className="text-xs text-gray-500 mt-1">الملف المختار: {selectedFile.name}</p>}
               </div>
               <Button onClick={handleFileUpload} disabled={isUploadingFile || !selectedFile || isOwnerView} className="w-full bg-app-red hover:bg-red-700">
-                  {isUploadingFile ? <Loader2 className="ms-2 h-5 w-5 animate-spin"/> : <UploadCloud size={18} className="ms-2"/>}
+                  {isUploadingFile ? <LoaderIcon className="ms-2 h-5 w-5 animate-spin"/> : <UploadCloud size={18} className="ms-2"/>}
                   {isUploadingFile ? 'جاري الرفع...' : 'رفع الملف'}
               </Button>
               {isOwnerView && <p className="text-xs text-red-500 text-center">المالك لا يمكنه رفع الملفات.</p>}
@@ -600,10 +533,4 @@ export default function ProjectDetailPage() {
   );
 }
 
-const Loader2 = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-  </svg>
-);
-
-    
+// Removed duplicate Loader2 definition, assuming it's imported from lucide-react as LoaderIcon

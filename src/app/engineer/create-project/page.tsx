@@ -14,6 +14,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, PlusCircle, MapPin, CalendarRange } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // Import useRouter
+import { addProject as dbAddProject, type Project } from '@/lib/mock-db';
+
 
 const createProjectSchema = z.object({
   projectName: z.string().min(3, { message: "اسم المشروع مطلوب (3 أحرف على الأقل)." }),
@@ -21,6 +24,10 @@ const createProjectSchema = z.object({
   description: z.string().min(10, { message: "وصف المشروع مطلوب (10 أحرف على الأقل)." }),
   startDate: z.string().refine(val => !isNaN(Date.parse(val)), { message: "تاريخ البدء غير صالح." }),
   endDate: z.string().refine(val => !isNaN(Date.parse(val)), { message: "تاريخ الانتهاء غير صالح." }),
+  engineer: z.string().min(3, { message: "اسم المهندس مطلوب." }), // Assuming engineer creates it
+  clientName: z.string().optional(), // Optional for now
+  budget: z.number().positive({ message: "الميزانية يجب أن تكون رقمًا موجبًا." }).optional(),
+  linkedOwnerEmail: z.string().email({ message: "بريد المالك الإلكتروني غير صالح."}).optional(),
 }).refine(data => new Date(data.endDate) >= new Date(data.startDate), {
   message: "تاريخ الانتهاء يجب أن يكون بعد أو نفس تاريخ البدء.",
   path: ["endDate"],
@@ -30,27 +37,49 @@ type CreateProjectFormValues = z.infer<typeof createProjectSchema>;
 
 export default function CreateProjectPage() {
   const { toast } = useToast();
+  const router = useRouter(); 
   const [isLoading, setIsLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
+    defaultValues: {
+        engineer: "المهندس الحالي (محاكاة)", // Default or fetch from auth
+    }
   });
 
   const onSubmit: SubmitHandler<CreateProjectFormValues> = async (data) => {
     setIsLoading(true);
-    console.log("Create project data:", data); // Simulate API call
+    
+    const projectDataForDb: Omit<Project, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'> = {
+        name: data.projectName,
+        location: data.location,
+        description: data.description,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        engineer: data.engineer,
+        clientName: data.clientName,
+        budget: data.budget,
+        linkedOwnerEmail: data.linkedOwnerEmail,
+        quantitySummary: "" // Initial empty summary
+    };
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const newProject = dbAddProject(projectDataForDb);
 
-    toast({
-      title: "تم إنشاء المشروع بنجاح (محاكاة)",
-      description: `مشروع "${data.projectName}" جاهز الآن.`,
-      variant: "default",
-    });
-    reset();
-    // In a real app, you might redirect to the new project's page or project list
-    // For example: router.push('/my-projects');
+    if (newProject) {
+        toast({
+          title: "تم إنشاء المشروع بنجاح",
+          description: `مشروع "${newProject.name}" جاهز الآن.`,
+          variant: "default",
+        });
+        reset();
+        router.push(`/my-projects/${newProject.id}`); // Redirect to the new project's page
+    } else {
+        toast({
+            title: "خطأ في إنشاء المشروع",
+            description: "لم يتمكن النظام من إنشاء المشروع. يرجى المحاولة مرة أخرى.",
+            variant: "destructive",
+        });
+    }
     setIsLoading(false);
   };
 
@@ -80,6 +109,11 @@ export default function CreateProjectPage() {
                     <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 </div>
                 {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
+              </div>
+               <div>
+                <Label htmlFor="engineer" className="block mb-1.5 font-semibold text-gray-700">المهندس المسؤول</Label>
+                <Input id="engineer" type="text" {...register("engineer")} className="bg-white focus:border-app-gold" placeholder="اسم المهندس القائم على المشروع" />
+                {errors.engineer && <p className="text-red-500 text-sm mt-1">{errors.engineer.message}</p>}
               </div>
 
               <div>
@@ -112,6 +146,22 @@ export default function CreateProjectPage() {
                   {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>}
                 </div>
               </div>
+               <div>
+                <Label htmlFor="clientName" className="block mb-1.5 font-semibold text-gray-700">اسم العميل/المالك (اختياري)</Label>
+                <Input id="clientName" type="text" {...register("clientName")} className="bg-white focus:border-app-gold" placeholder="اسم صاحب المشروع" />
+                {errors.clientName && <p className="text-red-500 text-sm mt-1">{errors.clientName.message}</p>}
+              </div>
+              <div>
+                <Label htmlFor="budget" className="block mb-1.5 font-semibold text-gray-700">الميزانية التقديرية (شيكل - اختياري)</Label>
+                <Input id="budget" type="number" {...register("budget", { valueAsNumber: true })} className="bg-white focus:border-app-gold" placeholder="مثال: 1500000" />
+                {errors.budget && <p className="text-red-500 text-sm mt-1">{errors.budget.message}</p>}
+              </div>
+               <div>
+                <Label htmlFor="linkedOwnerEmail" className="block mb-1.5 font-semibold text-gray-700">ربط ببريد المالك الإلكتروني (اختياري)</Label>
+                <Input id="linkedOwnerEmail" type="email" {...register("linkedOwnerEmail")} className="bg-white focus:border-app-gold" placeholder="owner@example.com" />
+                {errors.linkedOwnerEmail && <p className="text-red-500 text-sm mt-1">{errors.linkedOwnerEmail.message}</p>}
+              </div>
+
 
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <Button type="submit" className="w-full sm:w-auto flex-grow bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg" disabled={isLoading}>

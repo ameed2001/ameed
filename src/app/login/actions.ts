@@ -2,9 +2,7 @@
 'use server';
 
 import { z } from 'zod';
-
-// This schema should ideally match or be imported from page.tsx
-// type LoginFormValues = { email: string; password: string; };
+import { dbUsers, findUserByEmail } from '@/lib/mock-db';
 
 export interface LoginActionResponse {
   success: boolean;
@@ -13,19 +11,10 @@ export interface LoginActionResponse {
   fieldErrors?: Record<string, string[] | undefined>;
 }
 
-// Mock user data for simulation - In a real app, this comes from a database
-const mockUsersDB = [
-  { email: "owner@example.com", password: "password123", role: "Owner", status: "Active" },
-  { email: "engineer_approved@example.com", password: "password123", role: "Engineer", status: "Active" },
-  { email: "engineer_pending@example.com", password: "password123", role: "Engineer", status: "Pending Approval" },
-  { email: "admin@example.com", password: "adminpass", role: "Admin", status: "Active" },
-];
-
-
 export async function loginUserAction(data: { email: string; password: string; }): Promise<LoginActionResponse> {
   console.log("Server Action: loginUserAction called with:", { email: data.email });
 
-  const user = mockUsersDB.find(u => u.email === data.email);
+  const user = findUserByEmail(data.email);
 
   if (!user || user.password !== data.password) {
     console.log(`Login failed for ${data.email}. Invalid credentials.`);
@@ -52,12 +41,11 @@ export async function loginUserAction(data: { email: string; password: string; }
     };
   }
 
-  // Successful login
-  let redirectTo = "/"; // Default redirect for Owner
+  let redirectTo = "/"; 
   if (user.role === "Engineer") {
-    redirectTo = "/my-projects"; // Engineer dashboard
+    redirectTo = "/my-projects"; 
   } else if (user.role === "Admin") {
-    redirectTo = "/admin"; // Admin dashboard
+    redirectTo = "/admin"; 
   }
 
   console.log(`User ${data.email} (Role: ${user.role}) logged in successfully. Redirecting to ${redirectTo}`);

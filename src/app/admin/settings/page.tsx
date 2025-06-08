@@ -10,27 +10,13 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Settings as SettingsIcon } from 'lucide-react';
+import { dbSettings, type SystemSettings } from '@/lib/mock-db';
 
-// Mock settings - in a real app, these would be fetched and updated
-interface SystemSettings {
-  siteName: string;
-  defaultLanguage: string;
-  maintenanceMode: boolean;
-  maxUploadSizeMB: number;
-  emailNotificationsEnabled: boolean;
-}
-
-const initialSettings: SystemSettings = {
-  siteName: "المحترف لحساب الكميات",
-  defaultLanguage: "ar",
-  maintenanceMode: false,
-  maxUploadSizeMB: 50,
-  emailNotificationsEnabled: true,
-};
 
 export default function AdminSettingsPage() {
   const { toast } = useToast();
-  const [settings, setSettings] = useState<SystemSettings>(initialSettings);
+  // Initialize component state with data from mock DB
+  const [settings, setSettings] = useState<SystemSettings>({...dbSettings});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (field: keyof SystemSettings, value: string | number | boolean) => {
@@ -41,11 +27,18 @@ export default function AdminSettingsPage() {
     event.preventDefault();
     setIsLoading(true);
     console.log("Saving settings (simulation):", settings);
-    // Simulate API call
+    
+    // Update the mock DB directly
+    dbSettings.siteName = settings.siteName;
+    dbSettings.defaultLanguage = settings.defaultLanguage;
+    dbSettings.maintenanceMode = settings.maintenanceMode;
+    dbSettings.maxUploadSizeMB = settings.maxUploadSizeMB;
+    dbSettings.emailNotificationsEnabled = settings.emailNotificationsEnabled;
+    
     await new Promise(resolve => setTimeout(resolve, 1000));
     toast({
       title: "تم حفظ الإعدادات",
-      description: "تم تحديث إعدادات النظام بنجاح (محاكاة).",
+      description: "تم تحديث إعدادات النظام بنجاح.",
     });
     setIsLoading(false);
   };

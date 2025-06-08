@@ -2,27 +2,21 @@
 'use server';
 
 import { z } from 'zod';
-
-// This schema should ideally match or be imported from page.tsx
-// For this example, we assume the structure of data passed in.
-// type SignupFormValues = { name: string; email: string; password: string; role: "owner" | "engineer";};
+import { dbUsers, findUserByEmail, addUser as dbAddUser } from '@/lib/mock-db';
+import type { User } from '@/lib/mock-db';
 
 export interface SignupActionResponse {
   success: boolean;
   message: string;
   isPendingApproval?: boolean;
   redirectTo?: string;
-  fieldErrors?: Record<string, string[] | undefined>; // For more detailed Zod-like errors if needed
+  fieldErrors?: Record<string, string[] | undefined>; 
 }
 
 export async function signupUserAction(data: { name: string; email: string; password: string; role: "owner" | "engineer"; confirmPassword?: string }): Promise<SignupActionResponse> {
   console.log("Server Action: signupUserAction called with:", { name: data.name, email: data.email, role: data.role });
 
-  // Simulate database interaction and business logic
-  // In a real app, you'd hash the password and save the user to a database.
-  // Also, proper validation (e.g. with Zod) should happen here if not fully trusted from client.
-
-  if (data.email === "exists@example.com") {
+  if (findUserByEmail(data.email)) {
     return { 
       success: false, 
       message: "هذا البريد الإلكتروني مسجل بالفعل.",
@@ -30,7 +24,6 @@ export async function signupUserAction(data: { name: string; email: string; pass
     };
   }
   
-  // Basic password check (example, not for production)
   if (data.password.length < 6) {
      return { 
       success: false, 
@@ -47,11 +40,18 @@ export async function signupUserAction(data: { name: string; email: string; pass
     };
   }
 
+  const newUserBase: Omit<User, 'id' | 'status'> = {
+      name: data.name,
+      email: data.email,
+      password: data.password, // Store password for mock login
+      role: data.role,
+  };
+  
+  const newUser = dbAddUser(newUserBase);
 
-  if (data.role === "engineer") {
-    // Simulate engineer account pending approval
-    // In a real app, save user with status 'Pending Approval'
-    console.log(`Engineer account ${data.email} created, pending approval.`);
+
+  if (newUser.role === "Engineer") {
+    console.log(`Engineer account ${newUser.email} created, pending approval.`);
     return { 
       success: true, 
       message: "تم إنشاء حسابك كمهندس بنجاح. حسابك حاليًا قيد المراجعة والموافقة من قبل الإدارة. سيتم إعلامك عند التفعيل.", 
@@ -59,12 +59,10 @@ export async function signupUserAction(data: { name: string; email: string; pass
     };
   }
 
-  // Owner account or other roles activated immediately
-  // In a real app, save user with status 'Active'
-  console.log(`Owner account ${data.email} created and activated.`);
+  console.log(`Owner account ${newUser.email} created and activated.`);
   return { 
     success: true, 
     message: "تم إنشاء حسابك كمالك بنجاح. يمكنك الآن تسجيل الدخول.",
-    redirectTo: "/login" // Redirect owner to login page after successful signup
+    redirectTo: "/login" 
   };
 }

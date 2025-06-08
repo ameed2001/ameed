@@ -1,60 +1,53 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Edit, Trash2, KeyRound, CheckCircle, UserPlus, Filter, UserCheck } from 'lucide-react';
+import { Search, Edit, Trash2, KeyRound, UserPlus, UserCheck } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'Owner' | 'Engineer' | 'Admin';
-  status: 'Active' | 'Pending Approval' | 'Suspended';
-}
-
-const mockUsers: User[] = [
-  { id: 'u1', name: 'أحمد محمود', email: 'engineer_pending@example.com', role: 'Engineer', status: 'Pending Approval' },
-  { id: 'u2', name: 'فاطمة علي', email: 'owner@example.com', role: 'Owner', status: 'Active' },
-  { id: 'u3', name: 'المشرف العام', email: 'admin@example.com', role: 'Admin', status: 'Active' },
-  { id: 'u4', name: 'خالد إبراهيم', email: 'engineer_approved@example.com', role: 'Engineer', status: 'Active' },
-  { id: 'u5', name: 'سارة ياسين', email: 'sara_owner@example.com', role: 'Owner', status: 'Suspended' },
-];
+import { dbUsers, type User, type UserRole, type UserStatus, deleteUser as dbDeleteUser, updateUser as dbUpdateUser } from '@/lib/mock-db';
 
 export default function AdminUsersPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  // Use the dbUsers directly or a state initialized with it if local manipulations are needed before "saving"
+  const [users, setUsersState] = useState<User[]>(dbUsers); // Local state for UI updates
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  const refreshUsersFromDb = () => setUsersState([...dbUsers]); // Helper to re-sync from "DB"
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
-  const filteredUsers = users.filter(user =>
-    (user.name.toLowerCase().includes(searchTerm) ||
-    user.email.toLowerCase().includes(searchTerm)) &&
-    (roleFilter === 'all' || user.role === roleFilter) &&
-    (statusFilter === 'all' || user.status === statusFilter)
-  );
+  const filteredUsers = useMemo(() => {
+    return users.filter(user =>
+      (user.name.toLowerCase().includes(searchTerm) ||
+      user.email.toLowerCase().includes(searchTerm)) &&
+      (roleFilter === 'all' || user.role === roleFilter) &&
+      (statusFilter === 'all' || user.status === statusFilter)
+    );
+  }, [users, searchTerm, roleFilter, statusFilter]);
 
   const handleEditUser = (userId: string) => {
     toast({ title: "تعديل المستخدم", description: `بدء تعديل المستخدم ${userId} (محاكاة).` });
     // Logic for opening an edit modal/form would go here
+    // For actual edit, find user in dbUsers, update, then refreshUsersFromDb()
   };
 
   const handleDeleteUser = (userId: string, userName: string) => {
-    // Simulate backend deletion
-    setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-    toast({ title: "تم حذف المستخدم", description: `تم حذف المستخدم ${userName} بنجاح (محاكاة).`, variant: "destructive" });
+    if (dbDeleteUser(userId)) {
+        refreshUsersFromDb();
+        toast({ title: "تم حذف المستخدم", description: `تم حذف المستخدم ${userName} بنجاح.`, variant: "destructive" });
+    } else {
+        toast({ title: "خطأ", description: `فشل حذف المستخدم ${userName}.`, variant: "destructive" });
+    }
   };
   
   const handleResetPassword = (userName: string) => {
@@ -62,12 +55,17 @@ export default function AdminUsersPage() {
   };
 
   const handleApproveEngineer = (userId: string, userName: string) => {
-    setUsers(prevUsers => prevUsers.map(user => user.id === userId ? {...user, status: 'Active'} : user));
-    toast({ title: "تمت الموافقة على المهندس", description: `تم تفعيل حساب المهندس ${userName} وجعله نشطاً (محاكاة).`, variant: "default" });
+    if (dbUpdateUser(userId, { status: 'Active' })) {
+        refreshUsersFromDb();
+        toast({ title: "تمت الموافقة على المهندس", description: `تم تفعيل حساب المهندس ${userName} وجعله نشطاً.`, variant: "default" });
+    } else {
+        toast({ title: "خطأ", description: `فشل تفعيل حساب المهندس ${userName}.`, variant: "destructive" });
+    }
   };
   
   const handleAddUser = () => {
     toast({ title: "إضافة مستخدم جديد", description: "سيتم فتح نموذج لإضافة مستخدم جديد (محاكاة)." });
+    // For actual add, call dbAddUser, then refreshUsersFromDb()
   };
 
 

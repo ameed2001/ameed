@@ -4,13 +4,22 @@
 import { z } from 'zod';
 import nodemailer from 'nodemailer';
 
-// نموذج التحقق من صحة البيانات
+// 1. تعريف نموذج التحقق من الصحة مع رسائل خطأ مخصصة
 const contactFormSchema = z.object({
-  name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
-  email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  messageType: z.string().min(1, { message: "يرجى اختيار نوع الرسالة." }),
-  subject: z.string().min(5, { message: "الموضوع مطلوب (5 أحرف على الأقل)." }),
-  message: z.string().min(10, { message: "الرسالة مطلوبة (10 أحرف على الأقل)." }),
+  name: z.string()
+    .min(3, { message: "يجب أن يحتوي الاسم على 3 أحرف على الأقل" })
+    .max(50, { message: "يجب ألا يتجاوز الاسم 50 حرفًا" }),
+  email: z.string()
+    .email({ message: "البريد الإلكتروني غير صالح" })
+    .max(100, { message: "يجب ألا يتجاوز البريد الإلكتروني 100 حرف" }),
+  messageType: z.string()
+    .min(1, { message: "يرجى اختيار نوع الرسالة" }),
+  subject: z.string()
+    .min(5, { message: "يجب أن يحتوي الموضوع على 5 أحرف على الأقل" })
+    .max(100, { message: "يجب ألا يتجاوز الموضوع 100 حرف" }),
+  message: z.string()
+    .min(10, { message: "يجب أن تحتوي الرسالة على 10 أحرف على الأقل" })
+    .max(1000, { message: "يجب ألا تتجاوز الرسالة 1000 حرف" }),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -18,162 +27,288 @@ type ContactFormData = z.infer<typeof contactFormSchema>;
 export interface SendContactMessageResponse {
   success: boolean;
   message?: string;
+  errors?: Record<string, string>;
   error?: string;
 }
 
-// أنواع الرسائل
-const messageTypes: Record<string, string> = {
-  technical_support: "دعم فني",
-  feature_request: "اقتراح إضافة",
-  modification_request: "اقتراح تعديل",
-  technical_issue: "مشكلة فنية",
-  general_inquiry: "استفسار عام",
-};
+// 2. أنواع الرسائل مع تعريف كامل
+const MESSAGE_TYPES = {
+  technical_support: {
+    label: "دعم فني",
+    email: "support@mediaplus.com",
+    color: "#2196F3"
+  },
+  feature_request: {
+    label: "اقتراح إضافة",
+    email: "product@mediaplus.com",
+    color: "#4CAF50"
+  },
+  modification_request: {
+    label: "اقتراح تعديل",
+    email: "product@mediaplus.com",
+    color: "#FFC107"
+  },
+  technical_issue: {
+    label: "مشكلة فنية",
+    email: "tech@mediaplus.com",
+    color: "#F44336"
+  },
+  general_inquiry: {
+    label: "استفسار عام",
+    email: "info@mediaplus.com",
+    color: "#9C27B0"
+  }
+} as const;
 
+// 3. إنشاء موصل البريد الإلكتروني (مخبأ لتحسين الأداء)
+let cachedTransporter: nodemailer.Transporter | null = null;
+
+function getTransporter() {
+  if (cachedTransporter) return cachedTransporter;
+
+  cachedTransporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SERVICE || 'gmail',
+    host: process.env.EMAIL_HOST,
+    port: parseInt(process.env.EMAIL_PORT || '587'),
+    secure: process.env.EMAIL_SECURE === 'true',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD, // Changed from EMAIL_PASS to EMAIL_PASSWORD to match user's .env example
+    },
+    tls: {
+      rejectUnauthorized: process.env.NODE_ENV === 'production',
+    },
+  });
+
+  return cachedTransporter;
+}
+
+// 4. دالة الإرسال الرئيسية
 export async function sendContactMessageAction(
   formData: ContactFormData
 ): Promise<SendContactMessageResponse> {
   try {
-    // التحقق من صحة البيانات
-    const validatedData = contactFormSchema.parse(formData);
+    // التحقق من الصحة
+    const validatedData = contactFormSchema.safeParse(formData);
     
-    // إعداد خدمة البريد الإلكتروني
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    if (!validatedData.success) {
+      const errors = validatedData.error.flatten().fieldErrors;
+      return {
+        success: false,
+        errors: Object.fromEntries(
+          Object.entries(errors).map(([key, value]) => [key, value?.join(', ') || ''])
+        ),
+      };
+    }
 
-    const messageTypeLabel = messageTypes[validatedData.messageType] || validatedData.messageType;
+    const { name, email, messageType, subject, message } = validatedData.data;
     
-    // إعداد البريد الإلكتروني الأساسي
-    const mailOptions = {
-      from: `"${validatedData.name}" <${process.env.EMAIL_USER}>`, // Sender's name in "from"
-      to: 'mediaplus64@gmail.com',
-      replyTo: validatedData.email, // Set reply-to to sender's email
-      subject: `[${messageTypeLabel}] ${validatedData.subject}`,
-      html: `
-        <div dir="rtl" style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <h2 style="color: #B40404; border-bottom: 2px solid #FFC107; padding-bottom: 10px;">
-            رسالة جديدة من نموذج الاتصال
-          </h2>
-          
-          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #B40404; margin-top: 0;">معلومات المرسل:</h3>
-            <p><strong>الاسم:</strong> ${validatedData.name}</p>
-            <p><strong>البريد الإلكتروني:</strong> ${validatedData.email}</p>
-            <p><strong>نوع الرسالة:</strong> <span style="background-color: #FFC107; color: #333; padding: 2px 8px; border-radius: 4px;">${messageTypeLabel}</span></p>
-            <p><strong>الموضوع:</strong> ${validatedData.subject}</p>
-          </div>
-          
-          <div style="background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <h3 style="color: #B40404; margin-top: 0;">محتوى الرسالة:</h3>
-            <div style="white-space: pre-wrap; font-size: 16px; line-height: 1.8;">
-              ${validatedData.message}
-            </div>
-          </div>
-          
-          <div style="margin-top: 30px; padding: 15px; background-color: #e3f2fd; border-radius: 8px; font-size: 14px; color: #666;">
-            <p><strong>تاريخ الإرسال:</strong> ${new Date().toLocaleString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
-            <p><strong>مصدر الرسالة:</strong> نموذج الاتصال في الموقع الإلكتروني</p>
-          </div>
-        </div>
-      `,
-      text: `
-رسالة جديدة من نموذج الاتصال
-
-معلومات المرسل:
-الاسم: ${validatedData.name}
-البريد الإلكتروني: ${validatedData.email}
-نوع الرسالة: ${messageTypeLabel}
-الموضوع: ${validatedData.subject}
-
-محتوى الرسالة:
-${validatedData.message}
-
----
-تاريخ الإرسال: ${new Date().toLocaleString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-مصدر الرسالة: نموذج الاتصال في الموقع الإلكتروني
-      `,
+    // الحصول على تفاصيل نوع الرسالة
+    const messageTypeInfo = MESSAGE_TYPES[messageType as keyof typeof MESSAGE_TYPES] || {
+      label: messageType,
+      email: 'mediaplus64@gmail.com', // Fallback email
+      color: '#607D8B'
     };
 
-    // إرسال البريد الإلكتروني الأساسي
+    const transporter = getTransporter();
+    const currentDate = new Date().toLocaleString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    // 5. إعداد البريد الأساسي
+    const mailOptions = {
+      from: `${process.env.EMAIL_FROM_NAME || "موقع MediaPlus"} <${process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER}>`,
+      to: messageTypeInfo.email, // Uses specific email based on type or fallback
+      replyTo: email,
+      subject: `[${messageTypeInfo.label}] ${subject}`,
+      html: renderMainEmailTemplate({
+        name,
+        email,
+        messageType: messageTypeInfo.label,
+        subject,
+        message,
+        date: currentDate,
+        color: messageTypeInfo.color
+      }),
+      text: renderTextEmailTemplate({
+        name,
+        email,
+        messageType: messageTypeInfo.label,
+        subject,
+        message,
+        date: currentDate
+      }),
+    };
+
+    // 6. إرسال البريد
     await transporter.sendMail(mailOptions);
-    
-    // إرسال بريد تأكيد للمرسل
+
+    // 7. إرسال بريد التأكيد
     const confirmationMailOptions = {
-      from: `"المحترف لحساب الكميات" <${process.env.EMAIL_USER}>`, // Site name in "from"
-      to: validatedData.email,
-      subject: 'تأكيد استلام رسالتك - المحترف لحساب الكميات',
-      html: `
-        <div dir="rtl" style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <h2 style="color: #B40404;">شكراً لتواصلك معنا!</h2>
-          
-          <p>عزيز/عزيزة ${validatedData.name},</p>
-          
-          <p>تم استلام رسالتك بنجاح وسيقوم فريقنا بمراجعتها والرد عليك في أقرب وقت ممكن.</p>
-          
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <h3>ملخص رسالتك:</h3>
-            <p><strong>نوع الرسالة:</strong> ${messageTypeLabel}</p>
-            <p><strong>الموضوع:</strong> ${validatedData.subject}</p>
-          </div>
-          
-          <p>إذا كان لديك أي استفسارات عاجلة، يمكنك التواصل معنا مباشرة:</p>
-          <ul>
-            <li>الهاتف/واتساب: +972 594 371 424</li>
-            <li>البريد الإلكتروني: mediaplus64@gmail.com</li>
-          </ul>
-          
-          <p style="margin-top: 30px;">مع أطيب التحيات,<br><strong>فريق المحترف لحساب الكميات</strong></p>
-        </div>
-      `,
-      text: `
-شكراً لتواصلك معنا!
-
-عزيز/عزيزة ${validatedData.name},
-
-تم استلام رسالتك بنجاح وسيقوم فريقنا بمراجعتها والرد عليك في أقرب وقت ممكن.
-
-ملخص رسالتك:
-نوع الرسالة: ${messageTypeLabel}
-الموضوع: ${validatedData.subject}
-
-إذا كان لديك أي استفسارات عاجلة:
-- الهاتف/واتساب: +972 594 371 424
-- البريد الإلكتروني: mediaplus64@gmail.com
-
-مع أطيب التحيات,
-فريق المحترف لحساب الكميات
-      `,
+      from: `${process.env.EMAIL_FROM_NAME || "MediaPlus"} <${process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'تم استلام رسالتك بنجاح',
+      html: renderConfirmationTemplate({
+        name,
+        messageType: messageTypeInfo.label,
+        subject,
+        date: currentDate
+      }),
+      text: renderTextConfirmationTemplate({
+        name,
+        messageType: messageTypeInfo.label,
+        subject,
+        date: currentDate
+      }),
     };
 
     await transporter.sendMail(confirmationMailOptions);
 
     return {
       success: true,
-      message: "تم إرسال رسالتك بنجاح! لقد أرسلنا لك بريدًا إلكترونيًا للتأكيد.",
+      message: "تم إرسال رسالتك بنجاح! سوف نتواصل معك قريبًا.",
     };
 
   } catch (error) {
-    console.error('Error sending contact email:', error);
+    console.error('فشل إرسال الرسالة:', error);
     
-    if (error instanceof z.ZodError) {
-      // Return the first Zod error message
-      return {
-        success: false,
-        error: error.errors[0]?.message || "خطأ في البيانات المدخلة.",
-      };
-    }
-    
-    // Generic error for other cases (e.g., nodemailer issues)
     return {
       success: false,
-      error: "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى أو التواصل معنا عبر وسائل أخرى.",
+      error: "حدث خطأ غير متوقع أثناء محاولة إرسال رسالتك. يرجى المحاولة مرة أخرى لاحقًا أو التواصل معنا عبر الهاتف.",
     };
   }
 }
 
-    
+// 8. دوال عرض القوالب
+function renderMainEmailTemplate(data: {
+  name: string;
+  email: string;
+  messageType: string;
+  subject: string;
+  message: string;
+  date: string;
+  color: string;
+}) {
+  return `
+    <div dir="rtl" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+      <div style="background-color: ${data.color}; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">رسالة جديدة من ${data.name}</h1>
+        <p style="margin: 5px 0 0; font-size: 16px;">${data.messageType}</p>
+      </div>
+      
+      <div style="padding: 20px;">
+        <div style="margin-bottom: 20px;">
+          <h3 style="color: ${data.color}; margin-bottom: 10px;">معلومات المرسل:</h3>
+          <p><strong>الاسم:</strong> ${data.name}</p>
+          <p><strong>البريد الإلكتروني:</strong> <a href="mailto:${data.email}">${data.email}</a></p>
+          <p><strong>الموضوع:</strong> ${data.subject}</p>
+        </div>
+        
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; border-left: 4px solid ${data.color};">
+          <h3 style="color: ${data.color}; margin-top: 0;">محتوى الرسالة:</h3>
+          <div style="white-space: pre-wrap; line-height: 1.6;">${data.message}</div>
+        </div>
+      </div>
+      
+      <div style="background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 14px; color: #666;">
+        <p>تم الإرسال في: ${data.date}</p>
+        <p>هذه رسالة آلية - لا ترد مباشرة على هذا البريد</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderTextEmailTemplate(data: {
+  name: string;
+  email: string;
+  messageType: string;
+  subject: string;
+  message: string;
+  date: string;
+}) {
+  return `
+رسالة جديدة من نموذج الاتصال
+-------------------------
+الاسم: ${data.name}
+البريد الإلكتروني: ${data.email}
+نوع الرسالة: ${data.messageType}
+الموضوع: ${data.subject}
+
+الرسالة:
+${data.message}
+
+-------------------------
+تاريخ الإرسال: ${data.date}
+  `;
+}
+
+function renderConfirmationTemplate(data: {
+  name: string;
+  messageType: string;
+  subject: string;
+  date: string;
+}) {
+  return `
+    <div dir="rtl" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
+      <div style="background-color: #4CAF50; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">تم استلام رسالتك بنجاح</h1>
+      </div>
+      
+      <div style="padding: 20px;">
+        <p>عزيزي/عزيزتي ${data.name},</p>
+        
+        <p>نشكرك على تواصلك معنا. لقد تلقينا رسالتك وسيتم الرد عليها في أقرب وقت ممكن.</p>
+        
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+          <h3 style="color: #4CAF50; margin-top: 0;">تفاصيل الرسالة:</h3>
+          <p><strong>نوع الرسالة:</strong> ${data.messageType}</p>
+          <p><strong>الموضوع:</strong> ${data.subject}</p>
+          <p><strong>تاريخ الإرسال:</strong> ${data.date}</p>
+        </div>
+        
+        <p>إذا كان لديك أي استفسار عاجل، لا تتردد في التواصل معنا عبر:</p>
+        <ul style="padding-right: 20px;">
+          <li>البريد الإلكتروني: <a href="mailto:mediaplus64@gmail.com">mediaplus64@gmail.com</a></li>
+          <li>الهاتف: +972 59 437 1424</li>
+        </ul>
+      </div>
+      
+      <div style="background-color: #f5f5f5; padding: 15px; text-align: center; font-size: 14px; color: #666;">
+        <p>مع أطيب التحيات،</p>
+        <p style="font-weight: bold; color: #333;">فريق MediaPlus</p>
+      </div>
+    </div>
+  `;
+}
+
+function renderTextConfirmationTemplate(data: {
+  name: string;
+  messageType: string;
+  subject: string;
+  date: string;
+}) {
+  return `
+تم استلام رسالتك بنجاح
+-------------------------
+عزيزي/عزيزتي ${data.name},
+
+نشكرك على تواصلك معنا. لقد تلقينا رسالتك وسيتم الرد عليها في أقرب وقت ممكن.
+
+تفاصيل الرسالة:
+- نوع الرسالة: ${data.messageType}
+- الموضوع: ${data.subject}
+- تاريخ الإرسال: ${data.date}
+
+للتواصل العاجل:
+البريد الإلكتروني: mediaplus64@gmail.com
+الهاتف: +972 59 437 1424
+
+مع أطيب التحيات،
+فريق MediaPlus
+  `;
+}

@@ -3,8 +3,9 @@
 
 import FeatureCard from './FeatureCard';
 import { Button } from '@/components/ui/button';
-import { Zap, ShieldCheck, Smartphone } from 'lucide-react';
-import Link from 'next/link'; // Added import for Link
+import { Zap, ShieldCheck, Smartphone, Quote } from 'lucide-react';
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Added Card components for testimonials
 
 const features = [
   {
@@ -30,6 +31,29 @@ const features = [
   },
 ];
 
+const testimonials = [
+  {
+    name: "عميد سماره",
+    testimonial: "الموقع رائع وسهل الاستخدام! ساعدني كثيرًا في تقدير كميات المواد لمشروعي بسرعة ودقة. أنصح به بشدة.",
+    dataAiHint: "user testimonial"
+  },
+  {
+    name: "م. أحمد خالد",
+    testimonial: "ك مهندس، أجد هذا الموقع أداة قيمة جدًا. المعادلات دقيقة والواجهة سهلة. يوفر الكثير من الوقت والجهد.",
+    dataAiHint: "engineer testimonial"
+  },
+  {
+    name: "سارة عبدالله",
+    testimonial: "أخيرًا موقع عربي متكامل لحساب كميات البناء! تصميم جذاب وأدوات مفيدة للغاية. شكرًا للقائمين عليه.",
+    dataAiHint: "user review"
+  },
+  {
+    name: "شركة البناء الحديث",
+    testimonial: "نستخدم الموقع لتقديراتنا الأولية للمشاريع. يساعدنا في تقديم عروض أسعار سريعة لعملائنا. عمل ممتاز!",
+    dataAiHint: "company feedback"
+  }
+];
+
 const FeaturesSection = () => {
   return (
     <section className="py-16 md:py-20 bg-gray-100">
@@ -49,13 +73,37 @@ const FeaturesSection = () => {
             />
           ))}
         </div>
-        <div className="text-center">
+        <div className="text-center mb-16 md:mb-20">
           <Button
-            asChild // Added asChild prop for Link
+            asChild
             className="bg-app-red hover:bg-red-700 text-white font-bold py-3 px-8 text-lg rounded-lg shadow-lg transition-transform hover:scale-105"
           >
             <Link href="/login">اكتشف المزيد من المميزات</Link>
           </Button>
+        </div>
+
+        {/* User Testimonials Section */}
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-app-red">
+          ماذا يقول المستخدمون عنا؟
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          {testimonials.map((testimonial, index) => (
+            <Card 
+              key={index} 
+              className="bg-white shadow-lg rounded-xl p-6 text-right flex flex-col transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1"
+              data-ai-hint={testimonial.dataAiHint}
+            >
+              <CardHeader className="p-0 mb-3">
+                <div className="flex items-center justify-end gap-3">
+                  <CardTitle className="text-lg font-semibold text-app-red">{testimonial.name}</CardTitle>
+                  <Quote className="h-6 w-6 text-app-gold transform scale-x-[-1]" />
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 text-sm text-gray-600 flex-grow">
+                <p className="leading-relaxed">{testimonial.testimonial}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </section>

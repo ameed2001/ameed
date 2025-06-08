@@ -13,9 +13,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserPlus } from 'lucide-react';
+import { Loader2, UserPlus, Info } from 'lucide-react';
 import { signupUserAction, type SignupActionResponse } from './actions';
 import { useRouter } from 'next/navigation';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const signupSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
@@ -34,6 +35,7 @@ export default function SignupPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPendingApprovalMessage, setShowPendingApprovalMessage] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -41,6 +43,7 @@ export default function SignupPage() {
 
   const onSubmit: SubmitHandler<SignupFormValues> = async (data) => {
     setIsLoading(true);
+    setShowPendingApprovalMessage(false); // Reset message on new submission
     const result: SignupActionResponse = await signupUserAction(data);
     setIsLoading(false);
 
@@ -51,9 +54,12 @@ export default function SignupPage() {
         variant: "default",
       });
       reset();
-      if (!result.isPendingApproval) {
-        // Redirect to login if account is immediately active (e.g., owner)
-        router.push('/login');
+      if (result.isPendingApproval) {
+        setShowPendingApprovalMessage(true);
+      } else if (result.redirectTo) {
+        router.push(result.redirectTo);
+      } else {
+        router.push('/login'); 
       }
     } else {
       toast({
@@ -86,6 +92,15 @@ export default function SignupPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {showPendingApprovalMessage && (
+              <Alert variant="default" className="mb-6 bg-blue-50 border-blue-300 text-blue-700">
+                <Info className="h-5 w-5 text-blue-700" />
+                <AlertTitle className="font-semibold">حسابك قيد المراجعة</AlertTitle>
+                <AlertDescription>
+                  شكراً لتسجيلك كمهندس. حسابك قيد المراجعة حالياً من قبل الإدارة. ستتلقى إشعاراً عند تفعيله.
+                </AlertDescription>
+              </Alert>
+            )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-right">
               <div>
                 <Label htmlFor="name" className="block mb-1.5 font-semibold text-gray-700">الاسم الكامل</Label>

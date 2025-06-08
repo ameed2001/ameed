@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -10,6 +11,7 @@ export interface SignupActionResponse {
   success: boolean;
   message: string;
   isPendingApproval?: boolean;
+  redirectTo?: string;
   fieldErrors?: Record<string, string[] | undefined>; // For more detailed Zod-like errors if needed
 }
 
@@ -37,21 +39,32 @@ export async function signupUserAction(data: { name: string; email: string; pass
     };
   }
 
+  if (data.password !== data.confirmPassword) {
+    return {
+      success: false,
+      message: "كلمتا المرور غير متطابقتين.",
+      fieldErrors: { confirmPassword: ["كلمتا المرور غير متطابقتين."] }
+    };
+  }
+
 
   if (data.role === "engineer") {
     // Simulate engineer account pending approval
+    // In a real app, save user with status 'Pending Approval'
     console.log(`Engineer account ${data.email} created, pending approval.`);
     return { 
       success: true, 
-      message: "تم إنشاء الحساب بنجاح. حسابك كمهندس قيد المراجعة وسيتم تفعيله قريباً.", 
+      message: "تم إنشاء حسابك كمهندس بنجاح. حسابك حاليًا قيد المراجعة والموافقة من قبل الإدارة. سيتم إعلامك عند التفعيل.", 
       isPendingApproval: true 
     };
   }
 
   // Owner account or other roles activated immediately
+  // In a real app, save user with status 'Active'
   console.log(`Owner account ${data.email} created and activated.`);
   return { 
     success: true, 
-    message: "تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول." 
+    message: "تم إنشاء حسابك كمالك بنجاح. يمكنك الآن تسجيل الدخول.",
+    redirectTo: "/login" // Redirect owner to login page after successful signup
   };
 }

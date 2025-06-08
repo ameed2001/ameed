@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Edit, Trash2, KeyRound, CheckCircle, UserPlus, Filter } from 'lucide-react';
+import { Search, Edit, Trash2, KeyRound, CheckCircle, UserPlus, Filter, UserCheck } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
@@ -21,11 +21,11 @@ interface User {
 }
 
 const mockUsers: User[] = [
-  { id: 'u1', name: 'أحمد محمود', email: 'ahmad@example.com', role: 'Engineer', status: 'Pending Approval' },
-  { id: 'u2', name: 'فاطمة علي', email: 'fatima@example.com', role: 'Owner', status: 'Active' },
+  { id: 'u1', name: 'أحمد محمود', email: 'engineer_pending@example.com', role: 'Engineer', status: 'Pending Approval' },
+  { id: 'u2', name: 'فاطمة علي', email: 'owner@example.com', role: 'Owner', status: 'Active' },
   { id: 'u3', name: 'المشرف العام', email: 'admin@example.com', role: 'Admin', status: 'Active' },
-  { id: 'u4', name: 'خالد إبراهيم', email: 'khalid@example.com', role: 'Engineer', status: 'Active' },
-  { id: 'u5', name: 'سارة ياسين', email: 'sara@example.com', role: 'Owner', status: 'Suspended' },
+  { id: 'u4', name: 'خالد إبراهيم', email: 'engineer_approved@example.com', role: 'Engineer', status: 'Active' },
+  { id: 'u5', name: 'سارة ياسين', email: 'sara_owner@example.com', role: 'Owner', status: 'Suspended' },
 ];
 
 export default function AdminUsersPage() {
@@ -63,7 +63,7 @@ export default function AdminUsersPage() {
 
   const handleApproveEngineer = (userId: string, userName: string) => {
     setUsers(prevUsers => prevUsers.map(user => user.id === userId ? {...user, status: 'Active'} : user));
-    toast({ title: "تمت الموافقة على المهندس", description: `تم تفعيل حساب المهندس ${userName} (محاكاة).` });
+    toast({ title: "تمت الموافقة على المهندس", description: `تم تفعيل حساب المهندس ${userName} وجعله نشطاً (محاكاة).`, variant: "default" });
   };
   
   const handleAddUser = () => {
@@ -144,16 +144,16 @@ export default function AdminUsersPage() {
                   </TableCell>
                   <TableCell className="text-center space-x-1 space-x-reverse">
                     {user.role === 'Engineer' && user.status === 'Pending Approval' && (
-                       <Button variant="ghost" size="icon" className="text-green-600 hover:text-green-800 hover:bg-green-100" onClick={() => handleApproveEngineer(user.id, user.name)}>
-                        <CheckCircle className="h-5 w-5" /><span className="sr-only">موافقة</span>
+                       <Button variant="ghost" size="icon" className="text-green-600 hover:text-green-800 hover:bg-green-100" title="موافقة على المهندس" onClick={() => handleApproveEngineer(user.id, user.name)}>
+                        <UserCheck className="h-5 w-5" /><span className="sr-only">موافقة</span>
                       </Button>
                     )}
-                    <Button variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100" onClick={() => handleEditUser(user.id)}>
+                    <Button variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100" title="تعديل" onClick={() => handleEditUser(user.id)}>
                       <Edit className="h-5 w-5" /><span className="sr-only">تعديل</span>
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100">
+                        <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100" title="حذف">
                           <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
                         </Button>
                       </AlertDialogTrigger>
@@ -172,7 +172,7 @@ export default function AdminUsersPage() {
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
-                    <Button variant="ghost" size="icon" className="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100" onClick={() => handleResetPassword(user.name)}>
+                    <Button variant="ghost" size="icon" className="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100" title="إعادة تعيين كلمة المرور" onClick={() => handleResetPassword(user.name)}>
                       <KeyRound className="h-5 w-5" /><span className="sr-only">إعادة تعيين كلمة المرور</span>
                     </Button>
                   </TableCell>

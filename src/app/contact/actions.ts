@@ -23,15 +23,38 @@ export interface SendContactMessageResponse {
 export async function sendContactMessageAction(
   formData: any // Changed from z.infer<typeof contactFormSchemaServer> for debugging
 ): Promise<SendContactMessageResponse> {
-  console.log("========== Server Action: sendContactMessageAction (SUPER SIMPLIFIED) ==========");
+  console.log("========== Server Action: sendContactMessageAction (SUPER SIMPLIFIED - NO DELAY) ==========");
   console.log("Raw formData received:", formData);
 
   // No Zod validation on server for this test
   // No actual email sending logic
 
-  // Simulate a short delay
-  await new Promise(resolve => setTimeout(resolve, 200));
+  // Simulate a short delay - REMOVED
+  // await new Promise(resolve => setTimeout(resolve, 200));
+
+  // In a real application, you would add your email sending logic here.
+  // For example, using nodemailer or a third-party email service (SendGrid, Mailgun, etc.)
+  //
+  // try {
+  //   // 1. Configure your email transport (e.g., nodemailer with SMTP or an API key for a service)
+  //   // 2. Construct the email message:
+  //   //    To: mediaplus64@gmail.com
+  //   //    From: formData.email (or a no-reply address from your domain)
+  //   //    Subject: formData.subject
+  //   //    Body: formData.message (along with formData.name and formData.email)
+  //   // 3. Send the email
+  //   //
+  //   // If successful:
+  //   // return { success: true, message: "تم إرسال رسالتك بنجاح!" };
+  //   // If error:
+  //   // console.error("Email sending error:", error);
+  //   // return { success: false, error: "حدث خطأ أثناء إرسال البريد الإلكتروني." };
+  // } catch (e) {
+  //   console.error("Exception during email sending attempt:", e);
+  //   return { success: false, error: "حدث خطأ استثنائي أثناء محاولة إرسال البريد." };
+  // }
+
 
   // Always return success for this test
-  return { success: true, message: "تم استلام رسالتك (اختبار خادم مبسط)." };
+  return { success: true, message: "تم استلام رسالتك (اختبار خادم مبسط جداً - بدون تأخير)." };
 }

@@ -4,6 +4,7 @@
 import FeatureCard from './FeatureCard';
 import { Button } from '@/components/ui/button';
 import { Zap, ShieldCheck, Smartphone } from 'lucide-react';
+import Link from 'next/link'; // Added import for Link
 
 const features = [
   {
@@ -50,10 +51,10 @@ const FeaturesSection = () => {
         </div>
         <div className="text-center">
           <Button
+            asChild // Added asChild prop for Link
             className="bg-app-red hover:bg-red-700 text-white font-bold py-3 px-8 text-lg rounded-lg shadow-lg transition-transform hover:scale-105"
-            onClick={() => { /* Add navigation or action later */ }}
           >
-            اكتشف المزيد من المميزات
+            <Link href="/login">اكتشف المزيد من المميزات</Link>
           </Button>
         </div>
       </div>

@@ -51,11 +51,11 @@ const contactMethods = [
     icon: MapPin,
     label: "الموقع:",
     value: "سلفيت، فلسطين",
-    href: "https://maps.google.com/?q=Salfit,Palestine", // Example Google Maps link
+    href: "https://maps.google.com/?q=Salfit,Palestine", 
     dataAiHint: "office location"
   },
   {
-    icon: Briefcase, // Could use Clock for working hours
+    icon: Briefcase, 
     label: "أوقات العمل:",
     value: "الأحد - الخميس، 9 صباحًا – 4 مساءً",
     dataAiHint: "working hours"
@@ -79,7 +79,7 @@ export default function ContactPageEnhanced() {
 
   const onFormSubmit: SubmitHandler<ContactFormValues> = async (data) => {
     setIsFormLoading(true);
-    console.log("Contact form data:", data); // Simulate API call
+    console.log("Contact form data:", data); 
     await new Promise(resolve => setTimeout(resolve, 1500));
     toast({
       title: "تم إرسال رسالتك بنجاح!",
@@ -103,14 +103,14 @@ export default function ContactPageEnhanced() {
           </CardHeader>
           <CardContent className="space-y-10 px-4 md:px-8 py-6">
             
-            {/* Contact Methods Section */}
             <section>
               <h2 className="text-2xl font-semibold text-app-red text-right mb-6 pb-2 border-b-2 border-app-gold">
                 معلومات الاتصال المباشر
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 text-right">
                 {contactMethods.map((method) => (
-                  <div key={method.label} className="flex items-start justify-end gap-4 group" data-ai-hint={method.dataAiHint}>
+                  <div key={method.label} className="flex items-start justify-end gap-3 group" data-ai-hint={method.dataAiHint}>
+                    <method.icon className="h-7 w-7 text-app-red mt-1 shrink-0 transition-transform duration-300 group-hover:scale-110" />
                     <div className="text-right">
                       <p className="font-semibold text-gray-800">{method.label}</p>
                       {method.href ? (
@@ -126,7 +126,6 @@ export default function ContactPageEnhanced() {
                         <p className="text-gray-600">{method.value}</p>
                       )}
                     </div>
-                    <method.icon className="h-7 w-7 text-app-red mt-1 shrink-0 transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 ))}
               </div>
@@ -134,7 +133,6 @@ export default function ContactPageEnhanced() {
 
             <Separator className="my-8" />
 
-            {/* Quick Contact Form Section */}
             <section>
               <h2 className="text-2xl font-semibold text-app-red text-right mb-6 pb-2 border-b-2 border-app-gold">
                 أرسل لنا رسالة سريعة
@@ -194,7 +192,6 @@ export default function ContactPageEnhanced() {
             
             <Separator className="my-8" />
 
-            {/* Social Media Section */}
             <section className="text-center">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">تابعنا على وسائل التواصل الاجتماعي</h3>
               <div className="flex justify-center items-center gap-4 md:gap-6">
@@ -217,7 +214,6 @@ export default function ContactPageEnhanced() {
               </div>
             </section>
 
-            {/* Call Now Button - Mobile Only */}
             <div className="mt-10 md:hidden text-center">
               <Button asChild size="lg" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 text-lg">
                 <a href="tel:+972594371424">

@@ -25,30 +25,28 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
   const logoErrorCount = useRef(0);
   
   const logoUrls = [
-    'https://i.imgur.com/79bO3U2.png', // Primary
-    'https://i.imgur.com/79bO3U2.jpg', // Fallback
+    'https://i.imgur.com/79bO3U2.png', 
+    'https://i.imgur.com/79bO3U2.jpg',
   ];
 
-  // This function will be called by the onError prop of the Next.js Image component
   const handleLogoError = () => {
     logoErrorCount.current++;
     if (logoErrorCount.current < logoUrls.length) {
       setLogoDisplayUrl(logoUrls[logoErrorCount.current]);
     } else {
-      setShowTextFallback(true); // Show text fallback if all URLs fail
+      setShowTextFallback(true); 
     }
   };
-
-  // Effect for 3D particles
+  
   useEffect(() => {
     if (!isLoading || !particles3dRef.current) return;
     const particlesContainer = particles3dRef.current;
-    if (particlesContainer.children.length > 0) return; // Avoid re-adding particles
+    if (particlesContainer.children.length > 0) return; 
 
     const particleCount = 60;
     for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement('div');
-      particle.className = 'particle-3d-loader'; // Ensure class name matches globals.css
+      particle.className = 'particle-3d-loader'; 
       particle.style.left = Math.random() * 100 + '%';
       particle.style.top = Math.random() * 100 + '%';
       particle.style.animationDelay = Math.random() * 8 + 's';
@@ -60,7 +58,6 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     }
   }, [isLoading]);
 
-  // Effect for progress animation
   useEffect(() => {
     if (!isLoading) return;
     let currentPercentage = 0;
@@ -109,7 +106,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
         if (currentPercentage >= 100) {
           clearInterval(progressInterval);
           if (percentageElementRef.current) {
-            percentageElementRef.current.style.animation = 'none'; // Stop percentageGlow
+            percentageElementRef.current.style.animation = 'none'; 
             percentageElementRef.current.style.background = 'var(--loader-secondary-gradient)';
             percentageElementRef.current.style.webkitBackgroundClip = 'text';
             percentageElementRef.current.style.webkitTextFillColor = 'transparent';
@@ -125,7 +122,6 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     return () => clearInterval(progressInterval);
   }, [isLoading]); 
 
-  // Effect for interactive glow and container tilt
   useEffect(() => {
     if (!isLoading) return;
 
@@ -153,10 +149,9 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     
     const createClickRipple = (x:number, y:number) => {
       const ripple = document.createElement('div');
-      ripple.className = 'ripple-loader'; // Ensure class name matches globals.css
+      ripple.className = 'ripple-loader'; 
       ripple.style.left = x + 'px';
       ripple.style.top = y + 'px';
-      // Append to body or a specific positioned container if body causes issues
       document.body.appendChild(ripple); 
       setTimeout(() => ripple.remove(), 1000);
     };
@@ -205,7 +200,6 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
                     height={90}
                     className="logo-image-loader"
                     priority
-                    unoptimized
                     onError={handleLogoError}
                     data-ai-hint="logo construction"
                   />
@@ -255,3 +249,4 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
 };
 
 export default InitialLoader;
+    

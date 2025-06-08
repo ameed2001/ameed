@@ -35,7 +35,7 @@ export interface TimelineTask {
 
 export interface ProjectComment {
   id: string;
-  user: string; 
+  user: string;
   text: string;
   date: string;
   avatar?: string;
@@ -51,8 +51,8 @@ export interface Project {
   startDate: string;
   endDate: string;
   location?: string;
-  engineer?: string; 
-  clientName?: string; 
+  engineer?: string;
+  clientName?: string;
   budget?: number;
   quantitySummary?: string;
   photos: ProjectPhoto[];
@@ -82,7 +82,8 @@ export interface SystemSettings {
 
 // Initial Data Store
 export let dbUsers: User[] = [
-  { id: 'u7', name: 'المدير عميد', email: 'ameed@admin.com', password: "2792001", role: 'Admin', status: 'Active' },
+  { id: 'admin001', name: 'المدير عميد', email: 'ameed@admin.com', password: "2792001", role: 'Admin', status: 'Active' },
+  { id: 'owner001', name: 'صاحب افتراضي', email: 'owner@example.com', password: "password123", role: 'Owner', status: 'Active' },
 ];
 
 export let dbProjects: Project[] = [];
@@ -111,11 +112,10 @@ export function findUserByEmail(email: string): User | undefined {
 export function addUser(userData: Omit<User, 'id' | 'status'>): User {
   const newUser: User = {
     ...userData,
-    id: `u${crypto.randomUUID()}`, // Use crypto.randomUUID for more unique IDs
+    id: `u${crypto.randomUUID()}`,
     status: userData.role === 'Engineer' ? 'Pending Approval' : 'Active',
   };
   dbUsers.push(newUser);
-  // Simulate log entry
   dbLogs.unshift({ id: `log${crypto.randomUUID()}`, timestamp: new Date(), level: 'INFO', message: `تم إنشاء حساب جديد للمستخدم ${newUser.email} بدور ${newUser.role}.`, user: 'النظام' });
   return newUser;
 }
@@ -123,10 +123,10 @@ export function addUser(userData: Omit<User, 'id' | 'status'>): User {
 export function updateUser(userId: string, updates: Partial<Omit<User, 'id'>>): User | null {
   const userIndex = dbUsers.findIndex(user => user.id === userId);
   if (userIndex === -1) return null;
-  
+
   const originalRole = dbUsers[userIndex].role;
   dbUsers[userIndex] = { ...dbUsers[userIndex], ...updates };
-  
+
   if (updates.role && updates.role !== originalRole) {
       if (dbUsers[userIndex].role === 'Engineer' && dbUsers[userIndex].status === 'Active') {
         // This part might be handled by admin user page for explicit status changes.
@@ -153,7 +153,7 @@ export function findProjectById(projectId: string): Project | undefined {
 export function addProject(projectData: Omit<Project, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'>): Project {
    const newProject: Project = {
     ...projectData,
-    id: `p${crypto.randomUUID()}`, // Use crypto.randomUUID
+    id: `p${crypto.randomUUID()}`,
     overallProgress: 0,
     status: 'مخطط له',
     photos: projectData.photos || [],
@@ -185,12 +185,12 @@ export function deleteProject(projectId: string): boolean {
 // Log Helpers
 export function addLogEntry(level: LogLevel, message: string, user?: string): LogEntry {
     const newLog: LogEntry = {
-        id: `log${crypto.randomUUID()}`, // Use crypto.randomUUID
+        id: `log${crypto.randomUUID()}`,
         timestamp: new Date(),
         level,
         message,
         user,
     };
-    dbLogs.unshift(newLog); 
+    dbLogs.unshift(newLog);
     return newLog;
 }

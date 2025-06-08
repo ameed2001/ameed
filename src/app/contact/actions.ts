@@ -56,7 +56,7 @@ const MESSAGE_TYPES = {
   },
   general_inquiry: {
     label: "استفسار عام",
-    email: "info@mediaplus.com",
+    email: "info@mediaplus.com", // Default for unmapped types
     color: "#9C27B0"
   }
 } as const;
@@ -69,14 +69,15 @@ function getTransporter() {
 
   cachedTransporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE || 'gmail',
-    host: process.env.EMAIL_HOST,
+    host: process.env.EMAIL_HOST, // smtp.gmail.com for gmail if EMAIL_SERVICE is gmail
     port: parseInt(process.env.EMAIL_PORT || '587'),
-    secure: process.env.EMAIL_SECURE === 'true',
+    secure: process.env.EMAIL_SECURE === 'true', // false for port 587
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD, // Ensure this matches your .env variable name
+      pass: process.env.EMAIL_PASSWORD, // Ensure this is an app password for Gmail
     },
     tls: {
+      // do not fail on invalid certs if not in production
       rejectUnauthorized: process.env.NODE_ENV === 'production',
     },
   });
@@ -106,8 +107,8 @@ export async function sendContactMessageAction(
     
     // الحصول على تفاصيل نوع الرسالة
     const messageTypeInfo = MESSAGE_TYPES[messageType as keyof typeof MESSAGE_TYPES] || {
-      label: messageType,
-      email: 'mediaplus64@gmail.com', // Fallback email if type is not in MESSAGE_TYPES
+      label: messageType, // Fallback label
+      email: 'mediaplus64@gmail.com', // Fallback email
       color: '#607D8B' // Fallback color
     };
 
@@ -120,13 +121,18 @@ export async function sendContactMessageAction(
       hour: '2-digit',
       minute: '2-digit'
     });
-
-    const emailFromName = process.env.EMAIL_FROM_NAME || "موقع MediaPlus";
-    const emailFromAddress = process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER;
+    
+    // Corrected 'from' address construction
+    const fromEmailAddress = process.env.EMAIL_USER; // Should be just the email address
+    if (!fromEmailAddress) {
+        console.error("EMAIL_USER environment variable is not set.");
+        return { success: false, error: "خطأ في إعدادات الخادم لإرسال البريد." };
+    }
+    const fromName = "موقع MediaPlus"; // Or use another env var for the name if needed
 
     // 5. إعداد البريد الأساسي
     const mailOptions = {
-      from: `"${emailFromName}" <${emailFromAddress}>`,
+      from: `"${fromName}" <${fromEmailAddress}>`,
       to: messageTypeInfo.email, 
       replyTo: email,
       subject: `[${messageTypeInfo.label}] ${subject}`,
@@ -154,7 +160,7 @@ export async function sendContactMessageAction(
 
     // 7. إرسال بريد التأكيد
     const confirmationMailOptions = {
-      from: `"${emailFromName}" <${emailFromAddress}>`,
+      from: `"${fromName}" <${fromEmailAddress}>`,
       to: email,
       subject: 'تم استلام رسالتك بنجاح',
       html: renderConfirmationTemplate({
@@ -181,15 +187,18 @@ export async function sendContactMessageAction(
   } catch (error) {
     console.error('فشل إرسال الرسالة:', error);
     
-    // Check if the error is from nodemailer for more specific messages
-    if (error instanceof Error && 'code' in error) {
-        const nodemailerError = error as nodemailer.SMTPError;
-        if (nodemailerError.code === 'EAUTH') {
-            return { success: false, error: "خطأ في مصادقة البريد الإلكتروني. يرجى التحقق من بيانات اعتماد البريد." };
-        }
-        if (nodemailerError.code === 'ECONNECTION') {
-            return { success: false, error: "فشل الاتصال بخادم البريد. يرجى التحقق من اتصال الشبكة وإعدادات الخادم." };
-        }
+    // Improved error handling for nodemailer
+    if (error instanceof Error) {
+      const nodemailerError = error as any; // Use any for simplicity if SMTPError type is not directly available
+      if (nodemailerError.code === 'EAUTH') {
+        return { success: false, error: "خطأ في مصادقة البريد الإلكتروني. يرجى التحقق من بيانات اعتماد البريد (EMAIL_USER, EMAIL_PASSWORD)." };
+      }
+      if (nodemailerError.code === 'ECONNECTION' || nodemailerError.code === 'ETIMEDOUT') {
+        return { success: false, error: "فشل الاتصال بخادم البريد. يرجى التحقق من اتصال الشبكة وإعدادات الخادم (EMAIL_HOST, EMAIL_PORT)." };
+      }
+       if (nodemailerError.responseCode === 550) {
+        return { success: false, error: "رفض خادم البريد الرسالة (خطأ 550). قد يكون البريد الإلكتروني للمستلم غير صحيح أو محظور."};
+       }
     }
     
     return {
@@ -323,7 +332,7 @@ function renderTextConfirmationTemplate(data: {
 البريد الإلكتروني: mediaplus64@gmail.com
 الهاتف: +972 59 437 1424
 
-مع أطيب التحيات،
+مع أطيب التحيات,
 فريق MediaPlus
   `;
 }

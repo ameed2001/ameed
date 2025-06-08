@@ -9,14 +9,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Search, Eye, Trash2, Briefcase, Filter } from 'lucide-react';
+import { Search, Eye, Trash2, Filter } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+type ProjectStatus = 'مكتمل' | 'قيد التنفيذ' | 'مخطط له' | 'مؤرشف';
 
 interface AdminProject {
   id: string;
   name: string;
   engineer: string;
   owner: string;
-  status: 'مكتمل' | 'قيد التنفيذ' | 'مخطط له' | 'مؤرشف';
+  status: ProjectStatus;
 }
 
 const mockAdminProjects: AdminProject[] = [
@@ -31,15 +34,17 @@ export default function AdminProjectsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [projects, setProjects] = useState<AdminProject[]>(mockAdminProjects);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
   const filteredProjects = projects.filter(project =>
-    project.name.toLowerCase().includes(searchTerm) ||
+    (project.name.toLowerCase().includes(searchTerm) ||
     project.engineer.toLowerCase().includes(searchTerm) ||
-    project.owner.toLowerCase().includes(searchTerm)
+    project.owner.toLowerCase().includes(searchTerm)) &&
+    (statusFilter === 'all' || project.status === statusFilter)
   );
 
   const handleDeleteProject = (projectId: string, projectName: string) => {
@@ -54,8 +59,8 @@ export default function AdminProjectsPage() {
         <CardDescription className="text-gray-600">متابعة المشاريع الإنشائية في النظام وإدارتها.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 text-right">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-grow">
+        <div className="flex flex-col sm:flex-row gap-4 p-4 border rounded-lg bg-gray-50 items-center">
+          <div className="relative flex-grow w-full sm:w-auto">
             <Input
               type="search"
               placeholder="ابحث باسم المشروع، المهندس، أو المالك..."
@@ -65,9 +70,18 @@ export default function AdminProjectsPage() {
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </div>
-           <Button variant="outline" className="border-app-gold text-app-gold hover:bg-app-gold/10">
-            <Filter className="ms-2 h-4 w-4" /> تطبيق الفلاتر
-          </Button>
+           <Select value={statusFilter} onValueChange={setStatusFilter} dir="rtl">
+            <SelectTrigger className="w-full sm:w-auto bg-white focus:border-app-gold text-right">
+              <SelectValue placeholder="تصفية حسب الحالة..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">جميع الحالات</SelectItem>
+              <SelectItem value="مكتمل">مكتمل</SelectItem>
+              <SelectItem value="قيد التنفيذ">قيد التنفيذ</SelectItem>
+              <SelectItem value="مخطط له">مخطط له</SelectItem>
+              <SelectItem value="مؤرشف">مؤرشف</SelectItem>
+            </SelectContent>
+          </Select>
           {/* Potentially an "Add New Project" button here if admin can create them directly */}
         </div>
 
@@ -132,13 +146,16 @@ export default function AdminProjectsPage() {
               )) : (
                  <TableRow>
                   <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                    لا توجد مشاريع تطابق معايير البحث.
+                    لا توجد مشاريع تطابق معايير البحث أو التصفية.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </div>
+         {filteredProjects.length > 0 && (
+            <p className="text-xs text-gray-500 text-center">يتم عرض {filteredProjects.length} من إجمالي {projects.length} مشروع.</p>
+        )}
       </CardContent>
     </Card>
   );

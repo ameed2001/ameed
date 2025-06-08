@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from '@/components/ui/button';
-import { ScrollText, Search, Filter, CalendarIcon, Download } from 'lucide-react';
+import { ScrollText, Search, CalendarIcon, Download } from 'lucide-react'; // Removed Filter icon as Select is used
 import { format } from 'date-fns';
 import { arSA } from 'date-fns/locale'; // For Arabic date formatting
+import { useToast } from "@/hooks/use-toast";
+
 
 interface LogEntry {
   id: string;
@@ -31,6 +33,7 @@ const mockLogs: LogEntry[] = [
 ];
 
 export default function AdminLogsPage() {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [logLevelFilter, setLogLevelFilter] = useState<string>('all');
   // Add date filter states if needed: const [dateFilter, setDateFilter] = useState<Date | undefined>();
@@ -67,7 +70,7 @@ export default function AdminLogsPage() {
     link.download = 'system_logs.txt';
     link.click();
     URL.revokeObjectURL(link.href);
-    console.log("Exporting logs (simulated):", filteredLogs);
+    toast({ title: "تم تصدير السجلات", description: "تم بدء تنزيل ملف السجلات المصفاة (محاكاة)." });
   };
 
 

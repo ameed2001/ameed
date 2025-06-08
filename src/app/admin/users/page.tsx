@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Edit, Trash2, KeyRound, CheckCircle, UserPlus, Filter } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 interface User {
   id: string;
@@ -30,15 +32,18 @@ export default function AdminUsersPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<User[]>(mockUsers);
+  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
   const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm) ||
-    user.email.toLowerCase().includes(searchTerm) ||
-    user.role.toLowerCase().includes(searchTerm)
+    (user.name.toLowerCase().includes(searchTerm) ||
+    user.email.toLowerCase().includes(searchTerm)) &&
+    (roleFilter === 'all' || user.role === roleFilter) &&
+    (statusFilter === 'all' || user.status === statusFilter)
   );
 
   const handleEditUser = (userId: string) => {
@@ -60,6 +65,10 @@ export default function AdminUsersPage() {
     setUsers(prevUsers => prevUsers.map(user => user.id === userId ? {...user, status: 'Active'} : user));
     toast({ title: "تمت الموافقة على المهندس", description: `تم تفعيل حساب المهندس ${userName} (محاكاة).` });
   };
+  
+  const handleAddUser = () => {
+    toast({ title: "إضافة مستخدم جديد", description: "سيتم فتح نموذج لإضافة مستخدم جديد (محاكاة)." });
+  };
 
 
   return (
@@ -69,22 +78,41 @@ export default function AdminUsersPage() {
         <CardDescription className="text-gray-600">عرض، بحث، وتعديل حسابات المستخدمين في النظام.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6 text-right">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-grow">
+        <div className="flex flex-col sm:flex-row gap-4 items-center p-4 border rounded-lg bg-gray-50">
+          <div className="relative flex-grow w-full sm:w-auto">
             <Input
               type="search"
-              placeholder="ابحث بالاسم، البريد الإلكتروني، أو الدور..."
+              placeholder="ابحث بالاسم، البريد الإلكتروني..."
               value={searchTerm}
               onChange={handleSearch}
               className="pr-10 bg-white focus:border-app-gold"
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </div>
-          <Button variant="outline" className="border-app-gold text-app-gold hover:bg-app-gold/10">
-            <Filter className="ms-2 h-4 w-4" /> تطبيق الفلاتر
-          </Button>
-          <Button className="bg-app-red hover:bg-red-700 text-white">
-            <UserPlus className="ms-2 h-4 w-4" /> إضافة مستخدم جديد
+          <Select value={roleFilter} onValueChange={setRoleFilter} dir="rtl">
+            <SelectTrigger className="w-full sm:w-auto bg-white focus:border-app-gold text-right">
+              <SelectValue placeholder="تصفية حسب الدور..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">جميع الأدوار</SelectItem>
+              <SelectItem value="Engineer">مهندس</SelectItem>
+              <SelectItem value="Owner">مالك</SelectItem>
+              <SelectItem value="Admin">مشرف</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={statusFilter} onValueChange={setStatusFilter} dir="rtl">
+            <SelectTrigger className="w-full sm:w-auto bg-white focus:border-app-gold text-right">
+              <SelectValue placeholder="تصفية حسب الحالة..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">جميع الحالات</SelectItem>
+              <SelectItem value="Active">نشط</SelectItem>
+              <SelectItem value="Pending Approval">بانتظار الموافقة</SelectItem>
+              <SelectItem value="Suspended">معلق</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={handleAddUser} className="w-full sm:w-auto bg-app-red hover:bg-red-700 text-white">
+            <UserPlus className="ms-2 h-4 w-4" /> إضافة مستخدم
           </Button>
         </div>
 
@@ -152,15 +180,17 @@ export default function AdminUsersPage() {
               )) : (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                    لا يوجد مستخدمون يطابقون معايير البحث.
+                    لا يوجد مستخدمون يطابقون معايير البحث أو التصفية.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </div>
+        {filteredUsers.length > 0 && (
+            <p className="text-xs text-gray-500 text-center">يتم عرض {filteredUsers.length} من إجمالي {users.length} مستخدم.</p>
+        )}
       </CardContent>
     </Card>
   );
 }
-

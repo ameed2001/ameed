@@ -2,12 +2,13 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, Info, Phone, HelpCircle, UserPlus, LogIn } from 'lucide-react'; // Removed FileText, GanttChartSquare, BotMessageSquare
+import { Home, Info, Phone, HelpCircle, UserPlus, LogIn, ListChecks } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', label: 'الرئيسية', icon: Home },
+  { href: '/my-projects', label: 'مشاريعي', icon: ListChecks }, // Added My Projects link
   { href: '/about', label: 'عن الموقع', icon: Info },
   { href: '/contact', label: 'اتصل بنا', icon: Phone },
   { href: '/help', label: 'المساعدة', icon: HelpCircle },
@@ -49,3 +50,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

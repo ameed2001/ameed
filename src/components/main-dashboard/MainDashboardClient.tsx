@@ -2,11 +2,10 @@
 "use client";
 
 import InfoCard from '@/components/ui/InfoCard';
-import { Box, BarChart3, DollarSign, LogIn, UserPlus } from 'lucide-react';
+import { Box, BarChart3, DollarSign } from 'lucide-react'; // Removed LogIn, UserPlus
 import { useState } from 'react';
 import CalculationModal from '@/components/modals/CalculationModal';
 import PriceCalculationModal from '@/components/modals/PriceCalculationModal';
-// import AuthModal, { type AuthModalType } from '@/components/modals/AuthModal'; // Restore if AuthModal was used
 
 const MainDashboardClient = () => {
   const [isConcreteModalOpen, setIsConcreteModalOpen] = useState(false);
@@ -14,8 +13,6 @@ const MainDashboardClient = () => {
   const [isSteelModalOpen, setIsSteelModalOpen] = useState(false);
   const [steelModalCategory, setSteelModalCategory] = useState('');
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
-  // const [isAuthModalOpen, setIsAuthModalOpen] = useState(false); // Restore if AuthModal was used
-  // const [authModalType, setAuthModalType] = useState<AuthModalType>('login'); // Restore if AuthModal was used
 
   const handleOpenConcreteModal = (category: string) => {
     setConcreteModalCategory(category);
@@ -26,12 +23,6 @@ const MainDashboardClient = () => {
     setIsSteelModalOpen(true);
   };
   const handleOpenPriceModal = () => setIsPriceModalOpen(true);
-  /*
-  const handleOpenAuthModal = (type: AuthModalType) => { // Restore if AuthModal was used
-    setAuthModalType(type);
-    setIsAuthModalOpen(true);
-  };
-  */
 
   const dashboardCards = [
     {
@@ -67,45 +58,15 @@ const MainDashboardClient = () => {
       cardHeightClass: "h-72",
       applyFlipEffect: false,
     },
-    {
-      title: "تسجيل الدخول",
-      description: "للوصول إلى ميزات إضافية وإدارة مشاريعك.",
-      icon: <LogIn />,
-      iconWrapperClass: "bg-green-100 dark:bg-green-900",
-      iconColorClass: "text-green-500 dark:text-green-400",
-      // onClick: () => handleOpenAuthModal('login'), // Use this if AuthModal is preferred
-      href: "/login",
-      applyFlipEffect: true,
-      backTitle: "مرحباً بعودتك!",
-      backDescription: "أدخل بياناتك للوصول إلى حسابك وإدارة مشاريعك بكفاءة.",
-      backCtaText: "تسجيل الدخول الآن",
-      dataAiHint: "user login",
-      cardHeightClass: "h-72",
-    },
-    {
-      title: "إنشاء حساب جديد",
-      description: "انضم للاستفادة من جميع أدوات حساب الكميات وإدارة المشاريع.",
-      icon: <UserPlus />,
-      iconWrapperClass: "bg-purple-100 dark:bg-purple-900",
-      iconColorClass: "text-purple-500 dark:text-purple-400",
-      // onClick: () => handleOpenAuthModal('signup'), // Use this if AuthModal is preferred
-      href: "/signup",
-      applyFlipEffect: true,
-      backTitle: "انضم إلى المحترفين!",
-      backDescription: "أنشئ حسابك مجانًا وابدأ في استخدام أدواتنا المتقدمة اليوم.",
-      backCtaText: "إنشاء حساب",
-      dataAiHint: "user registration",
-      cardHeightClass: "h-72",
-    },
+    // Login and Signup cards removed from here
   ];
 
   return (
     <>
       <div 
-        id="auth-cards-section" // This ID is used by HeroSection button to scroll here
-        className="container mx-auto px-4 py-12 text-center"
+        className="container mx-auto px-4 py-16 text-center" // ID removed as it's now on page.tsx
       >
-        <h2 className="text-3xl font-bold text-app-red mb-10">أدواتك الأساسية وتسجيل الدخول</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-app-red mb-12">أدواتك الأساسية للحسابات</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
           {dashboardCards.map(card => (
             <InfoCard 
@@ -132,13 +93,6 @@ const MainDashboardClient = () => {
         isOpen={isPriceModalOpen}
         onClose={() => setIsPriceModalOpen(false)}
       />
-      {/* 
-      <AuthModal // Restore if AuthModal was used
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        type={authModalType}
-      />
-      */}
     </>
   );
 };

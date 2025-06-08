@@ -103,7 +103,7 @@ const Header = () => {
         <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3">
           <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center gap-2">
             <Clock size={16} className="flex-shrink-0" />
-            <span className="tabular-nums min-w-[8ch] text-left">{currentTime || 'Loading...'}</span>
+            <span className="tabular-nums min-w-[12ch] text-left">{currentTime || 'Loading...'}</span>
           </div>
 
           <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md">
@@ -137,4 +137,3 @@ const Header = () => {
 };
 
 export default Header;
-

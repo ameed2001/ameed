@@ -16,18 +16,20 @@ interface InfoCardProps {
   dataAiHint?: string;
 }
 
-const InfoCard = ({ title, description, onClick, href, className, icon, iconWrapperClass, iconColorClass, dataAiHint }: InfoCardProps) => {
+const InfoCard = (props: InfoCardProps) => {
+  const { title, description, onClick: onClickProp, href, className, icon, iconWrapperClass, iconColorClass, dataAiHint } = props;
+
   const cardContent = (
     <div
       className={cn(
-        "w-full bg-card rounded-xl shadow-lg p-6 text-center transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col items-center h-full",
-        onClick && "cursor-pointer",
+        "w-full bg-card rounded-xl shadow-lg p-6 text-center transition-all duration-300 ease-in-out flex flex-col items-center h-full",
+        onClickProp && !href && "cursor-pointer",
         className
       )}
-      onClick={!href ? onClick : undefined}
-      role={href ? undefined : "button"}
-      tabIndex={href ? undefined : 0}
-      onKeyDown={!href ? (e) => (e.key === 'Enter' || e.key === ' ') && onClick?.() : undefined}
+      onClick={!href ? onClickProp : undefined}
+      role={!href && onClickProp ? "button" : undefined}
+      tabIndex={!href && onClickProp ? 0 : undefined}
+      onKeyDown={!href && onClickProp ? (e) => (e.key === 'Enter' || e.key === ' ') && onClickProp?.() : undefined}
       data-ai-hint={dataAiHint}
     >
       {icon && (

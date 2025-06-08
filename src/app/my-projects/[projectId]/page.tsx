@@ -2,19 +2,26 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import AppLayout from "@/components/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CalendarDays, Image as ImageIcon, FileText, MessageSquare, Edit, Send, Palette, CheckCircle2 } from "lucide-react";
+import { 
+  CalendarDays, Image as ImageIcon, FileText, MessageSquare, Edit, Send, Palette, CheckCircle2, 
+  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
-import Image from 'next/image'; // Using next/image
+import Image from 'next/image';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { X } from 'lucide-react';
+
 
 interface ProjectPhoto {
   id: string;
@@ -30,8 +37,8 @@ interface TimelineTask {
   status: 'مكتمل' | 'قيد التنفيذ' | 'مخطط له';
   startDate: string;
   endDate: string;
-  progress?: number; // 0-100 for in-progress tasks
-  color: string; // Tailwind bg color like 'bg-blue-500'
+  progress?: number; 
+  color: string; 
 }
 
 interface ProjectComment {
@@ -39,26 +46,29 @@ interface ProjectComment {
   user: string;
   text: string;
   date: string;
-  avatar?: string; // URL to user avatar
+  avatar?: string; 
+  dataAiHintAvatar?: string;
 }
 
 interface Project {
   id: string;
   name: string;
   status: 'مكتمل' | 'قيد التنفيذ' | 'مخطط له';
-  overallProgress: number; // 0-100
+  overallProgress: number; 
   description: string;
   startDate: string;
   endDate: string;
   location?: string;
   engineer?: string;
+  clientName?: string; // New field
+  budget?: number; // New field
   quantitySummary?: string;
   photos?: ProjectPhoto[];
   timelineTasks?: TimelineTask[];
   comments?: ProjectComment[];
+  linkedOwnerEmail?: string; // New field
 }
 
-// Enhanced Mock data
 const mockProjects: Project[] = [
   {
     id: '1',
@@ -70,11 +80,13 @@ const mockProjects: Project[] = [
     endDate: '2024-12-31',
     location: "حي النرجس، الرياض",
     engineer: "م. خالد الأحمدي",
+    clientName: "السيد عبدالله الراجحي",
+    budget: 1200000,
     quantitySummary: 'تم استهلاك 120 متر مكعب من الباطون و 15 طن من حديد التسليح حتى الآن. تم الانتهاء من 80% من أعمال الهيكل الخرساني.',
     photos: [
       { id: 'p1', src: 'https://placehold.co/600x400.png', alt: 'أعمال الأساسات', dataAiHint: 'building foundation', caption: 'صب قواعد الأساسات بتاريخ 15 مارس 2024' },
       { id: 'p2', src: 'https://placehold.co/600x400.png', alt: 'أعمدة الطابق الأرضي', dataAiHint: 'concrete columns', caption: 'الانتهاء من أعمدة الطابق الأرضي بتاريخ 10 أبريل 2024' },
-      { id: 'p3', src: 'https://placehold.co/600x400.png', alt: 'تقدم الهيكل', dataAiHint: 'construction progress', caption: 'نظرة عامة على تقدم الهيكل الخرساني بتاريخ 1 مايو 2024' },
+      { id: 'p3', src: 'https://placehold.co/600x400.png', alt: 'تقدم الهيكل', dataAiHint: 'construction site', caption: 'نظرة عامة على تقدم الهيكل الخرساني بتاريخ 1 مايو 2024' },
     ],
     timelineTasks: [
       { id: 't1', name: "التخطيط والتراخيص", startDate: "2024-03-01", endDate: "2024-03-15", status: 'مكتمل', progress: 100, color: "bg-green-500" },
@@ -85,13 +97,12 @@ const mockProjects: Project[] = [
       { id: 't6', name: "التشطيبات النهائية والتسليم", startDate: "2024-11-01", endDate: "2024-12-31", status: 'مخطط له', progress: 0, color: "bg-blue-500" },
     ],
     comments: [
-      { id: 'c1', user: "م. خالد الأحمدي", text: "تم الانتهاء من صب سقف الطابق الأرضي اليوم. كل شيء يسير وفق الجدول.", date: "2024-06-20", avatar: "https://placehold.co/40x40.png?text=EN" },
-      { id: 'c2', user: "المالك", text: "عمل رائع! متى يمكنني زيارة الموقع للاطلاع على آخر التطورات؟", date: "2024-06-21", avatar: "https://placehold.co/40x40.png?text=OW" },
-    ]
+      { id: 'c1', user: "م. خالد الأحمدي", text: "تم الانتهاء من صب سقف الطابق الأرضي اليوم. كل شيء يسير وفق الجدول.", date: "2024-06-20", avatar: "https://placehold.co/40x40.png?text=EN", dataAiHintAvatar: "engineer avatar" },
+      { id: 'c2', user: "المالك", text: "عمل رائع! متى يمكنني زيارة الموقع للاطلاع على آخر التطورات؟", date: "2024-06-21", avatar: "https://placehold.co/40x40.png?text=OW", dataAiHintAvatar: "owner avatar" },
+    ],
+    linkedOwnerEmail: "owner@example.com"
   },
-  // Add other mock projects if needed, similar to the structure above
 ];
-
 
 export default function ProjectDetailPage() {
   const params = useParams();
@@ -100,60 +111,113 @@ export default function ProjectDetailPage() {
   const [project, setProject] = useState<Project | null>(null);
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [progressUpdate, setProgressUpdate] = useState({ percentage: '', notes: '' });
+  const [linkedOwnerEmailInput, setLinkedOwnerEmailInput] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
 
   useEffect(() => {
-    // Simulate fetching project data
     const foundProject = mockProjects.find(p => p.id === projectId);
     setProject(foundProject || null);
+    if (foundProject?.linkedOwnerEmail) {
+      setLinkedOwnerEmailInput(foundProject.linkedOwnerEmail);
+    }
+    if (foundProject?.overallProgress) {
+      setProgressUpdate(prev => ({ ...prev, percentage: foundProject.overallProgress.toString() }));
+    }
   }, [projectId]);
 
   const handleCommentSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !project) return;
-
     setIsSubmittingComment(true);
-    // Simulate API call
     setTimeout(() => {
       const commentToAdd: ProjectComment = {
-        id: crypto.randomUUID(),
-        user: "المالك (أنت)", // Simulate current user
-        text: newComment,
-        date: new Date().toISOString().split('T')[0],
-        avatar: "https://placehold.co/40x40.png?text=ME"
+        id: crypto.randomUUID(), user: "المهندس (أنت)", text: newComment, date: new Date().toISOString().split('T')[0], avatar: "https://placehold.co/40x40.png?text=ME", dataAiHintAvatar: "my avatar"
       };
       setProject(prev => prev ? { ...prev, comments: [...(prev.comments || []), commentToAdd] } : null);
       setNewComment('');
       setIsSubmittingComment(false);
-      toast({
-        title: "تم إضافة التعليق",
-        description: "تم نشر تعليقك بنجاح.",
-        variant: "default",
-      });
+      toast({ title: "تم إضافة التعليق", description: "تم نشر تعليقك بنجاح." });
     }, 1000);
   };
+
+  const handleProgressSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!project || !progressUpdate.percentage) {
+      toast({ title: "خطأ", description: "يرجى إدخال نسبة التقدم.", variant: "destructive"});
+      return;
+    }
+    const newProgress = parseInt(progressUpdate.percentage);
+    if (isNaN(newProgress) || newProgress < 0 || newProgress > 100) {
+      toast({ title: "خطأ", description: "الرجاء إدخال نسبة تقدم صالحة (0-100).", variant: "destructive"});
+      return;
+    }
+    console.log("Progress Update:", progressUpdate);
+    setProject(prev => prev ? { ...prev, overallProgress: newProgress, quantitySummary: prev.quantitySummary + ` (ملاحظة تقدم: ${progressUpdate.notes || 'لا يوجد'})` } : null);
+    toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%. ${progressUpdate.notes ? 'الملاحظات: ' + progressUpdate.notes : ''}` });
+    setProgressUpdate(prev => ({ ...prev, notes: '' }));
+  };
+
+  const handleLinkOwnerSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!project || !linkedOwnerEmailInput.trim()) {
+      toast({ title: "خطأ", description: "يرجى إدخال بريد إلكتروني للمالك.", variant: "destructive"});
+      return;
+    }
+    console.log("Linking owner:", linkedOwnerEmailInput);
+    setProject(prev => prev ? { ...prev, linkedOwnerEmail: linkedOwnerEmailInput } : null);
+    toast({ title: "تم ربط المالك", description: `تم ربط المالك بالبريد الإلكتروني: ${linkedOwnerEmailInput} (محاكاة).` });
+  };
   
-  // Calculate the total duration of the project in days for timeline scaling
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+    } else {
+      setSelectedFile(null);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile || !project) {
+      toast({ title: "لم يتم اختيار ملف", description: "يرجى اختيار ملف لتحميله.", variant: "destructive" });
+      return;
+    }
+    setIsUploadingFile(true);
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate upload
+    const newPhoto: ProjectPhoto = {
+      id: crypto.randomUUID(),
+      src: URL.createObjectURL(selectedFile), // Temporary URL for display
+      alt: `Uploaded: ${selectedFile.name}`,
+      dataAiHint: "uploaded image",
+      caption: `تم الرفع: ${selectedFile.name}`
+    };
+    setProject(prev => prev ? { ...prev, photos: [...(prev.photos || []), newPhoto] } : null);
+    setSelectedFile(null);
+    setIsUploadingFile(false);
+    const fileInput = document.getElementById('projectFileUpload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    toast({ title: "تم رفع الملف بنجاح", description: `${selectedFile.name} جاهز الآن (محاكاة).` });
+  };
+
+
   const projectStartDate = project?.timelineTasks ? new Date(Math.min(...project.timelineTasks.map(task => new Date(task.startDate).getTime()))) : new Date();
   const projectEndDate = project?.timelineTasks ? new Date(Math.max(...project.timelineTasks.map(task => new Date(task.endDate).getTime()))) : new Date();
-  let totalProjectDurationDays = Math.ceil((projectEndDate.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1; // Min 1 day
-  if (totalProjectDurationDays <= 0) totalProjectDurationDays = 30; // Default to 30 if no tasks or invalid dates
+  let totalProjectDurationDays = Math.ceil((projectEndDate.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  if (totalProjectDurationDays <= 0) totalProjectDurationDays = 30;
 
   const getTaskPositionAndWidth = (task: TimelineTask) => {
     const taskStart = new Date(task.startDate);
     const taskEnd = new Date(task.endDate);
-    
     const offsetDays = Math.ceil((taskStart.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24));
     const durationDays = Math.ceil((taskEnd.getTime() - taskStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-
     const leftPercentage = (offsetDays / totalProjectDurationDays) * 100;
     const widthPercentage = (durationDays / totalProjectDurationDays) * 100;
-
     return {
-      left: `${Math.max(0, Math.min(100 - widthPercentage, leftPercentage))}%`, // Ensure it stays within bounds
-      width: `${Math.max(2, Math.min(100, widthPercentage))}%`, // Min width, max 100%
+      left: `${Math.max(0, Math.min(100 - widthPercentage, leftPercentage))}%`,
+      width: `${Math.max(2, Math.min(100, widthPercentage))}%`,
     };
   };
-
 
   if (!project) {
     return (
@@ -162,9 +226,7 @@ export default function ProjectDetailPage() {
           <Alert variant="destructive">
             <FileText className="h-5 w-5" />
             <AlertTitle>المشروع غير موجود</AlertTitle>
-            <AlertDescription>
-              لم يتم العثور على تفاصيل المشروع المطلوب. قد يكون الرابط غير صحيح أو تم حذف المشروع.
-            </AlertDescription>
+            <AlertDescription>لم يتم العثور على تفاصيل المشروع المطلوب.</AlertDescription>
           </Alert>
            <Button asChild className="mt-6 bg-app-gold hover:bg-yellow-600 text-primary-foreground">
              <Link href="/my-projects">العودة إلى قائمة المشاريع</Link>
@@ -174,18 +236,30 @@ export default function ProjectDetailPage() {
     );
   }
 
+  const simulateAction = (actionName: string) => {
+    toast({ title: "محاكاة إجراء", description: `تم تنفيذ "${actionName}" (محاكاة).` });
+  };
+
   return (
     <AppLayout>
       <div className="container mx-auto py-8 px-4 text-right">
+        {/* Project Header Card */}
         <Card className="bg-white/95 shadow-xl mb-8">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold text-app-red">{project.name}</CardTitle>
-            <CardDescription className="text-gray-700 mt-1">
-              {project.description}
-            </CardDescription>
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 mt-3">
+            <div className="flex justify-between items-start">
+                <div>
+                    <CardTitle className="text-3xl font-bold text-app-red">{project.name}</CardTitle>
+                    <CardDescription className="text-gray-700 mt-1">{project.description}</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل تفاصيل المشروع")}>
+                    <FileEdit size={18} className="ms-1.5" /> تعديل التفاصيل
+                </Button>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-sm text-gray-600 mt-3">
                 <span><strong>الموقع:</strong> {project.location || 'غير محدد'}</span>
                 <span><strong>المهندس المسؤول:</strong> {project.engineer || 'غير محدد'}</span>
+                <span><strong>العميل:</strong> {project.clientName || 'غير محدد'}</span>
+                <span><strong>الميزانية التقديرية:</strong> {project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</span>
                 <span><strong>تاريخ البدء:</strong> {project.startDate}</span>
                 <span><strong>التسليم المتوقع:</strong> {project.endDate}</span>
             </div>
@@ -208,14 +282,61 @@ export default function ProjectDetailPage() {
           </CardContent>
         </Card>
 
+        {/* Engineer Actions Section */}
+        <Card className="bg-white/95 shadow-lg mb-8">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+              <Settings2 size={28}/> لوحة تحكم المهندس
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الباطون")}>
+                <HardHat size={18} className="ms-2"/> حساب كميات الباطون
+            </Button>
+            <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الحديد")}>
+                <BarChart3 size={18} className="ms-2"/> حساب كميات الحديد
+            </Button>
+             <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10">
+                    <UploadCloud size={18} className="ms-2"/> رفع صورة/فيديو
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px] bg-white/95 custom-dialog-overlay">
+                <DialogHeader>
+                  <DialogTitle className="text-app-red text-right">رفع ملف جديد</DialogTitle>
+                </DialogHeader>
+                <div className="py-4 space-y-4 text-right">
+                    <div>
+                        <Label htmlFor="projectFileUpload" className="block mb-1.5 font-semibold text-gray-700">اختر ملفًا:</Label>
+                        <Input id="projectFileUpload" type="file" onChange={handleFileChange} className="bg-white focus:border-app-gold"/>
+                        {selectedFile && <p className="text-xs text-gray-500 mt-1">الملف المختار: {selectedFile.name}</p>}
+                    </div>
+                    <Button onClick={handleFileUpload} disabled={isUploadingFile || !selectedFile} className="w-full bg-app-red hover:bg-red-700">
+                        {isUploadingFile ? <Loader2 className="ms-2 h-5 w-5 animate-spin"/> : <UploadCloud size={18} className="ms-2"/>}
+                        {isUploadingFile ? 'جاري الرفع...' : 'رفع الملف'}
+                    </Button>
+                </div>
+                <DialogClose asChild>
+                    <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-app-red"><X size={20}/></Button>
+                </DialogClose>
+              </DialogContent>
+            </Dialog>
+          </CardContent>
+        </Card>
+
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             {/* Project Timeline Section */}
             <Card className="bg-white/95 shadow-lg">
-              <CardHeader>
+              <CardHeader className="flex flex-row justify-between items-center">
                 <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                  <CalendarDays size={28} /> الجدول الزمني للمشروع
+                  <GanttChartSquare size={28} /> الجدول الزمني للمشروع
                 </CardTitle>
+                <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تحديد/تعديل مراحل الإنشاء")}>
+                    <CalendarDays size={18} className="ms-1.5" /> تعديل المراحل
+                </Button>
               </CardHeader>
               <CardContent>
                 {project.timelineTasks && project.timelineTasks.length > 0 ? (
@@ -232,14 +353,15 @@ export default function ProjectDetailPage() {
                     {project.timelineTasks.map((task, index) => {
                       const { left, width } = getTaskPositionAndWidth(task);
                       return (
-                        <div key={task.id} className="relative h-12 flex items-center text-right pr-3" style={{ zIndex: index + 1 }}>
+                        <div key={task.id} className="relative h-12 flex items-center text-right pr-3 group" style={{ zIndex: index + 1 }}>
                           <div 
                             className={cn(
-                              "absolute h-8 rounded-md shadow-sm flex items-center justify-between px-2.5 text-white transition-all duration-300 ease-in-out hover:opacity-90 text-xs",
-                              task.color
+                              "absolute h-8 rounded-md shadow-sm flex items-center justify-between px-2.5 text-white transition-all duration-300 ease-in-out hover:opacity-90 text-xs cursor-pointer",
+                              task.color, "group-hover:ring-2 group-hover:ring-app-gold"
                             )}
                             style={{ left, width, right: 'auto' }}
                             title={`${task.name} (من ${task.startDate} إلى ${task.endDate}) - ${task.status} ${task.progress !== undefined ? task.progress + '%' : ''}`}
+                            onClick={() => simulateAction(`تعديل مهمة: ${task.name}`)}
                           >
                             <span className="font-medium truncate">{task.name}</span>
                             {task.status === 'مكتمل' && <CheckCircle2 size={14} className="text-white/90 shrink-0 ml-1.5"/>}
@@ -259,7 +381,7 @@ export default function ProjectDetailPage() {
             <Card className="bg-white/95 shadow-lg">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                  <ImageIcon size={28} /> صور وفيديوهات تقدم المشروع
+                  <ImageIcon size={28} /> صور تقدم المشروع
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -268,10 +390,7 @@ export default function ProjectDetailPage() {
                     {project.photos.map((photo) => (
                       <div key={photo.id} className="group relative rounded-lg overflow-hidden shadow-md">
                         <Image 
-                            src={photo.src} 
-                            alt={photo.alt} 
-                            width={600} 
-                            height={400} 
+                            src={photo.src} alt={photo.alt} width={600} height={400} 
                             className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
                             data-ai-hint={photo.dataAiHint} 
                         />
@@ -284,29 +403,90 @@ export default function ProjectDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500">لا توجد صور أو فيديوهات مرفوعة لهذا المشروع حالياً.</p>
+                  <p className="text-gray-500">لا توجد صور مرفوعة لهذا المشروع حالياً.</p>
                 )}
               </CardContent>
             </Card>
           </div>
 
           <div className="space-y-8">
-            {/* Summarized Quantity Reports Section */}
+            {/* Update Construction Progress Section */}
             <Card className="bg-white/95 shadow-lg">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                  <FileText size={28} /> تقارير الكميات الملخصة
+                  <Percent size={28} /> تحديث تقدم الإنشاء
                 </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleProgressSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="progressPercentage" className="font-semibold text-gray-700">نسبة التقدم الإجمالية (%):</Label>
+                    <Input 
+                      id="progressPercentage" type="number" min="0" max="100"
+                      value={progressUpdate.percentage}
+                      onChange={(e) => setProgressUpdate({...progressUpdate, percentage: e.target.value})}
+                      className="mt-1 bg-white focus:border-app-gold" placeholder="مثال: 75"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="progressNotes" className="font-semibold text-gray-700">ملاحظات التقدم:</Label>
+                    <Textarea 
+                      id="progressNotes" rows={3}
+                      value={progressUpdate.notes}
+                      onChange={(e) => setProgressUpdate({...progressUpdate, notes: e.target.value})}
+                      className="mt-1 bg-white focus:border-app-gold" placeholder="أضف ملاحظات حول التقدم المحرز..."
+                    />
+                  </div>
+                  <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-semibold">
+                    <Send size={18} className="ms-2"/> إرسال تحديث التقدم
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+            
+            {/* Summarized Quantity Reports Section */}
+            <Card className="bg-white/95 shadow-lg">
+              <CardHeader className="flex flex-row justify-between items-center">
+                <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                  <FileText size={28} /> تقارير الكميات
+                </CardTitle>
+                 <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقرير الكميات PDF/Excel")}>
+                    <Download size={18} className="ms-1.5" /> تصدير
+                </Button>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 leading-relaxed">
                   {project.quantitySummary || "لا توجد تقارير كميات ملخصة متاحة حالياً."}
                 </p>
-                {project.quantitySummary && (
-                    <Button variant="outline" className="mt-4 border-app-gold text-app-gold hover:bg-app-gold/10">
-                        <FileText size={18} className="ms-2" /> تحميل التقرير التفصيلي (PDF)
-                    </Button>
-                )}
+                {/* Placeholder for report customization */}
+                <div className="mt-4 text-sm text-gray-500 italic">
+                  (سيتم إضافة خيارات لتخصيص عرض التقرير هنا لاحقًا)
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Link Owner to Project Section */}
+            <Card className="bg-white/95 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                  <Users size={28} /> ربط المالك بالمشروع
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleLinkOwnerSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="ownerEmail" className="font-semibold text-gray-700">البريد الإلكتروني للمالك:</Label>
+                    <Input 
+                      id="ownerEmail" type="email"
+                      value={linkedOwnerEmailInput}
+                      onChange={(e) => setLinkedOwnerEmailInput(e.target.value)}
+                      className="mt-1 bg-white focus:border-app-gold" placeholder="owner@example.com"
+                    />
+                  </div>
+                  <Button type="submit" className="w-full bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold">
+                    <Link2 size={18} className="ms-2"/> {project.linkedOwnerEmail ? "تحديث ربط المالك" : "ربط المالك"}
+                  </Button>
+                </form>
               </CardContent>
             </Card>
             
@@ -322,12 +502,8 @@ export default function ProjectDetailPage() {
                   <div>
                     <Label htmlFor="newComment" className="font-semibold text-gray-700">أضف تعليقاً أو استفساراً:</Label>
                     <Textarea
-                      id="newComment"
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="اكتب تعليقك هنا..."
-                      rows={3}
-                      className="mt-1 bg-white focus:border-app-gold"
+                      id="newComment" value={newComment} onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="اكتب تعليقك هنا..." rows={3} className="mt-1 bg-white focus:border-app-gold"
                     />
                   </div>
                   <Button type="submit" className="bg-app-red hover:bg-red-700 text-white font-semibold" disabled={isSubmittingComment || !newComment.trim()}>
@@ -341,7 +517,7 @@ export default function ProjectDetailPage() {
                     project.comments.slice().reverse().map((comment) => (
                       <div key={comment.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
                         <div className="flex items-start gap-3">
-                           {comment.avatar && <Image src={comment.avatar} alt={comment.user} width={40} height={40} className="rounded-full" data-ai-hint="avatar person" />}
+                           {comment.avatar && <Image src={comment.avatar} alt={comment.user} width={40} height={40} className="rounded-full" data-ai-hint={comment.dataAiHintAvatar || "avatar person"} />}
                            {!comment.avatar && <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">{comment.user.substring(0,1)}</div>}
                            <div className="flex-grow">
                                 <p className="font-semibold text-gray-800">{comment.user}</p>
@@ -364,7 +540,6 @@ export default function ProjectDetailPage() {
   );
 }
 
-// Loader2 icon for simulating loading state
 const Loader2 = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
     <path d="M21 12a9 9 0 1 1-6.219-8.56"/>

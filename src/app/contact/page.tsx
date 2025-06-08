@@ -129,6 +129,7 @@ export default function ContactPageEnhanced() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 text-right">
                 {contactMethods.map((method) => (
                   <div key={method.label} className="flex items-start justify-end gap-3 group" data-ai-hint={method.dataAiHint}>
+                     <method.icon className="h-7 w-7 text-app-red mt-1 shrink-0 transition-transform duration-300 group-hover:scale-110" />
                      <div className="text-right">
                       <p className="font-semibold text-gray-800">{method.label}</p>
                       {method.href ? (
@@ -144,7 +145,6 @@ export default function ContactPageEnhanced() {
                         <p className="text-gray-600">{method.value}</p>
                       )}
                     </div>
-                    <method.icon className="h-7 w-7 text-app-red mt-1 shrink-0 transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 ))}
               </div>
@@ -213,10 +213,10 @@ export default function ContactPageEnhanced() {
 
             <section className="text-center">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">تابعنا على وسائل التواصل الاجتماعي</h3>
-              <div className="flex justify-center items-center gap-4 md:gap-6">
-                {socialLinks.map((social) => (
-                  <TooltipProvider key={social.name}>
-                    <Tooltip>
+              <TooltipProvider>
+                <div className="flex justify-center items-center gap-4 md:gap-6">
+                  {socialLinks.map((social) => (
+                    <Tooltip key={social.name}>
                       <TooltipTrigger asChild>
                         <Link href={social.href} target="_blank" rel="noopener noreferrer"
                               className={`p-3 rounded-full bg-gray-100 text-gray-700 ${social.colorClass} transition-all duration-300 transform hover:scale-110 hover:shadow-md`}>
@@ -228,9 +228,9 @@ export default function ContactPageEnhanced() {
                         <p>تابعنا على {social.name}</p>
                       </TooltipContent>
                     </Tooltip>
-                  </TooltipProvider>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </TooltipProvider>
             </section>
 
             <div className="mt-10 md:hidden text-center">
@@ -248,4 +248,3 @@ export default function ContactPageEnhanced() {
     </AppLayout>
   );
 }
-

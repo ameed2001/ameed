@@ -94,12 +94,12 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       boxShadow: {
-        'header-footer': '0 2px 8px rgba(0, 0, 0, 0.25)', // Adjusted shadow
-        'nav': '0 2px 6px rgba(0, 0, 0, 0.2)', // Adjusted shadow
+        'header-footer': '0 2px 8px rgba(0, 0, 0, 0.25)', 
+        'nav': '0 2px 6px rgba(0, 0, 0, 0.2)', 
         'message': '0 4px 8px rgba(0, 0, 0, 0.2)',
-        'card-main': '0 15px 30px -5px rgba(151, 65, 252, 0.2)', 
-        'card-main-hover': '0 20px 40px rgba(151, 65, 252, 0.3)', 
         'form-container': '0 10px 25px rgba(0, 0, 0, 0.2)',
+        // Removed 'card-main' and 'card-main-hover' as they are from the old design
+        // Standard shadows like 'lg' and 'xl' will be used for cards
       },
       keyframes: {
         'accordion-down': {

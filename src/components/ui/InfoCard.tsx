@@ -1,44 +1,52 @@
 
+import * as React from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import type { ReactNode } from 'react';
 
 interface InfoCardProps {
   title: string;
+  description: string;
   onClick?: () => void;
   href?: string;
   className?: string;
-  icon?: React.ReactNode; // Optional icon
-  dataAiHint?: string; // For placeholder images if used within card content
+  icon?: ReactNode;
+  iconWrapperClass?: string;
+  iconColorClass?: string;
+  dataAiHint?: string;
 }
 
-const InfoCard = ({ title, onClick, href, className, icon, dataAiHint }: InfoCardProps) => {
+const InfoCard = ({ title, description, onClick, href, className, icon, iconWrapperClass, iconColorClass, dataAiHint }: InfoCardProps) => {
   const cardContent = (
     <div
       className={cn(
-        "w-full sm:w-[200px] h-[260px] md:w-[220px] md:h-[280px] rounded-2xl p-0.5 shadow-card-main cursor-pointer relative overflow-hidden transition-all duration-300 ease-in-out hover:transform hover:-translate-y-2 hover:scale-103 hover:shadow-card-main-hover group",
-        "bg-gradient-to-l from-[#f7ba2b] to-[#ea5358]", // Gradient from HTML .card
+        "w-full bg-card rounded-xl shadow-lg p-6 text-center transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col items-center h-full",
+        onClick && "cursor-pointer",
         className
       )}
-      onClick={!href ? onClick : undefined} // Only use onClick if href is not provided
-      role={href ? undefined : "button"} // Role is button only if it's not a link
-      tabIndex={href ? undefined : 0} // TabIndex for non-link cards
+      onClick={!href ? onClick : undefined}
+      role={href ? undefined : "button"}
+      tabIndex={href ? undefined : 0}
       onKeyDown={!href ? (e) => (e.key === 'Enter' || e.key === ' ') && onClick?.() : undefined}
       data-ai-hint={dataAiHint}
     >
-      <div className={cn(
-        "rounded-[15px] w-full h-full flex flex-col justify-center items-center text-white font-bold text-xl md:text-2xl text-center p-4 transition-all duration-300 ease-in-out backdrop-blur-sm",
-        "bg-[rgba(5,6,45,0.9)] group-hover:bg-[rgba(5,6,45,0.95)] group-hover:text-[#f7ba2b]" // Styles from HTML .card__content
-      )}>
-        {icon && <div className="mb-3 text-app-gold group-hover:text-white transition-colors">{icon}</div>}
-        {title}
-      </div>
+      {icon && (
+        <div className={cn(
+          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 shrink-0",
+          iconWrapperClass
+        )}>
+          {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7", iconColorClass) }) : icon}
+        </div>
+      )}
+      <h3 className="text-xl font-semibold text-foreground mb-2">{title}</h3>
+      <p className="text-sm text-muted-foreground flex-grow">{description}</p>
     </div>
   );
 
   if (href) {
     return (
       <Link href={href} passHref legacyBehavior>
-        <a className="outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-2xl">
+        <a className="outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-xl block h-full">
           {cardContent}
         </a>
       </Link>

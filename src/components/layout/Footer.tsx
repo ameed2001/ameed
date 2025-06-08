@@ -38,6 +38,7 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold text-white mb-4 border-b-2 border-app-gold pb-2 inline-block">روابط سريعة</h4>
             <ul className="space-y-2 text-sm">
+              <li><Link href="/" className="hover:text-app-gold transition-colors duration-200">الرئيسية</Link></li>
               <li><Link href="/about" className="hover:text-app-gold transition-colors duration-200">عن الموقع</Link></li>
               <li><Link href="/contact" className="hover:text-app-gold transition-colors duration-200">تواصل معنا</Link></li>
               <li><Link href="/help" className="hover:text-app-gold transition-colors duration-200">مركز المساعدة</Link></li>

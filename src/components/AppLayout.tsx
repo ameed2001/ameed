@@ -8,7 +8,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <div className="flex flex-col min-h-screen bg-transparent">
       <Header />
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-6 md:py-8 text-center">
+      <main className="flex-grow">
         {children}
       </main>
       <Footer />

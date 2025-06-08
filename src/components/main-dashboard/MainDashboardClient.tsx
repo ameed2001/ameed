@@ -13,7 +13,7 @@ import {
   Layers3, Square, Anchor, Minus, Grid3x3, RectangleVertical, PanelTop, CheckCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import HeroSection from './HeroSection'; // Import the new HeroSection
+// HeroSection is now rendered in page.tsx
 
 type ModalType = 
   'concrete_options' | 'steel_options' | 
@@ -93,24 +93,24 @@ const MainDashboardClient = () => {
 
   return (
     <>
-      <HeroSection /> {/* Add HeroSection here */}
+      {/* HeroSection is moved to page.tsx */}
+      <div className="container mx-auto px-4 py-8 text-center">
+        <div className="welcome-message-box">
+          <p>
+            هذا الموقع مختص في حساب الكميات لكل من الحديد والباطون للأبنية الانشائية والأبار والجدران الإستنادية
+          </p>
+        </div>
 
-      <div className="welcome-message-box">
-        <p>
-          هذا الموقع مختص في حساب الكميات لكل من الحديد والباطون للأبنية الانشائية والأبار والجدران الإستنادية
-        </p>
-      </div>
-
-      {/* Add id here for the button to scroll to */}
-      <div id="calculators-section" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center pt-8"> {/* Added pt-8 for spacing below hero */}
-        {cardData.map(card => (
-          <InfoCard 
-            key={card.title}
-            title={card.title} 
-            onClick={() => handleCardClick(card.modalType)}
-            icon={card.icon}
-          />
-        ))}
+        <div id="calculators-section" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center pt-8">
+          {cardData.map(card => (
+            <InfoCard 
+              key={card.title}
+              title={card.title} 
+              onClick={() => handleCardClick(card.modalType)}
+              icon={card.icon}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Concrete Options Modal */}

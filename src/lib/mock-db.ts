@@ -88,6 +88,7 @@ export let dbUsers: User[] = [
   { id: 'u4', name: 'خالد إبراهيم', email: 'engineer_approved@example.com', password: "password123", role: 'Engineer', status: 'Active' },
   { id: 'u5', name: 'سارة ياسين', email: 'sara_owner@example.com', password: "password123", role: 'Owner', status: 'Suspended' },
   { id: 'u6', name: 'مستخدم موجود', email: 'exists@example.com', password: "password123", role: 'Owner', status: 'Active' },
+  { id: 'u7', name: 'المدير عميد', email: 'ameed@admin.com', password: "2792001", role: 'Admin', status: 'Active' },
 ];
 
 export let dbProjects: Project[] = [
@@ -210,3 +211,105 @@ export let dbSettings: SystemSettings = {
   maxUploadSizeMB: 50,
   emailNotificationsEnabled: true,
 };
+
+// --- Helper Functions ---
+
+// User Helpers
+export function findUserById(userId: string): User | undefined {
+  return dbUsers.find(user => user.id === userId);
+}
+
+export function findUserByEmail(email: string): User | undefined {
+  return dbUsers.find(user => user.email.toLowerCase() === email.toLowerCase());
+}
+
+export function addUser(userData: Omit<User, 'id' | 'status'>): User {
+  const newUser: User = {
+    ...userData,
+    id: `u${dbUsers.length + 1}`, 
+    status: userData.role === 'Engineer' ? 'Pending Approval' : 'Active',
+  };
+  dbUsers.push(newUser);
+  // Simulate log entry
+  dbLogs.unshift({ id: `log${dbLogs.length + 1}`, timestamp: new Date(), level: 'INFO', message: `تم إنشاء حساب جديد للمستخدم ${newUser.email} بدور ${newUser.role}.`, user: 'النظام' });
+  return newUser;
+}
+
+export function updateUser(userId: string, updates: Partial<Omit<User, 'id'>>): User | null {
+  const userIndex = dbUsers.findIndex(user => user.id === userId);
+  if (userIndex === -1) return null;
+  
+  const originalRole = dbUsers[userIndex].role;
+  dbUsers[userIndex] = { ...dbUsers[userIndex], ...updates };
+  
+  // Prevent changing role through this generic update if it's not intended
+  if (updates.role && updates.role !== originalRole) {
+      // If role change is significant (e.g., Engineer to Owner), status might need re-evaluation
+      if (dbUsers[userIndex].role === 'Engineer' && dbUsers[userIndex].status === 'Active') {
+        // Potentially set to 'Pending Approval' if role changed to Engineer from something else,
+        // but current logic in addUser handles new Engineer status.
+        // For simplicity, admin user page will handle specific status changes like 'Pending Approval' -> 'Active'
+      }
+  }
+  dbLogs.unshift({ id: `log${dbLogs.length + 1}`, timestamp: new Date(), level: 'INFO', message: `تم تحديث بيانات المستخدم ${dbUsers[userIndex].email}.`, user: 'النظام/المشرف' });
+  return dbUsers[userIndex];
+}
+
+export function deleteUser(userId: string): boolean {
+  const userIndex = dbUsers.findIndex(user => user.id === userId);
+  if (userIndex === -1) return false;
+  const deletedUserEmail = dbUsers[userIndex].email;
+  dbUsers.splice(userIndex, 1);
+  dbLogs.unshift({ id: `log${dbLogs.length + 1}`, timestamp: new Date(), level: 'INFO', message: `تم حذف المستخدم ${deletedUserEmail}.`, user: 'النظام/المشرف' });
+  return true;
+}
+
+// Project Helpers
+export function findProjectById(projectId: string): Project | undefined {
+  return dbProjects.find(project => project.id === projectId);
+}
+
+export function addProject(projectData: Omit<Project, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'>): Project {
+   const newProject: Project = {
+    ...projectData,
+    id: `p${dbProjects.length + 1}`,
+    overallProgress: 0,
+    status: 'مخطط له',
+    photos: projectData.photos || [],
+    timelineTasks: projectData.timelineTasks || [],
+    comments: projectData.comments || [],
+  };
+  dbProjects.push(newProject);
+   dbLogs.unshift({ id: `log${dbLogs.length + 1}`, timestamp: new Date(), level: 'INFO', message: `تم إنشاء مشروع جديد: "${newProject.name}".`, user: newProject.engineer || 'النظام' });
+  return newProject;
+}
+
+export function updateProject(projectId: string, updates: Partial<Omit<Project, 'id'>>): Project | null {
+  const projectIndex = dbProjects.findIndex(project => project.id === projectId);
+  if (projectIndex === -1) return null;
+  dbProjects[projectIndex] = { ...dbProjects[projectIndex], ...updates };
+  dbLogs.unshift({ id: `log${dbLogs.length + 1}`, timestamp: new Date(), level: 'INFO', message: `تم تحديث بيانات المشروع "${dbProjects[projectIndex].name}".`, user: 'النظام/المهندس' });
+  return dbProjects[projectIndex];
+}
+
+export function deleteProject(projectId: string): boolean {
+  const projectIndex = dbProjects.findIndex(project => project.id === projectId);
+  if (projectIndex === -1) return false;
+  const deletedProjectName = dbProjects[projectIndex].name;
+  dbProjects.splice(projectIndex, 1);
+  dbLogs.unshift({ id: `log${dbLogs.length + 1}`, timestamp: new Date(), level: 'INFO', message: `تم حذف المشروع "${deletedProjectName}".`, user: 'النظام/المشرف' });
+  return true;
+}
+
+// Log Helpers
+export function addLogEntry(level: LogLevel, message: string, user?: string): LogEntry {
+    const newLog: LogEntry = {
+        id: `log${dbLogs.length + 1}`,
+        timestamp: new Date(),
+        level,
+        message,
+        user,
+    };
+    dbLogs.unshift(newLog); // Add to the beginning to show newest first
+    return newLog;
+}

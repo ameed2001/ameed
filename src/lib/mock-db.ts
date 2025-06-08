@@ -7,7 +7,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  password?: string;
+  password?: string; // In a real app, this would be a hash
   role: UserRole;
   status: UserStatus;
 }
@@ -27,18 +27,18 @@ export interface TimelineTask {
   id: string;
   name: string;
   status: 'مكتمل' | 'قيد التنفيذ' | 'مخطط له';
-  startDate: string;
-  endDate: string;
-  progress?: number;
-  color: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string;   // YYYY-MM-DD
+  progress?: number; // Optional: 0-100
+  color: string; // Tailwind bg color class e.g., 'bg-blue-500'
 }
 
 export interface ProjectComment {
   id: string;
-  user: string;
+  user: string; // Name of the user who commented
   text: string;
-  date: string;
-  avatar?: string;
+  date: string; // YYYY-MM-DD
+  avatar?: string; // URL to avatar image
   dataAiHintAvatar?: string;
 }
 
@@ -46,20 +46,21 @@ export interface Project {
   id: string;
   name: string;
   status: ProjectStatusType;
-  overallProgress: number;
+  overallProgress: number; // Percentage 0-100
   description: string;
-  startDate: string;
-  endDate: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
   location?: string;
-  engineer?: string;
-  clientName?: string;
+  engineer?: string; // Name of the engineer
+  clientName?: string; // Name of the client/owner
   budget?: number;
-  quantitySummary?: string;
+  quantitySummary?: string; // Text summary for now
   photos: ProjectPhoto[];
   timelineTasks: TimelineTask[];
   comments: ProjectComment[];
-  linkedOwnerEmail?: string;
+  linkedOwnerEmail?: string; // Email of the owner linked to this project
 }
+
 
 // System Logs
 export type LogLevel = 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
@@ -68,7 +69,7 @@ export interface LogEntry {
   timestamp: Date;
   level: LogLevel;
   message: string;
-  user?: string;
+  user?: string; // Optional: ID or name of user associated with log
 }
 
 // System Settings
@@ -80,10 +81,11 @@ export interface SystemSettings {
   emailNotificationsEnabled: boolean;
 }
 
-// Initial Data Store
+
+// --- Data Store (Local "Database") ---
+// Initialize with only the admin user. Other users must sign up.
 export let dbUsers: User[] = [
   { id: 'admin001', name: 'المدير عميد', email: 'ameed@admin.com', password: "2792001", role: 'Admin', status: 'Active' },
-  { id: 'owner001', name: 'صاحب افتراضي', email: 'owner@example.com', password: "password123", role: 'Owner', status: 'Active' },
 ];
 
 export let dbProjects: Project[] = [];
@@ -112,7 +114,7 @@ export function findUserByEmail(email: string): User | undefined {
 export function addUser(userData: Omit<User, 'id' | 'status'>): User {
   const newUser: User = {
     ...userData,
-    id: `u${crypto.randomUUID()}`,
+    id: `u${crypto.randomUUID()}`, // Use crypto.randomUUID() for more unique IDs
     status: userData.role === 'Engineer' ? 'Pending Approval' : 'Active',
   };
   dbUsers.push(newUser);
@@ -127,9 +129,11 @@ export function updateUser(userId: string, updates: Partial<Omit<User, 'id'>>): 
   const originalRole = dbUsers[userIndex].role;
   dbUsers[userIndex] = { ...dbUsers[userIndex], ...updates };
 
+  // If role changed and the new role is Engineer, ensure status is handled (e.g., by admin page)
   if (updates.role && updates.role !== originalRole) {
       if (dbUsers[userIndex].role === 'Engineer' && dbUsers[userIndex].status === 'Active') {
-        // This part might be handled by admin user page for explicit status changes.
+        // Potentially reset status to 'Pending Approval' if an admin changes a user to Engineer
+        // For now, this logic is mainly handled on the admin users page for approval.
       }
   }
   dbLogs.unshift({ id: `log${crypto.randomUUID()}`, timestamp: new Date(), level: 'INFO', message: `تم تحديث بيانات المستخدم ${dbUsers[userIndex].email}.`, user: 'النظام/المشرف' });
@@ -150,20 +154,23 @@ export function findProjectById(projectId: string): Project | undefined {
   return dbProjects.find(project => project.id === projectId);
 }
 
+// Function to add a new project to the dbProjects array
 export function addProject(projectData: Omit<Project, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'>): Project {
-   const newProject: Project = {
+  // Create a new project object with a unique ID, default progress, and status
+  const newProject: Project = {
     ...projectData,
-    id: `p${crypto.randomUUID()}`,
-    overallProgress: 0,
-    status: 'مخطط له',
-    photos: projectData.photos || [],
-    timelineTasks: projectData.timelineTasks || [],
-    comments: projectData.comments || [],
+    id: `p${crypto.randomUUID()}`, // Use crypto.randomUUID() for more unique IDs
+    overallProgress: 0, // Default progress
+    status: 'مخطط له', // Default status
+    photos: projectData.photos || [], // Initialize with empty array if not provided
+    timelineTasks: projectData.timelineTasks || [], // Initialize with empty array
+    comments: projectData.comments || [], // Initialize with empty array
   };
-  dbProjects.push(newProject);
+  dbProjects.push(newProject); // Add the new project to the array
    dbLogs.unshift({ id: `log${crypto.randomUUID()}`, timestamp: new Date(), level: 'INFO', message: `تم إنشاء مشروع جديد: "${newProject.name}".`, user: newProject.engineer || 'النظام' });
-  return newProject;
+  return newProject; // Return the newly created project
 }
+
 
 export function updateProject(projectId: string, updates: Partial<Omit<Project, 'id'>>): Project | null {
   const projectIndex = dbProjects.findIndex(project => project.id === projectId);
@@ -183,14 +190,15 @@ export function deleteProject(projectId: string): boolean {
 }
 
 // Log Helpers
+// Function to add a new log entry
 export function addLogEntry(level: LogLevel, message: string, user?: string): LogEntry {
     const newLog: LogEntry = {
-        id: `log${crypto.randomUUID()}`,
+        id: `log${crypto.randomUUID()}`, // Generate unique ID
         timestamp: new Date(),
         level,
         message,
         user,
     };
-    dbLogs.unshift(newLog);
+    dbLogs.unshift(newLog); // Add to the beginning of the array for chronological order (newest first)
     return newLog;
 }

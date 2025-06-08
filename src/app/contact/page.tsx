@@ -16,6 +16,7 @@ import { Mail, Phone, MapPin, Facebook, Instagram, Send, User, MessageSquare, Lo
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from '@/components/ui/separator';
+import { sendContactMessageAction, type SendContactMessageResponse } from './actions'; // Import the server action
 
 // SVG for WhatsApp icon
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -24,13 +25,13 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-const contactFormSchema = z.object({
+const contactFormSchemaClient = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
   subject: z.string().min(5, { message: "الموضوع مطلوب (5 أحرف على الأقل)." }),
   message: z.string().min(10, { message: "الرسالة مطلوبة (10 أحرف على الأقل)." }),
 });
-type ContactFormValues = z.infer<typeof contactFormSchema>;
+type ContactFormValues = z.infer<typeof contactFormSchemaClient>;
 
 const contactMethods = [
   {
@@ -74,20 +75,38 @@ export default function ContactPageEnhanced() {
   const [isFormLoading, setIsFormLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<ContactFormValues>({
-    resolver: zodResolver(contactFormSchema),
+    resolver: zodResolver(contactFormSchemaClient),
   });
 
   const onFormSubmit: SubmitHandler<ContactFormValues> = async (data) => {
     setIsFormLoading(true);
-    console.log("Contact form data:", data); 
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    toast({
-      title: "تم إرسال رسالتك بنجاح!",
-      description: "سيتواصل معك فريقنا في أقرب وقت ممكن.",
-      variant: "default",
-    });
-    reset();
-    setIsFormLoading(false);
+    try {
+      const result: SendContactMessageResponse = await sendContactMessageAction(data);
+
+      if (result.success) {
+        toast({
+          title: "تم إرسال رسالتك بنجاح!",
+          description: result.message || "سيتواصل معك فريقنا في أقرب وقت ممكن.",
+          variant: "default",
+        });
+        reset();
+      } else {
+        toast({
+          title: "خطأ في الإرسال",
+          description: result.error || "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting contact form via server action:", error);
+      toast({
+        title: "خطأ في الإرسال",
+        description: "حدث خطأ غير متوقع أثناء محاولة إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsFormLoading(false);
+    }
   };
 
   return (
@@ -110,8 +129,7 @@ export default function ContactPageEnhanced() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 text-right">
                 {contactMethods.map((method) => (
                   <div key={method.label} className="flex items-start justify-end gap-3 group" data-ai-hint={method.dataAiHint}>
-                    <method.icon className="h-7 w-7 text-app-red mt-1 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-                    <div className="text-right">
+                     <div className="text-right">
                       <p className="font-semibold text-gray-800">{method.label}</p>
                       {method.href ? (
                         <a
@@ -126,6 +144,7 @@ export default function ContactPageEnhanced() {
                         <p className="text-gray-600">{method.value}</p>
                       )}
                     </div>
+                    <method.icon className="h-7 w-7 text-app-red mt-1 shrink-0 transition-transform duration-300 group-hover:scale-110" />
                   </div>
                 ))}
               </div>
@@ -229,3 +248,4 @@ export default function ContactPageEnhanced() {
     </AppLayout>
   );
 }
+

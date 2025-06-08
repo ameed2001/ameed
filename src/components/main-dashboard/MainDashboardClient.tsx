@@ -95,12 +95,7 @@ const MainDashboardClient = () => {
     <>
       {/* HeroSection is moved to page.tsx */}
       <div className="container mx-auto px-4 py-8 text-center">
-        <div className="welcome-message-box">
-          <p>
-            هذا الموقع مختص في حساب الكميات لكل من الحديد والباطون للأبنية الانشائية والأبار والجدران الإستنادية
-          </p>
-        </div>
-
+        {/* Welcome message box removed from here */}
         <div id="calculators-section" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center pt-8">
           {cardData.map(card => (
             <InfoCard 

@@ -227,9 +227,4 @@
   text-align: right;
 }
 
-.welcome-message-box {
-  @apply text-lg md:text-xl font-semibold text-red-700 p-4 my-5 mx-auto rounded-xl w-[90%] max-w-[800px] shadow-md;
-  background-color: rgba(255, 193, 7, 0.1); /* Light golden yellow background */
-  border: 1px solid rgba(255, 193, 7, 0.3);
-  backdrop-filter: blur(2px);
-}
+/* .welcome-message-box class removed */

@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 import { dbUsers, findUserByEmail, addUser as dbAddUser } from '@/lib/mock-db';
-import type { User } from '@/lib/mock-db';
+import type { User, UserRole } from '@/lib/mock-db';
 
 export interface SignupActionResponse {
   success: boolean;
@@ -40,14 +40,17 @@ export async function signupUserAction(data: { name: string; email: string; pass
     };
   }
 
-  const newUserBase: Omit<User, 'id' | 'status'> = {
+  // Convert lowercase role from form to UserRole (uppercase first letter)
+  const roleForDb: UserRole = data.role.charAt(0).toUpperCase() + data.role.slice(1) as UserRole;
+
+  const newUserPayload: Pick<User, 'name' | 'email' | 'password' | 'role'> = {
       name: data.name,
-      email: data.email,
-      password: data.password, // Store password for mock login
-      role: data.role,
+      email: data.email.toLowerCase(), // Ensure email is stored consistently lowercase
+      password: data.password, 
+      role: roleForDb, // Use the correctly cased role
   };
   
-  const newUser = dbAddUser(newUserBase);
+  const newUser = dbAddUser(newUserPayload);
 
 
   if (newUser.role === "Engineer") {
@@ -59,7 +62,8 @@ export async function signupUserAction(data: { name: string; email: string; pass
     };
   }
 
-  console.log(`Owner account ${newUser.email} created and activated.`);
+  // For Owner role (and Admin if it were allowed via signup, which it isn't here)
+  console.log(`${newUser.role} account ${newUser.email} created and activated.`);
   return { 
     success: true, 
     message: "تم إنشاء حسابك كمالك بنجاح. يمكنك الآن تسجيل الدخول.",

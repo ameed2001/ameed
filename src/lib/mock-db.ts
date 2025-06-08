@@ -2,49 +2,57 @@
 
 // أنواع الأدوار
 export type Role = 'Admin' | 'Engineer' | 'Owner' | 'GeneralUser';
+export type UserRole = 'Admin' | 'Engineer' | 'Owner'; // For actual app roles
 export type UserStatus = 'Active' | 'Pending Approval' | 'Suspended';
 
 // نموذج لتمثيل Use Case
 export interface UseCase {
   id: number;
   title: string;
-  role: Role;
+  role: Role; // Can be GeneralUser for some use cases
   description: string;
-  dependsOn?: number[]; // IDs of other use cases it depends on
+  dependsOn?: number[];
 }
 
-// نموذج لتمثيل مستخدم 
-// Updated User interface to include email, password, and status for login/signup and admin management
+// نموذج لتمثيل مستخدم
 export interface User {
-  id: string; // Changed to string to match crypto.randomUUID()
+  id: string; // Using string for UUIDs
   name: string;
   email: string;
-  password?: string; // Storing password for mock login; hash in real app
-  role: Role;
+  password_hash: string; // Changed from password
+  role: UserRole; // Specific app roles
   status: UserStatus;
 }
 
-// نموذج مشروع 
-// Kept user's Project interface
+export type ProjectStatusType = 'مكتمل' | 'قيد التنفيذ' | 'مخطط له' | 'مؤرشف';
+
+// نموذج مشروع وهمي (as used by admin/projects page)
 export interface Project {
-  id: number;
+  id: number; // Kept as number based on admin/projects page usage
   name: string;
-  engineerId: number;
-  ownerId: number;
-  status: 'active' | 'archived';
+  engineerId: number; // Corresponds to User.id (but User.id is string, potential mismatch if not handled)
+  ownerId: number;    // Corresponds to User.id (but User.id is string, potential mismatch if not handled)
+  status: ProjectStatusType; // Updated to use ProjectStatusType
+  engineer?: string; // Optional: for direct display on admin/projects page
+  clientName?: string; // Optional: for direct display on admin/projects page
 }
+
 
 // بيانات الأدوار
 export const roles: Role[] = ['Admin', 'Engineer', 'Owner', 'GeneralUser'];
 
-// بيانات المستخدمين - Initialized with only the admin user.
+// بيانات المستخدمين
 export let dbUsers: User[] = [
-  { id: crypto.randomUUID(), name: "Ameed Admin", email: "ameed@admin.com", password: "password123", role: "Admin", status: "Active" },
+  { id: crypto.randomUUID(), name: 'Admin User', email: 'ameed@admin.com', password_hash: 'password123', role: 'Admin', status: 'Active' },
+  // { id: crypto.randomUUID(), name: 'Eng. Ahmad', email: 'eng@example.com', password_hash: 'password123', role: 'Engineer', status: 'Active' },
+  // { id: crypto.randomUUID(), name: 'Owner Sami', email: 'owner@example.com', password_hash: 'password123', role: 'Owner', status: 'Active' },
 ];
 
-// بيانات المشاريع
+// بيانات المشاريع (Exported as dbProjects to match admin page import)
 export let dbProjects: Project[] = [
-  { id: 1, name: 'مشروع الإسكان', engineerId: 0, ownerId: 0, status: 'active' }, // Placeholder IDs, engineer/owner IDs might need to match actual user IDs if linked
+  { id: 1, name: 'مشروع الإسكان النموذجي', engineerId: 2, ownerId: 3, status: 'قيد التنفيذ', engineer: 'م. أحمد خالد', clientName: 'سامر عبدالله' },
+  { id: 2, name: 'بناء فيلا سكنية', engineerId: 2, ownerId: 3, status: 'مخطط له', engineer: 'م. أحمد خالد', clientName: 'ليلى المصري' },
+  { id: 3, name: 'تطوير مجمع تجاري', engineerId: 2, ownerId: 3, status: 'مكتمل', engineer: 'م. أحمد خالد', clientName: 'شركة الاستثمار' },
 ];
 
 // بيانات الـ Use Cases
@@ -89,17 +97,16 @@ export const useCases: UseCase[] = [
   { id: 31, title: 'Review System Logs', role: 'Admin', description: 'مراجعة سجلات النظام' },
 ];
 
+
 // Helper functions for user management
 export function findUserByEmail(email: string): User | undefined {
   return dbUsers.find(user => user.email.toLowerCase() === email.toLowerCase());
 }
 
-export function addUser(userData: Omit<User, 'id' | 'status' | 'password'> & { password?: string, role: 'Owner' | 'Engineer' }): User {
+export function addUser(userData: Pick<User, 'name' | 'email' | 'password_hash' | 'role'>): User {
   const newUser: User = {
-    name: userData.name,
+    ...userData,
     email: userData.email.toLowerCase(),
-    password: userData.password, 
-    role: userData.role,
     id: crypto.randomUUID(),
     status: userData.role === 'Engineer' ? 'Pending Approval' : 'Active',
   };
@@ -112,7 +119,8 @@ export function updateUser(userId: string, updates: Partial<User>): User | null 
   if (userIndex === -1) {
     return null;
   }
-  dbUsers[userIndex] = { ...dbUsers[userIndex], ...updates };
+  const { id, role, email, ...safeUpdates } = updates;
+  dbUsers[userIndex] = { ...dbUsers[userIndex], ...safeUpdates };
   return dbUsers[userIndex];
 }
 
@@ -122,9 +130,19 @@ export function deleteUser(userId: string): boolean {
   return dbUsers.length < initialLength;
 }
 
-// Add other necessary types and data for admin pages if they were removed:
-// For example, ProjectStatusType and LogLevel types for other admin pages
-export type ProjectStatusType = 'مكتمل' | 'قيد التنفيذ' | 'مخطط له' | 'مؤرشف';
+// Helper function for project deletion (used by admin/projects page)
+export function deleteProject(projectIdString: string): boolean {
+  const projectId = parseInt(projectIdString, 10);
+  if (isNaN(projectId)) {
+    return false; // Invalid ID format
+  }
+  const initialLength = dbProjects.length;
+  dbProjects = dbProjects.filter(p => p.id !== projectId);
+  return dbProjects.length < initialLength;
+}
+
+
+// --- System Settings and Logs ---
 export type LogLevel = 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
 
 export interface LogEntry {
@@ -132,7 +150,7 @@ export interface LogEntry {
   timestamp: Date;
   level: LogLevel;
   message: string;
-  user?: string; // User who performed the action, or system
+  user?: string;
 }
 
 export interface SystemSettings {
@@ -143,20 +161,34 @@ export interface SystemSettings {
   emailNotificationsEnabled: boolean;
 }
 
-// These were part of the original mock-db and might be needed by admin pages
-// that were not part of the user's schema update.
-// If Project types clash, we'll need to resolve that.
-// For now, I'll assume the admin pages use a more detailed Project type.
-export interface FullProject extends Project { // Extending the user's Project type
+export let dbSettings: SystemSettings = {
+  siteName: "المحترف لحساب الكميات",
+  defaultLanguage: "ar",
+  maintenanceMode: false,
+  maxUploadSizeMB: 25,
+  emailNotificationsEnabled: true,
+};
+
+export let dbLogs: LogEntry[] = [
+  { id: crypto.randomUUID(), timestamp: new Date(Date.now() - 1000 * 60 * 5), level: 'INFO', message: 'تم تسجيل دخول المستخدم ameed@admin.com بنجاح.', user: 'ameed@admin.com' },
+  { id: crypto.randomUUID(), timestamp: new Date(Date.now() - 1000 * 60 * 10), level: 'WARNING', message: 'محاولة تسجيل دخول فاشلة للحساب userX.', user: 'النظام' },
+];
+
+// --- More Detailed Project Structure (FullProject) ---
+// This structure is used by my-projects/[projectId] page and potentially create-project page.
+// It uses string IDs for consistency with User IDs.
+export interface FullProject {
+  id: string;
+  name: string;
   location?: string;
   description?: string;
   startDate?: string;
   endDate?: string;
-  engineer?: string; // This was engineerId in user's Project
-  clientName?: string; // ownerId was in user's Project
+  engineer?: string;
+  clientName?: string;
   budget?: number;
   overallProgress: number;
-  // status: ProjectStatusType; // This is 'active' | 'archived' in user's Project
+  status: ProjectStatusType;
   photos?: ProjectPhoto[];
   timelineTasks?: TimelineTask[];
   comments?: ProjectComment[];
@@ -178,85 +210,57 @@ export interface TimelineTask {
   startDate: string;
   endDate: string;
   status: 'مكتمل' | 'قيد التنفيذ' | 'مخطط له';
-  progress?: number; // Optional: specific progress for this task
+  progress?: number;
   color: string; // Example: 'bg-blue-500'
 }
 
 export interface ProjectComment {
   id: string;
-  user: string;
+  user: string; // Name of the user or "المالك", "المهندس (أنت)"
   avatar?: string;
   dataAiHintAvatar?: string;
   text: string;
-  date: string;
+  date: string; // YYYY-MM-DD
 }
 
-// Re-populate dbProjects with richer structure if admin/project pages need it.
-// For now, we'll keep the user's simpler dbProjects structure.
-// If errors arise, we'll need to merge or choose one.
-
-// Mock System Settings
-export let dbSettings: SystemSettings = {
-  siteName: "المحترف لحساب الكميات",
-  defaultLanguage: "ar",
-  maintenanceMode: false,
-  maxUploadSizeMB: 25,
-  emailNotificationsEnabled: true,
-};
-
-// Mock System Logs
-export let dbLogs: LogEntry[] = [
-  { id: crypto.randomUUID(), timestamp: new Date(Date.now() - 1000 * 60 * 5), level: 'INFO', message: 'تم تسجيل دخول المستخدم admin@example.com بنجاح.', user: 'admin@example.com' },
-  { id: crypto.randomUUID(), timestamp: new Date(Date.now() - 1000 * 60 * 10), level: 'WARNING', message: 'محاولة تسجيل دخول فاشلة للحساب userX.', user: 'النظام' },
-  { id: crypto.randomUUID(), timestamp: new Date(Date.now() - 1000 * 60 * 15), level: 'SUCCESS', message: 'تم إنشاء مشروع "بناء فيلا سكنية" بنجاح.', user: 'engineer@example.com' },
-  { id: crypto.randomUUID(), timestamp: new Date(Date.now() - 1000 * 60 * 20), level: 'ERROR', message: 'فشل في الاتصال بخادم البريد الإلكتروني.', user: 'النظام' },
+// This dbProjectsFull is for the more detailed project structure.
+export let dbProjectsFull: FullProject[] = [
+    {
+    id: crypto.randomUUID(),
+    name: "مشروع بناء فيلا الأحلام",
+    location: "الرياض، حي الياسمين",
+    description: "فيلا سكنية مكونة من طابقين مع مسبح وحديقة.",
+    startDate: "2024-01-15",
+    endDate: "2024-12-20",
+    engineer: "م. خالد عبدالرحمن",
+    clientName: "عبدالله السالم",
+    budget: 2500000,
+    overallProgress: 65,
+    status: "قيد التنفيذ",
+    linkedOwnerEmail: "owner@example.com", // Example linked owner
+    photos: [
+      { id: crypto.randomUUID(), src: "https://placehold.co/600x400.png?text=Villa+Exterior", alt: "الواجهة الخارجية للفيلا", caption: "الواجهة قيد الإنشاء", dataAiHint: "modern villa" },
+      { id: crypto.randomUUID(), src: "https://placehold.co/600x400.png?text=Foundation+Works", alt: "أعمال الأساسات", caption: "صب القواعد", dataAiHint: "construction foundation" },
+    ],
+    timelineTasks: [
+      { id: crypto.randomUUID(), name: "أعمال الحفر والأساسات", startDate: "2024-01-15", endDate: "2024-03-01", status: "مكتمل", progress: 100, color: "bg-green-500" },
+      { id: crypto.randomUUID(), name: "الهيكل الخرساني", startDate: "2024-03-02", endDate: "2024-06-30", status: "قيد التنفيذ", progress: 70, color: "bg-yellow-500" },
+      { id: crypto.randomUUID(), name: "أعمال التشطيبات الداخلية", startDate: "2024-07-01", endDate: "2024-10-31", status: "مخطط له", progress: 0, color: "bg-blue-500" },
+    ],
+    comments: [
+      { id: crypto.randomUUID(), user: "م. خالد عبدالرحمن", text: "تم الانتهاء من صب أعمدة الطابق الأول.", date: "2024-05-10", avatar: "https://placehold.co/40x40.png?text=EN", dataAiHintAvatar: "engineer photo" },
+      { id: crypto.randomUUID(), user: "المالك", text: "متى يمكنني زيارة الموقع؟", date: "2024-05-12", avatar: "https://placehold.co/40x40.png?text=OW", dataAiHintAvatar: "client photo" },
+    ],
+    quantitySummary: "الباطون: 120 م³ (حتى الآن), الحديد: 15 طن (حتى الآن)",
+  },
 ];
 
-// Functions for Project management used by Admin/Projects page might need to be re-added
-// For now, Admin/Projects page has its own state management based on initial dbProjects.
-// If "deleteProject" is needed from mock-db by other parts, it should be added.
-// Example:
-export function deleteProject(projectId: string | number ): boolean {
-  // const initialLength = dbProjects.length;
-  // dbProjects = dbProjects.filter(p => p.id !== projectId);
-  // return dbProjects.length < initialLength;
-  // The above line is commented out because the user's project ID is a number,
-  // but other project pages use string IDs and a more complex project structure.
-  // This needs to be reconciled based on which project structure is canonical.
-  // For now, to avoid breaking the Admin page that uses `dbDeleteProject(projectId: string)`,
-  // we'll keep the original logic that expects string IDs and the FullProject structure
-  // if that was the original intent for admin pages.
-  // This highlights a discrepancy that needs resolving.
-  // Let's assume the admin page uses string IDs for projects.
-  // If user's `dbProjects` (with number IDs) is the source of truth, this function won't work.
-  console.warn("deleteProject called, but project ID types and structures might be inconsistent.");
-  return false; // Placeholder to avoid error, actual logic depends on chosen Project structure
-}
-
-
-// Helper for finding a project by ID (assuming string ID from FullProject context)
 export function findProjectById(projectId: string): FullProject | undefined {
-  // This function expects string IDs and the FullProject structure.
-  // If user's `dbProjects` is the primary source, this needs adjustment.
-  // For now, this is a placeholder.
-  // return dbProjectsFull.find(p => p.id === projectId); // Assuming a dbProjectsFull array exists
-  console.warn("findProjectById called, but relies on a potentially different project structure (FullProject).");
-  return undefined;
+  return dbProjectsFull.find(p => p.id === projectId);
 }
 
-// Helper for updating a project (assuming string ID and FullProject structure)
-export function updateProject(projectId: string, updates: Partial<FullProject>): FullProject | null {
-    console.warn("updateProject called, but relies on a potentially different project structure (FullProject).");
-    // const projectIndex = dbProjectsFull.findIndex(p => p.id === projectId);
-    // if (projectIndex === -1) return null;
-    // dbProjectsFull[projectIndex] = { ...dbProjectsFull[projectIndex], ...updates };
-    // return dbProjectsFull[projectIndex];
-    return null; // Placeholder
-}
-
-
-// Helper for adding a project (assuming FullProject structure, but taking simpler input)
-export function addProject(projectData: Omit<FullProject, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'>): FullProject {
+// Renamed to avoid conflict with the simpler addProject which might be used by admin if it adds to dbProjects (number ID)
+export function addFullProject(projectData: Omit<FullProject, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'>): FullProject {
     const newProject: FullProject = {
         ...projectData,
         id: crypto.randomUUID(),
@@ -267,20 +271,51 @@ export function addProject(projectData: Omit<FullProject, 'id' | 'overallProgres
         comments: [],
         quantitySummary: projectData.quantitySummary || "لم يتم إضافة ملخص كميات بعد."
     };
-    // dbProjectsFull.push(newProject); // Assuming a dbProjectsFull array exists
-    // For now, to make it work with the user's simpler dbProjects array, we adapt:
-    const simpleProject: Project = {
-      id: dbProjects.length > 0 ? Math.max(...dbProjects.map(p => p.id)) + 1 : 1,
-      name: newProject.name,
-      engineerId: 0, // Placeholder
-      ownerId: 0, // Placeholder
-      status: 'active' // Match user's Project status type
-    };
-    dbProjects.push(simpleProject);
-    // This is not ideal as it doesn't save the full details.
-    // The FullProject structure should be used consistently if it's the desired one.
-    console.warn("addProject is adding to the user's simpler 'dbProjects' array, potentially losing detail from FullProject structure.");
-    return newProject; // Return the FullProject structure even if only a simpler version is saved to user's dbProjects
+    dbProjectsFull.push(newProject);
+
+    // Also, add a simplified version to dbProjects for the admin panel if an engineer creates it
+    // This part is a bit of a hack due to two different project structures.
+    // A more robust solution would unify these.
+    if (projectData.engineer) {
+        const simplifiedProject: Project = {
+            id: dbProjects.length > 0 ? Math.max(...dbProjects.map(p => p.id)) + 1 : 1, // Ensure unique numeric ID
+            name: newProject.name,
+            engineerId: 0, // Placeholder, actual engineer ID linking would be complex with string/number mismatch
+            ownerId: 0, // Placeholder
+            status: 'مخطط له',
+            engineer: newProject.engineer,
+            clientName: newProject.clientName
+        };
+        dbProjects.push(simplifiedProject);
+    }
+    return newProject;
 }
 
-    
+// Renamed to avoid conflict
+export function updateFullProject(projectId: string, updates: Partial<FullProject>): FullProject | null {
+    const projectIndex = dbProjectsFull.findIndex(p => p.id === projectId);
+    if (projectIndex === -1) return null;
+
+    const oldProject = dbProjectsFull[projectIndex];
+    dbProjectsFull[projectIndex] = { ...oldProject, ...updates };
+
+    // Also update the simplified version in dbProjects if it exists
+    // This again assumes name is unique enough for this hacky sync.
+    const simplifiedProjectIndex = dbProjects.findIndex(p => p.name === oldProject.name);
+    if (simplifiedProjectIndex !== -1) {
+        const simplifiedUpdates: Partial<Project> = {};
+        if (updates.name) simplifiedUpdates.name = updates.name;
+        if (updates.status) simplifiedUpdates.status = updates.status;
+        if (updates.engineer) simplifiedUpdates.engineer = updates.engineer;
+        if (updates.clientName) simplifiedUpdates.clientName = updates.clientName;
+        dbProjects[simplifiedProjectIndex] = { ...dbProjects[simplifiedProjectIndex], ...simplifiedUpdates };
+    }
+
+    return dbProjectsFull[projectIndex];
+}
+
+// This is the function name the engineer/create-project page expects for adding.
+// It will call addFullProject internally.
+export const addProject = addFullProject;
+// This is the function name my-projects/[projectId] page expects for updating.
+export const updateProject = updateFullProject;

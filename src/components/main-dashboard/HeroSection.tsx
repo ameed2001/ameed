@@ -2,19 +2,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-// useRouter is no longer needed for this specific button's action
-// import { useRouter } from 'next/navigation'; 
 
 const HeroSection = () => {
-  // const router = useRouter(); // No longer needed here
-
   const handleStartClick = () => {
-    // Instead of navigating, scroll to the section with auth cards
     const authSection = document.getElementById('auth-cards-section');
     if (authSection) {
       authSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    // If you still want a fallback or a direct link for non-JS, consider an href on the button or a link elsewhere.
   };
 
   return (
@@ -22,10 +16,23 @@ const HeroSection = () => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
-            أدق الحسابات للحديد والباطون
+            احسب بدقة، ابنِ بثقة — وادِر مشروعك من الألف إلى الياء
           </h1>
-          <p className="text-lg sm:text-xl text-gray-200 mb-10 leading-relaxed">
-            هذا الموقع مختص في حساب الكميات لكل من الحديد والباطون للأبنية الإنشائية والأبار والجدران الإستنادية
+          <p className="text-lg sm:text-xl text-gray-200 mb-8 leading-relaxed">
+            منصة هندسية متكاملة لحساب كميات الحديد والباطون بدقة عالية، ومتابعة كل ما يتعلق بمشروعك الإنشائي، بما في ذلك الأبنية، الآبار، الجدران الاستنادية، والأساسات.
+          </p>
+          <div className="text-right sm:text-xl text-gray-200 mb-8 space-y-3 leading-relaxed px-4 sm:px-0">
+            <p>سواء كنت مهندسًا، مقاولًا، أو صاحب عقار، نتيح لك أدوات قوية تُمكِّنك من:</p>
+            <p>🔹 تقدير الكميات بدقة وفقًا للمخططات والمعايير الفنية</p>
+            <p>🔹 احتساب التكاليف والأسعار التقديرية لمواد البناء والعمالة</p>
+            <p>🔹 متابعة مراحل البناء خطوة بخطوة: من الحفر وحتى التشطيب</p>
+            <p>🔹 إدارة المشاريع والمستندات بسهولة واحترافية</p>
+          </div>
+          <p className="text-lg sm:text-xl text-gray-200 mb-8 leading-relaxed">
+            وإن واجهتك أي مشكلة، لا تقلق — فريق الدعم مستعد دائمًا لمساعدتك وحلها فورًا.
+          </p>
+          <p className="text-lg sm:text-xl text-gray-100 font-semibold mb-10 leading-relaxed">
+            ابدأ الآن، وامتلك السيطرة الكاملة على مشروعك بكل ثقة ووضوح.
           </p>
           <Button 
             onClick={handleStartClick}

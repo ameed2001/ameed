@@ -2,16 +2,13 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, Info, Phone, HelpCircle, FileText, GanttChartSquare, BotMessageSquare, UserPlus, LogIn, UserCircle } from 'lucide-react';
+import { Home, Info, Phone, HelpCircle, UserPlus, LogIn } from 'lucide-react'; // Removed FileText, GanttChartSquare, BotMessageSquare
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/', label: 'الرئيسية', icon: Home },
   { href: '/about', label: 'عن الموقع', icon: Info },
-  { href: '/documents', label: 'المستندات', icon: FileText },
-  { href: '/timeline', label: 'الجدول الزمني', icon: GanttChartSquare },
-  { href: '/ai-report-generator', label: 'مولد التقارير AI', icon: BotMessageSquare },
   { href: '/contact', label: 'اتصل بنا', icon: Phone },
   { href: '/help', label: 'المساعدة', icon: HelpCircle },
 ];
@@ -32,8 +29,8 @@ const Navbar = () => {
           const isActive = pathname === item.href;
           return (
             <li key={item.href}>
-              <Link 
-                href={item.href} 
+              <Link
+                href={item.href}
                 className={cn(
                   "nav-link-animated flex items-center justify-center w-full min-w-[100px] md:min-w-[120px] px-2 py-2.5 text-center font-bold text-xs sm:text-sm md:text-base rounded-md",
                   "text-nav-link hover:text-nav-link-hover",

@@ -1,4 +1,5 @@
+
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/generate-project-report.ts';
+// Removed import for '@/ai/flows/generate-project-report.ts';

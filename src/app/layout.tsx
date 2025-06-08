@@ -1,7 +1,9 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
-import AppProviders from '@/components/AppProviders'; // For client-side state management if needed
+import AppProviders from '@/components/AppProviders';
+import InitialLoader from '@/components/loading/InitialLoader';
 
 export const metadata: Metadata = {
   title: 'المحترف لحساب الكميات',
@@ -19,10 +21,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
+        {/* Cairo font for loader is now imported in globals.css */}
       </head>
-      <body className="font-body antialiased flex flex-col min-h-screen bg-transparent">
+      <body className="font-body antialiased"> {/* Removed flex layout from body, InitialLoader handles its own full screen */}
         <AppProviders>
-          {children}
+          <InitialLoader>{children}</InitialLoader>
           <Toaster />
         </AppProviders>
       </body>

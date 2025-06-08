@@ -515,7 +515,10 @@ export default function ProjectDetailPage() {
                 <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
                   {project.comments && project.comments.length > 0 ? (
                     project.comments.slice().reverse().map((comment) => (
-                      <div key={comment.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200 shadow-sm">
+                      <div key={comment.id} className={cn(
+                        "p-3 rounded-lg border shadow-sm",
+                        comment.user === "المالك" ? "bg-yellow-50 border-app-gold" : "bg-gray-50 border-gray-200"
+                      )}>
                         <div className="flex items-start gap-3">
                            {comment.avatar && <Image src={comment.avatar} alt={comment.user} width={40} height={40} className="rounded-full" data-ai-hint={comment.dataAiHintAvatar || "avatar person"} />}
                            {!comment.avatar && <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">{comment.user.substring(0,1)}</div>}
@@ -545,3 +548,5 @@ const Loader2 = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
   </svg>
 );
+
+    

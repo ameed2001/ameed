@@ -107,9 +107,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           clearInterval(progressInterval);
           if (percentageElementRef.current) {
             percentageElementRef.current.style.animation = 'none'; 
-            percentageElementRef.current.style.background = 'var(--loader-secondary-gradient)';
-            percentageElementRef.current.style.webkitBackgroundClip = 'text';
-            percentageElementRef.current.style.webkitTextFillColor = 'transparent';
+            percentageElementRef.current.style.color = '#00f2fe'; // Solid color on completion
           }
           updateLoadingTextInternal(loadingMessages.length - 1);
           setTimeout(() => {
@@ -168,8 +166,8 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      if(loadingContainerRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      if(loadingContainerRef.current) {        
         loadingContainerRef.current.removeEventListener('mouseleave', handleMouseLeaveContainer);
       }
       document.removeEventListener('click', handleClick);
@@ -213,8 +211,10 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           <p className="subtitle-loader">منصة متطورة لحساب الكميات ومتابعة مشاريع الإنشاءات بتقنيات الذكاء الاصطناعي</p>
           
           <div className="progress-section-loader">
-              <div className="percentage-display-loader" ref={percentageElementRef}>{percentage}%</div>
-              <div className="circular-progress-loader"></div>
+              <div className="circular-progress-loader">
+                 <div className="percentage-display-loader" ref={percentageElementRef}>{percentage}%</div>
+              </div>
+              
               <div className="multi-progress-loader">
                   {[...Array(5)].map((_, i) => (
                       <div className="progress-bar-loader" key={i}><div className="progress-fill-loader"></div></div>

@@ -108,8 +108,6 @@
     @apply bg-background text-foreground;
     font-family: 'Tajawal', sans-serif;
     direction: rtl;
-    background: url('https://i.imgur.com/B2JeVnp.jpg') no-repeat center center fixed;
-    background-size: cover;
     text-align: center;
     min-height: 100vh;
   }

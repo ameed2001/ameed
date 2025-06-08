@@ -12,19 +12,19 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-r from-red-800 via-app-red to-red-700 text-white text-center">
+    <section className="w-full py-12 md:py-16 lg:py-20 bg-gradient-to-r from-red-800 via-app-red to-red-700 text-white text-center">
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4">
             احسب بدقة، ابنِ بثقة — وادِر مشروعك من الألف إلى الياء
           </h1>
-          <p className="text-lg sm:text-xl text-gray-200 mb-8 leading-relaxed">
+          <p className="text-lg sm:text-xl text-gray-200 mb-4 leading-relaxed">
             منصة هندسية متكاملة لحساب كميات الحديد والباطون بدقة عالية، ومتابعة كل ما يتعلق بمشروعك الإنشائي، بما في ذلك الأبنية، الآبار، الجدران الاستنادية، والأساسات.
           </p>
-          <p className="text-lg sm:text-xl text-gray-200 mb-8 leading-relaxed">
+          <p className="text-lg sm:text-xl text-gray-200 mb-4 leading-relaxed">
             سواء كنت مهندسًا، مقاولًا، أو صاحب عقار، نتيح لك أدوات قوية تُمكِّنك من:
           </p>
-          <div className="text-right sm:text-xl text-gray-200 mb-8 leading-relaxed px-4 sm:px-0">
+          <div className="text-right sm:text-xl text-gray-200 mb-4 leading-relaxed px-4 sm:px-0">
             <p>
               🔹 تقدير الكميات بدقة وفقًا للمخططات والمعايير الفنية<br />
               🔹 احتساب التكاليف والأسعار التقديرية لمواد البناء والعمالة<br />
@@ -32,10 +32,10 @@ const HeroSection = () => {
               🔹 إدارة المشاريع والمستندات بسهولة واحترافية
             </p>
           </div>
-          <p className="text-lg sm:text-xl text-gray-100 font-semibold mb-8 leading-relaxed">
+           <p className="text-lg sm:text-xl text-gray-100 font-semibold mb-4 leading-relaxed">
             ابدأ الآن، وامتلك السيطرة الكاملة على مشروعك بكل ثقة ووضوح.
           </p>
-          <p className="text-lg sm:text-xl text-gray-200 mb-10 leading-relaxed">
+          <p className="text-lg sm:text-xl text-gray-200 mb-6 leading-relaxed">
             وإن واجهتك أي مشكلة، لا تقلق — فريق الدعم مستعد دائمًا لمساعدتك وحلها فورًا.
           </p>
           <Button

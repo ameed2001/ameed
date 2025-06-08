@@ -225,24 +225,6 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           <div className="loading-text-loader" ref={loadingTextElementRef} dangerouslySetInnerHTML={{ __html: `${currentLoadingText}<span class="typing-dots-loader"></span>` }}>
           </div>
           
-          <div className="features-grid-loader">
-              <div className="feature-card-loader">
-                  <div className="feature-icon-loader">🧮</div>
-                  <div className="feature-title-loader">حساب ذكي</div>
-              </div>
-              <div className="feature-card-loader">
-                  <div className="feature-icon-loader">🏗️</div>
-                  <div className="feature-title-loader">متابعة مشاريع</div>
-              </div>
-              <div className="feature-card-loader">
-                  <div className="feature-icon-loader">📊</div>
-                  <div className="feature-title-loader">تحليلات متقدمة</div>
-              </div>
-              <div className="feature-card-loader">
-                  <div className="feature-icon-loader">🤖</div>
-                  <div className="feature-title-loader">ذكاء اصطناعي</div>
-              </div>
-          </div>
       </div>
     </div>
   );

@@ -58,7 +58,7 @@ const InfoCard = (props: InfoCardProps) => {
 
   const frontFaceContent = (
     <div className={cn(
-      "card-face card-front-3d bg-card text-card-foreground p-6 sm:p-8 flex flex-col justify-center items-center text-center",
+      "card-face card-front-3d bg-card text-card-foreground p-6 sm:p-8 flex flex-col justify-center items-center text-center border border-border", // Added border here
       cardHeightClass, // ensure face takes height
       !applyFlipEffect && "shadow-lg" // Apply shadow if not flipping
     )}>
@@ -79,7 +79,7 @@ const InfoCard = (props: InfoCardProps) => {
 
   const backFaceContent = (
     <div className={cn(
-        "card-face card-back-3d p-5 flex flex-col justify-center items-center text-center", 
+        "card-face card-back-3d p-5 flex flex-col justify-center items-center text-center border border-primary-dark-flip", // Added border here
         cardHeightClass
       )}>
       <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-white">{backTitle || title}</h3>
@@ -99,7 +99,8 @@ const InfoCard = (props: InfoCardProps) => {
       {backFaceContent}
     </div>
   ) : (
-    <div className={cn("relative w-full h-full bg-card rounded-lg", cardHeightClass)} data-ai-hint={dataAiHint}>
+    // For non-flip cards, ensure border is applied directly if not already by card-front-3d class
+    <div className={cn("relative w-full h-full bg-card rounded-lg", cardHeightClass, !applyFlipEffect && "border border-border shadow-lg")} data-ai-hint={dataAiHint}>
      {frontFaceContent}
     </div>
   );

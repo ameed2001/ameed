@@ -2,7 +2,7 @@
 "use client";
 
 import InfoCard from '@/components/ui/InfoCard';
-import { LogIn, UserPlus, Cubes, BarChart3, Info as InfoIcon, Users, DollarSign, FileText as ReportsIcon, GanttChartSquare, FolderArchive, Brain } from 'lucide-react';
+import { LogIn, UserPlus, Box, BarChart3, Info as InfoIcon, Users, DollarSign, FileText as ReportsIcon, GanttChartSquare, FolderArchive, Brain, ArrowLeft } from 'lucide-react';
 import CalculationModal from '@/components/modals/CalculationModal';
 import PriceCalculationModal from '@/components/modals/PriceCalculationModal';
 import GuidelinesModal from '@/components/modals/GuidelinesModal';
@@ -26,10 +26,11 @@ const MainDashboardClient = () => {
       iconColorClass: "text-blue-600 dark:text-blue-400",
       href: "/login",
       dataAiHint: "user login",
-      backTitle: "تسجيل الدخول",
-      backDescription: "مستعد للبدء؟ اضغط هنا للوصول إلى حسابك.",
-      backCtaText: "تسجيل الدخول",
+      cardHeightClass: "h-72",
       applyFlipEffect: true,
+      backTitle: "جاهز للبدء؟",
+      backDescription: "اضغط هنا للوصول إلى حسابك وإدارة مشاريعك.",
+      backCtaText: "تسجيل الدخول",
     },
     { 
       title: "إنشاء حساب", 
@@ -39,10 +40,11 @@ const MainDashboardClient = () => {
       iconColorClass: "text-green-600 dark:text-green-400",
       href: "/signup",
       dataAiHint: "new user",
-      backTitle: "إنشاء حساب جديد",
-      backDescription: "انضم إلى مجتمعنا الآن وابدأ في إدارة مشاريعك بكفاءة.",
-      backCtaText: "إنشاء حساب",
+      cardHeightClass: "h-72",
       applyFlipEffect: true,
+      backTitle: "جديد هنا؟",
+      backDescription: "أنشئ حسابك الآن لتبدأ في استخدام أدواتنا القوية.",
+      backCtaText: "إنشاء حساب",
     },
   ];
 
@@ -50,13 +52,12 @@ const MainDashboardClient = () => {
     {
       title: "حساب كميات الباطون",
       description: "حساب الكميات الدقيقة للخرسانة لمختلف العناصر الإنشائية.",
-      icon: <Cubes />,
+      icon: <Box />, 
       iconWrapperClass: "bg-red-100 dark:bg-red-900",
       iconColorClass: "text-red-500 dark:text-red-400",
       onClick: () => { setIsConcreteModalOpen(true); setConcreteModalCategory('العناصر الإنشائية'); },
       dataAiHint: "concrete calculation",
-      backTitle: "خيارات الباطون",
-      backDescription: "اختر العنصر الإنشائي لحساب كمية الباطون اللازمة.",
+      cardHeightClass: "h-72",
     },
     {
       title: "حساب كميات الحديد",
@@ -66,41 +67,37 @@ const MainDashboardClient = () => {
       iconColorClass: "text-blue-500 dark:text-blue-400",
       onClick: () => { setIsSteelModalOpen(true); setSteelModalCategory('العناصر الإنشائية'); },
       dataAiHint: "steel calculation",
-      backTitle: "خيارات الحديد",
-      backDescription: "اختر العنصر الإنشائي لحساب كمية الحديد اللازمة.",
+      cardHeightClass: "h-72",
     },
     {
       title: "إرشادات للمهندس",
       description: "نصائح وإرشادات عملية للمهندسين الإنشائيين.",
-      icon: <Users />,
+      icon: <Users />, // Using Users icon as per original InfoCard for engineers
       iconWrapperClass: "bg-green-100 dark:bg-green-900",
       iconColorClass: "text-green-500 dark:text-green-400",
       onClick: () => { setIsGuidelinesModalOpen(true); setGuidelinesModalType('engineer'); },
       dataAiHint: "engineer guidelines",
-      backTitle: "للمهندسين",
-      backDescription: "إرشادات لضمان دقة الحسابات وكفاءة التنفيذ.",
+      cardHeightClass: "h-72",
     },
     {
       title: "إرشادات لصاحب المبنى",
       description: "معلومات هامة لأصحاب المشاريع والمباني.",
-      icon: <InfoIcon />,
+      icon: <InfoIcon />, // Using Info icon as per original InfoCard for owners
       iconWrapperClass: "bg-purple-100 dark:bg-purple-900",
       iconColorClass: "text-purple-500 dark:text-purple-400",
       onClick: () => { setIsGuidelinesModalOpen(true); setGuidelinesModalType('owner'); },
       dataAiHint: "owner guidelines",
-      backTitle: "لأصحاب المباني",
-      backDescription: "نصائح لمتابعة المشروع وفهم متطلبات البناء.",
+      cardHeightClass: "h-72",
     },
     {
       title: "حساب الأسعار",
       description: "تقدير التكاليف الإجمالية لمواد البناء الأساسية.",
       icon: <DollarSign />,
-      iconWrapperClass: "bg-yellow-100 dark:bg-yellow-700", // Adjusted dark bg
+      iconWrapperClass: "bg-yellow-100 dark:bg-yellow-700",
       iconColorClass: "text-yellow-500 dark:text-yellow-400",
       onClick: () => setIsPriceModalOpen(true),
       dataAiHint: "cost estimation",
-      backTitle: "تقدير التكلفة",
-      backDescription: "أدخل الكميات والأسعار لتقدير تكلفة المواد.",
+      cardHeightClass: "h-72",
     },
     {
       title: "التقارير بالذكاء الاصطناعي",
@@ -110,9 +107,12 @@ const MainDashboardClient = () => {
       iconColorClass: "text-indigo-500 dark:text-indigo-400",
       href: "/ai-report-generator",
       dataAiHint: "ai reports",
-      backTitle: "إنشاء التقارير",
-      backDescription: "استخدم الذكاء الاصطناعي لتوليد تقارير مفصلة.",
-      backCtaText: "ابدأ الإنشاء"
+      cardHeightClass: "h-72",
+       // Assuming you want a flip effect for this as well, if not, remove applyFlipEffect or set to false
+      applyFlipEffect: false, // Set to true if you want flip effect
+      // backTitle: "إنشاء التقارير", // Add if applyFlipEffect is true
+      // backDescription: "استخدم الذكاء الاصطناعي لتوليد تقارير مفصلة.", // Add if applyFlipEffect is true
+      // backCtaText: "ابدأ الإنشاء" // Add if applyFlipEffect is true
     },
   ];
 
@@ -131,8 +131,6 @@ const MainDashboardClient = () => {
             <InfoCard 
               key={card.title}
               {...card}
-              cardHeightClass="h-72" // Specific height for flip cards
-              className="min-h-[288px]" // Ensure consistent height for flip visual
             />
           ))}
         </div>
@@ -143,9 +141,6 @@ const MainDashboardClient = () => {
             <InfoCard 
               key={card.title}
               {...card}
-              cardHeightClass="h-72" // Consistent height for dashboard cards
-              className="min-h-[288px]"
-              // applyFlipEffect={true} // Can enable flip for these too if desired by setting to true
             />
           ))}
         </div>

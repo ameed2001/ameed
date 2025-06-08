@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -66,10 +67,10 @@ export default {
           ring: 'hsl(var(--sidebar-ring))',
         },
         // Custom colors based on user's CSS & HSL variables
-        'header-bg': 'rgba(var(--header-bg-rgb), 0.95)', // Updated opacity slightly
+        'header-bg': 'rgba(var(--header-bg-rgb), 0.95)', 
         'header-fg': 'hsl(var(--header-fg-hsl))',
-        'nav-link': 'hsl(var(--nav-link-hsl))', // Will be overridden by text-white in Navbar
-        'nav-link-hover': 'hsl(var(--nav-link-hover-hsl))', // Will be overridden
+        'nav-link': 'hsl(var(--nav-link-hsl))', 
+        'nav-link-hover': 'hsl(var(--nav-link-hover-hsl))', 
         'nav-link-border': 'hsl(var(--nav-link-border-hsl))',
         'app-red': '#B40404', 
         'app-gold': '#f1c40f', 
@@ -80,13 +81,13 @@ export default {
         'card-content-bg-hover': 'rgba(var(--card-content-bg-rgb), 0.95)',
         'card-content-fg': 'hsl(var(--card-content-fg-hsl))',
         'card-content-hover-fg': 'hsl(var(--card-content-hover-fg-hsl))',
-        'currency-jod': '#2ecc71', // Green for JOD lozenge
-        'currency-eur': '#3498db', // Blue for EUR lozenge
-        'currency-usd': '#B40404', // Red for USD lozenge (Changed from yellow)
+        'currency-jod': '#2ecc71', 
+        'currency-eur': '#3498db', 
+        'currency-usd': '#B40404', 
         'social-whatsapp': '#25D366',
-        'social-instagram': '#E4405F', // Simplified pink/red for Instagram
+        'social-instagram': '#E4405F', 
         'social-facebook': '#1877F2',
-        'header-info-bg': '#3b3e51', // Darker gray for time/currency boxes
+        'header-info-bg': '#3b3e51', 
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -98,8 +99,14 @@ export default {
         'nav': '0 2px 6px rgba(0, 0, 0, 0.2)', 
         'message': '0 4px 8px rgba(0, 0, 0, 0.2)',
         'form-container': '0 10px 25px rgba(0, 0, 0, 0.2)',
-        // Removed 'card-main' and 'card-main-hover' as they are from the old design
-        // Standard shadows like 'lg' and 'xl' will be used for cards
+      },
+      transitionTimingFunction: {
+        'card-flip': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        'card-container': 'cubic-bezier(0.165, 0.84, 0.44, 1)',
+      },
+      transitionDuration: {
+        '800': '800ms',
+        '600': '600ms',
       },
       keyframes: {
         'accordion-down': {
@@ -111,16 +118,41 @@ export default {
           to: { height: '0' },
         },
         modalFadeIn: { 
-          'from': { opacity: '0', transform: 'translateY(-50px)' },
-          'to': { opacity: '1', transform: 'translateY(0)' },
+          'from': { opacity: '0', transform: 'translateY(-70px) scale(0.9)' },
+          'to': { opacity: '1', transform: 'translateY(0) scale(1)' },
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'modal-fade-in': 'modalFadeIn 0.4s ease-out',
+        'modal-fade-in': 'modalFadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      },
+      rotate: {
+        'y-180': 'rotateY(180deg)',
+      },
+      transformStyle: {
+        'preserve-3d': 'preserve-3d',
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    function ({ addUtilities }: { addUtilities: any}) {
+      addUtilities({
+        '.transform-style-preserve-3d': {
+          'transform-style': 'preserve-3d',
+        },
+        '.perspective-1500': {
+          'perspective': '1500px',
+        },
+        '.backface-hidden': {
+          'backface-visibility': 'hidden',
+          '-webkit-backface-visibility': 'hidden',
+        },
+        '.rotate-y-180': {
+          'transform': 'rotateY(180deg)',
+        }
+      })
+    }
+  ],
 } satisfies Config;

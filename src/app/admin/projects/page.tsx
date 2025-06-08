@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,39 +8,68 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Search, Eye, Trash2 } from 'lucide-react'; // Filter icon removed
+import { Search, Eye, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { dbProjects, type Project, type ProjectStatusType, deleteProject as dbDeleteProject } from '@/lib/mock-db';
+import {
+  type Project,
+  type ProjectStatusType,
+  getProjects,
+  deleteProject,
+  updateProject
+} from '@/lib/mock-db';
 
 export default function AdminProjectsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
-  const [projects, setProjectsState] = useState<Project[]>(dbProjects);
   const [statusFilter, setStatusFilter] = useState<string>('all');
-
-  const refreshProjectsFromDb = () => setProjectsState([...dbProjects]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
 
+
   const filteredProjects = useMemo(() => {
     return projects.filter(project =>
-        (project.name.toLowerCase().includes(searchTerm) ||
-        (project.engineer && project.engineer.toLowerCase().includes(searchTerm)) ||
-        (project.clientName && project.clientName.toLowerCase().includes(searchTerm))) &&
-        (statusFilter === 'all' || project.status === statusFilter)
-    );
+      (project.name.toLowerCase().includes(searchTerm) ||
+      (project.engineer?.toLowerCase().includes(searchTerm)) ||
+      (project.clientName?.toLowerCase().includes(searchTerm))
+ ) &&
+      (statusFilter === 'all' || project.status === statusFilter));
   }, [projects, searchTerm, statusFilter]);
 
-  const handleDeleteProject = (projectId: string, projectName: string) => {
-    if (dbDeleteProject(projectId)) {
-        refreshProjectsFromDb();
-        toast({ title: "تم حذف المشروع", description: `تم حذف المشروع "${projectName}" بنجاح.`, variant: "destructive" });
-    } else {
-        toast({ title: "خطأ", description: `فشل حذف المشروع "${projectName}".`, variant: "destructive" });
+  const currentUserId = 'admin-id'; // Replace with actual user ID
+
+  useEffect(() => {
+    loadProjects();
+  }, []);
+
+  async function loadProjects() {
+    const result = await getProjects(currentUserId);
+    if (result.success && result.projects) {
+      setProjects(result.projects);
     }
-  };
+  }
+
+  async function handleDeleteProject(projectId: number) {
+    const result = await deleteProject(projectId);
+    if (result.success) {
+      toast({ title: "نجاح", description: result.message });
+      loadProjects();
+    } else {
+      toast({ title: "خطأ", description: result.message, variant: "destructive" });
+    }
+  }
+
+  async function handleUpdateProjectStatus(projectId: number, newStatus: ProjectStatusType) {
+    const result = await updateProject(projectId.toString(), { status: newStatus });
+    if (result.success) {
+      toast({ title: "نجاح", description: "تم تحديث حالة المشروع بنجاح", variant: "default" });
+      loadProjects();
+    } else {
+      toast({ title: "خطأ", description: result.message, variant: "destructive" });
+    }
+  }
 
   return (
     <Card className="bg-white/95 shadow-xl w-full">
@@ -61,7 +89,7 @@ export default function AdminProjectsPage() {
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </div>
-           <Select value={statusFilter} onValueChange={setStatusFilter} dir="rtl">
+          <Select value={statusFilter} onValueChange={setStatusFilter} dir="rtl">
             <SelectTrigger className="w-full sm:w-auto bg-white focus:border-app-gold text-right">
               <SelectValue placeholder="تصفية حسب الحالة..." />
             </SelectTrigger>
@@ -90,7 +118,7 @@ export default function AdminProjectsPage() {
               {filteredProjects.length > 0 ? filteredProjects.map((project) => (
                 <TableRow key={project.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium text-app-red hover:underline">
-                     <Link href={`/my-projects/${project.id}`}>{project.name}</Link>
+                    <Link href={`/my-projects/${project.id}`}>{project.name}</Link>
                   </TableCell>
                   <TableCell>{project.engineer || 'غير محدد'}</TableCell>
                   <TableCell>{project.clientName || 'غير محدد'}</TableCell>
@@ -125,7 +153,7 @@ export default function AdminProjectsPage() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteProject(project.id, project.name)} className="bg-destructive hover:bg-destructive/90">
+                          <AlertDialogAction onClick={() => handleDeleteProject(project.id)} className="bg-destructive hover:bg-destructive/90">
                             حذف
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -134,7 +162,7 @@ export default function AdminProjectsPage() {
                   </TableCell>
                 </TableRow>
               )) : (
-                 <TableRow>
+                <TableRow>
                   <TableCell colSpan={5} className="text-center text-gray-500 py-8">
                     لا توجد مشاريع تطابق معايير البحث أو التصفية.
                   </TableCell>
@@ -143,8 +171,8 @@ export default function AdminProjectsPage() {
             </TableBody>
           </Table>
         </div>
-         {filteredProjects.length > 0 && (
-            <p className="text-xs text-gray-500 text-center">يتم عرض {filteredProjects.length} من إجمالي {projects.length} مشروع.</p>
+        {filteredProjects.length > 0 && (
+          <p className="text-xs text-gray-500 text-center">يتم عرض {filteredProjects.length} من إجمالي {projects.length} مشروع.</p>
         )}
       </CardContent>
     </Card>

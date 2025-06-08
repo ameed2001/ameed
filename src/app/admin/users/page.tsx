@@ -10,17 +10,35 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { Search, Edit, Trash2, KeyRound, UserPlus, UserCheck } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { dbUsers, type User, type UserRole, type UserStatus, deleteUser as dbDeleteUser, updateUser as dbUpdateUser } from '@/lib/mock-db';
+import { 
+  dbUsers, 
+  type User, 
+  type UserRole, 
+  type UserStatus, 
+  deleteUser as dbDeleteUser, 
+  updateUser as dbUpdateUser,
+  getUsers,
+  suspendUser,
+  approveEngineer
+} from '@/lib/mock-db';
 
 export default function AdminUsersPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
-  // Use the dbUsers directly or a state initialized with it if local manipulations are needed before "saving"
-  const [users, setUsersState] = useState<User[]>(dbUsers); // Local state for UI updates
+  const [users, setUsersState] = useState<User[]>(dbUsers); 
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  const refreshUsersFromDb = () => setUsersState([...dbUsers]); // Helper to re-sync from "DB"
+  const refreshUsersFromDb = () => {
+     const usersResponse = getUsers(currentUser.id); 
+      if (usersResponse.success && usersResponse.users) {
+        setUsersState([...usersResponse.users]);
+      } else {
+        setUsersState([]); // Or handle error
+        toast({ title: "خطأ", description: usersResponse.message || "فشل تحميل المستخدمين.", variant: "destructive" });
+      }
+  };
+
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
@@ -35,18 +53,37 @@ export default function AdminUsersPage() {
     );
   }, [users, searchTerm, roleFilter, statusFilter]);
 
-  const handleEditUser = (userId: string) => {
-    toast({ title: "تعديل المستخدم", description: `بدء تعديل المستخدم ${userId} (محاكاة).` });
-    // Logic for opening an edit modal/form would go here
-    // For actual edit, find user in dbUsers, update, then refreshUsersFromDb()
-  };
+  const currentUser = { id: 'admin-001', role: 'Admin' }; 
 
-  const handleDeleteUser = (userId: string, userName: string) => {
-    if (dbDeleteUser(userId)) {
-        refreshUsersFromDb();
-        toast({ title: "تم حذف المستخدم", description: `تم حذف المستخدم ${userName} بنجاح.`, variant: "destructive" });
+  async function handleDeleteUser(userId: string, userName: string) {
+    const result = dbDeleteUser(userId); 
+    if (result.success) {
+      toast({
+        title: "نجاح",
+        description: result.message,
+        variant: "default",
+      });
+      refreshUsersFromDb();
     } else {
-        toast({ title: "خطأ", description: `فشل حذف المستخدم ${userName}.`, variant: "destructive" });
+      toast({
+        title: "خطأ",
+        description: result.message,
+        variant: "destructive",
+      });
+    }
+  }
+
+  async function handleUpdateUser(userId: string, updates: Partial<User>) {
+    const result = dbUpdateUser(userId, updates); 
+    if (result.success) {
+      toast({
+        title: "نجاح",
+        description: "تم تحديث بيانات المستخدم بنجاح",
+        variant: "default",
+      });
+        refreshUsersFromDb();
+    } else {
+      toast({ title: "خطأ", description: result.message, variant: "destructive" });
     }
   };
   
@@ -55,18 +92,41 @@ export default function AdminUsersPage() {
   };
 
   const handleApproveEngineer = (userId: string, userName: string) => {
-    if (dbUpdateUser(userId, { status: 'Active' })) {
-        refreshUsersFromDb();
-        toast({ title: "تمت الموافقة على المهندس", description: `تم تفعيل حساب المهندس ${userName} وجعله نشطاً.`, variant: "default" });
+    const result = approveEngineer(currentUser.id, userId); 
+    if (result.success) {
+      refreshUsersFromDb();
+      toast({ title: "تمت الموافقة على المهندس", description: `تم تفعيل حساب المهندس ${userName} وجعله نشطاً.`, variant: "default" });
     } else {
-        toast({ title: "خطأ", description: `فشل تفعيل حساب المهندس ${userName}.`, variant: "destructive" });
+      toast({ title: "خطأ", description: result.message, variant: "destructive" });
     }
   };
+
+  const handleSuspendUser = (userId: string, userName: string) => {
+    const result = suspendUser(currentUser.id, userId); 
+    if (result.success) {
+      refreshUsersFromDb();
+      toast({ title: "تم التعامل مع المستخدم", description: `${result.message}`, variant: "default" });
+    } else {
+      toast({ title: "خطأ", description: result.message, variant: "destructive" });
+    }
+  };
+
   
+   const handleEditUserClick = (user: User) => {
+    console.log("Attempting to edit user:", user);
+    toast({ title: "تعديل المستخدم", description: `سيتم فتح نموذج لتعديل المستخدم ${user.name} (محاكاة).` });
+  };
+
+
   const handleAddUser = () => {
     toast({ title: "إضافة مستخدم جديد", description: "سيتم فتح نموذج لإضافة مستخدم جديد (محاكاة)." });
-    // For actual add, call dbAddUser, then refreshUsersFromDb()
   };
+
+  // Initial fetch of users
+  React.useEffect(() => {
+    refreshUsersFromDb();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   return (
@@ -135,7 +195,7 @@ export default function AdminUsersPage() {
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                       user.status === 'Active' ? 'bg-green-100 text-green-700' :
                       user.status === 'Pending Approval' ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-red-100 text-red-700'
+                      'bg-red-100 text-red-700' // Suspended
                     }`}>
                       {user.status === 'Active' ? 'نشط' : user.status === 'Pending Approval' ? 'بانتظار الموافقة' : 'معلق'}
                     </span>
@@ -146,30 +206,44 @@ export default function AdminUsersPage() {
                         <UserCheck className="h-5 w-5" /><span className="sr-only">موافقة</span>
                       </Button>
                     )}
-                    <Button variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100" title="تعديل" onClick={() => handleEditUser(user.id)}>
+                     {user.role !== 'Admin' && ( // Admins cannot suspend other admins or themselves via this button typically
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className={user.status === 'Suspended' ? "text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100" : "text-orange-600 hover:text-orange-800 hover:bg-orange-100"}
+                            title={user.status === 'Suspended' ? "إلغاء تعليق المستخدم" : "تعليق المستخدم"}
+                            onClick={() => handleSuspendUser(user.id, user.name)}
+                        >
+                          <Edit className="h-5 w-5" /> {/* Icon can be changed for suspend/unsuspend */}
+                          <span className="sr-only">{user.status === 'Suspended' ? "إلغاء تعليق" : "تعليق"}</span>
+                        </Button>
+                    )}
+                    <Button variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100" title="تعديل" onClick={() => handleEditUserClick(user)}>
                       <Edit className="h-5 w-5" /><span className="sr-only">تعديل</span>
                     </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100" title="حذف">
-                          <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent dir="rtl">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            هل أنت متأكد أنك تريد حذف المستخدم "{user.name}"؟ لا يمكن التراجع عن هذا الإجراء.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="bg-destructive hover:bg-destructive/90">
-                            حذف
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    {user.role !== 'Admin' && (
+                        <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100" title="حذف">
+                            <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent dir="rtl">
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                هل أنت متأكد أنك تريد حذف المستخدم "{user.name}"؟ لا يمكن التراجع عن هذا الإجراء.
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="bg-destructive hover:bg-destructive/90">
+                                حذف
+                            </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                        </AlertDialog>
+                    )}
                     <Button variant="ghost" size="icon" className="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100" title="إعادة تعيين كلمة المرور" onClick={() => handleResetPassword(user.name)}>
                       <KeyRound className="h-5 w-5" /><span className="sr-only">إعادة تعيين كلمة المرور</span>
                     </Button>
@@ -192,3 +266,4 @@ export default function AdminUsersPage() {
     </Card>
   );
 }
+

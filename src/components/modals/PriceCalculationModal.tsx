@@ -19,8 +19,13 @@ const PriceCalculationModal = ({ isOpen, onClose }: PriceCalculationModalProps) 
       <DialogContent className="bg-transparent border-none shadow-none p-0 sm:max-w-lg custom-dialog-overlay animate-modal-fade-in">
         <div className="relative"> {/* Wrapper for positioning close button relative to the form card */}
           <PriceForm />
-          <DialogClose asChild className="absolute top-2 right-2 z-10"> {/* Adjusted: top-2 right-2 for RTL */}
-              <Button variant="ghost" size="icon" className="text-gray-600 hover:text-app-red hover:bg-gray-200/70 rounded-full w-8 h-8 p-1.5">
+          <DialogClose asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="absolute top-2 right-2 z-10 text-gray-600 hover:text-app-red hover:bg-gray-200/70 rounded-full w-8 h-8 p-1.5"
+                aria-label="Close"
+              >
                   <X size={20} />
               </Button>
           </DialogClose>
@@ -31,5 +36,3 @@ const PriceCalculationModal = ({ isOpen, onClose }: PriceCalculationModalProps) 
 };
 
 export default PriceCalculationModal;
-
-    

@@ -52,9 +52,9 @@ const Navbar = () => {
                 href={item.href}
                 className={cn(
                   "flex items-center justify-center min-w-[90px] md:min-w-[110px] px-2 py-2 text-center font-medium text-sm md:text-base rounded-md transition-colors",
-                  isActive 
-                    ? "bg-app-red text-white font-semibold" 
-                    : "bg-app-gold text-primary-foreground hover:bg-app-red hover:text-white"
+                  isActive
+                    ? "bg-app-red text-white font-semibold" // Active button: red background, white text
+                    : "bg-app-gold text-primary-foreground hover:bg-yellow-600" // Inactive: yellow background, dark text; on hover: darker yellow background, dark text
                 )}
               >
                 <item.icon size={18} className="ml-1.5 md:ml-2" /> {/* Icon on the left for RTL */}

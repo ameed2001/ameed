@@ -101,9 +101,9 @@ const Header = () => {
         
         {/* Left Section: Info (Time, Currency, Social) (RTL) */}
         <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3">
-          <div className="text-white text-sm flex items-center gap-2"> {/* Removed bg-header-info-bg, px-3, py-1.5, rounded-lg, shadow-md */}
-            <Clock size={16} />
-            <span>{currentTime || 'Loading time...'}</span>
+          <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center gap-2">
+            <Clock size={16} className="flex-shrink-0" />
+            <span className="tabular-nums min-w-[8ch] text-left">{currentTime || 'Loading...'}</span>
           </div>
 
           <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md">
@@ -137,3 +137,4 @@ const Header = () => {
 };
 
 export default Header;
+

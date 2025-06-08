@@ -88,11 +88,14 @@ export default {
         'social-instagram': '#E4405F', 
         'social-facebook': '#1877F2',
         'header-info-bg': '#3b3e51', 
+        'primary-color-flip': 'hsl(var(--accent))',
+        'primary-dark-flip': 'color-mix(in srgb, hsl(var(--accent)) 70%, black)',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        xl: 'calc(var(--radius) + 4px)', // Added for FeatureCard
       },
       boxShadow: {
         'header-footer': '0 2px 8px rgba(0, 0, 0, 0.25)', 

@@ -37,11 +37,11 @@
     --radius: 0.5rem;
 
     /* Custom variables from user's HTML/CSS for header, nav */
-    --header-bg-rgb: 51, 51, 51; /* For use with opacity */
+    --header-bg-rgb: 38, 40, 51; /* New dark blue/purple for header/nav e.g. #262833 */
     --header-fg-hsl: 0 0% 100%; /* #fff */
-    --nav-link-hsl: 40 100% 94%; /* #ffedd3 */
-    --nav-link-hover-hsl: 60 100% 50%; /* #FFFF00 */
-    --nav-link-border-hsl: 46 100% 51%; /* #ffc506 */
+    --nav-link-hsl: 0 0% 100%; /* White for nav links */
+    --nav-link-hover-hsl: 0 0% 85%; /* Lighter gray for nav link hover */
+    --nav-link-border-hsl: 46 100% 51%; /* #ffc506 - not actively used for nav items in new design */
     
     --card-content-bg-rgb: 5, 6, 45; /* For card content background from user CSS */
     --card-content-fg-hsl: 0 0% 100%; /* White text on card content */
@@ -73,7 +73,7 @@
     --muted-foreground: 0 0% 60%;
 
     --accent: 0 93% 45%; /* Slightly lighter red for dark mode */
-    --accent-rgb: 180, 4, 4; /* Assuming this doesn't change for dark mode, or define a dark-accent-rgb */
+    --accent-rgb: 180, 4, 4; 
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 72.2% 50.6%;
@@ -83,10 +83,10 @@
     --input: 240 5% 28%;
     --ring: 45 100% 51%;
 
-    --header-bg-rgb: 30, 30, 30;
+    --header-bg-rgb: 30, 30, 30; /* Example for dark mode, can be same as light or different */
     --header-fg-hsl: 0 0% 100%;
-    --nav-link-hsl: 40 100% 94%;
-    --nav-link-hover-hsl: 60 100% 50%;
+    --nav-link-hsl: 0 0% 100%;
+    --nav-link-hover-hsl: 0 0% 85%;
     --nav-link-border-hsl: 46 100% 51%;
 
     --card-content-bg-rgb: 10, 12, 50;
@@ -115,52 +115,19 @@
   }
 }
 
-/* Custom utility for gradient text from HTML */
+/* Custom utility for gradient text from HTML - NOT USED FOR HEADER LOGO ANYMORE */
 .text-gradient-logo {
   @apply bg-clip-text text-transparent;
   background-image: linear-gradient(45deg, #ff007f, #ff7f00, #ff00ff);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2), 4px 4px 6px rgba(0, 0, 0, 0.4);
 }
 
-/* Custom styles for nav links hover effect from HTML */
-.nav-link-animated {
-  position: relative;
-  overflow: hidden;
-  transition: color 0.5s linear, box-shadow 0.3s ease; /* Added box-shadow transition */
-}
-
+/* Custom styles for nav links hover effect from HTML - REMOVED .nav-link-animated related styles */
 .nav-link-animated:hover {
   /* color is handled by --nav-link-hover-hsl */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* From HTML nav ul li a:hover */
 }
 
-.nav-link-animated::before,
-.nav-link-animated::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  background-color: hsl(var(--nav-link-border-hsl));
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-
-.nav-link-animated::before {
-  top: 0;
-  left: 0;
-  transform-origin: left;
-}
-
-.nav-link-animated::after {
-  bottom: 0;
-  right: 0;
-  transform-origin: right;
-}
-
-.nav-link-animated:hover::before,
-.nav-link-animated:hover::after {
-  transform: scaleX(1);
-}
 
 /* For Dialog overlay backdrop blur */
 .custom-dialog-overlay {
@@ -198,23 +165,23 @@
   color: hsl(var(--primary)); /* app-gold */
 }
 
-/* Styles for option links within modals (from HTML .modal-content a) - Old style */
+/* Styles for option links within modals (from HTML .modal-content a) - OLD STYLE, REPLACED BY modal-option-button */
 .modal-option-link {
   display: block;
   padding: 1rem; 
   margin: 0.5rem 0; 
-  color: hsl(var(--header-fg-hsl)); /* White text */
+  /* color: hsl(var(--header-fg-hsl)); Defaulting to button styles now */
   text-decoration: none;
   border-radius: var(--radius); 
   transition: background-color 0.3s ease, transform 0.3s ease;
-  background-color: rgba(var(--accent-rgb), 0.25); /* Semi-transparent accent red */
+  /* background-color: rgba(var(--accent-rgb), 0.25); Using button styles */
   text-align: right; 
   font-weight: 500; 
 }
 
 .modal-option-link:hover {
-  background-color: rgba(var(--accent-rgb), 0.45); 
-  color: hsl(var(--header-fg-hsl)); 
+  /* background-color: rgba(var(--accent-rgb), 0.45); */
+  /* color: hsl(var(--header-fg-hsl)); */
   transform: scale(1.02); 
   font-weight: bold;
 }
@@ -261,7 +228,8 @@
 }
 
 .welcome-message-box {
-  @apply text-lg md:text-xl font-bold text-[#FF0000] p-4 my-5 mx-auto rounded-[30px] w-[90%] max-w-[800px] shadow-message;
-  background-color: rgba(250, 172, 88, 0.8); /* From original .message class */
-  backdrop-filter: blur(5px); /* From original .message class */
+  @apply text-lg md:text-xl font-semibold text-red-700 p-4 my-5 mx-auto rounded-xl w-[90%] max-w-[800px] shadow-md;
+  background-color: rgba(255, 193, 7, 0.1); /* Light golden yellow background */
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  backdrop-filter: blur(2px);
 }

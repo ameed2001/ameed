@@ -66,13 +66,13 @@ export default {
           ring: 'hsl(var(--sidebar-ring))',
         },
         // Custom colors based on user's CSS & HSL variables
-        'header-bg': 'rgba(var(--header-bg-rgb), 0.9)',
+        'header-bg': 'rgba(var(--header-bg-rgb), 0.95)', // Updated opacity slightly
         'header-fg': 'hsl(var(--header-fg-hsl))',
-        'nav-link': 'hsl(var(--nav-link-hsl))',
-        'nav-link-hover': 'hsl(var(--nav-link-hover-hsl))',
+        'nav-link': 'hsl(var(--nav-link-hsl))', // Will be overridden by text-white in Navbar
+        'nav-link-hover': 'hsl(var(--nav-link-hover-hsl))', // Will be overridden
         'nav-link-border': 'hsl(var(--nav-link-border-hsl))',
-        'app-red': '#B40404', // For direct use if needed
-        'app-gold': '#f1c40f', // For direct use if needed
+        'app-red': '#B40404', 
+        'app-gold': '#f1c40f', 
         'gradient-pink': '#ff007f',
         'gradient-orange': '#ff7f00',
         'gradient-purple': '#ff00ff',
@@ -80,6 +80,13 @@ export default {
         'card-content-bg-hover': 'rgba(var(--card-content-bg-rgb), 0.95)',
         'card-content-fg': 'hsl(var(--card-content-fg-hsl))',
         'card-content-hover-fg': 'hsl(var(--card-content-hover-fg-hsl))',
+        'currency-jod': '#2ecc71', // Green for JOD lozenge
+        'currency-eur': '#3498db', // Blue for EUR lozenge
+        'currency-usd': '#f1c40f', // Yellow/Gold for USD lozenge
+        'social-whatsapp': '#25D366',
+        'social-instagram': '#E4405F', // Simplified pink/red for Instagram
+        'social-facebook': '#1877F2',
+        'header-info-bg': '#3b3e51', // Darker gray for time/currency boxes
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -87,11 +94,11 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       boxShadow: {
-        'header-footer': '0 4px 12px rgba(0, 0, 0, 0.3)',
-        'nav': '0 4px 8px rgba(0, 0, 0, 0.2)',
+        'header-footer': '0 2px 8px rgba(0, 0, 0, 0.25)', // Adjusted shadow
+        'nav': '0 2px 6px rgba(0, 0, 0, 0.2)', // Adjusted shadow
         'message': '0 4px 8px rgba(0, 0, 0, 0.2)',
-        'card-main': '0 15px 30px -5px rgba(151, 65, 252, 0.2)', // Example, adjust to match user's card shadow
-        'card-main-hover': '0 20px 40px rgba(151, 65, 252, 0.3)', // Example
+        'card-main': '0 15px 30px -5px rgba(151, 65, 252, 0.2)', 
+        'card-main-hover': '0 20px 40px rgba(151, 65, 252, 0.3)', 
         'form-container': '0 10px 25px rgba(0, 0, 0, 0.2)',
       },
       keyframes: {

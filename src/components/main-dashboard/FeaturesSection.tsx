@@ -5,7 +5,7 @@ import FeatureCard from './FeatureCard';
 import { Button } from '@/components/ui/button';
 import { Zap, ShieldCheck, Smartphone, Quote } from 'lucide-react';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Added Card components for testimonials
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const features = [
   {
@@ -93,14 +93,14 @@ const FeaturesSection = () => {
               className="bg-white shadow-lg rounded-xl p-6 text-right flex flex-col transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1"
               data-ai-hint={testimonial.dataAiHint}
             >
-              <CardHeader className="p-0 mb-3">
-                <div className="flex items-center justify-end gap-3">
-                  <CardTitle className="text-lg font-semibold text-app-red">{testimonial.name}</CardTitle>
-                  <Quote className="h-6 w-6 text-app-gold transform scale-x-[-1]" />
+              <CardHeader className="p-0 mb-2 text-right">
+                <div className="mb-2">
+                  <Quote className="h-8 w-8 text-app-gold opacity-75 transform scale-x-[-1]" />
                 </div>
+                <CardTitle className="text-xl font-semibold text-app-red">{testimonial.name}</CardTitle>
               </CardHeader>
-              <CardContent className="p-0 text-sm text-gray-600 flex-grow">
-                <p className="leading-relaxed">{testimonial.testimonial}</p>
+              <CardContent className="p-0 text-gray-700 flex-grow">
+                <p className="text-base leading-relaxed italic">"{testimonial.testimonial}"</p>
               </CardContent>
             </Card>
           ))}

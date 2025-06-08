@@ -13,6 +13,7 @@ import {
   Layers3, Square, Anchor, Minus, Grid3x3, RectangleVertical, PanelTop, CheckCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import HeroSection from './HeroSection'; // Import the new HeroSection
 
 type ModalType = 
   'concrete_options' | 'steel_options' | 
@@ -79,7 +80,6 @@ const MainDashboardClient = () => {
     'صبة النظافة': Layers3, // Cleaning Pour
     'الأسقف': PanelTop, // Roofs/Ceilings
     'شروش الأعمدة': Anchor, // Column Necks/Starters
-    // Add steel specific if different, otherwise they share
   };
 
 
@@ -93,13 +93,16 @@ const MainDashboardClient = () => {
 
   return (
     <>
+      <HeroSection /> {/* Add HeroSection here */}
+
       <div className="welcome-message-box">
         <p>
           هذا الموقع مختص في حساب الكميات لكل من الحديد والباطون للأبنية الانشائية والأبار والجدران الإستنادية
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center">
+      {/* Add id here for the button to scroll to */}
+      <div id="calculators-section" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8 justify-items-center pt-8"> {/* Added pt-8 for spacing below hero */}
         {cardData.map(card => (
           <InfoCard 
             key={card.title}

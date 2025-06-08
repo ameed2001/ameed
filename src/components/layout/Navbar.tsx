@@ -44,15 +44,10 @@ const Navbar = () => {
                 className={cn(
                   // Base styles for all buttons
                   "flex items-center justify-center min-w-[90px] md:min-w-[110px] px-2 py-2 text-center font-medium text-sm md:text-base rounded-md transition-colors",
-
-                  // Default state for NON-ACTIVE buttons: transparent background, white text
-                  !isActive && "bg-transparent text-white",
-
-                  // Styles for ACTIVE buttons: red background, white text
-                  isActive && "bg-app-red text-white",
-
-                  // Hover styles for ALL buttons: red background, gold text
-                  "hover:bg-app-red hover:text-app-gold"
+                  // Conditional styling
+                  isActive
+                    ? "bg-app-red text-white hover:text-app-gold" // Active button: red bg, white text. Hover: text gold (bg stays red)
+                    : "bg-transparent text-white hover:bg-transparent hover:text-app-gold" // Non-active button: transparent bg, white text. Hover: transparent bg, text gold
                 )}
               >
                 <item.icon size={18} className="ml-1.5 md:ml-2" />

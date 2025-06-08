@@ -20,7 +20,7 @@
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 240 6% 10%;
 
-    --muted: 210 40% 90%;
+    --muted: 210 40% 90%; /* A bit darker gray for modal buttons bg */
     --muted-foreground: 210 30% 50%;
 
     --accent: 0 93% 35%; /* Deep red #B40404 (PRD) */
@@ -173,7 +173,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Modal content gradient from user's CSS */
+/* Modal content gradient from user's CSS - Keep for GuidelinesModal */
 .modal-content-gradient {
     background: linear-gradient(135deg, var(--modal-content-gradient-start), var(--modal-content-gradient-mid), var(--modal-content-gradient-end));
 }
@@ -198,26 +198,55 @@
   color: hsl(var(--primary)); /* app-gold */
 }
 
-/* Styles for option links within modals (from HTML .modal-content a) */
+/* Styles for option links within modals (from HTML .modal-content a) - Old style */
 .modal-option-link {
   display: block;
-  padding: 1rem; /* Approx 16px */
-  margin: 0.5rem 0; /* Approx 8px */
+  padding: 1rem; 
+  margin: 0.5rem 0; 
   color: hsl(var(--header-fg-hsl)); /* White text */
   text-decoration: none;
-  border-radius: var(--radius); /* 0.5rem from theme, ShadCN default */
+  border-radius: var(--radius); 
   transition: background-color 0.3s ease, transform 0.3s ease;
   background-color: rgba(var(--accent-rgb), 0.25); /* Semi-transparent accent red */
-  text-align: right; /* Ensure text alignment for RTL */
-  font-weight: 500; /* Medium weight */
+  text-align: right; 
+  font-weight: 500; 
 }
 
 .modal-option-link:hover {
-  background-color: rgba(var(--accent-rgb), 0.45); /* Darker semi-transparent accent red */
-  color: hsl(var(--header-fg-hsl)); /* Keep text white */
-  transform: scale(1.02); /* Slight scale effect */
+  background-color: rgba(var(--accent-rgb), 0.45); 
+  color: hsl(var(--header-fg-hsl)); 
+  transform: scale(1.02); 
   font-weight: bold;
 }
+
+/* New styles for modal option buttons (as per image) */
+.modal-option-button {
+  @apply flex items-center justify-between w-full p-3 sm:p-4 text-right rounded-lg shadow-sm transition-all duration-200 ease-in-out;
+  @apply bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-app-gold focus:ring-opacity-50;
+  /* For dark mode, consider: dark:bg-gray-700 dark:hover:bg-gray-600 */
+}
+
+.modal-option-button-text {
+  @apply flex-grow text-sm sm:text-base font-medium text-gray-700; 
+  /* For dark mode: dark:text-gray-200 */
+}
+
+.modal-option-button-icon-area {
+  @apply flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full ml-3; /* ml-3 for RTL, change to mr-3 for LTR */
+  background-color: hsl(var(--accent) / 0.1); /* Light red/pinkish background for icon circle */
+}
+
+.modal-option-button-icon {
+  @apply w-4 h-4 sm:w-5 sm:h-5;
+  color: hsl(var(--accent)); /* Red icon color */
+}
+
+.modal-footer-close-button {
+  @apply px-6 py-2 text-sm font-medium rounded-md transition-colors;
+  @apply bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400;
+  /* For dark mode: dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 */
+}
+
 
 /* Style for calculation result div */
 .calculation-result-display {
@@ -236,6 +265,3 @@
   background-color: rgba(250, 172, 88, 0.8); /* From original .message class */
   backdrop-filter: blur(5px); /* From original .message class */
 }
-    
-
-    

@@ -6,9 +6,13 @@ import InfoCard from '@/components/ui/InfoCard';
 import CalculationModal from '@/components/modals/CalculationModal';
 import GuidelinesModal from '@/components/modals/GuidelinesModal';
 import PriceCalculationModal from '@/components/modals/PriceCalculationModal';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Calculator, DraftingCompass, UserCheck, FileText, DollarSign, MessageSquare, Info, Handshake, ListChecks } from 'lucide-react';
+import { 
+  X, Calculator, DraftingCompass, UserCheck, FileText, DollarSign, MessageSquare, Info, Handshake, ListChecks,
+  Layers3, Square, Anchor, Minus, Grid3x3, RectangleVertical, PanelTop, CheckCircle
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type ModalType = 
   'concrete_options' | 'steel_options' | 
@@ -64,9 +68,20 @@ const MainDashboardClient = () => {
     setPriceCalculatorOpen(false);
   };
 
+  const concreteCategories: CalculationCategory[] = ['الأرضية', 'الأعمدة', 'القواعد', 'الجسور الأرضية', 'صبة النظافة', 'الأسقف', 'شروش الأعمدة'];
+  const steelCategories: CalculationCategory[] = ['القواعد', 'الأعمدة', 'الجسور الأرضية', 'الأرضية', 'الأسقف', 'شروش الأعمدة'];
+  
+  const categoryIcons: Record<string, React.ElementType> = {
+    'الأرضية': Grid3x3, // Slabs/Floors
+    'الأعمدة': RectangleVertical, // Columns
+    'القواعد': Square, // Foundations
+    'الجسور الأرضية': Minus, // Ground Beams (like equals sign)
+    'صبة النظافة': Layers3, // Cleaning Pour
+    'الأسقف': PanelTop, // Roofs/Ceilings
+    'شروش الأعمدة': Anchor, // Column Necks/Starters
+    // Add steel specific if different, otherwise they share
+  };
 
-  const concreteCategories: CalculationCategory[] = ['صبة النظافة', 'القواعد', 'شروش الأعمدة', 'الجسور الأرضية', 'الأرضية', 'الأعمدة', 'الأسقف'];
-  const steelCategories: CalculationCategory[] = ['القواعد', 'شروش الأعمدة', 'الجسور الأرضية', 'الأرضية', 'الأعمدة', 'الأسقف'];
 
   const cardData = [
     { title: "حساب كميات الباطون", modalType: 'concrete_options' as ModalType, icon: <DraftingCompass size={48} /> },
@@ -78,7 +93,7 @@ const MainDashboardClient = () => {
 
   return (
     <>
-      <div className="text-lg md:text-xl font-bold text-[#FF0000] bg-[rgba(250,172,88,0.8)] p-4 my-5 mx-auto rounded-[30px] shadow-message w-[90%] max-w-[800px] backdrop-blur-sm">
+      <div className="welcome-message-box">
         <p>
           هذا الموقع مختص في حساب الكميات لكل من الحديد والباطون للأبنية الانشائية والأبار والجدران الإستنادية
         </p>
@@ -97,43 +112,67 @@ const MainDashboardClient = () => {
 
       {/* Concrete Options Modal */}
       <Dialog open={activeModal === 'concrete_options'} onOpenChange={(isOpen) => !isOpen && setActiveModal(null)}>
-        <DialogContent className="modal-content-gradient text-white sm:max-w-[425px] animate-modal-fade-in custom-dialog-overlay p-6">
-          <DialogHeader className="relative">
-            <DialogTitle className="text-white text-2xl text-center mb-4">اختر عنصر الباطون</DialogTitle>
+        <DialogContent className="sm:max-w-xl bg-background custom-dialog-overlay p-6">
+          <DialogHeader className="relative text-center mb-4">
+            <DialogTitle className="text-app-red text-2xl font-bold">حساب كميات الباطون</DialogTitle>
             <DialogClose asChild>
-              <button className="html-modal-close-btn" aria-label="Close">
-                &times;
-              </button>
+              <Button variant="ghost" size="icon" className="absolute top-0 left-0 text-gray-500 hover:text-app-red w-8 h-8 p-1.5">
+                <X size={24} />
+              </Button>
             </DialogClose>
           </DialogHeader>
-          <div className="py-2 space-y-2">
-            {concreteCategories.map(cat => cat && (
-              <button key={cat} className="modal-option-link w-full" onClick={() => openCalculationForm('concrete', cat)}>
-                {cat}
-              </button>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2">
+            {concreteCategories.map(cat => {
+              if (!cat) return null;
+              const IconComponent = categoryIcons[cat] || CheckCircle; // Default icon
+              return (
+                <button key={cat} className="modal-option-button" onClick={() => openCalculationForm('concrete', cat)}>
+                  <span className="modal-option-button-icon-area">
+                    <IconComponent className="modal-option-button-icon" />
+                  </span>
+                  <span className="modal-option-button-text">{cat}</span>
+                </button>
+              );
+            })}
           </div>
+          <DialogFooter className="mt-6 pt-4 border-t border-gray-200">
+            <DialogClose asChild>
+              <Button className="modal-footer-close-button">إغلاق</Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Steel Options Modal */}
       <Dialog open={activeModal === 'steel_options'} onOpenChange={(isOpen) => !isOpen && setActiveModal(null)}>
-        <DialogContent className="modal-content-gradient text-white sm:max-w-[425px] animate-modal-fade-in custom-dialog-overlay p-6">
-          <DialogHeader className="relative">
-            <DialogTitle className="text-white text-2xl text-center mb-4">اختر عنصر الحديد</DialogTitle>
-             <DialogClose asChild>
-              <button className="html-modal-close-btn" aria-label="Close">
-                &times;
-              </button>
+        <DialogContent className="sm:max-w-xl bg-background custom-dialog-overlay p-6">
+           <DialogHeader className="relative text-center mb-4">
+            <DialogTitle className="text-app-red text-2xl font-bold">حساب كميات الحديد</DialogTitle>
+            <DialogClose asChild>
+              <Button variant="ghost" size="icon" className="absolute top-0 left-0 text-gray-500 hover:text-app-red w-8 h-8 p-1.5">
+                <X size={24} />
+              </Button>
             </DialogClose>
           </DialogHeader>
-          <div className="py-2 space-y-2">
-            {steelCategories.map(cat => cat && (
-              <button key={cat} className="modal-option-link w-full" onClick={() => openCalculationForm('steel', cat)}>
-                {cat}
-              </button>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2">
+            {steelCategories.map(cat => {
+              if (!cat) return null;
+              const IconComponent = categoryIcons[cat] || CheckCircle; // Default icon
+              return (
+                <button key={cat} className="modal-option-button" onClick={() => openCalculationForm('steel', cat)}>
+                  <span className="modal-option-button-icon-area">
+                    <IconComponent className="modal-option-button-icon" />
+                  </span>
+                  <span className="modal-option-button-text">{cat}</span>
+                </button>
+              );
+            })}
           </div>
+          <DialogFooter className="mt-6 pt-4 border-t border-gray-200">
+            <DialogClose asChild>
+              <Button className="modal-footer-close-button">إغلاق</Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       

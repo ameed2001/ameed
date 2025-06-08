@@ -17,6 +17,7 @@ import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from '@/components/ui/separator';
 import { sendContactMessageAction, type SendContactMessageResponse } from './actions'; // Import the server action
+import { cn } from '@/lib/utils';
 
 // SVG for WhatsApp icon
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -219,7 +220,10 @@ export default function ContactPageEnhanced() {
                     <Tooltip key={social.name}>
                       <TooltipTrigger asChild>
                         <Link href={social.href} target="_blank" rel="noopener noreferrer"
-                              className={`p-3 rounded-full bg-gray-100 text-gray-700 ${social.colorClass} transition-all duration-300 transform hover:scale-110 hover:shadow-md`}>
+                              className={cn(
+                                "p-3 rounded-full bg-gray-100 text-gray-700 transition-all duration-300 transform hover:scale-110 hover:shadow-md",
+                                social.colorClass
+                              )}>
                           <social.icon className="h-6 w-6 md:h-7 md:w-7" />
                           <span className="sr-only">{social.name}</span>
                         </Link>
@@ -248,5 +252,3 @@ export default function ContactPageEnhanced() {
     </AppLayout>
   );
 }
-
-    

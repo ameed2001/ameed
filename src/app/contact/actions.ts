@@ -1,3 +1,4 @@
+
 // app/contact/actions.ts
 "use server";
 
@@ -35,7 +36,7 @@ export interface SendContactMessageResponse {
 const MESSAGE_TYPES = {
   technical_support: {
     label: "دعم فني",
-    email: "support@mediaplus.com",
+    email: "support@mediaplus.com", // Replace with actual target emails
     color: "#2196F3"
   },
   feature_request: {
@@ -55,46 +56,50 @@ const MESSAGE_TYPES = {
   },
   general_inquiry: {
     label: "استفسار عام",
-    email: "info@mediaplus.com", // Default for unmapped types
+    email: "info@mediaplus.com",
     color: "#9C27B0"
   }
 } as const;
 
-// 3. إنشاء موصل البريد الإلكتروني (مخبأ لتحسين الأداء)
-let cachedTransporter: nodemailer.Transporter | null = null;
-
-function getTransporter() {
-  if (cachedTransporter) return cachedTransporter;
-
+// 3. إنشاء موصل البريد الإلكتروني (بدون تخزين مؤقت حاليًا للتشخيص)
+function getTransporter(): nodemailer.Transporter | null {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-    throw new Error("بيانات اعتماد البريد الإلكتروني (EMAIL_USER, EMAIL_PASSWORD) غير معرفة في متغيرات البيئة.");
+    console.error("EMAIL_USER or EMAIL_PASSWORD is not set in environment variables.");
+    return null; // Return null instead of throwing, to be handled by caller
   }
 
-  cachedTransporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE || 'gmail',
-    host: process.env.EMAIL_HOST, // smtp.gmail.com for gmail if EMAIL_SERVICE is gmail
-    port: parseInt(process.env.EMAIL_PORT || '587'),
-    secure: process.env.EMAIL_SECURE === 'true', // false for port 587
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD, // Ensure this is an app password for Gmail
-    },
-    tls: {
-      // do not fail on invalid certs if not in production
-      rejectUnauthorized: process.env.NODE_ENV === 'production',
-    },
-  });
-
-  return cachedTransporter;
+  try {
+    return nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      host: process.env.EMAIL_HOST, // smtp.gmail.com for gmail if EMAIL_SERVICE is gmail
+      port: parseInt(process.env.EMAIL_PORT || '587'),
+      secure: process.env.EMAIL_SECURE === 'true', // false for port 587
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD, // Ensure this is an app password for Gmail
+      },
+      tls: {
+        // do not fail on invalid certs if not in production
+        rejectUnauthorized: process.env.NODE_ENV === 'production',
+      },
+    });
+  } catch (error) {
+    console.error("Failed to create Nodemailer transporter:", error);
+    return null;
+  }
 }
 
 // 4. دالة الإرسال الرئيسية
 export async function sendContactMessageAction(
   formData: ContactFormData
 ): Promise<SendContactMessageResponse> {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-    console.error("EMAIL_USER or EMAIL_PASSWORD is not set in environment variables.");
-    return { success: false, error: "خطأ في إعدادات الخادم لإرسال البريد. يرجى مراجعة المسؤول." };
+  const transporter = getTransporter();
+
+  if (!transporter) {
+    return {
+      success: false,
+      error: "خطأ في إعدادات خادم البريد: بيانات اعتماد البريد (EMAIL_USER, EMAIL_PASSWORD) غير معرفة أو فشل إنشاء الناقل. يرجى مراجعة المسؤول.",
+    };
   }
 
   try {
@@ -116,11 +121,14 @@ export async function sendContactMessageAction(
     // الحصول على تفاصيل نوع الرسالة
     const messageTypeInfo = MESSAGE_TYPES[messageType as keyof typeof MESSAGE_TYPES] || {
       label: messageType, // Fallback label
-      email: 'mediaplus64@gmail.com', // Fallback email
+      email: process.env.EMAIL_USER!, // Fallback to sending to EMAIL_USER if type is unknown
       color: '#607D8B' // Fallback color
     };
+    
+    // Ensure EMAIL_FROM is defined, otherwise fallback to EMAIL_USER for the 'from' address part
+    const fromAddress = process.env.EMAIL_FROM || `"${name}" <${process.env.EMAIL_USER!}>`;
 
-    const transporter = getTransporter();
+
     const currentDate = new Date().toLocaleString('ar-EG', {
       weekday: 'long',
       year: 'numeric',
@@ -130,12 +138,9 @@ export async function sendContactMessageAction(
       minute: '2-digit'
     });
     
-    const fromEmailAddress = process.env.EMAIL_USER;
-    const fromName = "موقع MediaPlus"; 
-
     // 5. إعداد البريد الأساسي
     const mailOptions = {
-      from: `"${fromName}" <${fromEmailAddress}>`,
+      from: fromAddress, // Use the prepared fromAddress
       to: messageTypeInfo.email, 
       replyTo: email,
       subject: `[${messageTypeInfo.label}] ${subject}`,
@@ -163,7 +168,7 @@ export async function sendContactMessageAction(
 
     // 7. إرسال بريد التأكيد
     const confirmationMailOptions = {
-      from: `"${fromName}" <${fromEmailAddress}>`,
+      from: fromAddress, // Use the same fromAddress
       to: email,
       subject: 'تم استلام رسالتك بنجاح',
       html: renderConfirmationTemplate({
@@ -209,10 +214,6 @@ export async function sendContactMessageAction(
        if (nodemailerError.responseCode === 550) {
         return { success: false, error: "رفض خادم البريد الرسالة (خطأ 550). قد يكون البريد الإلكتروني للمستلم غير صحيح أو محظور."};
        }
-       // Catch specific error from getTransporter if env vars are missing
-       if (error.message.includes("بيانات اعتماد البريد الإلكتروني")) {
-         return { success: false, error: error.message };
-       }
     }
     
     return {
@@ -222,7 +223,7 @@ export async function sendContactMessageAction(
   }
 }
 
-// 8. دوال عرض القوالب
+// 8. دوال عرض القوالب (كما هي بدون تغيير)
 function renderMainEmailTemplate(data: {
   name: string;
   email: string;
@@ -311,7 +312,7 @@ function renderConfirmationTemplate(data: {
         
         <p>إذا كان لديك أي استفسار عاجل، لا تتردد في التواصل معنا عبر:</p>
         <ul style="padding-right: 20px;">
-          <li>البريد الإلكتروني: <a href="mailto:mediaplus64@gmail.com">mediaplus64@gmail.com</a></li>
+          <li>البريد الإلكتروني: <a href="mailto:${process.env.EMAIL_USER}">${process.env.EMAIL_USER}</a></li>
           <li>الهاتف: +972 59 437 1424</li>
         </ul>
       </div>
@@ -343,10 +344,12 @@ function renderTextConfirmationTemplate(data: {
 - تاريخ الإرسال: ${data.date}
 
 للتواصل العاجل:
-البريد الإلكتروني: mediaplus64@gmail.com
+البريد الإلكتروني: ${process.env.EMAIL_USER}
 الهاتف: +972 59 437 1424
 
-مع أطيب التحيات،
+مع أطيب التحيات,
 فريق MediaPlus
   `;
 }
+
+    

@@ -53,8 +53,8 @@ const Navbar = () => {
                 href={item.href}
                 className={cn(
                   "flex items-center justify-center min-w-[90px] md:min-w-[110px] px-2 py-2 text-center font-medium text-sm md:text-base rounded-md",
-                  "text-white hover:text-gray-300 transition-colors",
-                  isActive ? "text-app-gold font-semibold" : "" // Subtle active state
+                  "text-white hover:bg-sky-500 hover:text-white transition-colors", // Updated hover effect
+                  isActive ? "text-app-gold font-semibold" : "" 
                 )}
               >
                 <item.icon size={18} className="ml-1.5 md:ml-2" /> {/* Icon on the left for RTL */}

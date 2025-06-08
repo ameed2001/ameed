@@ -2,10 +2,10 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, Info, Phone, HelpCircle, LogOut } from 'lucide-react'; // Added LogOut
-import { usePathname, useRouter } from 'next/navigation'; // Added useRouter
+import { Home, Info, Phone, HelpCircle } from 'lucide-react'; // Removed LogOut
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { useToast } from '@/hooks/use-toast';
 
 const navItems = [
   { href: '/', label: 'الرئيسية', icon: Home },
@@ -16,17 +16,18 @@ const navItems = [
 
 const Navbar = () => {
   const pathname = usePathname();
-  const router = useRouter();
-  const { toast } = useToast();
+  // useRouter and useToast are kept in case they are needed for other functionality in the future.
+  // const router = useRouter();
+  // const { toast } = useToast();
 
-  const handleLogout = () => {
-    toast({
-      title: "تم تسجيل الخروج",
-      description: "تم تسجيل خروجك بنجاح.",
-      variant: "default",
-    });
-    router.push('/login');
-  };
+  // const handleLogout = () => {
+  //   toast({
+  //     title: "تم تسجيل الخروج",
+  //     description: "تم تسجيل خروجك بنجاح.",
+  //     variant: "default",
+  //   });
+  //   router.push('/login');
+  // };
 
   const allNavItems = [...navItems];
 
@@ -52,7 +53,7 @@ const Navbar = () => {
             </li>
           );
         })}
-        {/* Logout Button */}
+        {/* Logout Button Removed
         <li>
           <button
             onClick={handleLogout}
@@ -65,6 +66,7 @@ const Navbar = () => {
             تسجيل الخروج
           </button>
         </li>
+        */}
       </ul>
     </nav>
   );

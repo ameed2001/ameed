@@ -2,20 +2,12 @@
 "use client";
 
 import InfoCard from '@/components/ui/InfoCard';
-import { LogIn, UserPlus, Box, BarChart3, Info as InfoIcon, Users, DollarSign, FileText as ReportsIcon, GanttChartSquare, FolderArchive, Brain, ArrowLeft } from 'lucide-react';
-import CalculationModal from '@/components/modals/CalculationModal';
-import PriceCalculationModal from '@/components/modals/PriceCalculationModal';
-import GuidelinesModal from '@/components/modals/GuidelinesModal';
+import { LogIn, UserPlus, Box, BarChart3, DollarSign, ArrowLeft } from 'lucide-react';
+// Removed imports for other icons and modals no longer used directly here
 import { useState } from 'react';
 
 const MainDashboardClient = () => {
-  const [isConcreteModalOpen, setIsConcreteModalOpen] = useState(false);
-  const [concreteModalCategory, setConcreteModalCategory] = useState('');
-  const [isSteelModalOpen, setIsSteelModalOpen] = useState(false);
-  const [steelModalCategory, setSteelModalCategory] = useState('');
-  const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
-  const [isGuidelinesModalOpen, setIsGuidelinesModalOpen] = useState(false);
-  const [guidelinesModalType, setGuidelinesModalType] = useState<'engineer' | 'owner'>('engineer');
+  // State for modals is no longer needed here as cards will scroll to auth section
 
   const authCards = [
     { 
@@ -48,6 +40,13 @@ const MainDashboardClient = () => {
     },
   ];
 
+  const scrollToAuthSection = () => {
+    const authSection = document.getElementById('auth-cards-section');
+    if (authSection) {
+      authSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const dashboardCards = [
     {
       title: "حساب كميات الباطون",
@@ -55,9 +54,10 @@ const MainDashboardClient = () => {
       icon: <Box />, 
       iconWrapperClass: "bg-red-100 dark:bg-red-900",
       iconColorClass: "text-red-500 dark:text-red-400",
-      onClick: () => { setIsConcreteModalOpen(true); setConcreteModalCategory('العناصر الإنشائية'); },
+      onClick: scrollToAuthSection,
       dataAiHint: "concrete calculation",
-      cardHeightClass: "h-72",
+      cardHeightClass: "h-72", // Or adjust as needed for non-flip cards
+      applyFlipEffect: false,
     },
     {
       title: "حساب كميات الحديد",
@@ -65,29 +65,10 @@ const MainDashboardClient = () => {
       icon: <BarChart3 />,
       iconWrapperClass: "bg-blue-100 dark:bg-blue-900",
       iconColorClass: "text-blue-500 dark:text-blue-400",
-      onClick: () => { setIsSteelModalOpen(true); setSteelModalCategory('العناصر الإنشائية'); },
+      onClick: scrollToAuthSection,
       dataAiHint: "steel calculation",
       cardHeightClass: "h-72",
-    },
-    {
-      title: "إرشادات للمهندس",
-      description: "نصائح وإرشادات عملية للمهندسين الإنشائيين.",
-      icon: <Users />, // Using Users icon as per original InfoCard for engineers
-      iconWrapperClass: "bg-green-100 dark:bg-green-900",
-      iconColorClass: "text-green-500 dark:text-green-400",
-      onClick: () => { setIsGuidelinesModalOpen(true); setGuidelinesModalType('engineer'); },
-      dataAiHint: "engineer guidelines",
-      cardHeightClass: "h-72",
-    },
-    {
-      title: "إرشادات لصاحب المبنى",
-      description: "معلومات هامة لأصحاب المشاريع والمباني.",
-      icon: <InfoIcon />, // Using Info icon as per original InfoCard for owners
-      iconWrapperClass: "bg-purple-100 dark:bg-purple-900",
-      iconColorClass: "text-purple-500 dark:text-purple-400",
-      onClick: () => { setIsGuidelinesModalOpen(true); setGuidelinesModalType('owner'); },
-      dataAiHint: "owner guidelines",
-      cardHeightClass: "h-72",
+      applyFlipEffect: false,
     },
     {
       title: "حساب الأسعار",
@@ -95,24 +76,10 @@ const MainDashboardClient = () => {
       icon: <DollarSign />,
       iconWrapperClass: "bg-yellow-100 dark:bg-yellow-700",
       iconColorClass: "text-yellow-500 dark:text-yellow-400",
-      onClick: () => setIsPriceModalOpen(true),
+      onClick: scrollToAuthSection,
       dataAiHint: "cost estimation",
       cardHeightClass: "h-72",
-    },
-    {
-      title: "التقارير بالذكاء الاصطناعي",
-      description: "إنشاء تقارير مشروع مخصصة باستخدام الذكاء الاصطناعي.",
-      icon: <Brain />,
-      iconWrapperClass: "bg-indigo-100 dark:bg-indigo-900",
-      iconColorClass: "text-indigo-500 dark:text-indigo-400",
-      href: "/ai-report-generator",
-      dataAiHint: "ai reports",
-      cardHeightClass: "h-72",
-       // Assuming you want a flip effect for this as well, if not, remove applyFlipEffect or set to false
-      applyFlipEffect: false, // Set to true if you want flip effect
-      // backTitle: "إنشاء التقارير", // Add if applyFlipEffect is true
-      // backDescription: "استخدم الذكاء الاصطناعي لتوليد تقارير مفصلة.", // Add if applyFlipEffect is true
-      // backCtaText: "ابدأ الإنشاء" // Add if applyFlipEffect is true
+      applyFlipEffect: false,
     },
   ];
 
@@ -131,6 +98,8 @@ const MainDashboardClient = () => {
             <InfoCard 
               key={card.title}
               {...card}
+              // Pass ArrowLeft for the back of flip cards
+              backCtaIcon={<ArrowLeft className="h-4 w-4" />}
             />
           ))}
         </div>
@@ -146,6 +115,8 @@ const MainDashboardClient = () => {
         </div>
       </div>
 
+      {/* Modals are no longer triggered from this component directly */}
+      {/* 
       <CalculationModal
         isOpen={isConcreteModalOpen}
         onClose={() => setIsConcreteModalOpen(false)}
@@ -166,7 +137,8 @@ const MainDashboardClient = () => {
         isOpen={isGuidelinesModalOpen}
         onClose={() => setIsGuidelinesModalOpen(false)}
         type={guidelinesModalType}
-      />
+      /> 
+      */}
     </>
   );
 };

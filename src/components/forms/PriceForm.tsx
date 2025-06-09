@@ -16,26 +16,69 @@ const PriceForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const cq = parseFloat(concreteQuantity);
-    const cp = parseFloat(concretePrice);
-    const sq = parseFloat(steelQuantity);
-    const sp = parseFloat(steelPrice);
+    
+    let resultParts: string[] = [];
+    let totalConcreteCost = 0;
+    let totalSteelCost = 0;
+    let hasValidInput = false;
+    let hasError = false;
 
-    if (isNaN(cq) || isNaN(cp) || isNaN(sq) || isNaN(sp) || cq < 0 || cp < 0 || sq < 0 || sp < 0) {
-      setResult("<p class='text-red-600'>الرجاء إدخال قيم صالحة لجميع الحقول.</p>");
+    const cqVal = parseFloat(concreteQuantity);
+    const cpVal = parseFloat(concretePrice);
+    const sqVal = parseFloat(steelQuantity);
+    const spVal = parseFloat(steelPrice);
+
+    if (concreteQuantity !== '') {
+      if (!isNaN(cqVal) && cqVal > 0 && !isNaN(cpVal) && cpVal >= 0) {
+        totalConcreteCost = cqVal * cpVal;
+        resultParts.push(`<p>تكلفة الباطون: <strong>${totalConcreteCost.toFixed(2)} شيكل</strong></p>`);
+        hasValidInput = true;
+      } else {
+        resultParts.push("<p class='text-red-600'>الرجاء إدخال كمية وسعر صالحين للباطون (الكمية أكبر من صفر).</p>");
+        hasError = true;
+      }
+    }
+
+    if (steelQuantity !== '') {
+      if (!isNaN(sqVal) && sqVal > 0 && !isNaN(spVal) && spVal >= 0) {
+        totalSteelCost = sqVal * spVal;
+        resultParts.push(`<p>تكلفة الحديد: <strong>${totalSteelCost.toFixed(2)} شيكل</strong></p>`);
+        hasValidInput = true;
+      } else {
+        resultParts.push("<p class='text-red-600'>الرجاء إدخال كمية وسعر صالحين للحديد (الكمية أكبر من صفر).</p>");
+        hasError = true;
+      }
+    }
+
+    if (!hasValidInput && !hasError) {
+      setResult("<p class='text-orange-600'>الرجاء إدخال كمية الباطون أو الحديد أو كليهما لحساب التكلفة.</p>");
       return;
     }
-    
-    const concreteTotal = (cq * cp).toFixed(2);
-    const steelTotal = (sq * sp).toFixed(2);
-    const grandTotal = (parseFloat(concreteTotal) + parseFloat(steelTotal)).toFixed(2);
 
-    setResult(`
-      <p>تكلفة الباطون: <strong>${concreteTotal} شيكل</strong></p>
-      <p>تكلفة الحديد: <strong>${steelTotal} شيكل</strong></p>
-      <p>المجموع الكلي: <strong>${grandTotal} شيكل</strong></p>
-    `);
-     console.log('حفظ حساب الأسعار:', { type: 'price', inputs: {concreteQuantity: cq, concretePrice: cp, steelQuantity: sq, steelPrice: sp}, result: grandTotal });
+    if (totalConcreteCost > 0 && totalSteelCost > 0 && !hasError) {
+      const grandTotal = totalConcreteCost + totalSteelCost;
+      resultParts.push(`<p>المجموع الكلي: <strong>${grandTotal.toFixed(2)} شيكل</strong></p>`);
+    }
+    
+    setResult(resultParts.join(''));
+
+    // Log calculation attempt
+    if (hasValidInput) {
+        console.log('حفظ حساب الأسعار:', { 
+            type: 'price', 
+            inputs: {
+                concreteQuantity: concreteQuantity !== '' ? cqVal : undefined, 
+                concretePrice: concreteQuantity !== '' ? cpVal : undefined, 
+                steelQuantity: steelQuantity !== '' ? sqVal : undefined, 
+                steelPrice: steelQuantity !== '' ? spVal : undefined
+            }, 
+            results: {
+                concreteTotal: totalConcreteCost > 0 ? totalConcreteCost.toFixed(2) : undefined,
+                steelTotal: totalSteelCost > 0 ? totalSteelCost.toFixed(2) : undefined,
+                grandTotal: (totalConcreteCost > 0 && totalSteelCost > 0 && !hasError) ? (totalConcreteCost + totalSteelCost).toFixed(2) : undefined
+            }
+        });
+    }
   };
 
   return (
@@ -47,15 +90,16 @@ const PriceForm = () => {
         <form onSubmit={handleSubmit} className="space-y-4 text-right">
           <div className="form-group">
             <Label htmlFor="concreteQuantity" className="block mb-1.5 font-bold text-gray-700">كمية الباطون (م³):</Label>
-            <Input type="number" id="concreteQuantity" value={concreteQuantity} onChange={(e) => setConcreteQuantity(e.target.value)} step="0.01" required className="text-right text-base" placeholder="مثال: 20"/>
+            <Input type="number" id="concreteQuantity" value={concreteQuantity} onChange={(e) => setConcreteQuantity(e.target.value)} step="0.01" className="text-right text-base" placeholder="مثال: 20"/>
           </div>
           <div className="form-group">
             <Label htmlFor="concretePrice" className="block mb-1.5 font-bold text-gray-700">سعر المتر المكعب من الباطون (شيكل):</Label>
             <Input type="number" id="concretePrice" value={concretePrice} onChange={(e) => setConcretePrice(e.target.value)} step="0.01" required className="text-right text-base" placeholder="مثال: 350"/>
           </div>
+          <hr className="my-3 border-gray-300"/>
           <div className="form-group">
             <Label htmlFor="steelQuantity" className="block mb-1.5 font-bold text-gray-700">كمية الحديد (كغم):</Label>
-            <Input type="number" id="steelQuantity" value={steelQuantity} onChange={(e) => setSteelQuantity(e.target.value)} step="0.01" required className="text-right text-base" placeholder="مثال: 1500"/>
+            <Input type="number" id="steelQuantity" value={steelQuantity} onChange={(e) => setSteelQuantity(e.target.value)} step="0.01" className="text-right text-base" placeholder="مثال: 1500"/>
           </div>
           <div className="form-group">
             <Label htmlFor="steelPrice" className="block mb-1.5 font-bold text-gray-700">سعر الكيلوغرام من الحديد (شيكل):</Label>
@@ -68,7 +112,7 @@ const PriceForm = () => {
         {result && (
           <div 
             id="priceResult" 
-            className="calculation-result-display" // Applied class from globals.css
+            className="calculation-result-display"
             dangerouslySetInnerHTML={{ __html: result }}
           />
         )}
@@ -78,5 +122,3 @@ const PriceForm = () => {
 };
 
 export default PriceForm;
-
-    

@@ -2,8 +2,9 @@
 'use server';
 
 import { z } from 'zod';
-import { dbUsers, findUserByEmail, registerUser } from '@/lib/mock-db'; // Changed addUser to registerUser
-import type { User, UserRole } from '@/lib/mock-db';
+// Updated import to use Prisma-based registerUser and UserRole
+import { registerUser, UserRole as PrismaUserRole } from '@/lib/db'; 
+import type { User } from '@prisma/client'; // Import User type from Prisma
 
 export interface SignupActionResponse {
   success: boolean;
@@ -16,14 +17,7 @@ export interface SignupActionResponse {
 export async function signupUserAction(data: { name: string; email: string; password: string; role: "owner" | "engineer"; confirmPassword?: string }): Promise<SignupActionResponse> {
   console.log("Server Action: signupUserAction called with:", { name: data.name, email: data.email, role: data.role });
 
-  if (findUserByEmail(data.email)) {
-    return {
-      success: false,
-      message: "هذا البريد الإلكتروني مسجل بالفعل.",
-      fieldErrors: { email: ["هذا البريد الإلكتروني مسجل بالفعل."] }
-    };
-  }
-
+  // Basic validation matching client-side
   if (data.password.length < 6) {
      return {
       success: false,
@@ -39,14 +33,14 @@ export async function signupUserAction(data: { name: string; email: string; pass
       fieldErrors: { confirmPassword: ["كلمتا المرور غير متطابقتين."] }
     };
   }
+  
+  // Map client role to Prisma UserRole enum
+  const roleForDb: PrismaUserRole = data.role === 'engineer' ? PrismaUserRole.ENGINEER : PrismaUserRole.OWNER;
 
-  // The registerUser function in mock-db.ts expects 'Engineer' | 'Owner' (capitalized).
-  const roleForDb: 'Engineer' | 'Owner' = data.role.charAt(0).toUpperCase() + data.role.slice(1) as 'Engineer' | 'Owner';
-
-  const registrationResult = registerUser({
+  const registrationResult = await registerUser({
       name: data.name,
-      email: data.email.toLowerCase(), // Ensure email is stored consistently lowercase
-      password_hash: data.password, // Pass password as password_hash
+      email: data.email, 
+      password: data.password, // Pass plain password, hashing is done in registerUser
       role: roleForDb,
   });
 
@@ -55,13 +49,13 @@ export async function signupUserAction(data: { name: string; email: string; pass
     return {
         success: false,
         message: registrationResult.message || "فشل إنشاء الحساب.",
-        // Potentially pass fieldErrors from registrationResult if it provides them
+        fieldErrors: registrationResult.message?.includes("البريد الإلكتروني مسجل") ? { email: [registrationResult.message] } : undefined,
     };
   }
 
   const newUser = registrationResult.user;
 
-  if (newUser.role === "Engineer") {
+  if (newUser.role === PrismaUserRole.ENGINEER && registrationResult.isPendingApproval) {
     console.log(`Engineer account ${newUser.email} created, pending approval.`);
     return {
       success: true,
@@ -70,7 +64,6 @@ export async function signupUserAction(data: { name: string; email: string; pass
     };
   }
 
-  // For Owner role
   console.log(`${newUser.role} account ${newUser.email} created and activated.`);
   return {
     success: true,
@@ -78,3 +71,4 @@ export async function signupUserAction(data: { name: string; email: string; pass
     redirectTo: "/login"
   };
 }
+

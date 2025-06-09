@@ -1,9 +1,13 @@
-// src/app/login/actions.ts (أو المسار الفعلي لدالة الـ Server Action)
+
+// src/app/login/actions.ts
 'use server';
 
 import { z } from 'zod';
-import { loginUser, type LoginResult } from '@/lib/mock-db';
-import { type LoginActionResponse } from '@/types/auth'; // <--- هنا التعديل: استيراد من ملف الأنواع
+// Updated imports to use Prisma-based functions and types
+import { loginUser, type LoginResult, UserRole as PrismaUserRole } from '@/lib/db'; 
+import { type LoginActionResponse } from '@/types/auth';
+import type { User } from '@prisma/client';
+
 
 export async function loginUserAction(data: { email: string; password: string; }): Promise<LoginActionResponse> {
   console.log("[LoginAction] محاولة تسجيل دخول للبريد:", data.email);
@@ -31,8 +35,13 @@ export async function loginUserAction(data: { email: string; password: string; }
         generalMessage = result.message || "حسابك قيد المراجعة. يرجى الانتظار حتى الموافقة عليه.";
         break;
       default:
-        fieldErrors.email = ["البيانات المدخلة غير صحيحة."];
-        fieldErrors.password = ["البيانات المدخلة غير صحيحة."];
+        // For 'other' or undefined errorType, keep a general message
+        // and potentially set errors on both fields if appropriate
+        if (!result.message?.includes("البريد الإلكتروني") && !result.message?.includes("كلمة المرور")) {
+            // Only set generic field errors if the message isn't already specific
+            fieldErrors.email = ["البيانات المدخلة غير صحيحة."];
+            fieldErrors.password = ["البيانات المدخلة غير صحيحة."];
+        }
         generalMessage = result.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
         break;
     }
@@ -47,16 +56,20 @@ export async function loginUserAction(data: { email: string; password: string; }
   const user = result.user!;
 
   let redirectTo = "/";
+  // Use PrismaUserRole for comparison
   switch (user.role) {
-    case "Engineer":
+    case PrismaUserRole.ENGINEER:
       redirectTo = "/my-projects";
       break;
-    case "Admin":
+    case PrismaUserRole.ADMIN:
       redirectTo = "/admin";
       break;
-    case "Owner":
-      redirectTo = "/owner/dashboard";
+    case PrismaUserRole.OWNER:
+      redirectTo = "/owner/dashboard"; // Default for owner
       break;
+    case PrismaUserRole.GENERAL_USER:
+       redirectTo = "/"; // Default for general user
+       break;
     default:
       redirectTo = "/";
   }
@@ -69,3 +82,4 @@ export async function loginUserAction(data: { email: string; password: string; }
     redirectTo: redirectTo
   };
 }
+

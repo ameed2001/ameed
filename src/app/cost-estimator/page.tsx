@@ -1,14 +1,15 @@
+
 "use client";
 
-import OwnerAppLayout from "@/components/owner/OwnerAppLayout";
+import AppLayout from "@/components/AppLayout"; // Changed from OwnerAppLayout
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import PriceForm from "@/components/forms/PriceForm";
 import { DollarSign } from "lucide-react";
 
 export default function CostEstimatorPage() {
   return (
-    <OwnerAppLayout>
-      <div className="max-w-2xl mx-auto space-y-8">
+    <AppLayout> {/* Changed from OwnerAppLayout */}
+      <div className="max-w-4xl mx-auto space-y-8 p-4 md:p-6"> {/* Adjusted max-width and added padding */}
         <Card className="bg-white/95 shadow-xl">
           <CardHeader className="text-center">
             <DollarSign className="mx-auto h-12 w-12 text-app-gold mb-3" />
@@ -22,6 +23,6 @@ export default function CostEstimatorPage() {
           </CardContent>
         </Card>
       </div>
-    </OwnerAppLayout>
+    </AppLayout>
   );
 }

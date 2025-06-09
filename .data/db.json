@@ -1,4 +1,3 @@
-
 {
   "users": [
     {
@@ -375,6 +374,38 @@
       "message": "Invalid password attempt for user: ameed@admin.com",
       "timestamp": "2025-06-09T21:54:17.698Z",
       "user": "user-001"
+    },
+    {
+      "id": "log-1749506215850-3p4xc",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:56:55.850Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749506217090-nj0f3",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:56:57.090Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749506401556-7tlin",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-09T22:00:01.556Z",
+      "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749506485069-0bygj",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T22:01:25.069Z",
+      "user": "user-001"
     }
   ],
   "roles": [
@@ -659,5 +690,3 @@
     }
   ]
 }
-
-    

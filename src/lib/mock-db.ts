@@ -40,13 +40,13 @@ export interface UseCase {
  * واجهة المشروع
  */
 export interface Project {
-  id: number; // Changed from string to number as per admin/projects/page.tsx
+  id: number;
   name: string;
-  engineerId?: string; // Matches FullProject
-  ownerId?: string; // Matches FullProject
+  engineerId?: string;
+  ownerId?: string;
   engineer?: string;
   clientName?: string;
-  status: ProjectStatusType; // Uses the specific type
+  status: ProjectStatusType;
   startDate?: string;
   endDate?: string;
   linkedOwnerEmail?: string;
@@ -56,7 +56,7 @@ export interface Project {
   overallProgress?: number;
   quantitySummary?: string;
   photos?: ProjectPhoto[];
-  timelineTasks?: ProjectTimelineTask[]; // Changed from ProjectTimelineTask
+  timelineTasks?: ProjectTimelineTask[];
   comments?: ProjectComment[];
 }
 
@@ -91,7 +91,7 @@ export interface ProjectComment {
   id: string;
   user: string;
   text: string;
-  date: string; // Consider Date object if more manipulation needed
+  date: string;
   avatar?: string;
   dataAiHintAvatar?: string;
 }
@@ -106,20 +106,20 @@ export interface SystemSettings {
   maintenanceMode: boolean;
   maxUploadSizeMB: number;
   emailNotificationsEnabled: boolean;
-  engineerApprovalRequired: boolean; // Added this setting
+  engineerApprovalRequired: boolean;
 }
 
 /**
  * واجهة سجلات النظام
  */
-export type LogLevel = 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS'; // Added SUCCESS
+export type LogLevel = 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
 
 export interface LogEntry {
   id: string;
   timestamp: Date;
   level: LogLevel;
   message: string;
-  user?: string; // Optional user associated with the log
+  user?: string;
   ipAddress?: string;
   action?: string;
 }
@@ -133,7 +133,7 @@ export let dbUsers: User[] = [
     id: crypto.randomUUID(),
     name: 'مدير النظام',
     email: 'admin@example.com',
-    password_hash: 'adminpass', // Plain text for mock
+    password_hash: 'adminpass', // كلمة مرور نص عادي لسهولة الاختبار
     role: 'Admin',
     status: 'Active',
     createdAt: new Date(),
@@ -143,14 +143,14 @@ export let dbUsers: User[] = [
     id: crypto.randomUUID(),
     name: 'مستخدم تجريبي',
     email: 'test@example.com',
-    password_hash: 'test123', // Plain text for mock
-    role: 'Owner', // Role from UserRole type
-    status: 'Active', // Status from UserStatus type
+    password_hash: 'test123',
+    role: 'Owner',
+    status: 'Active',
     createdAt: new Date(),
     profileImage: '/profiles/admin.jpg'
   }
 ];
-console.log('[MockDB] Initial dbUsers loaded:', dbUsers.map(u => ({email: u.email, role: u.role, status: u.status, id: u.id })));
+console.log('[MockDB Initial Load] dbUsers initialized:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status}))));
 
 
 // بيانات الأدوار
@@ -158,9 +158,8 @@ export const roles: Role[] = ['Admin', 'Engineer', 'Owner', 'GeneralUser'];
 
 // بيانات المشاريع
 export let dbProjects: Project[] = [
-  { id: 1, name: 'مشروع الإسكان', engineerId: "eng-002", ownerId: "owner-003", status: 'قيد التنفيذ', engineer: 'Eng. Ahmad', clientName: 'Owner Sami' },
   {
-    id: 2,
+    id: 1,
     name: "مشروع فيلا الأحلام",
     engineer: "م. خالد عبد العزيز",
     clientName: "السيد/ محمد الحسن",
@@ -213,7 +212,6 @@ export let dbLogs: LogEntry[] = [
   },
 ];
 
-
 // بيانات الـ Use Cases
 export const useCases: UseCase[] = [
   // General User
@@ -221,7 +219,6 @@ export const useCases: UseCase[] = [
   { id: 2, title: 'Login', role: 'GeneralUser', description: 'تسجيل الدخول', dependsOn: [1] },
   { id: 3, title: 'Manage Profile', role: 'GeneralUser', description: 'إدارة البيانات الشخصية', dependsOn: [2] },
   { id: 4, title: 'Forgot Password', role: 'GeneralUser', description: 'استعادة كلمة المرور' },
-
   // Owner
   { id: 5, title: 'View My Projects', role: 'Owner', description: 'عرض المشاريع المرتبطة بك', dependsOn: [2] },
   { id: 6, title: 'Monitor Construction Project Progress', role: 'Owner', description: 'متابعة تقدم المشروع', dependsOn: [5] },
@@ -229,7 +226,6 @@ export const useCases: UseCase[] = [
   { id: 8, title: 'View Progress Photos/Videos', role: 'Owner', description: 'مشاهدة الصور والفيديوهات', dependsOn: [6] },
   { id: 9, title: 'Add Comments/Inquiries', role: 'Owner', description: 'إرسال استفسارات وتعليقات', dependsOn: [6] },
   { id: 10, title: 'View Project Timeline', role: 'Owner', description: 'عرض الجدول الزمني للمشروع', dependsOn: [6] },
-
   // Engineer
   { id: 11, title: 'Create New Construction Project', role: 'Engineer', description: 'إنشاء مشروع جديد', dependsOn: [2] },
   { id: 12, title: 'Link Owner to Project', role: 'Engineer', description: 'ربط المشروع بالمالك', dependsOn: [11] },
@@ -245,7 +241,6 @@ export const useCases: UseCase[] = [
   { id: 22, title: 'Upload Progress Photos/Videos', role: 'Engineer', description: 'رفع الصور والفيديوهات', dependsOn: [20] },
   { id: 23, title: 'Manage Construction Projects', role: 'Engineer', description: 'إدارة المشاريع الحالية', dependsOn: [2] },
   { id: 24, title: 'Archive Project', role: 'Engineer', description: 'أرشفة المشروع', dependsOn: [20] },
-
   // Admin
   { id: 25, title: 'View All Users', role: 'Admin', description: 'عرض كل المستخدمين', dependsOn: [2] },
   { id: 26, title: 'Edit User Details', role: 'Admin', description: 'تعديل بيانات المستخدم', dependsOn: [25] },
@@ -256,6 +251,7 @@ export const useCases: UseCase[] = [
   { id: 31, title: 'Review System Logs', role: 'Admin', description: 'مراجعة سجلات النظام', dependsOn: [2] },
 ];
 
+
 /**
  * تسجيل مستخدم جديد
  */
@@ -265,9 +261,9 @@ export function registerUser(userData: {
   password_hash: string; // Expecting plain password here, to be stored as is for mock
   role: 'Engineer' | 'Owner';
 }): { success: boolean; user?: User; message?: string } {
-  console.log(`[MockDB registerUser] Called with email: ${userData.email}, role: ${userData.role}`);
-  console.log(`[MockDB registerUser] Current dbUsers (before add) - Length ${dbUsers.length}:`, dbUsers.map(u => ({email: u.email, role: u.role, status: u.status, id: u.id })));
-  
+  console.log(`[MockDB registerUser] Attempting registration for email: ${userData.email}, role: ${userData.role}`);
+  console.log('[MockDB registerUser] dbUsers BEFORE push:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status}))));
+
   const existingUser = dbUsers.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
   if (existingUser) {
     console.log(`[MockDB registerUser] Email ${userData.email} already exists.`);
@@ -290,35 +286,34 @@ export function registerUser(userData: {
 
   dbUsers.push(newUser);
   console.log(`[MockDB registerUser] Added new user:`, {email: newUser.email, role: newUser.role, status: newUser.status, id: newUser.id});
-  console.log(`[MockDB registerUser] Current dbUsers (after add) - Length ${dbUsers.length}:`, dbUsers.map(u => ({email: u.email, role: u.role, status: u.status, id: u.id })));
-
+  console.log('[MockDB registerUser] dbUsers AFTER push:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status}))));
 
   dbLogs.push({
     id: crypto.randomUUID(),
     timestamp: new Date(),
     level: 'INFO',
     message: `تم تسجيل مستخدم جديد: ${newUser.name} (${newUser.role}), الحالة: ${newUser.status}`,
-    user: newUser.email, // Using user's email for log
+    user: newUser.email,
     action: 'USER_REGISTER'
   });
 
-  return { success: true, user: newUser };
+  return { success: true, user: newUser, message: `تم تسجيل حساب ${newUser.role} بنجاح. الحالة: ${status}` };
 }
 
 /**
  * البحث عن مستخدم بواسطة البريد الإلكتروني
  */
 export function findUserByEmail(email: string): User | undefined {
-  console.log(`[MockDB findUserByEmail] Searching for: ${email}`);
+  console.log(`[MockDB findUserByEmail] Searching for: ${email.toLowerCase()}`);
+  console.log('[MockDB findUserByEmail] Current dbUsers:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status}))));
   const foundUser = dbUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
   if (foundUser) {
     console.log(`[MockDB findUserByEmail] Found:`, {email: foundUser.email, role: foundUser.role, status: foundUser.status, id: foundUser.id});
   } else {
-    console.log(`[MockDB findUserByEmail] User ${email} not found.`);
+    console.log(`[MockDB findUserByEmail] User ${email.toLowerCase()} not found.`);
   }
   return foundUser;
 }
-
 
 // Defining a more specific return type for loginUser
 export type LoginResult = {
@@ -330,24 +325,23 @@ export type LoginResult = {
   errorType?: "email_not_found" | "invalid_password" | "account_suspended" | "pending_approval" | "other";
 };
 
-
 /**
  * تسجيل الدخول
  */
 export function loginUser(email: string, password_hash: string): LoginResult {
   console.log(`[MockDB loginUser] Attempting login for email: ${email}`);
-  console.log(`[MockDB loginUser] Current dbUsers (at login attempt) - Length ${dbUsers.length}:`, dbUsers.map(u => ({email: u.email, role: u.role, status: u.status, id: u.id })));
+  console.log('[MockDB loginUser] dbUsers BEFORE find in loginUser:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status}))));
 
   const user = findUserByEmail(email.toLowerCase());
-  
+
   if (!user) {
-    console.log(`[MockDB loginUser] User ${email} not found.`);
+    console.log(`[MockDB loginUser] User ${email} not found after findUserByEmail call.`);
     return { success: false, message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة', errorType: "email_not_found" };
   }
   console.log(`[MockDB loginUser] User ${email} found. Status: ${user.status}. Comparing passwords.`);
   console.log(`[MockDB loginUser] Provided Pwd: ${password_hash}, Stored Pwd: ${user.password_hash}`);
 
-  if (user.password_hash !== password_hash) { // Direct comparison for mock
+  if (user.password_hash !== password_hash) {
     console.log(`[MockDB loginUser] Password mismatch for ${email}.`);
     return { success: false, message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة', errorType: "invalid_password" };
   }
@@ -384,23 +378,24 @@ export function approveEngineer(adminId: string, engineerId: string): { success:
     return { success: false, message: 'ليست لديك صلاحية الموافقة على الحسابات' };
   }
 
-  const engineer = dbUsers.find(u => u.id === engineerId && u.role === 'Engineer');
-  if (!engineer) {
+  const engineerIndex = dbUsers.findIndex(u => u.id === engineerId && u.role === 'Engineer');
+  if (engineerIndex === -1) {
     return { success: false, message: 'المستخدم غير موجود أو ليس مهندساً' };
   }
 
-  if (engineer.status !== 'Pending Approval') {
+  if (dbUsers[engineerIndex].status !== 'Pending Approval') {
     return { success: false, message: 'حساب المهندس ليس في انتظار الموافقة' };
   }
 
-  engineer.status = 'Active';
+  dbUsers[engineerIndex].status = 'Active';
+  const engineerName = dbUsers[engineerIndex].name;
 
   dbLogs.push({
     id: crypto.randomUUID(),
     timestamp: new Date(),
     level: 'INFO',
-    message: `تمت الموافقة على حساب المهندس ${engineer.name} بواسطة ${admin.name}`,
-    user: admin.email, // Using admin's email
+    message: `تمت الموافقة على حساب المهندس ${engineerName} بواسطة ${admin.name}`,
+    user: admin.email,
     action: 'ENGINEER_APPROVE'
   });
 
@@ -423,21 +418,20 @@ export function getPendingEngineers(adminId: string): { success: boolean; users?
  * تحديث بيانات المستخدم (بواسطة الأدمن)
  */
 export function updateUser(
-  adminId: string, // Assuming only admin can update for now
+  adminId: string,
   userIdToUpdate: string,
-  updates: Partial<Omit<User, 'id' | 'createdAt' | 'email' | 'password_hash'>> // Prevent changing sensitive fields directly
+  updates: Partial<Omit<User, 'id' | 'createdAt' | 'email' | 'password_hash'>>
 ): { success: boolean; user?: User; message?: string } {
   const admin = dbUsers.find(u => u.id === adminId && u.role === 'Admin');
   if (!admin) {
     return { success: false, message: 'ليست لديك صلاحية تعديل المستخدمين.' };
   }
-  
+
   const userIndex = dbUsers.findIndex(u => u.id === userIdToUpdate);
   if (userIndex === -1) {
     return { success: false, message: 'المستخدم غير موجود' };
   }
 
-  // Apply only allowed updates (e.g., name, role, status)
   const allowedUpdates: Partial<User> = {};
   if (updates.name) allowedUpdates.name = updates.name;
   if (updates.role) allowedUpdates.role = updates.role;
@@ -445,52 +439,51 @@ export function updateUser(
   if (updates.phone) allowedUpdates.phone = updates.phone;
   if (updates.profileImage) allowedUpdates.profileImage = updates.profileImage;
 
-
   dbUsers[userIndex] = { ...dbUsers[userIndex], ...allowedUpdates };
+  const updatedUser = dbUsers[userIndex];
 
   dbLogs.push({
     id: crypto.randomUUID(),
     timestamp: new Date(),
     level: 'INFO',
-    message: `تم تحديث بيانات المستخدم ${dbUsers[userIndex].name} (ID: ${userIdToUpdate}) بواسطة ${admin.name}`,
+    message: `تم تحديث بيانات المستخدم ${updatedUser.name} (ID: ${userIdToUpdate}) بواسطة ${admin.name}`,
     user: admin.email,
     action: 'USER_UPDATE_BY_ADMIN'
   });
 
-  return { success: true, user: dbUsers[userIndex], message: "تم تحديث بيانات المستخدم بنجاح." };
+  return { success: true, user: updatedUser, message: "تم تحديث بيانات المستخدم بنجاح." };
 }
-
 
 /**
  * حذف مستخدم (بواسطة الأدمن)
  */
 export function deleteUser(adminId: string, userIdToDelete: string): { success: boolean; message?: string } {
-    const admin = dbUsers.find(u => u.id === adminId && u.role === 'Admin');
-    if (!admin) {
-      return { success: false, message: 'ليست لديك صلاحية حذف المستخدمين.' };
-    }
+  const admin = dbUsers.find(u => u.id === adminId && u.role === 'Admin');
+  if (!admin) {
+    return { success: false, message: 'ليست لديك صلاحية حذف المستخدمين.' };
+  }
 
-    if (adminId === userIdToDelete) {
-        return { success: false, message: 'لا يمكن للمسؤول حذف حسابه الخاص بهذه الطريقة.' };
-    }
+  if (adminId === userIdToDelete) {
+    return { success: false, message: 'لا يمكن للمسؤول حذف حسابه الخاص بهذه الطريقة.' };
+  }
 
-    const userIndex = dbUsers.findIndex(u => u.id === userIdToDelete);
-    if (userIndex === -1) {
-      return { success: false, message: 'المستخدم المراد حذفه غير موجود.' };
-    }
-    
-    const userToDelete = dbUsers[userIndex];
-    dbUsers.splice(userIndex, 1);
+  const userIndex = dbUsers.findIndex(u => u.id === userIdToDelete);
+  if (userIndex === -1) {
+    return { success: false, message: 'المستخدم المراد حذفه غير موجود.' };
+  }
 
-    dbLogs.push({
-      id: crypto.randomUUID(),
-      timestamp: new Date(),
-      level: 'WARNING',
-      message: `تم حذف المستخدم ${userToDelete.name} (ID: ${userIdToDelete}) بواسطة ${admin.name}`,
-      user: admin.email,
-      action: 'USER_DELETE_BY_ADMIN'
-    });
-    return { success: true, message: `تم حذف المستخدم ${userToDelete.name} بنجاح.` };
+  const userToDelete = dbUsers[userIndex];
+  dbUsers.splice(userIndex, 1);
+
+  dbLogs.push({
+    id: crypto.randomUUID(),
+    timestamp: new Date(),
+    level: 'WARNING',
+    message: `تم حذف المستخدم ${userToDelete.name} (ID: ${userIdToDelete}) بواسطة ${admin.name}`,
+    user: admin.email,
+    action: 'USER_DELETE_BY_ADMIN'
+  });
+  return { success: true, message: `تم حذف المستخدم ${userToDelete.name} بنجاح.` };
 }
 
 /**
@@ -501,7 +494,7 @@ export function getUsers(adminId: string): { success: boolean; users?: User[]; m
   if (!admin) {
     return { success: false, message: 'غير مصرح لك بعرض قائمة المستخدمين.' };
   }
-  return { success: true, users: [...dbUsers] }; // Return a copy
+  return { success: true, users: [...dbUsers] };
 }
 
 /**
@@ -517,68 +510,52 @@ export function suspendUser(adminId: string, userIdToSuspend: string): { success
   if (userIndex === -1) {
     return { success: false, message: 'المستخدم المراد تعليقه غير موجود.' };
   }
-  
+
   if (dbUsers[userIndex].id === adminId) {
     return { success: false, message: 'لا يمكنك تعليق حسابك الخاص.' };
   }
 
   const userToModify = dbUsers[userIndex];
-  if (userToModify.status === 'Suspended') {
-    userToModify.status = 'Active';
-    dbLogs.push({
-      id: crypto.randomUUID(),
-      timestamp: new Date(),
-      level: 'INFO',
-      message: `تم إلغاء تعليق حساب المستخدم ${userToModify.name} بواسطة ${admin.name}`,
-      user: admin.email,
-      action: 'USER_UNSUSPEND'
-    });
-    return { success: true, message: `تم إلغاء تعليق حساب المستخدم ${userToModify.name}.` };
-  } else {
-    userToModify.status = 'Suspended';
-    dbLogs.push({
-      id: crypto.randomUUID(),
-      timestamp: new Date(),
-      level: 'WARNING',
-      message: `تم تعليق حساب المستخدم ${userToModify.name} بواسطة ${admin.name}`,
-      user: admin.email,
-      action: 'USER_SUSPEND'
-    });
-    return { success: true, message: `تم تعليق حساب المستخدم ${userToModify.name} بنجاح.` };
-  }
-}
+  const actionTaken = userToModify.status === 'Suspended' ? 'إلغاء تعليق' : 'تعليق';
+  userToModify.status = userToModify.status === 'Suspended' ? 'Active' : 'Suspended';
 
+  dbLogs.push({
+    id: crypto.randomUUID(),
+    timestamp: new Date(),
+    level: userToModify.status === 'Suspended' ? 'WARNING' : 'INFO',
+    message: `تم ${actionTaken} حساب المستخدم ${userToModify.name} بواسطة ${admin.name}`,
+    user: admin.email,
+    action: userToModify.status === 'Suspended' ? 'USER_SUSPEND' : 'USER_UNSUSPEND'
+  });
+  return { success: true, message: `تم ${actionTaken} حساب المستخدم ${userToModify.name} بنجاح.` };
+}
 
 // ========== دوال إدارة المشاريع ========== //
 
 export function getProjects(userId: string): { success: boolean; projects?: Project[]; message?: string } {
-  const user = dbUsers.find(u => u.id === userId); // This should be fine for Admin role check
+  const user = dbUsers.find(u => u.id === userId);
   if (!user) {
     return { success: false, message: 'المستخدم غير موجود للتحقق من الصلاحيات.' };
   }
   if (user.role === 'Admin') {
     return { success: true, projects: [...dbProjects] };
   }
-  // Add logic for other roles like Engineer (their projects) or Owner (linked projects)
   if (user.role === 'Engineer') {
-    // For now, let engineers see all projects, or implement specific logic
-    // const engineerProjects = dbProjects.filter(p => p.engineerId === userId);
-    return { success: true, projects: [...dbProjects] };
+    return { success: true, projects: [...dbProjects] }; // Or filter p.engineerId === userId
   }
-   if (user.role === 'Owner') {
+  if (user.role === 'Owner') {
     const ownerProjects = dbProjects.filter(p => p.linkedOwnerEmail === user.email);
     return { success: true, projects: ownerProjects };
   }
   return { success: false, message: 'ليس لديك صلاحية لعرض المشاريع.' };
 }
 
-
 export function addProject(projectData: Omit<Project, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'>): Project | null {
   const newId = dbProjects.length > 0 ? Math.max(...dbProjects.map(p => p.id)) + 1 : 1;
   const newProject: Project = {
     ...projectData,
-    id: newId, // Ensure ID is a number
-    status: "مخطط له", // Default status
+    id: newId,
+    status: "مخطط له",
     overallProgress: 0,
     photos: [{ id: "placeholder", src: "https://placehold.co/600x400.png", alt: "Project placeholder", dataAiHint: "construction project" }],
     timelineTasks: [],
@@ -590,7 +567,7 @@ export function addProject(projectData: Omit<Project, 'id' | 'overallProgress' |
     timestamp: new Date(),
     level: 'INFO',
     message: `تم إنشاء مشروع جديد: ${newProject.name} (ID: ${newProject.id})`,
-    user: projectData.engineer || 'System', // Assuming engineer name is passed
+    user: projectData.engineer || 'System',
     action: 'PROJECT_CREATE'
   });
   return newProject;
@@ -599,15 +576,13 @@ export function addProject(projectData: Omit<Project, 'id' | 'overallProgress' |
 export function findProjectById(projectIdInput: string | number): Project | null {
   const projectId = typeof projectIdInput === 'string' ? parseInt(projectIdInput, 10) : projectIdInput;
   if (isNaN(projectId)) {
-    console.error("[MockDB findProjectById] Invalid project ID:", projectIdInput);
     return null;
   }
   return dbProjects.find(p => p.id === projectId) || null;
 }
 
-
 export function updateProject(
-  projectIdString: string, // projectId is expected as string from params usually
+  projectIdString: string,
   updates: Partial<Omit<Project, 'id'>>
 ): { success: boolean; project?: Project; message?: string } {
   const projectId = parseInt(projectIdString, 10);
@@ -621,13 +596,11 @@ export function updateProject(
   }
 
   const currentProject = dbProjects[projectIndex];
-  // Merge carefully, especially for arrays like photos, tasks, comments
   const updatedProjectData = { ...currentProject, ...updates };
 
-  // Example of how to merge arrays (if applicable for your updates)
   if (updates.photos) {
     updatedProjectData.photos = [...(currentProject.photos || []), ...updates.photos].filter(
-      (photo, index, self) => index === self.findIndex((p) => p.id === photo.id) // Avoid duplicates
+      (photo, index, self) => index === self.findIndex((p) => p.id === photo.id)
     );
   }
   if (updates.timelineTasks) {
@@ -635,12 +608,11 @@ export function updateProject(
       (task, index, self) => index === self.findIndex((t) => t.id === task.id)
     );
   }
-   if (updates.comments) {
+  if (updates.comments) {
     updatedProjectData.comments = [...(currentProject.comments || []), ...updates.comments].filter(
       (comment, index, self) => index === self.findIndex((c) => c.id === comment.id)
     );
   }
-
 
   dbProjects[projectIndex] = updatedProjectData;
 
@@ -649,36 +621,36 @@ export function updateProject(
     timestamp: new Date(),
     level: 'INFO',
     message: `تم تحديث المشروع: ${updatedProjectData.name} (ID: ${projectId})`,
-    user: 'System/User', // Placeholder, ideally identify who made the change
+    user: 'System/User',
     action: 'PROJECT_UPDATE'
   });
 
   return { success: true, project: updatedProjectData, message: "تم تحديث المشروع بنجاح." };
 }
 
+export function deleteProject(adminId: string, projectId: number): { success: boolean; message?: string } {
+    const admin = dbUsers.find(u => u.id === adminId && u.role === 'Admin');
+    if (!admin) {
+      return { success: false, message: 'ليست لديك صلاحية حذف المشاريع.' };
+    }
 
-export function deleteProject(projectId: number): { success: boolean; message?: string } {
-  const initialLength = dbProjects.length;
-  const projectIndex = dbProjects.findIndex(p => p.id === projectId);
+    const projectIndex = dbProjects.findIndex(p => p.id === projectId);
+    if (projectIndex === -1) {
+      return { success: false, message: 'المشروع غير موجود' };
+    }
+    
+    const projectName = dbProjects[projectIndex].name;
+    dbProjects.splice(projectIndex, 1);
 
-  if (projectIndex === -1) {
-    return { success: false, message: 'لم يتم العثور على المشروع' };
-  }
-  const projectName = dbProjects[projectIndex].name;
-  dbProjects.splice(projectIndex, 1);
-
-  if (dbProjects.length < initialLength) {
-     dbLogs.push({
+    dbLogs.push({
         id: crypto.randomUUID(),
         timestamp: new Date(),
         level: 'WARNING',
-        message: `تم حذف المشروع ${projectName} (ID: ${projectId})`,
-        user: 'System/Admin', // Placeholder, assuming admin action
-        action: 'PROJECT_DELETE'
+        message: `تم حذف المشروع ${projectName} (ID: ${projectId}) بواسطة ${admin.name}`,
+        user: admin.email,
+        action: 'PROJECT_DELETE_BY_ADMIN'
     });
-    return { success: true, message: `تم حذف المشروع "${projectName}" بنجاح` };
-  }
-  return { success: false, message: 'لم يتم العثور على المشروع ليتم حذفه' }; // Should not happen if index found
+    return { success: true, message: `تم حذف المشروع "${projectName}" بنجاح.` };
 }
 
 // Default export for easier consumption if needed, though named exports are preferred.
@@ -694,13 +666,15 @@ export default {
   approveEngineer,
   getPendingEngineers,
   updateUser,
-  deleteUser, // For user deletion
+  deleteUser,
   getProjects,
   addProject,
   findProjectById,
   updateProject, // For project update
-  deleteProject, // For project deletion
+  // deleteProject, // This is now admin-specific
   findUserByEmail,
-  getUsers, // For admin to get all users
+  getUsers,
   suspendUser
 };
+
+    

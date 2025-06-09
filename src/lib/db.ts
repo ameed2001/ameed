@@ -1,24 +1,26 @@
 
 // src/lib/db.ts
 import { MongoClient, ObjectId, type Db, type Collection } from 'mongodb';
-import bcrypt from 'bcryptjs';
-import type { z } from 'zod';
+import bcrypt from 'bcryptjs'; // Use bcryptjs for Node.js environment
 
 // Define MongoDB URI and Database Name from environment variables
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || 'construction_management_nosql';
+const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || 'muhandis_al_hasib_db'; // Default DB name
 
 if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env');
-}
-if (!MONGODB_DB_NAME) {
-  throw new Error('Please define the MONGODB_DB_NAME environment variable inside .env');
+  // In a server environment, you might throw an error or use a default for local dev
+  // For Firebase Studio, we'll log a warning, but real deployments need this.
+  console.warn('MONGODB_URI is not set. Database functionality will be limited.');
 }
 
 let cachedClient: MongoClient | null = null;
 let cachedDb: Db | null = null;
 
-export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db }> {
+export async function connectToDatabase(): Promise<{ client: MongoClient | null; db: Db | null }> {
+  if (!MONGODB_URI) {
+    console.error("MongoDB URI is not configured. Cannot connect to database.");
+    return { client: null, db: null };
+  }
   if (cachedClient && cachedDb) {
     try {
       // Ping the database to check if connection is still alive
@@ -44,7 +46,7 @@ export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db
     return { client, db };
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error);
-    throw error;
+    return { client: null, db: null }; // Return nulls on failure
   }
 }
 
@@ -61,24 +63,25 @@ export interface UserDocument {
   _id?: ObjectId;
   name: string;
   email: string;
-  passwordHash: string; // Renamed from password_hash
+  passwordHash: string;
   role: UserRole;
   status: UserStatus;
   phone?: string;
-  profileImage?: string; // Renamed from profile_image
-  createdAt: Date; // Renamed from created_at
-  updatedAt: Date; // Renamed from updated_at
+  profileImage?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface SystemSettingsDocument {
-  _id?: ObjectId;
+  _id?: ObjectId; // Optional: MongoDB will generate it
   siteName: string;
   defaultLanguage: string;
   maintenanceMode: boolean;
-  maxUploadSizeMb: number;
+  maxUploadSizeMb: number; // Corrected casing
   emailNotificationsEnabled: boolean;
   engineerApprovalRequired: boolean;
-  updatedAt?: Date; // Added for consistency
+  updatedAt?: Date;
+  createdAt?: Date; // Added for consistency
 }
 
 export interface LogEntryDocument {
@@ -86,16 +89,27 @@ export interface LogEntryDocument {
   action: string;
   level: LogLevel;
   message: string;
-  ipAddress?: string; // Renamed
-  userAgent?: string; // Renamed
-  createdAt: Date; // Renamed
-  userId?: ObjectId | string; // Can be string if storing as string ID, or ObjectId
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: Date;
+  userId?: ObjectId | string; 
 }
 
-// Helper function for logging
-export async function logAction(action: string, level: LogLevel, message: string, userId: ObjectId | string | null = null, ipAddress?: string, userAgent?: string): Promise<void> {
+
+export async function logAction(
+  action: string, 
+  level: LogLevel, 
+  message: string, 
+  userId?: ObjectId | string | null, 
+  ipAddress?: string, 
+  userAgent?: string
+): Promise<void> {
   try {
     const { db } = await connectToDatabase();
+    if (!db) {
+      console.error('logAction: Database connection not available.');
+      return;
+    }
     const logsCollection: Collection<LogEntryDocument> = db.collection('logs');
     const logEntry: LogEntryDocument = {
       action,
@@ -103,53 +117,57 @@ export async function logAction(action: string, level: LogLevel, message: string
       message,
       createdAt: new Date(),
     };
-    if (userId) logEntry.userId = userId instanceof ObjectId ? userId : new ObjectId(userId);
+    if (userId) {
+        logEntry.userId = typeof userId === 'string' ? new ObjectId(userId) : userId;
+    }
     if (ipAddress) logEntry.ipAddress = ipAddress;
     if (userAgent) logEntry.userAgent = userAgent;
     
     await logsCollection.insertOne(logEntry);
   } catch (error) {
     console.error('Failed to log action:', error);
-    // In a real app, you might have a more robust logging fallback or error handling
   }
 }
 
 
-// Function to get a single system setting or all settings
 export async function getSystemSettings(): Promise<SystemSettingsDocument | null> {
   try {
     const { db } = await connectToDatabase();
+    if (!db) {
+      console.error('getSystemSettings: Database connection not available.');
+      return null;
+    }
     const settingsCollection: Collection<SystemSettingsDocument> = db.collection('system_settings');
-    // Assuming there's only one document for system settings
-    const settings = await settingsCollection.findOne({});
+    let settings = await settingsCollection.findOne({});
+    
     if (!settings) {
-        // Create default settings if none exist
         console.warn('[db.ts] System settings not found. Creating default settings.');
-        const defaultSettings: SystemSettingsDocument = {
-            siteName: "نظام إدارة المشاريع الإنشائية",
+        const defaultSettings: Omit<SystemSettingsDocument, '_id'> = {
+            siteName: "المحترف لحساب الكميات",
             defaultLanguage: "ar",
             maintenanceMode: false,
             maxUploadSizeMb: 25,
             emailNotificationsEnabled: true,
-            engineerApprovalRequired: true,
+            engineerApprovalRequired: true, // As per PRD and user's SQL
+            createdAt: new Date(),
             updatedAt: new Date(),
         };
-        await settingsCollection.insertOne(defaultSettings);
+        const result = await settingsCollection.insertOne(defaultSettings);
+        settings = { _id: result.insertedId, ...defaultSettings };
         await logAction('SYSTEM_SETTINGS_CREATED_DEFAULT', 'INFO', 'Default system settings created as none were found.');
-        return defaultSettings;
     }
     return settings;
   } catch (error) {
-    console.error('Error fetching system settings:', error);
+    console.error('Error fetching/creating system settings:', error);
     await logAction('SYSTEM_SETTINGS_FETCH_ERROR', 'ERROR', `Error fetching system settings: ${error instanceof Error ? error.message : String(error)}`);
-    return null; // Or throw error, depending on desired behavior
+    return null;
   }
 }
 
 
 export interface RegistrationResult {
   success: boolean;
-  userId?: string; // Return string version of ObjectId
+  userId?: string; 
   message?: string;
   isPendingApproval?: boolean;
   errorType?: 'email_exists' | 'db_error' | 'settings_error' | 'other';
@@ -158,7 +176,7 @@ export interface RegistrationResult {
 export async function registerUser(userData: {
   name: string;
   email: string;
-  password_input: string;
+  password_input: string; // This matches what signupUserAction sends
   role: UserRole;
   phone?: string;
 }): Promise<RegistrationResult> {
@@ -167,6 +185,9 @@ export async function registerUser(userData: {
 
   try {
     const { db } = await connectToDatabase();
+    if (!db) {
+      return { success: false, message: "فشل الاتصال بقاعدة البيانات.", errorType: 'db_error' };
+    }
     const usersCollection: Collection<UserDocument> = db.collection('users');
 
     const existingUser = await usersCollection.findOne({ email });
@@ -190,7 +211,7 @@ export async function registerUser(userData: {
 
     const hashedPassword = await bcrypt.hash(password_input, 10);
 
-    const newUserDocument: UserDocument = {
+    const newUserDocument: Omit<UserDocument, '_id'> = { // Omit _id as MongoDB generates it
       name,
       email,
       passwordHash: hashedPassword,
@@ -221,8 +242,7 @@ export async function registerUser(userData: {
     let userMessage = "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.";
     let errorType: RegistrationResult['errorType'] = 'db_error';
 
-    // MongoDB duplicate key error for 'email' index
-    if (error.code === 11000 && error.message.includes('email_1')) {
+    if (error.code === 11000 && error.message.includes('email_1')) { // MongoDB duplicate key error for 'email' index
         userMessage = "البريد الإلكتروني مسجل بالفعل.";
         errorType = 'email_exists';
     }
@@ -235,7 +255,7 @@ export async function registerUser(userData: {
 
 export interface LoginResult {
   success: boolean;
-  user?: Omit<UserDocument, 'passwordHash'> & { id: string }; // Return user object without passwordHash
+  user?: Omit<UserDocument, 'passwordHash'> & { id: string }; // Use UserDocument from this file
   message?: string;
   errorType?: 'email_not_found' | 'invalid_password' | 'account_suspended' | 'pending_approval' | 'account_deleted' | 'db_error' | 'other';
 }
@@ -244,12 +264,16 @@ export async function loginUser(email: string, password_input: string): Promise<
   console.log('[db.ts] loginUser (MongoDB): Attempting login for:', email);
   try {
     const { db } = await connectToDatabase();
+     if (!db) {
+      return { success: false, message: "فشل الاتصال بقاعدة البيانات.", errorType: 'db_error' };
+    }
     const usersCollection: Collection<UserDocument> = db.collection('users');
     
     const user = await usersCollection.findOne({ email });
 
     if (!user) {
       console.warn('[db.ts] loginUser (MongoDB): Email not found:', email);
+      await logAction('USER_LOGIN_FAILURE_EMAIL_NOT_FOUND', 'WARNING', `Login attempt for non-existent email: ${email}`);
       return { success: false, message: "البريد الإلكتروني غير مسجل.", errorType: 'email_not_found' };
     }
 
@@ -271,13 +295,13 @@ export async function loginUser(email: string, password_input: string): Promise<
       await logAction('USER_LOGIN_FAILURE_SUSPENDED', 'WARNING', `Login attempt for suspended account: ${email}`, user._id);
       return { success: false, message: "حسابك موقوف. يرجى التواصل مع الإدارة.", errorType: 'account_suspended' };
     }
-
+    
     if (user.status === 'DELETED') {
       console.warn('[db.ts] loginUser (MongoDB): Account deleted for:', email);
       await logAction('USER_LOGIN_FAILURE_DELETED', 'WARNING', `Login attempt for deleted account: ${email}`, user._id);
       return { success: false, message: "هذا الحساب تم حذفه.", errorType: 'account_deleted' };
     }
-    
+
     if (user.status !== 'ACTIVE') {
         console.warn('[db.ts] loginUser (MongoDB): Account not active for:', email, 'Status:', user.status);
         await logAction('USER_LOGIN_FAILURE_NOT_ACTIVE', 'WARNING', `Login attempt for non-active account: ${email} (Status: ${user.status})`, user._id);
@@ -287,10 +311,10 @@ export async function loginUser(email: string, password_input: string): Promise<
     console.log('[db.ts] loginUser (MongoDB): Login successful for:', user.email);
     await logAction('USER_LOGIN_SUCCESS', 'INFO', `User logged in successfully: ${user.email}`, user._id);
     
-    const { passwordHash, ...userWithoutPassword } = user;
+    const { passwordHash, _id, ...userWithoutPasswordAndMongoId } = user; // Destructure _id as well
     return { 
         success: true, 
-        user: { ...userWithoutPassword, id: user._id!.toHexString() } 
+        user: { ...userWithoutPasswordAndMongoId, id: _id!.toHexString() } // Ensure _id is present and convert to string
     };
 
   } catch (error: any) {
@@ -299,41 +323,3 @@ export async function loginUser(email: string, password_input: string): Promise<
     return { success: false, message: "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.", errorType: 'db_error' };
   }
 }
-
-
-// TODO: Implement other data access functions as per the user's NoSQL examples
-// (updateProfile, changePassword, generatePasswordResetToken, resetPasswordWithToken,
-//  getOwnerProjects, getProjectProgress, getQuantityReportsSummary, getProjectPhotos,
-//  addProjectComment, getProjectTimeline, createProject, getEngineerProjects, archiveProject,
-//  addProjectMaterial, addProgressUpdate, addProjectPhoto, linkOwnerToProject,
-//  getAllUsers, searchUsers, updateUser (admin), deleteUser (admin), adminResetUserPassword,
-//  getAllProjects, updateSystemSettings, getSystemLogs)
-
-// Example for a function based on user's NoSQL code:
-/*
-export async function updateSystemSettings(updateData: Partial<SystemSettingsDocument>, adminId: string | ObjectId): Promise<void> {
-  try {
-    const { db } = await connectToDatabase();
-    const settingsCollection: Collection<SystemSettingsDocument> = db.collection('system_settings');
-    await settingsCollection.updateOne(
-      {}, // Assuming a single settings document, update it without specific filter
-      { $set: { ...updateData, updatedAt: new Date() } },
-      { upsert: true } // Create if it doesn't exist
-    );
-    await logAction('SYSTEM_SETTINGS_UPDATE', 'INFO', 'Updated system settings', adminId);
-  } catch (error) {
-    console.error('Error updating system settings:', error);
-    await logAction('SYSTEM_SETTINGS_UPDATE_ERROR', 'ERROR', `Error updating system settings: ${error instanceof Error ? error.message : String(error)}`, adminId);
-    throw error; // Re-throw or handle as appropriate
-  }
-}
-*/
-
-// Ensure client is closed when the app shuts down (for serverless environments, this might be handled differently)
-// process.on('SIGINT', async () => {
-//   if (cachedClient) {
-//     await cachedClient.close();
-//     console.log('MongoDB client connection closed.');
-//   }
-//   process.exit(0);
-// });

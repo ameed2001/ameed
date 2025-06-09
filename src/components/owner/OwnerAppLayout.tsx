@@ -10,10 +10,10 @@ export default function OwnerAppLayout({ children }: { children: ReactNode }) {
       <Header />
       {/* The main Navbar is intentionally omitted here for the owner layout */}
       <div className="flex flex-1 container mx-auto mt-0 rtl"> {/* Ensure RTL for layout */}
-        <main className="flex-grow p-6 bg-background/90 shadow-inner rounded-r-lg"> {/* Main content area */}
+        <OwnerSidebar /> {/* Sidebar on the right (visually right in RTL as it's first in flex order) */}
+        <main className="flex-grow p-6 bg-background/90 shadow-inner rounded-l-lg"> {/* Main content area, rounded-l-lg for style */}
           {children}
         </main>
-        <OwnerSidebar /> {/* Sidebar on the right (visually left in RTL) */}
       </div>
       <Footer />
     </div>

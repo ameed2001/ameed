@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserCircle, Edit3, Trash2 } from 'lucide-react';
+import { Loader2, UserCircle, Edit3, Trash2, Save } from 'lucide-react'; // Added Save icon
 
 // Define a type for the user data we'll store and retrieve
 interface UserProfileData {
@@ -170,8 +170,8 @@ function ProfilePageContent() {
                 <Input id="profileEmail" type="email" {...registerProfile("email")} className="bg-white focus:border-app-gold" />
                 {profileErrors.email && <p className="text-red-500 text-sm mt-1">{profileErrors.email.message}</p>}
               </div>
-              <Button type="submit" className="w-full bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-600 font-bold py-2.5 text-lg" disabled={isProfileLoading}>
-                {isProfileLoading ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <Edit3 className="ms-2 h-5 w-5" />}
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 text-lg" disabled={isProfileLoading}>
+                {isProfileLoading ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <Save className="ms-2 h-5 w-5" />}
                 حفظ تعديلات الملف الشخصي
               </Button>
             </form>
@@ -241,4 +241,3 @@ export default function ProfilePage() {
   );
 }
 
-    

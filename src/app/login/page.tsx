@@ -157,12 +157,12 @@ export default function LoginPage() {
               </div>
 
               <div className="text-sm text-left">
-                <Link href="/forgot-password" className="font-medium text-app-gold hover:underline">
+                <Link href="/forgot-password" className="font-medium text-blue-700 hover:text-blue-800 hover:underline">
                   هل نسيت كلمة المرور؟
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 text-lg" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="ms-2 h-5 w-5 animate-spin" />
@@ -177,7 +177,7 @@ export default function LoginPage() {
           <CardFooter className="flex justify-center mt-4">
             <p className="text-sm text-gray-600">
               ليس لديك حساب؟{' '}
-              <Link href="/signup" className="font-semibold text-app-gold hover:underline">
+              <Link href="/signup" className="font-semibold text-blue-700 underline hover:text-blue-800">
                 إنشاء حساب جديد
               </Link>
             </p>

@@ -1,10 +1,9 @@
 
 // src/lib/db.ts
 import { PrismaClient, UserRole, UserStatus, LogLevel } from '@prisma/client';
-import type { User } from '@prisma/client'; // Import User type separately
+import type { User } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
-// Prisma Client Initialization (Singleton pattern for Next.js)
 let prisma: PrismaClient;
 
 if (process.env.NODE_ENV === 'production') {
@@ -17,26 +16,25 @@ if (process.env.NODE_ENV === 'production') {
   // @ts-ignore
   prisma = global.prisma;
 }
-// End Prisma Client Initialization
 
-export { prisma, UserRole, UserStatus, LogLevel }; // Export enums
+export { prisma, UserRole, UserStatus, LogLevel };
 
 export interface RegistrationResult {
   success: boolean;
-  user?: User; // Use the imported User type
+  user?: User;
   message?: string;
   isPendingApproval?: boolean;
-  errorType?: 'email_exists' | 'other';
+  errorType?: 'email_exists' | 'system_settings_fetch_error' | 'other';
 }
 
 export async function registerUser(userData: {
   name: string;
   email: string;
-  password_input: string;
-  role: UserRole; // Use UserRole enum from @prisma/client
+  password: string; // Corrected: Changed from password_input to password
+  role: UserRole;
   phone?: string;
 }): Promise<RegistrationResult> {
-  const { name, email, password_input, role, phone } = userData;
+  const { name, email, password, role, phone } = userData; // Corrected: Destructure password directly
   console.log('[db.ts] registerUser: Attempting to register new user:', email, 'with role:', role);
   try {
     const existingUser = await prisma.user.findUnique({
@@ -49,38 +47,43 @@ export async function registerUser(userData: {
     }
     console.log('[db.ts] registerUser: Email check passed for', email);
 
-    const hashedPassword = await bcrypt.hash(password_input, 10);
+    const hashedPassword = await bcrypt.hash(password, 10); // Corrected: Use password directly
     console.log('[db.ts] registerUser: Password hashed for', email);
 
     let initialStatus = UserStatus.ACTIVE;
     let isPending = false;
-    
-    let engineerApprovalRequired = true; // Default to true if settings not found or table error
+    let engineerApprovalRequired = true; 
+
     try {
         const settings = await prisma.systemSettings.findFirst();
         if (settings) {
             engineerApprovalRequired = settings.engineerApprovalRequired;
+            console.log('[db.ts] registerUser: Fetched system settings. Approval required:', engineerApprovalRequired);
         } else {
-            console.warn('[db.ts] registerUser: SystemSettings not found or table empty. Defaulting engineerApprovalRequired to true.');
-        }
-        console.log('[db.ts] registerUser: Fetched system settings. Approval required:', engineerApprovalRequired);
-    } catch (settingsError) {
-        console.error('[db.ts] registerUser: Error fetching SystemSettings:', settingsError);
-        // Continue with default approval required, but log this as it's critical.
-        // Also log this error to the logs table if possible
-        try {
-            await prisma.logEntry.create({
+            console.warn('[db.ts] registerUser: SystemSettings not found. Defaulting engineerApprovalRequired to true.');
+            // Log this critical situation
+             await prisma.logEntry.create({
                 data: {
                     action: 'SYSTEM_SETTINGS_FETCH_FAILURE',
                     level: LogLevel.ERROR,
-                    message: `Error fetching SystemSettings during registration for ${email}: ${settingsError instanceof Error ? settingsError.message : String(settingsError)}`,
+                    message: `SystemSettings not found during registration for ${email}. Defaulted engineerApprovalRequired to true.`,
                 }
             });
-        } catch (dbLogError) {
-            console.error("[db.ts] registerUser: CRITICAL - Failed to log SystemSettings fetch failure to DB:", dbLogError);
+            // For the registration flow, we might want to return an error here or proceed with default.
+            // Proceeding with default true for now, but this indicates a setup issue.
+             return { success: false, message: "خطأ في إعدادات النظام. يرجى التواصل مع الإدارة.", errorType: 'system_settings_fetch_error' };
         }
+    } catch (settingsError) {
+        console.error('[db.ts] registerUser: Error fetching SystemSettings:', settingsError);
+        await prisma.logEntry.create({
+            data: {
+                action: 'SYSTEM_SETTINGS_FETCH_FAILURE',
+                level: LogLevel.ERROR,
+                message: `Error fetching SystemSettings during registration for ${email}: ${settingsError instanceof Error ? settingsError.message : String(settingsError)}`,
+            }
+        });
+        return { success: false, message: "خطأ في قراءة إعدادات النظام. يرجى التواصل مع الإدارة.", errorType: 'system_settings_fetch_error' };
     }
-
 
     if (role === UserRole.ENGINEER) {
       if (engineerApprovalRequired) {
@@ -104,34 +107,25 @@ export async function registerUser(userData: {
     });
     console.log('[db.ts] registerUser: User created successfully:', email, 'Status:', initialStatus);
 
-    try {
-      await prisma.logEntry.create({
+    await prisma.logEntry.create({
         data: {
-          action: 'USER_REGISTRATION',
-          level: LogLevel.INFO,
-          message: `New user registered: ${newUser.email}, Role: ${newUser.role}, Status: ${initialStatus}`,
-          userId: newUser.id,
+            action: 'USER_REGISTRATION',
+            level: LogLevel.INFO,
+            message: `New user registered: ${newUser.email}, Role: ${newUser.role}, Status: ${initialStatus}`,
+            userId: newUser.id,
         }
-      });
-      console.log('[db.ts] registerUser: Log entry created for', email);
-    } catch (logError) {
-      console.error("[db.ts] registerUser: Failed to create log entry for registration:", logError);
-    }
+    });
 
     return { success: true, user: newUser, isPendingApproval: isPending };
   } catch (error) {
     console.error("[db.ts] registerUser: Error during user registration for", email, ":", error);
-    try {
-        await prisma.logEntry.create({
-            data: {
-                action: 'USER_REGISTRATION_FAILURE',
-                level: LogLevel.ERROR,
-                message: `Failed registration attempt for ${email}: ${error instanceof Error ? error.message : String(error)}`,
-            }
-        });
-    } catch (dbLogError) {
-        console.error("[db.ts] registerUser: CRITICAL - Failed to log registration failure to DB:", dbLogError);
-    }
+    await prisma.logEntry.create({
+        data: {
+            action: 'USER_REGISTRATION_FAILURE',
+            level: LogLevel.ERROR,
+            message: `Failed registration attempt for ${email}: ${error instanceof Error ? error.message : String(error)}`,
+        }
+    });
     return { success: false, message: "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.", errorType: 'other' };
   }
 }
@@ -183,34 +177,26 @@ export async function loginUser(email_param: string, password_input: string): Pr
     }
 
     console.log('[db.ts] loginUser: User logged in successfully:', email);
-     try {
-        await prisma.logEntry.create({
-            data: {
-                action: 'USER_LOGIN_SUCCESS',
-                level: LogLevel.INFO,
-                message: `User logged in successfully: ${user.email}`,
-                userId: user.id,
-            }
-        });
-    } catch (logError) {
-        console.error("[db.ts] loginUser: Failed to create log entry for login success:", logError);
-    }
+    await prisma.logEntry.create({
+        data: {
+            action: 'USER_LOGIN_SUCCESS',
+            level: LogLevel.INFO,
+            message: `User logged in successfully: ${user.email}`,
+            userId: user.id,
+        }
+    });
 
     return { success: true, user };
 
   } catch (error) {
     console.error("[db.ts] loginUser: Error during login for", email, ":", error);
-    try {
-        await prisma.logEntry.create({
-            data: {
-                action: 'USER_LOGIN_FAILURE_SYSTEM_ERROR',
-                level: LogLevel.ERROR,
-                message: `System error during login attempt for ${email}: ${error instanceof Error ? error.message : String(error)}`,
-            }
-        });
-    } catch (logError) {
-        console.error("[db.ts] loginUser: Failed to create log entry for login failure:", logError);
-    }
+    await prisma.logEntry.create({
+        data: {
+            action: 'USER_LOGIN_FAILURE_SYSTEM_ERROR',
+            level: LogLevel.ERROR,
+            message: `System error during login attempt for ${email}: ${error instanceof Error ? error.message : String(error)}`,
+        }
+    });
     return { success: false, message: "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.", errorType: 'other' };
   }
 }

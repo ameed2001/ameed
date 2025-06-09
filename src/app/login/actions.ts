@@ -1,20 +1,18 @@
-
 // src/app/login/actions.ts
 'use server';
 
 import { z } from 'zod';
-import { loginUser, type LoginResult, type UserRole } from '@/lib/db'; 
+import { loginUser, type LoginResult, type UserDocument } from '@/lib/db'; // Use UserDocument from db.ts
 import { type LoginActionResponse } from '@/types/auth';
-import type { UserDocument } from '@/lib/db';
 
 export async function loginUserAction(data: { email: string; password_input: string; }): Promise<LoginActionResponse> {
-  console.log("[LoginAction MongoDB] Attempting login for email:", data.email);
+  console.log("[LoginAction JSON_DB] Attempting login for email:", data.email);
 
   // The loginUser function in db.ts expects 'password_input'
   const result: LoginResult = await loginUser(data.email, data.password_input);
 
   if (!result.success || !result.user) {
-    console.error("[LoginAction MongoDB] Login failed:", result.message);
+    console.error("[LoginAction JSON_DB] Login failed:", result.message);
     const fieldErrors: LoginActionResponse['fieldErrors'] = {};
     let generalMessage = result.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
 
@@ -24,6 +22,7 @@ export async function loginUserAction(data: { email: string; password_input: str
         generalMessage = result.message || "البريد الإلكتروني غير مسجل.";
         break;
       case "invalid_password":
+        // Changed to 'password_input' to match form field name if needed for setError
         fieldErrors.password = [result.message || "كلمة المرور غير صحيحة."];
         generalMessage = result.message || "كلمة المرور غير صحيحة.";
         break;
@@ -34,12 +33,6 @@ export async function loginUserAction(data: { email: string; password_input: str
         generalMessage = result.message || "حسابك قيد المراجعة. يرجى الانتظار حتى الموافقة عليه.";
         break;
       default:
-        // Avoid overly generic error on email/password fields if the error isn't specific to them
-        if (!result.message?.includes("البريد الإلكتروني") && !result.message?.includes("كلمة المرور")) {
-             // generalMessage is already set
-        } else {
-            // If message is specific, let it be the general message without field errors
-        }
         break;
     }
 
@@ -50,7 +43,6 @@ export async function loginUserAction(data: { email: string; password_input: str
     };
   }
 
-  // At this point, result.user is guaranteed to be defined
   const user = result.user; 
 
   let redirectTo = "/"; 
@@ -68,12 +60,11 @@ export async function loginUserAction(data: { email: string; password_input: str
        redirectTo = "/"; 
        break;
     default:
-      // This should ideally not happen if roles are strictly managed
-      console.warn(`[LoginAction MongoDB] Unknown role for user ${user.email}: ${user.role}`);
+      console.warn(`[LoginAction JSON_DB] Unknown role for user ${user.email}: ${user.role}`);
       redirectTo = "/";
   }
 
-  console.log(`[LoginAction MongoDB] Login successful for ${user.email} (Role: ${user.role}). Redirecting to ${redirectTo}`);
+  console.log(`[LoginAction JSON_DB] Login successful for ${user.email} (Role: ${user.role}). Redirecting to ${redirectTo}`);
 
   return {
     success: true,

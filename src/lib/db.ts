@@ -1,141 +1,159 @@
-
 // src/lib/db.ts
-import { ObjectId, type Collection, type MongoDbInstance } from '@/db/connect';
+import fs from 'fs/promises';
+import path from 'path';
 import bcrypt from 'bcryptjs';
-import { connectToDatabase } from "@/db/connect";
 
-// Consistent with UserRole type values
+const DB_PATH = path.join(process.cwd(), '.data', 'db.json');
+
 export type UserRole = 'ADMIN' | 'ENGINEER' | 'OWNER' | 'GENERAL_USER';
-// Consistent with UserStatus type values
 export type UserStatus = 'ACTIVE' | 'PENDING_APPROVAL' | 'SUSPENDED' | 'DELETED';
 
-// Document interfaces reflect snake_case for MongoDB fields as per user's NoSQL example
 export interface UserDocument {
-  _id?: ObjectId;
+  id: string; // Changed _id to id for consistency with provided db.json
   name: string;
   email: string;
-  password_hash: string; // Storing hashed password
+  password_hash: string;
   role: UserRole;
   status: UserStatus;
   phone?: string;
-  profile_image?: string;
-  created_at: Date;
-  updated_at: Date;
+  profileImage?: string; // Changed from profile_image
+  createdAt: string; // Changed from Date to string to match db.json
+  updatedAt?: string; // Changed from Date to string
 }
 
 export interface SystemSettingsDocument {
-  _id?: ObjectId;
-  site_name: string;
-  default_language: string;
-  maintenance_mode: boolean;
-  max_upload_size_mb: number;
-  email_notifications_enabled: boolean;
-  engineer_approval_required: boolean; // Field name in DB
-  created_at?: Date;
-  updated_at?: Date;
+  siteName: string;
+  defaultLanguage: string;
+  maintenanceMode: boolean;
+  maxUploadSizeMB: number; // Changed from max_upload_size_mb
+  emailNotificationsEnabled: boolean; // Changed from email_notifications_enabled
+  engineerApprovalRequired: boolean; // Changed from engineer_approval_required
 }
 
 export type LogLevel = 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
 
 export interface LogEntryDocument {
-  _id?: ObjectId;
+  id: string; // Changed _id to id
   action: string;
   level: LogLevel;
   message: string;
-  ip_address?: string;
-  user_agent?: string;
-  created_at: Date;
-  user_id?: ObjectId | string; // Can be ObjectId or string if reference is not always ObjectId
+  ipAddress?: string; // Changed from ip_address
+  userAgent?: string; // Changed from user_agent
+  timestamp: string; // Changed from createdAt, assuming timestamp is what's in db.json
+  user?: string; // User's name or 'System'
+}
+
+interface DatabaseStructure {
+  users: UserDocument[];
+  projects: any[]; // Define later
+  settings: SystemSettingsDocument;
+  logs: LogEntryDocument[];
+  roles: string[];
+  useCases: any[]; // Define later
+}
+
+async function readDb(): Promise<DatabaseStructure> {
+  try {
+    const fileData = await fs.readFile(DB_PATH, 'utf-8');
+    return JSON.parse(fileData) as DatabaseStructure;
+  } catch (error) {
+    console.error('[db.ts] readDb: Error reading or parsing db.json. Returning a default structure.', error);
+    // If file doesn't exist or is corrupted, return a default structure.
+    // This helps in first-run scenarios or if the file gets deleted.
+    return {
+      users: [],
+      projects: [],
+      settings: {
+        siteName: 'المحترف لحساب الكميات',
+        defaultLanguage: 'ar',
+        maintenanceMode: false,
+        maxUploadSizeMB: 25,
+        emailNotificationsEnabled: true,
+        engineerApprovalRequired: true,
+      },
+      logs: [],
+      roles: ["Admin", "Engineer", "Owner", "GeneralUser"],
+      useCases: []
+    };
+  }
+}
+
+async function writeDb(data: DatabaseStructure): Promise<void> {
+  try {
+    await fs.writeFile(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (error) {
+    console.error('[db.ts] writeDb: Error writing to db.json', error);
+    // Decide how to handle write errors. Maybe throw to make it more visible.
+    throw new Error("Failed to write to the database file.");
+  }
 }
 
 export async function logAction(
   action: string,
   level: LogLevel,
   message: string,
-  userId?: ObjectId | string | null,
+  userNameOrSystem?: string, // Changed from userId
   ipAddress?: string,
   userAgent?: string
 ): Promise<void> {
-  console.log(`[db.ts] logAction: Action: ${action}, Level: ${level}, Message: ${message.substring(0,100)}, UserID: ${userId || 'System'}`);
+  console.log(`[db.ts] logAction: Action: ${action}, Level: ${level}, Message: ${message.substring(0,100)}, User: ${userNameOrSystem || 'System'}`);
   try {
-    const { db } = await connectToDatabase();
-    if (!db) {
-      console.error('[db.ts] logAction: Database connection not available. Log attempt failed for action:', action);
-      return;
-    }
-    const logsCollection: Collection<Omit<LogEntryDocument, '_id'>> = db.collection('logs');
-    
-    const logEntry: Omit<LogEntryDocument, '_id'> = {
+    const db = await readDb();
+    const logEntry: LogEntryDocument = {
+      id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       action,
       level,
       message,
-      created_at: new Date(),
+      timestamp: new Date().toISOString(),
+      user: userNameOrSystem || 'System',
     };
-    if (userId) {
-      try {
-        logEntry.user_id = typeof userId === 'string' && ObjectId.isValid(userId) ? new ObjectId(userId) : userId;
-      } catch (e) {
-        console.warn(`[db.ts] logAction: Could not convert userId string to ObjectId: ${userId}. Storing as string or original type.`, e);
-        logEntry.user_id = userId;
-      }
-    }
-    if (ipAddress) logEntry.ip_address = ipAddress;
-    if (userAgent) logEntry.user_agent = userAgent;
+    if (ipAddress) logEntry.ipAddress = ipAddress;
+    if (userAgent) logEntry.userAgent = userAgent;
 
-    await logsCollection.insertOne(logEntry);
+    db.logs.push(logEntry);
+    await writeDb(db);
   } catch (error) {
     console.error('[db.ts] logAction: Failed to log action:', action, error);
   }
 }
 
-export async function getSystemSettings(): Promise<SystemSettingsDocument | null> {
+export async function getSystemSettings(): Promise<SystemSettingsDocument> {
   console.log('[db.ts] getSystemSettings: Attempting to retrieve system settings.');
   try {
-    const { db } = await connectToDatabase();
-    if (!db) {
-      console.error('[db.ts] getSystemSettings: Database connection failed.');
-      await logAction('SYSTEM_SETTINGS_FETCH_FAILURE', 'ERROR', 'Database connection failed while fetching system settings.');
-      return null;
-    }
-    const settingsCollection: Collection<SystemSettingsDocument> = db.collection('system_settings');
-    let settings = await settingsCollection.findOne({});
-
-    if (!settings) {
-      console.warn('[db.ts] getSystemSettings: System settings not found in DB. Creating default settings.');
-      const defaultSettingsData: Omit<SystemSettingsDocument, '_id'> = {
-        site_name: process.env.SITE_NAME || 'المحترف لحساب الكميات',
-        default_language: process.env.DEFAULT_LANGUAGE || 'ar',
-        maintenance_mode: false,
-        max_upload_size_mb: parseInt(process.env.MAX_UPLOAD_SIZE_MB || '25', 10),
-        email_notifications_enabled: true,
-        engineer_approval_required: true, // Default as per use case
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
-      const insertResult = await settingsCollection.insertOne(defaultSettingsData as SystemSettingsDocument);
-      if (insertResult.insertedId) {
-        settings = await settingsCollection.findOne({ _id: insertResult.insertedId });
-        if (settings) {
-          console.log('[db.ts] getSystemSettings: Default system settings created and retrieved.');
-          await logAction('SYSTEM_SETTINGS_CREATED_DEFAULT', 'INFO', 'Default system settings created as none were found.');
-        } else {
-          console.error('[db.ts] getSystemSettings: Failed to retrieve default settings after creation.');
-          await logAction('SYSTEM_SETTINGS_CREATE_FAILURE', 'ERROR', 'Failed to retrieve default system settings after creation.');
-          return null;
-        }
-      } else {
-        console.error('[db.ts] getSystemSettings: Failed to insert default settings.');
-        await logAction('SYSTEM_SETTINGS_CREATE_FAILURE', 'ERROR', 'Failed to insert default system settings.');
-        return null;
-      }
+    const db = await readDb();
+    if (db.settings) {
+        console.log('[db.ts] getSystemSettings: System settings retrieved successfully.');
+        return db.settings;
     } else {
-      console.log('[db.ts] getSystemSettings: System settings retrieved successfully.');
+        // This case should ideally be handled by readDb returning default settings
+        console.warn('[db.ts] getSystemSettings: System settings not found in db.json. Returning hardcoded defaults.');
+        const defaultSettings: SystemSettingsDocument = {
+            siteName: 'المحترف لحساب الكميات',
+            defaultLanguage: 'ar',
+            maintenanceMode: false,
+            maxUploadSizeMB: 25,
+            emailNotificationsEnabled: true,
+            engineerApprovalRequired: true,
+        };
+        // Optionally write these defaults back if they are missing
+        // const currentDb = await readDb(); // Reread to ensure we have the latest
+        // currentDb.settings = defaultSettings;
+        // await writeDb(currentDb);
+        await logAction('SYSTEM_SETTINGS_MISSING', 'WARNING', 'System settings were missing, default values returned.');
+        return defaultSettings;
     }
-    return settings;
   } catch (error) {
-    console.error('[db.ts] getSystemSettings: Error fetching/creating system settings:', error);
-    await logAction('SYSTEM_SETTINGS_FETCH_ERROR', 'ERROR', `Error fetching/creating system settings: ${error instanceof Error ? error.message : String(error)}`);
-    return null;
+    console.error('[db.ts] getSystemSettings: Error fetching system settings:', error);
+    await logAction('SYSTEM_SETTINGS_FETCH_ERROR', 'ERROR', `Error fetching system settings: ${error instanceof Error ? error.message : String(error)}`);
+    // Fallback to hardcoded defaults in case of error
+    return {
+        siteName: 'المحترف لحساب الكميات',
+        defaultLanguage: 'ar',
+        maintenanceMode: false,
+        maxUploadSizeMB: 25,
+        emailNotificationsEnabled: true,
+        engineerApprovalRequired: true,
+    };
   }
 }
 
@@ -147,79 +165,55 @@ export interface RegistrationResult {
   errorType?: 'email_exists' | 'db_error' | 'settings_error' | 'other';
 }
 
-// userData.password is the raw password from the form
-// userData.role is expected to be an uppercase UserRole type
 export async function registerUser(userData: {
   name: string;
   email: string;
-  password_input: string; // Explicitly named to match form data, will be hashed to password_hash
+  password_input: string;
   role: UserRole;
   phone?: string;
 }): Promise<RegistrationResult> {
   const { name, email, password_input, role, phone } = userData;
-  console.log('[db.ts] registerUser: Attempting to register user:', email, 'with role:', role);
+  console.log('[db.ts] registerUser (JSON): Attempting to register user:', email, 'with role:', role);
 
   try {
-    const { db } = await connectToDatabase();
-    if (!db) {
-      console.error("[db.ts] registerUser: Database connection failed.");
-      return { success: false, message: "فشل الاتصال بقاعدة البيانات.", errorType: 'db_error' };
-    }
-    const usersCollection: Collection<UserDocument> = db.collection('users');
-    try {
-        await usersCollection.createIndex({ email: 1 }, { unique: true });
-    } catch (indexError) {
-        console.warn("[db.ts] registerUser: Could not ensure unique index on email. This might lead to duplicate emails if not already set.", indexError);
-    }
+    const db = await readDb();
 
-
-    const existingUser = await usersCollection.findOne({ email });
+    const existingUser = db.users.find(u => u.email === email);
     if (existingUser) {
-      console.warn('[db.ts] registerUser: Email already exists:', email);
+      console.warn('[db.ts] registerUser (JSON): Email already exists:', email);
       await logAction('USER_REGISTRATION_FAILURE', 'WARNING', `Registration attempt failed for existing email: ${email}`);
       return { success: false, message: "البريد الإلكتروني مسجل بالفعل.", errorType: 'email_exists' };
     }
 
     const settings = await getSystemSettings();
-    if (!settings) {
-      console.error('[db.ts] registerUser: System settings not found, cannot determine approval requirements.');
-      await logAction('USER_REGISTRATION_FAILURE', 'ERROR', 'System settings not found during user registration for: ' + email);
-      return { success: false, message: "خطأ في إعدادات النظام، لا يمكن إكمال التسجيل.", errorType: 'settings_error' };
-    }
-    
-    let initialStatus: UserStatus = 'ACTIVE';
-    // Use snake_case for accessing settings field from DB object
-    if (role === 'ENGINEER' && settings.engineer_approval_required) {
-      initialStatus = 'PENDING_APPROVAL';
-    }
+    // engineerApprovalRequired is a boolean
+    let initialStatus: UserStatus = (role === 'ENGINEER' && settings.engineerApprovalRequired) ? 'PENDING_APPROVAL' : 'ACTIVE';
 
     const hashedPassword = await bcrypt.hash(password_input, 10);
 
-    const newUserDocument: Omit<UserDocument, '_id'> = {
+    const newUserId = `user-${Date.now()}-${db.users.length + 1}`;
+    const newUserDocument: UserDocument = {
+      id: newUserId,
       name,
       email,
       password_hash: hashedPassword,
-      role, // Already uppercase
+      role,
       status: initialStatus,
       phone: phone || undefined,
-      created_at: new Date(),
-      updated_at: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      profileImage: `https://placehold.co/100x100.png?text=${name.substring(0,2).toUpperCase()}`
     };
 
-    const result = await usersCollection.insertOne(newUserDocument as UserDocument); // Cast to UserDocument for insert
-    if (!result.insertedId) {
-        console.error("[db.ts] registerUser: Failed to insert new user into database for email:", email);
-        await logAction('USER_REGISTRATION_FAILURE', 'ERROR', `Database insert failed for ${email}`);
-        return { success: false, message: "فشل إنشاء الحساب في قاعدة البيانات.", errorType: 'db_error' };
-    }
-    const newUserId = result.insertedId;
+    db.users.push(newUserDocument);
+    await writeDb(db);
 
-    console.log('[db.ts] registerUser: User registered successfully:', email, 'Status:', initialStatus, 'ID:', newUserId.toHexString());
-    await logAction('USER_REGISTRATION_SUCCESS', 'INFO', `User ${email} registered. Role: ${role}, Status: ${initialStatus}.`, newUserId.toHexString());
+    console.log('[db.ts] registerUser (JSON): User registered successfully:', email, 'Status:', initialStatus, 'ID:', newUserId);
+    await logAction('USER_REGISTRATION_SUCCESS', 'INFO', `User ${email} registered. Role: ${role}, Status: ${initialStatus}.`, newUserId);
 
     return {
       success: true,
-      userId: newUserId.toHexString(),
+      userId: newUserId,
       isPendingApproval: initialStatus === 'PENDING_APPROVAL',
       message: initialStatus === 'PENDING_APPROVAL'
         ? "تم إنشاء حسابك كمهندس بنجاح. حسابك حاليًا قيد المراجعة والموافقة من قبل الإدارة."
@@ -227,164 +221,81 @@ export async function registerUser(userData: {
     };
 
   } catch (error: any) {
-    console.error("[db.ts] registerUser: Error during registration for", email, ":", error);
-    let userMessage = "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.";
-    let errorType: RegistrationResult['errorType'] = 'db_error';
-
-    if (error.code === 11000) { // MongoDB duplicate key error
-        userMessage = "البريد الإلكتروني مسجل بالفعل.";
-        errorType = 'email_exists';
-    }
-    
-    await logAction('USER_REGISTRATION_FAILURE', 'ERROR', `Database error during registration attempt for ${email}: ${error.message || String(error)}`);
-    return { success: false, message: userMessage, errorType };
+    console.error("[db.ts] registerUser (JSON): Error during registration for", email, ":", error);
+    await logAction('USER_REGISTRATION_FAILURE', 'ERROR', `File DB error during registration attempt for ${email}: ${error.message || String(error)}`);
+    return { success: false, message: "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.", errorType: 'db_error' };
   }
 }
 
 export interface LoginResult {
   success: boolean;
-  user?: Omit<UserDocument, 'password_hash'> & { id: string }; // Exclude password_hash, add string id
+  user?: Omit<UserDocument, 'password_hash'>;
   message?: string;
   errorType?: 'email_not_found' | 'invalid_password' | 'account_suspended' | 'pending_approval' | 'account_deleted' | 'db_error' | 'other';
 }
 
 export async function loginUser(email: string, password_input: string): Promise<LoginResult> {
-  console.log('[db.ts] loginUser: Attempting login for:', email);
+  console.log('[db.ts] loginUser (JSON): Attempting login for:', email);
   try {
-    const { db } = await connectToDatabase();
-     if (!db) {
-      console.error("[db.ts] loginUser: Database connection failed.");
-      return { success: false, message: "فشل الاتصال بقاعدة البيانات.", errorType: 'db_error' };
-    }
-    const usersCollection: Collection<UserDocument> = db.collection('users');
-    
-    const user = await usersCollection.findOne({ email });
+    const db = await readDb();
+    const user = db.users.find(u => u.email === email);
 
     if (!user) {
-      console.warn('[db.ts] loginUser: Email not found:', email);
+      console.warn('[db.ts] loginUser (JSON): Email not found:', email);
       await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for non-existent email: ${email}`);
       return { success: false, message: "البريد الإلكتروني غير مسجل.", errorType: 'email_not_found' };
     }
 
     const passwordMatch = await bcrypt.compare(password_input, user.password_hash);
     if (!passwordMatch) {
-      console.warn('[db.ts] loginUser: Invalid password for:', email);
-      await logAction('USER_LOGIN_FAILURE', 'WARNING', `Invalid password attempt for user: ${email}`, user._id?.toHexString());
+      console.warn('[db.ts] loginUser (JSON): Invalid password for:', email);
+      await logAction('USER_LOGIN_FAILURE', 'WARNING', `Invalid password attempt for user: ${email}`, user.id);
       return { success: false, message: "كلمة المرور غير صحيحة.", errorType: 'invalid_password' };
     }
     
     if (user.status === 'PENDING_APPROVAL') {
-      console.warn('[db.ts] loginUser: Account pending approval for:', email);
-      await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for pending approval account: ${email}`, user._id?.toHexString());
+      console.warn('[db.ts] loginUser (JSON): Account pending approval for:', email);
+      await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for pending approval account: ${email}`, user.id);
       return { success: false, message: "حسابك قيد المراجعة. يرجى الانتظار حتى الموافقة عليه.", errorType: 'pending_approval' };
     }
 
     if (user.status === 'SUSPENDED') {
-      console.warn('[db.ts] loginUser: Account suspended for:', email);
-      await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for suspended account: ${email}`, user._id?.toHexString());
+      console.warn('[db.ts] loginUser (JSON): Account suspended for:', email);
+      await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for suspended account: ${email}`, user.id);
       return { success: false, message: "حسابك موقوف. يرجى التواصل مع الإدارة.", errorType: 'account_suspended' };
     }
     
     if (user.status === 'DELETED') {
-      console.warn('[db.ts] loginUser: Account deleted for:', email);
-      await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for deleted account: ${email}`, user._id?.toHexString());
+      console.warn('[db.ts] loginUser (JSON): Account deleted for:', email);
+      await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for deleted account: ${email}`, user.id);
       return { success: false, message: "هذا الحساب تم حذفه.", errorType: 'account_deleted' };
     }
 
-    if (user.status !== 'ACTIVE') { // General catch-all for other non-active states
-        console.warn('[db.ts] loginUser: Account not active for:', email, 'Status:', user.status);
-        await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for non-active account: ${email} (Status: ${user.status})`, user._id?.toHexString());
+    if (user.status !== 'ACTIVE') {
+        console.warn('[db.ts] loginUser (JSON): Account not active for:', email, 'Status:', user.status);
+        await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for non-active account: ${email} (Status: ${user.status})`, user.id);
         return { success: false, message: "الحساب غير نشط. يرجى التواصل مع الإدارة.", errorType: 'other' };
     }
 
-    console.log('[db.ts] loginUser: Login successful for:', user.email);
-    await logAction('USER_LOGIN_SUCCESS', 'INFO', `User logged in successfully: ${user.email}`, user._id?.toHexString());
+    console.log('[db.ts] loginUser (JSON): Login successful for:', user.email);
+    await logAction('USER_LOGIN_SUCCESS', 'INFO', `User logged in successfully: ${user.email}`, user.id);
     
-    // Prepare user object for return, excluding sensitive fields
-    const { password_hash, _id, ...userWithoutPasswordAndMongoId } = user;
+    const { password_hash, ...userWithoutPassword } = user;
     return { 
         success: true, 
-        user: { ...userWithoutPasswordAndMongoId, id: _id!.toHexString() } // Ensure _id is converted to string 'id'
+        user: userWithoutPassword
     };
 
   } catch (error: any) {
-    console.error("[db.ts] loginUser: Error during login for", email, ":", error);
-    await logAction('USER_LOGIN_FAILURE', 'ERROR', `Database error during login attempt for ${email}: ${error.message || String(error)}`);
+    console.error("[db.ts] loginUser (JSON): Error during login for", email, ":", error);
+    await logAction('USER_LOGIN_FAILURE', 'ERROR', `File DB error during login attempt for ${email}: ${error.message || String(error)}`);
     return { success: false, message: "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.", errorType: 'db_error' };
   }
 }
 
-// Placeholder for other DB functions as per user's NoSQL example schema
-// These would need to be implemented similarly, using connectToDatabase and MongoDB operations.
-
-export interface ProjectPhotoDocument {
-  _id?: ObjectId;
-  url: string;
-  caption: string;
-  upload_date: Date;
-  project_id: ObjectId;
-  progress_update_id?: ObjectId;
-  task_id?: ObjectId;
-}
-
-export interface ProjectTaskDocument {
-  _id?: ObjectId;
-  name: string;
-  description?: string;
-  start_date: Date;
-  end_date: Date;
-  status: string; // 'NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'DELAYED'
-  progress: number;
-}
-
-export interface ProjectStageDocument {
-  _id?: ObjectId;
-  name: string;
-  description?: string;
-  start_date: Date;
-  end_date: Date;
-  progress: number;
-  tasks: ProjectTaskDocument[]; // Embedded
-}
-
-export type ProjectStatusType = 'PLANNED' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'ARCHIVED';
-
-export interface ProjectDocument {
-  _id?: ObjectId;
-  name: string;
-  description?: string;
-  location?: string;
-  start_date?: Date;
-  end_date?: Date;
-  budget?: number;
-  status?: ProjectStatusType;
-  overall_progress?: number;
-  owner_id?: ObjectId;
-  engineers?: ObjectId[]; // Array of engineer user IDs
-  created_at?: Date;
-  updated_at?: Date;
-  stages?: ProjectStageDocument[]; // Embedded
-  quantitySummary?: string; // This was in mock-db, keeping for potential use
-  photos?: ProjectPhotoDocument[]; // Should this be embedded or a separate collection? User example suggests separate.
-  comments?: CommentDocument[];   // Same as photos.
-  timelineTasks?: ProjectTaskDocument[]; // This seems redundant if tasks are in stages. Review schema.
-  linkedOwnerEmail?: string; // From mock-db, might be useful.
-}
-
-export interface CommentDocument {
-  _id?: ObjectId;
-  text: string;
-  created_at: Date;
-  user_id: ObjectId | string;
-  project_id: ObjectId;
-  task_id?: ObjectId;
-  update_id?: ObjectId;
-  // Fields from mock-db's ProjectComment that might be useful if embedding user info:
-  user?: string; // Name of the user who commented
-  avatar?: string; // URL to avatar
-  dataAiHintAvatar?: string;
-  date?: string; // Potentially redundant with created_at, format may differ
-}
-
-// Ensure other CRUD operations (getProjects, updateProject, deleteProject, etc.)
-// are implemented here using MongoDB driver.
+// Placeholder for other DB functions (projects, tasks, etc.) to be adapted for JSON file.
+// Example:
+// export async function getProjectsByOwner(ownerId: string): Promise<any[]> {
+//   const db = await readDb();
+//   return db.projects.filter(p => p.owner_id === ownerId && p.status !== 'ARCHIVED');
+// }

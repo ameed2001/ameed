@@ -1,10 +1,8 @@
-
+// src/app/signup/actions.ts
 'use server';
 
 import { z } from 'zod';
-// Import UserRole from @prisma/client is no longer valid.
-// UserRole type is now defined in src/lib/db.ts
-import { registerUser, type RegistrationResult, type UserRole } from '@/lib/db';
+import { registerUser, type RegistrationResult, type UserRole } from '@/lib/db'; // UserRole is now from our own db.ts
 
 export interface SignupActionResponse {
   success: boolean;
@@ -27,10 +25,10 @@ type ClientSignupFormDataType = z.infer<typeof clientSignupFormSchema>;
 export async function signupUserAction(
   data: ClientSignupFormDataType
 ): Promise<SignupActionResponse> {
-  console.log("[SignupAction] Server Action called with:", {
+  console.log("[SignupAction JSON_DB] Server Action called with:", {
     name: data.name,
     email: data.email,
-    role: data.role, // This will be 'owner' or 'engineer' (lowercase)
+    role: data.role,
   });
   
   if (data.password !== data.confirmPassword) {
@@ -50,11 +48,9 @@ export async function signupUserAction(
   }
 
   // Convert role to uppercase for UserRole type compatibility in db.ts
-  // UserRole type expects 'OWNER' or 'ENGINEER' (uppercase)
   const roleForDb = data.role.toUpperCase() as UserRole;
   if (roleForDb !== 'OWNER' && roleForDb !== 'ENGINEER' && roleForDb !== 'ADMIN' && roleForDb !== 'GENERAL_USER') {
-    // This check is defensive, as clientSignupFormSchema already limits it
-    console.error(`[SignupAction] Invalid role after uppercase conversion: ${roleForDb}`);
+    console.error(`[SignupAction JSON_DB] Invalid role after uppercase conversion: ${roleForDb}`);
     return {
         success: false,
         message: "الدور المحدد غير صالح.",
@@ -62,12 +58,12 @@ export async function signupUserAction(
     };
   }
 
+  // The registerUser function now expects password_input
   const registrationResult: RegistrationResult = await registerUser({
       name: data.name,
       email: data.email,
-      password_input: data.password, // Pass the raw password
+      password_input: data.password, 
       role: roleForDb,
-      // phone: data.phone, // Pass if/when phone is added
   });
 
   if (!registrationResult.success) {

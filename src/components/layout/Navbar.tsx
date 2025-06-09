@@ -28,10 +28,10 @@ const Navbar = () => {
     }
   }, [pathname]); // Re-check on pathname change, e.g., after login/logout
 
-  const allNavItems = [...baseNavItems];
+  let allNavItems = [...baseNavItems];
 
   if (userRole === 'OWNER') {
-    allNavItems.splice(1, 0, { href: '/owner/dashboard', label: 'حسابي', icon: UserCircle }); // Insert "حسابي" after "الرئيسية"
+    allNavItems.push({ href: '/owner/dashboard', label: 'حسابي', icon: UserCircle }); // Add "حسابي" to the end
   }
   
   // const handleLogout = () => {

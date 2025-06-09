@@ -32,7 +32,7 @@ const ownerNavItems = [
   { href: '/contact', label: 'تواصل معنا', icon: Phone },
 ];
 
-// Zeroed-out stats data
+// Data for stats section in the sidebar, matching the user-provided image order
 const sidebarStats = [
   { label: "المشاريع النشطة", value: 0, icon: Briefcase, color: "text-amber-400" },
   { label: "الرسائل الجديدة", value: 0, icon: Mail, color: "text-blue-400" },
@@ -113,12 +113,12 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
       {/* Stats Section - Only visible when sidebar is open */}
       {isOpen && (
         <div className="p-3 border-b border-gray-700 flex-shrink-0">
-          <h3 className="text-sm font-semibold text-gray-400 mb-2 px-1 text-right">نظرة عامة سريعة</h3>
+          <h3 className="text-sm font-semibold text-white mb-2 px-1 text-right">نظرة عامة سريعة</h3>
           <div className="grid grid-cols-2 gap-2">
             {sidebarStats.map(stat => {
               const IconComponent = stat.icon;
               return (
-                <div key={stat.label} className="bg-gray-700/50 p-2 rounded-md text-center">
+                <div key={stat.label} className="bg-zinc-800 p-2 rounded-md text-center">
                   <IconComponent className={cn("h-5 w-5 mx-auto mb-1", stat.color)} />
                   <div className="text-xs text-gray-300 truncate">{stat.label}</div>
                   <div className="text-lg font-bold text-white">{stat.value}</div>
@@ -138,7 +138,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
+                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
                     "hover:bg-app-gold hover:text-gray-900",
                     isActive ? "bg-app-gold text-gray-900 shadow-md" : "text-gray-300 hover:text-gray-100",
                     !isOpen && "justify-center py-3"

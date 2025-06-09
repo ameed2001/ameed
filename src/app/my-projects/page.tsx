@@ -9,8 +9,7 @@ import { Briefcase, Eye, PlusSquare, Archive } from "lucide-react";
 import Image from 'next/image';
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
-import { dbProjects, type Project, updateProject as dbUpdateProject } from '@/lib/mock-db';
-
+import { getProjects, type Project, updateProject as dbUpdateProject } from '@/lib/db'; // Corrected import
 
 // Simulate logged-in user - replace with actual auth context in a real app
 const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Owner"; 
@@ -18,14 +17,31 @@ const MOCK_CURRENT_USER_EMAIL: string = "owner@example.com";
 
 export default function MyProjectsPage() {
   const { toast } = useToast();
-  // Initialize component state with data from mock DB
-  const [projects, setProjectsState] = useState<Project[]>(dbProjects);
+  const [projects, setProjectsState] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const refreshProjectsFromDb = () => setProjectsState([...dbProjects]);
+  async function loadProjects() {
+    setIsLoading(true);
+    const result = await getProjects(MOCK_CURRENT_USER_EMAIL); // Using MOCK_CURRENT_USER_EMAIL as userIdForFilter
+    if (result.success && result.projects) {
+      setProjectsState(result.projects);
+    } else {
+      setProjectsState([]);
+      toast({ title: "خطأ", description: result.message || "فشل تحميل المشاريع.", variant: "destructive" });
+    }
+    setIsLoading(false);
+  }
 
-  const handleArchiveProject = (projectId: string, projectName: string) => {
-    if (dbUpdateProject(projectId, { status: 'مؤرشف' })) {
-        refreshProjectsFromDb();
+  useEffect(() => {
+    loadProjects();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleArchiveProject = async (projectId: number, projectName: string) => {
+    // dbUpdateProject (from lib/db) expects projectId as number
+    const result = await dbUpdateProject(projectId, { status: 'مؤرشف' }); 
+    if (result.success) {
+        loadProjects(); // Refresh projects from the source
         toast({
           title: "أرشفة المشروع",
           description: `تم نقل المشروع "${projectName}" إلى الأرشيف بنجاح.`,
@@ -34,7 +50,7 @@ export default function MyProjectsPage() {
     } else {
         toast({
           title: "خطأ",
-          description: `فشل أرشفة المشروع "${projectName}".`,
+          description: result.message || `فشل أرشفة المشروع "${projectName}".`,
           variant: "destructive",
         });
     }
@@ -51,6 +67,17 @@ export default function MyProjectsPage() {
     displayedArchivedProjects = projects.filter(p => p.status === 'مؤرشف');
   }
 
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto py-10 px-4 text-center">
+          <Briefcase className="mx-auto h-16 w-16 text-app-gold mb-4 animate-pulse" />
+          <h1 className="text-4xl font-bold text-app-red mb-2">جاري تحميل المشاريع...</h1>
+          <p className="text-lg text-gray-600">يرجى الانتظار قليلاً.</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -76,7 +103,7 @@ export default function MyProjectsPage() {
           )}
         </div>
 
-        {(displayedActiveProjects.length === 0 && displayedArchivedProjects.length === 0) ? (
+        {(projects.length === 0 && !isLoading) ? (
           <Card className="max-w-2xl mx-auto bg-white/90 shadow-lg">
             <CardContent className="text-center py-10">
               <p className="text-xl text-gray-700">
@@ -194,3 +221,5 @@ export default function MyProjectsPage() {
     </AppLayout>
   );
 }
+
+    

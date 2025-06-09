@@ -51,13 +51,13 @@ export default function OwnerSidebar() {
   };
 
   return (
-    <aside className="w-72 bg-header-bg text-header-fg p-5 h-full shadow-xl flex-shrink-0 flex flex-col">
-      <div className="text-center mb-8">
+    <aside className="w-72 bg-header-bg text-header-fg p-5 h-full shadow-xl flex-shrink-0 flex flex-col sticky top-0">
+      <div className="text-center mb-8 flex-shrink-0">
         <DashboardIcon className="h-20 w-20 text-app-gold mx-auto mb-3" />
         <h2 className="text-xl font-bold text-white">مرحباً، {isClient ? ownerName : "المالك"}</h2>
         <p className="text-sm text-gray-400">لوحة تحكم المالك</p>
       </div>
-      <nav className="flex-grow overflow-y-auto"> {/* Added overflow-y-auto */}
+      <nav className="flex-grow overflow-y-auto">
         <ul className="space-y-2">
           {ownerNavItems.map((item) => {
             const isActive = pathname === item.href;
@@ -80,7 +80,7 @@ export default function OwnerSidebar() {
         </ul>
       </nav>
       {isClient && (
-        <div className="mt-auto pt-6 border-t border-gray-700">
+        <div className="mt-auto pt-6 border-t border-gray-700 flex-shrink-0">
           <button
             onClick={handleLogout}
             className={cn(

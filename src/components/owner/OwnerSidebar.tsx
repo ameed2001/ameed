@@ -1,8 +1,7 @@
-
 "use client";
 
 import Link from 'next/link';
-import { Home, UserCircle as DashboardIcon, Briefcase, Settings, Info, HelpCircle, Phone, LogOut, Menu, ChevronLeft, ChevronRight } from 'lucide-react'; // Added ChevronRight
+import { Home, UserCircle as DashboardIcon, Briefcase, Settings, Info, HelpCircle, Phone, LogOut, Menu as MenuIcon, ChevronLeft } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -37,22 +36,9 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
       if (storedUserName) {
         setOwnerName(storedUserName);
       }
-      const savedSidebarState = localStorage.getItem('ownerSidebarState');
-      if (savedSidebarState === 'closed' && isOpen) { // If localStorage says closed but prop says open (initial)
-        onToggle(); // Sync with localStorage if it was closed
-      } else if (savedSidebarState === 'open' && !isOpen) {
-        onToggle(); // Sync with localStorage if it was open
-      }
+      // Sidebar open state is now managed by OwnerAppLayout
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount
-
-  useEffect(() => {
-    if (isClient) { // Only run on client after initial mount
-        localStorage.setItem('ownerSidebarState', isOpen ? 'open' : 'closed');
-    }
-  }, [isOpen, isClient]);
-
+  }, []);
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
@@ -60,6 +46,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
       localStorage.removeItem('userRole');
       localStorage.removeItem('userEmail');
       localStorage.removeItem('userId');
+      localStorage.removeItem('ownerSidebarState'); // Clear sidebar state on logout
     }
     toast({
       title: "تم تسجيل الخروج",
@@ -71,11 +58,10 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
 
   return (
     <aside className={cn(
-      "bg-header-bg text-header-fg h-full shadow-xl flex flex-col transition-all duration-300 ease-in-out",
-      "sticky top-0", // Make sidebar sticky within its flex container
+      "bg-header-bg text-header-fg h-full shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out",
       isOpen ? "w-72" : "w-20"
     )}>
-      <div className="p-4 flex justify-between items-center border-b border-gray-700 h-[70px] flex-shrink-0"> {/* Fixed height for top bar */}
+      <div className="p-4 flex justify-between items-center border-b border-gray-700 h-[70px] flex-shrink-0">
         {isOpen ? (
           <div className="flex items-center gap-2 overflow-hidden">
             <DashboardIcon className="h-8 w-8 text-app-gold flex-shrink-0" />
@@ -89,7 +75,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
           className="text-gray-300 hover:text-white p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-app-gold"
           aria-label={isOpen ? "طي الشريط الجانبي" : "فتح الشريط الجانبي"}
         >
-          {isOpen ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
+          {isOpen ? <ChevronLeft size={24} /> : <MenuIcon size={24} />}
         </button>
       </div>
 
@@ -102,7 +88,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         </div>
       )}
 
-      <nav className="flex-grow overflow-y-auto"> {/* Scrollable nav links */}
+      <nav className="flex-grow overflow-y-auto">
         <ul className="space-y-1 p-2">
           {ownerNavItems.map((item) => {
             const isActive = pathname === item.href;
@@ -128,7 +114,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
       </nav>
 
       {isClient && (
-        <div className="mt-auto p-3 border-t border-gray-700 flex-shrink-0"> {/* Fixed height for logout area */}
+        <div className="mt-auto p-3 border-t border-gray-700 flex-shrink-0">
           <button
             onClick={handleLogout}
             className={cn(

@@ -1,5 +1,4 @@
-
-// mock-db.ts - نظام متكامل لإدارة المستخدمين والمشاريع الإنشائية
+// mock-db.ts - UPDATED for more specific login errors
 
 /**
  * أنواع البيانات الأساسية
@@ -40,13 +39,13 @@ export interface UseCase {
  * واجهة المشروع (متوافقة مع admin/projects/page.tsx و my-projects)
  */
 export interface Project {
-  id: number; 
+  id: number;
   name: string;
-  engineerId?: string; 
-  ownerId?: string;   
-  engineer?: string; 
-  clientName?: string; 
-  status: ProjectStatusType; 
+  engineerId?: string;
+  ownerId?: string;
+  engineer?: string;
+  clientName?: string;
+  status: ProjectStatusType;
   startDate?: string;
   endDate?: string;
   linkedOwnerEmail?: string;
@@ -78,8 +77,8 @@ export interface ProjectPhoto {
 export interface ProjectTimelineTask {
   id: string;
   name: string;
-  startDate: string; // YYYY-MM-DD
-  endDate: string;   // YYYY-MM-DD
+  startDate: string; //YYYY-MM-DD
+  endDate: string;   //YYYY-MM-DD
   color: string;     // Tailwind bg color class e.g., 'bg-blue-500'
   status: 'مكتمل' | 'قيد التنفيذ' | 'مخطط له'; // Matching ProjectStatusType subset
   progress?: number; // Optional progress for the task itself
@@ -90,10 +89,10 @@ export interface ProjectTimelineTask {
  */
 export interface ProjectComment {
   id: string;
-  user: string; 
+  user: string;
   text: string;
-  date: string; 
-  avatar?: string; 
+  date: string;
+  avatar?: string;
   dataAiHintAvatar?: string;
 }
 
@@ -106,7 +105,7 @@ export interface SystemSettings {
   defaultLanguage: 'ar' | 'en';
   maintenanceMode: boolean;
   maxUploadSizeMB: number;
-  emailNotificationsEnabled: boolean; 
+  emailNotificationsEnabled: boolean;
   engineerApprovalRequired: boolean;
 }
 
@@ -120,9 +119,9 @@ export interface LogEntry {
   timestamp: Date;
   level: LogLevel;
   message: string;
-  user?: string; 
-  ipAddress?: string; 
-  action?: string; 
+  user?: string;
+  ipAddress?: string;
+  action?: string;
 }
 
 // ========== قاعدة البيانات الوهمية ========== //
@@ -132,7 +131,7 @@ export let dbUsers: User[] = [
     id: 'admin-001',
     name: 'مدير النظام',
     email: 'admin@example.com',
-    password_hash: 'adminpass', 
+    password_hash: 'adminpass',
     role: 'Admin',
     status: 'Active',
     createdAt: new Date('2023-01-01'),
@@ -140,7 +139,7 @@ export let dbUsers: User[] = [
     profileImage: '/profiles/admin.jpg'
   },
   {
-    id: 'user-001', 
+    id: 'user-001',
     name: 'مستخدم تجريبي',
     email: 'test@example.com',
     password_hash: 'test123',
@@ -153,69 +152,69 @@ export let dbUsers: User[] = [
 
 
 export let dbProjects: Project[] = [
-    {
-      id: 1, 
-      name: "مشروع فيلا الأحلام",
-      engineer: "م. خالد عبد العزيز",
-      clientName: "السيد/ محمد الحسن",
-      status: "قيد التنفيذ",
-      startDate: "2023-03-01",
-      endDate: "2024-09-30",
-      description: "بناء فيلا سكنية فاخرة مكونة من طابقين وملحق خارجي.",
-      location: "الرياض، حي الياسمين",
-      budget: 2500000,
-      overallProgress: 65,
-      quantitySummary: "تم إنجاز أعمال الخرسانة للطابق الأرضي والأول. جاري العمل على التشطيبات الداخلية.",
-      photos: [
-        { id: "p1-img1", src: "https://placehold.co/600x400.png", alt: "موقع المشروع - مرحلة الأساسات", caption: "بداية أعمال الحفر", dataAiHint: "construction site" },
-        { id: "p1-img2", src: "https://placehold.co/600x400.png", alt: "الهيكل الخرساني للطابق الأول", caption: "صب سقف الطابق الأول", dataAiHint: "concrete structure" }
-      ],
-      timelineTasks: [
-        { id: "t1-1", name: "التصميم والموافقات", startDate: "2023-03-01", endDate: "2023-04-15", color: "bg-blue-500", status: "مكتمل" },
-        { id: "t1-2", name: "أعمال الحفر والأساسات", startDate: "2023-04-16", endDate: "2023-06-30", color: "bg-yellow-500", status: "مكتمل" },
-        { id: "t1-3", name: "الهيكل الخرساني", startDate: "2023-07-01", endDate: "2023-12-31", color: "bg-red-500", status: "قيد التنفيذ", progress: 70 },
-        { id: "t1-4", name: "التشطيبات الداخلية والخارجية", startDate: "2024-01-01", endDate: "2024-08-30", color: "bg-green-500", status: "مخطط له" },
-        { id: "t1-5", name: "تسليم المشروع", startDate: "2024-09-01", endDate: "2024-09-30", color: "bg-purple-500", status: "مخطط له" }
-      ],
-      comments: [
-        { id: "c1-1", user: "المالك (محمد الحسن)", text: "متى سيتم الانتهاء من أعمال السباكة في الطابق الأول؟", date: "2023-11-05", avatar: "https://placehold.co/40x40.png?text=MH", dataAiHintAvatar: "owner avatar" },
-        { id: "c1-2", user: "المهندس (خالد)", text: "جاري العمل عليها حاليًا، من المتوقع الانتهاء خلال أسبوعين.", date: "2023-11-06", avatar: "https://placehold.co/40x40.png?text=KA", dataAiHintAvatar: "engineer avatar" }
-      ],
-      linkedOwnerEmail: "owner@example.com"
-    },
-    {
-      id: 2,
-      name: "بناء مجمع تجاري",
-      engineer: "م. سارة الأحمدي",
-      clientName: "شركة الاستثمارات الحديثة",
-      status: "مخطط له",
-      startDate: "2024-01-15",
-      endDate: "2025-06-30",
-      description: "إنشاء مجمع تجاري متعدد الاستخدامات مع مواقف سيارات تحت الأرض.",
-      location: "جدة، طريق الملك فهد",
-      budget: 15000000,
-      overallProgress: 10,
-      photos: [{ id: "p2-img1", src: "https://placehold.co/600x400.png", alt: "تصميم المجمع التجاري", caption: "التصميم المبدئي", dataAiHint:"shopping mall" }],
-      timelineTasks: [],
-      comments: [],
-      linkedOwnerEmail: "invest@example.com"
-    },
-     {
-      id: 3,
-      name: "توسعة مستشفى المدينة",
-      engineer: "م. عمر فاروق",
-      clientName: "وزارة الصحة",
-      status: "مكتمل",
-      startDate: "2022-05-01",
-      endDate: "2023-10-31",
-      description: "إضافة جناح جديد للمستشفى وزيادة السعة الاستيعابية.",
-      location: "الدمام، حي الأطباء",
-      budget: 8000000,
-      overallProgress: 100,
-      photos: [{ id: "p3-img1", src: "https://placehold.co/600x400.png", alt: "الجناح الجديد للمستشفى", caption: "بعد الاكتمال", dataAiHint: "hospital building" }],
-      timelineTasks: [],
-      comments: [],
-    }
+  {
+    id: 1,
+    name: "مشروع فيلا الأحلام",
+    engineer: "م. خالد عبد العزيز",
+    clientName: "السيد/ محمد الحسن",
+    status: "قيد التنفيذ",
+    startDate: "2023-03-01",
+    endDate: "2024-09-30",
+    description: "بناء فيلا سكنية فاخرة مكونة من طابقين وملحق خارجي.",
+    location: "الرياض، حي الياسمين",
+    budget: 2500000,
+    overallProgress: 65,
+    quantitySummary: "تم إنجاز أعمال الخرسانة للطابق الأرضي والأول. جاري العمل على التشطيبات الداخلية.",
+    photos: [
+      { id: "p1-img1", src: "https://placehold.co/600x400.png", alt: "موقع المشروع - مرحلة الأساسات", caption: "بداية أعمال الحفر", dataAiHint: "construction site" },
+      { id: "p1-img2", src: "https://placehold.co/600x400.png", alt: "الهيكل الخرساني للطابق الأول", caption: "صب سقف الطابق الأول", dataAiHint: "concrete structure" }
+    ],
+    timelineTasks: [
+      { id: "t1-1", name: "التصميم والموافقات", startDate: "2023-03-01", endDate: "2023-04-15", color: "bg-blue-500", status: "مكتمل" },
+      { id: "t1-2", name: "أعمال الحفر والأساسات", startDate: "2023-04-16", endDate: "2023-06-30", color: "bg-yellow-500", status: "مكتمل" },
+      { id: "t1-3", name: "الهيكل الخرساني", startDate: "2023-07-01", endDate: "2023-12-31", color: "bg-red-500", status: "قيد التنفيذ", progress: 70 },
+      { id: "t1-4", name: "التشطيبات الداخلية والخارجية", startDate: "2024-01-01", endDate: "2024-08-30", color: "bg-green-500", status: "مخطط له" },
+      { id: "t1-5", name: "تسليم المشروع", startDate: "2024-09-01", endDate: "2024-09-30", color: "bg-purple-500", status: "مخطط له" }
+    ],
+    comments: [
+      { id: "c1-1", user: "المالك (محمد الحسن)", text: "متى سيتم الانتهاء من أعمال السباكة في الطابق الأول؟", date: "2023-11-05", avatar: "https://placehold.co/40x40.png?text=MH", dataAiHintAvatar: "owner avatar" },
+      { id: "c1-2", user: "المهندس (خالد)", text: "جاري العمل عليها حاليًا، من المتوقع الانتهاء خلال أسبوعين.", date: "2023-11-06", avatar: "https://placehold.co/40x40.png?text=KA", dataAiHintAvatar: "engineer avatar" }
+    ],
+    linkedOwnerEmail: "owner@example.com"
+  },
+  {
+    id: 2,
+    name: "بناء مجمع تجاري",
+    engineer: "م. سارة الأحمدي",
+    clientName: "شركة الاستثمارات الحديثة",
+    status: "مخطط له",
+    startDate: "2024-01-15",
+    endDate: "2025-06-30",
+    description: "إنشاء مجمع تجاري متعدد الاستخدامات مع مواقف سيارات تحت الأرض.",
+    location: "جدة، طريق الملك فهد",
+    budget: 15000000,
+    overallProgress: 10,
+    photos: [{ id: "p2-img1", src: "https://placehold.co/600x400.png", alt: "تصميم المجمع التجاري", caption: "التصميم المبدئي", dataAiHint: "shopping mall" }],
+    timelineTasks: [],
+    comments: [],
+    linkedOwnerEmail: "invest@example.com"
+  },
+  {
+    id: 3,
+    name: "توسعة مستشفى المدينة",
+    engineer: "م. عمر فاروق",
+    clientName: "وزارة الصحة",
+    status: "مكتمل",
+    startDate: "2022-05-01",
+    endDate: "2023-10-31",
+    description: "إضافة جناح جديد للمستشفى وزيادة السعة الاستيعابية.",
+    location: "الدمام، حي الأطباء",
+    budget: 8000000,
+    overallProgress: 100,
+    photos: [{ id: "p3-img1", src: "https://placehold.co/600x400.png", alt: "الجناح الجديد للمستشفى", caption: "بعد الاكتمال", dataAiHint: "hospital building" }],
+    timelineTasks: [],
+    comments: [],
+  }
 ];
 
 
@@ -232,7 +231,7 @@ export const useCases: UseCase[] = [
   { id: 8, title: 'View Progress Photos/Videos', role: 'Owner', description: 'مشاهدة الصور والفيديوهات', dependsOn: [6] },
   { id: 9, title: 'Add Comments/Inquiries', role: 'Owner', description: 'إرسال استفسارات وتعليقات', dependsOn: [6] },
   { id: 10, title: 'View Project Timeline', role: 'Owner', description: 'عرض الجدول الزمني للمشروع', dependsOn: [6] },
-  { id: 11, title: 'Create New Construction Project', role: 'Engineer', description: 'إنشاء مشروع جديد', dependsOn: [2]}, 
+  { id: 11, title: 'Create New Construction Project', role: 'Engineer', description: 'إنشاء مشروع جديد', dependsOn: [2] },
   { id: 12, title: 'Link Owner to Project', role: 'Engineer', description: 'ربط المشروع بالمالك', dependsOn: [11] },
   { id: 13, title: 'Define Construction Stages', role: 'Engineer', description: 'تحديد مراحل المشروع', dependsOn: [11] },
   { id: 14, title: 'Input Structural Element Details', role: 'Engineer', description: 'إدخال تفاصيل العناصر الإنشائية', dependsOn: [13] },
@@ -299,7 +298,7 @@ export function registerUser(userData: {
   name: string;
   email: string;
   password_hash: string;
-  role: 'Engineer' | 'Owner'; 
+  role: 'Engineer' | 'Owner';
 }): { success: boolean; user?: User; message?: string } {
   console.log("[MockDB registerUser] Attempting to register:", userData.email, "Role:", userData.role);
   const existingUser = dbUsers.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
@@ -316,7 +315,7 @@ export function registerUser(userData: {
     id: crypto.randomUUID(),
     name: userData.name,
     email: userData.email.toLowerCase(),
-    password_hash: userData.password_hash, 
+    password_hash: userData.password_hash,
     role: userData.role,
     status,
     createdAt: new Date()
@@ -351,34 +350,43 @@ export function findUserByEmail(email: string): User | undefined {
   return user;
 }
 
+// Defining a more specific return type for loginUser
+export type LoginResult = {
+  success: true;
+  user: User;
+} | {
+  success: false;
+  message: string;
+  errorType?: "email_not_found" | "invalid_password" | "account_suspended" | "pending_approval" | "other"; // Added specific error types
+};
 
-export function loginUser(email: string, password_hash: string): { success: boolean; user?: User; message?: string } {
+export function loginUser(email: string, password_hash: string): LoginResult {
   console.log(`[MockDB loginUser] Attempting login for email: ${email}`);
   const user = findUserByEmail(email);
 
   if (!user) {
     console.log(`[MockDB loginUser] User not found: ${email}`);
-    return { success: false, message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة' };
+    return { success: false, message: 'البريد الإلكتروني غير مسجل.', errorType: "email_not_found" }; // Specific message & type
   }
   console.log(`[MockDB loginUser] User found: ${user.email}, Role: ${user.role}, Status: ${user.status}`);
   console.log(`[MockDB loginUser] Provided Pwd: ${password_hash}, Stored Pwd: ${user.password_hash}`);
 
 
-  if (user.password_hash !== password_hash) { // Direct comparison for mock
+  if (user.password_hash !== password_hash) { // Direct comparison for mock - In real app, use bcrypt.compare
     console.log(`[MockDB loginUser] Password mismatch for ${email}`);
-    return { success: false, message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة' };
+    return { success: false, message: 'كلمة المرور غير صحيحة.', errorType: "invalid_password" }; // Specific message & type
   }
 
   if (user.status === 'Suspended') {
     console.log(`[MockDB loginUser] Account suspended for ${email}`);
-    return { success: false, message: 'حسابك موقوف. يرجى التواصل مع الإدارة' };
+    return { success: false, message: 'حسابك موقوف. يرجى التواصل مع الإدارة', errorType: "account_suspended" }; // Specific message & type
   }
 
   if (user.status === 'Pending Approval') {
     console.log(`[MockDB loginUser] Account pending approval for ${email}`);
-    return { success: false, message: 'حسابك قيد المراجعة. يرجى الانتظار حتى الموافقة عليه' };
+    return { success: false, message: 'حسابك قيد المراجعة. يرجى الانتظار حتى الموافقة عليه', errorType: "pending_approval" }; // Specific message & type
   }
-  
+
   console.log(`[MockDB loginUser] Login successful for ${email}`);
   dbLogs.push({
     id: crypto.randomUUID(),
@@ -435,7 +443,7 @@ export function getPendingEngineers(adminId: string): { success: boolean; users?
 
 export function updateUser(
   userId: string,
-  updates: Partial<Omit<User, 'id' | 'createdAt' | 'email'>> 
+  updates: Partial<Omit<User, 'id' | 'createdAt' | 'email'>>
 ): { success: boolean; user?: User; message?: string } {
   const userIndex = dbUsers.findIndex(u => u.id === userId);
   if (userIndex === -1) {
@@ -454,7 +462,7 @@ export function updateUser(
     timestamp: new Date(),
     level: 'INFO',
     message: `تم تحديث بيانات المستخدم: ${dbUsers[userIndex].name} (ID: ${userId})`,
-    user: dbUsers[userIndex].email, 
+    user: dbUsers[userIndex].email,
     action: 'USER_UPDATE'
   });
 
@@ -470,7 +478,7 @@ export function deleteUser(userId: string): { success: boolean; message?: string
 
   const userToDelete = dbUsers[userIndex];
   if (userToDelete.role === 'Admin' && dbUsers.filter(u => u.role === 'Admin').length === 1) {
-      return { success: false, message: 'لا يمكن حذف المسؤول الوحيد في النظام.' };
+    return { success: false, message: 'لا يمكن حذف المسؤول الوحيد في النظام.' };
   }
 
   dbUsers.splice(userIndex, 1);
@@ -480,7 +488,7 @@ export function deleteUser(userId: string): { success: boolean; message?: string
     timestamp: new Date(),
     level: 'WARNING',
     message: `تم حذف المستخدم ${userToDelete.name} (ID: ${userId})`,
-    user: 'System/Admin', 
+    user: 'System/Admin',
     action: 'USER_DELETE'
   });
   return { success: true, message: 'تم حذف المستخدم بنجاح' };
@@ -507,35 +515,35 @@ export function getProjects(userId: string): { success: boolean; projects?: Proj
 
 
 export function addProject(projectData: Omit<Project, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'>): Project | null {
-    const newId = dbProjects.length > 0 ? Math.max(...dbProjects.map(p => p.id)) + 1 : 1;
-    const newProject: Project = {
-        ...projectData,
-        id: newId,
-        status: "مخطط له", 
-        overallProgress: 0,
-        photos: [{id: "placeholder", src: "https://placehold.co/600x400.png", alt: "Project placeholder", dataAiHint: "construction project"}],
-        timelineTasks: [],
-        comments: [],
-    };
-    dbProjects.push(newProject);
-    dbLogs.push({
-      id: crypto.randomUUID(),
-      timestamp: new Date(),
-      level: 'INFO',
-      message: `تم إنشاء مشروع جديد: ${newProject.name} (ID: ${newProject.id})`,
-      user: projectData.engineer || 'System', 
-      action: 'PROJECT_CREATE'
-    });
-    return newProject;
+  const newId = dbProjects.length > 0 ? Math.max(...dbProjects.map(p => p.id)) + 1 : 1;
+  const newProject: Project = {
+    ...projectData,
+    id: newId,
+    status: "مخطط له",
+    overallProgress: 0,
+    photos: [{ id: "placeholder", src: "https://placehold.co/600x400.png", alt: "Project placeholder", dataAiHint: "construction project" }],
+    timelineTasks: [],
+    comments: [],
+  };
+  dbProjects.push(newProject);
+  dbLogs.push({
+    id: crypto.randomUUID(),
+    timestamp: new Date(),
+    level: 'INFO',
+    message: `تم إنشاء مشروع جديد: ${newProject.name} (ID: ${newProject.id})`,
+    user: projectData.engineer || 'System',
+    action: 'PROJECT_CREATE'
+  });
+  return newProject;
 }
 
 export function findProjectById(projectIdInput: string | number): Project | null {
-    const projectId = typeof projectIdInput === 'string' ? parseInt(projectIdInput, 10) : projectIdInput;
-    if (isNaN(projectId)) {
-        console.error("[MockDB findProjectById] Invalid project ID:", projectIdInput);
-        return null;
-    }
-    return dbProjects.find(p => p.id === projectId) || null;
+  const projectId = typeof projectIdInput === 'string' ? parseInt(projectIdInput, 10) : projectIdInput;
+  if (isNaN(projectId)) {
+    console.error("[MockDB findProjectById] Invalid project ID:", projectIdInput);
+    return null;
+  }
+  return dbProjects.find(p => p.id === projectId) || null;
 }
 
 
@@ -579,7 +587,7 @@ export function updateProject(
     timestamp: new Date(),
     level: 'INFO',
     message: `تم تحديث المشروع: ${updatedProjectData.name} (ID: ${projectId})`,
-    user: 'System/User', 
+    user: 'System/User',
     action: 'PROJECT_UPDATE'
   });
 
@@ -594,7 +602,7 @@ export function deleteProject(projectId: number): { success: boolean; message?: 
   if (projectIndex === -1) {
     return { success: false, message: 'لم يتم العثور على المشروع' };
   }
-  
+
   const projectName = dbProjects[projectIndex].name;
   dbProjects.splice(projectIndex, 1);
 
@@ -640,14 +648,14 @@ export function suspendUser(adminId: string, userIdToSuspend: string): { success
     return { success: false, message: 'المستخدم المراد تعليقه غير موجود.' };
   }
 
-  if (dbUsers[userIndex].id === adminId) { 
+  if (dbUsers[userIndex].id === adminId) {
     console.warn("[MockDB suspendUser] Admin attempting to suspend self:", adminId);
     return { success: false, message: 'لا يمكنك تعليق حسابك الخاص.' };
   }
-  
+
   const userToModify = dbUsers[userIndex];
   if (userToModify.status === 'Suspended') {
-    userToModify.status = 'Active'; 
+    userToModify.status = 'Active';
     dbLogs.push({
       id: crypto.randomUUID(),
       timestamp: new Date(),
@@ -691,7 +699,7 @@ export default {
   getProjects,
   addProject,
   findProjectById,
-  updateProject, 
+  updateProject,
   deleteProject,
   findUserByEmail,
   getUsers,

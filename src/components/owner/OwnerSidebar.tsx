@@ -51,7 +51,7 @@ export default function OwnerSidebar() {
   };
 
   return (
-    <aside className="w-72 bg-gray-800 text-white p-5 h-full shadow-xl flex-shrink-0 flex flex-col">
+    <aside className="w-72 bg-header-bg text-header-fg p-5 h-full shadow-xl flex-shrink-0 flex flex-col">
       <div className="text-center mb-8">
         <UserCircle className="h-20 w-20 text-app-gold mx-auto mb-3" />
         <h2 className="text-xl font-bold text-white">مرحباً، {isClient ? ownerName : "المالك"}</h2>

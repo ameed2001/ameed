@@ -1,5 +1,7 @@
 
 // mock-db.ts - نظام تسجيل المستخدمين وإدارة الصلاحيات
+import fs from 'fs';
+import path from 'path';
 
 /**
  * أنواع الأدوار
@@ -17,7 +19,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  password_hash: string; // Will store plain text password for this mock setup
+  password_hash: string;
   role: UserRole;
   status: UserStatus;
   createdAt: Date;
@@ -40,7 +42,7 @@ export interface UseCase {
  * واجهة المشروع
  */
 export interface Project {
-  id: number;
+  id: number; // Kept as number for admin/projects page compatibility
   name: string;
   engineerId?: string;
   ownerId?: string;
@@ -56,7 +58,7 @@ export interface Project {
   overallProgress?: number;
   quantitySummary?: string;
   photos?: ProjectPhoto[];
-  timelineTasks?: ProjectTimelineTask[];
+  timelineTasks?: ProjectTimelineTask[]; // Renamed from ProjectTimelineTask for consistency
   comments?: ProjectComment[];
 }
 
@@ -91,7 +93,7 @@ export interface ProjectComment {
   id: string;
   user: string;
   text: string;
-  date: string;
+  date: string; // Should be ISOString or parsable date string
   avatar?: string;
   dataAiHintAvatar?: string;
 }
@@ -124,133 +126,214 @@ export interface LogEntry {
   action?: string;
 }
 
+// --- File Persistence Setup ---
+const DB_FILE_PATH = path.resolve(process.cwd(), '.data', 'db.json');
+const DATA_DIR = path.dirname(DB_FILE_PATH);
+
+interface MockDbState {
+  users: User[];
+  projects: Project[];
+  settings: SystemSettings;
+  logs: LogEntry[];
+  useCases: UseCase[]; // Added useCases to the state
+  roles: Role[]; // Added roles to the state
+}
+
+function getInitialDbState(): MockDbState {
+  return {
+    users: [
+      {
+        id: 'user-001', // Fixed ID for easier testing if needed
+        name: 'مدير النظام',
+        email: 'admin@example.com',
+        password_hash: 'adminpass', // Plain text for mock simplicity
+        role: 'Admin',
+        status: 'Active',
+        createdAt: new Date(),
+        profileImage: '/profiles/admin.jpg'
+      },
+      {
+        id: 'user-002', // Fixed ID
+        name: 'مستخدم تجريبي',
+        email: 'test@example.com',
+        password_hash: 'test123',
+        role: 'Owner',
+        status: 'Active',
+        createdAt: new Date(),
+        profileImage: '/profiles/test.jpg'
+      }
+    ],
+    projects: [
+      {
+        id: 1,
+        name: "مشروع فيلا الأحلام",
+        engineer: "م. خالد عبد العزيز",
+        clientName: "السيد/ محمد الحسن",
+        status: "قيد التنفيذ",
+        startDate: "2023-03-01",
+        endDate: "2024-09-30",
+        description: "بناء فيلا سكنية فاخرة مكونة من طابقين وملحق خارجي.",
+        location: "الرياض، حي الياسمين",
+        budget: 2500000,
+        overallProgress: 65,
+        quantitySummary: "تم إنجاز أعمال الخرسانة للطابق الأرضي والأول. جاري العمل على التشطيبات الداخلية.",
+        photos: [
+          { id: "p1-img1", src: "https://placehold.co/600x400.png", alt: "موقع المشروع - مرحلة الأساسات", caption: "بداية أعمال الحفر", dataAiHint: "construction site" },
+          { id: "p1-img2", src: "https://placehold.co/600x400.png", alt: "الهيكل الخرساني للطابق الأول", caption: "صب سقف الطابق الأول", dataAiHint: "concrete structure" }
+        ],
+        timelineTasks: [
+          { id: "t1-1", name: "التصميم والموافقات", startDate: "2023-03-01", endDate: "2023-04-15", color: "bg-blue-500", status: "مكتمل" },
+          { id: "t1-2", name: "أعمال الحفر والأساسات", startDate: "2023-04-16", endDate: "2023-06-30", color: "bg-yellow-500", status: "مكتمل" },
+          { id: "t1-3", name: "الهيكل الخرساني", startDate: "2023-07-01", endDate: "2023-12-31", color: "bg-red-500", status: "قيد التنفيذ", progress: 70 },
+          { id: "t1-4", name: "التشطيبات الداخلية والخارجية", startDate: "2024-01-01", endDate: "2024-08-30", color: "bg-green-500", status: "مخطط له" },
+          { id: "t1-5", name: "تسليم المشروع", startDate: "2024-09-01", endDate: "2024-09-30", color: "bg-purple-500", status: "مخطط له" }
+        ],
+        comments: [
+          { id: "c1-1", user: "المالك (محمد الحسن)", text: "متى سيتم الانتهاء من أعمال السباكة في الطابق الأول؟", date: new Date("2023-11-05").toISOString(), avatar: "https://placehold.co/40x40.png?text=MH", dataAiHintAvatar: "owner avatar" },
+          { id: "c1-2", user: "المهندس (خالد)", text: "جاري العمل عليها حاليًا، من المتوقع الانتهاء خلال أسبوعين.", date: new Date("2023-11-06").toISOString(), avatar: "https://placehold.co/40x40.png?text=KA", dataAiHintAvatar: "engineer avatar" }
+        ],
+        linkedOwnerEmail: "owner@example.com"
+      },
+    ],
+    settings: {
+      siteName: 'المحترف لحساب الكميات',
+      defaultLanguage: 'ar',
+      maintenanceMode: false,
+      maxUploadSizeMB: 25,
+      emailNotificationsEnabled: true,
+      engineerApprovalRequired: true, // Default as per previous code
+    },
+    logs: [
+      {
+        id: crypto.randomUUID(),
+        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
+        level: 'INFO',
+        message: 'تم تشغيل النظام بنجاح.',
+        user: 'System',
+        action: 'SYSTEM_STARTUP_FILE_LOAD'
+      },
+    ],
+    roles: ['Admin', 'Engineer', 'Owner', 'GeneralUser'],
+    useCases: [
+        { id: 1, title: 'Sign Up', role: 'GeneralUser', description: 'تسجيل كمستخدم جديد' },
+        { id: 2, title: 'Login', role: 'GeneralUser', description: 'تسجيل الدخول', dependsOn: [1] },
+        { id: 3, title: 'Manage Profile', role: 'GeneralUser', description: 'إدارة البيانات الشخصية', dependsOn: [2] },
+        { id: 4, title: 'Forgot Password', role: 'GeneralUser', description: 'استعادة كلمة المرور' },
+        { id: 5, title: 'View My Projects', role: 'Owner', description: 'عرض المشاريع المرتبطة بك', dependsOn: [2] },
+        { id: 6, title: 'Monitor Construction Project Progress', role: 'Owner', description: 'متابعة تقدم المشروع', dependsOn: [5] },
+        { id: 7, title: 'View Summarized Quantity Reports', role: 'Owner', description: 'عرض تقارير الكميات المجملة', dependsOn: [6] },
+        { id: 8, title: 'View Progress Photos/Videos', role: 'Owner', description: 'مشاهدة الصور والفيديوهات', dependsOn: [6] },
+        { id: 9, title: 'Add Comments/Inquiries', role: 'Owner', description: 'إرسال استفسارات وتعليقات', dependsOn: [6] },
+        { id: 10, title: 'View Project Timeline', role: 'Owner', description: 'عرض الجدول الزمني للمشروع', dependsOn: [6] },
+        { id: 11, title: 'Create New Construction Project', role: 'Engineer', description: 'إنشاء مشروع جديد', dependsOn: [2] },
+        { id: 12, title: 'Link Owner to Project', role: 'Engineer', description: 'ربط المشروع بالمالك', dependsOn: [11] },
+        { id: 13, title: 'Define Construction Stages', role: 'Engineer', description: 'تحديد مراحل المشروع', dependsOn: [11] },
+        { id: 14, title: 'Input Structural Element Details', role: 'Engineer', description: 'إدخال تفاصيل العناصر الإنشائية', dependsOn: [13] },
+        { id: 15, title: 'Validate Input Data', role: 'Engineer', description: 'التحقق من صحة البيانات', dependsOn: [14] },
+        { id: 16, title: 'Calculate Material Quantities', role: 'Engineer', description: 'حساب كميات المواد', dependsOn: [15] },
+        { id: 17, title: 'Generate Report Data', role: 'Engineer', description: 'توليد بيانات التقرير', dependsOn: [16] },
+        { id: 18, title: 'View Quantity Reports', role: 'Engineer', description: 'عرض تقارير الكميات', dependsOn: [17] },
+        { id: 19, title: 'Customize Report Display', role: 'Engineer', description: 'تخصيص عرض التقرير', dependsOn: [18] },
+        { id: 20, title: 'Update Construction Progress', role: 'Engineer', description: 'تحديث تقدم المشروع', dependsOn: [13] },
+        { id: 21, title: 'Add Progress Notes', role: 'Engineer', description: 'إضافة ملاحظات حول التقدم', dependsOn: [20] },
+        { id: 22, title: 'Upload Progress Photos/Videos', role: 'Engineer', description: 'رفع الصور والفيديوهات', dependsOn: [20] },
+        { id: 23, title: 'Manage Construction Projects', role: 'Engineer', description: 'إدارة المشاريع الحالية', dependsOn: [2] },
+        { id: 24, title: 'Archive Project', role: 'Engineer', description: 'أرشفة المشروع', dependsOn: [20] },
+        { id: 25, title: 'View All Users', role: 'Admin', description: 'عرض كل المستخدمين', dependsOn: [2] },
+        { id: 26, title: 'Edit User Details', role: 'Admin', description: 'تعديل بيانات المستخدم', dependsOn: [25] },
+        { id: 27, title: 'Reset User Password', role: 'Admin', description: 'إعادة تعيين كلمة المرور', dependsOn: [25] },
+        { id: 28, title: 'View All Projects', role: 'Admin', description: 'عرض كل المشاريع', dependsOn: [2] },
+        { id: 29, title: 'Delete Project', role: 'Admin', description: 'حذف مشروع نهائيًا', dependsOn: [28] },
+        { id: 30, title: 'Configure System Settings', role: 'Admin', description: 'إعدادات النظام', dependsOn: [2] },
+        { id: 31, title: 'Review System Logs', role: 'Admin', description: 'مراجعة سجلات النظام', dependsOn: [2] },
+      ],
+  };
+}
+
+let dbState: MockDbState;
+
+function loadDbStateFromFile(): MockDbState {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (fs.existsSync(DB_FILE_PATH)) {
+      const data = fs.readFileSync(DB_FILE_PATH, 'utf8');
+      const parsedData = JSON.parse(data) as MockDbState;
+      // Convert date strings back to Date objects
+      parsedData.users = parsedData.users.map(user => ({
+        ...user,
+        createdAt: new Date(user.createdAt)
+      }));
+      parsedData.logs = parsedData.logs.map(log => ({
+        ...log,
+        timestamp: new Date(log.timestamp)
+      }));
+       parsedData.projects.forEach(project => {
+        if (project.comments) {
+          project.comments = project.comments.map(comment => ({
+            ...comment,
+            date: new Date(comment.date).toISOString() // Keep as ISO string
+          }));
+        }
+      });
+      console.log('[MockDB loadDbStateFromFile] Loaded DB state from file.');
+      return parsedData;
+    }
+  } catch (error) {
+    console.error("[MockDB loadDbStateFromFile] Error loading DB from file, using initial data:", error);
+  }
+  const initialState = getInitialDbState();
+  console.log('[MockDB loadDbStateFromFile] Initializing DB with default state and saving to file.');
+  // saveDbStateToFile(initialState); // saveDbStateToFile will be called implicitly by functions, or a direct call if needed on init
+  return initialState;
+}
+
+function saveDbStateToFile() {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(DB_FILE_PATH, JSON.stringify(dbState, null, 2), 'utf8');
+    console.log('[MockDB saveDbStateToFile] DB state saved to file.');
+  } catch (error) {
+    console.error("[MockDB saveDbStateToFile] Error saving DB state to file:", error);
+  }
+}
+
+// Initialize dbState by loading from file or using initial state
+dbState = loadDbStateFromFile();
+if (!fs.existsSync(DB_FILE_PATH)) { // Ensure file is created if it wasn't
+    saveDbStateToFile();
+}
+
+
+// Export reactive parts of the state
+export let dbUsers: User[] = dbState.users;
+export let dbProjects: Project[] = dbState.projects;
+export let dbSettings: SystemSettings = dbState.settings;
+export let dbLogs: LogEntry[] = dbState.logs;
+export let roles: Role[] = dbState.roles;
+export let useCases: UseCase[] = dbState.useCases;
+
+
+console.log('[MockDB Initial Load] dbUsers initialized. Count:', dbUsers.length, 'Emails:', dbUsers.map(u => u.email).join(', '));
 
 /**
- * بيانات المستخدمين الأولية
+ * البحث عن مستخدم بواسطة البريد الإلكتروني
  */
-export let dbUsers: User[] = [
-  {
-    id: crypto.randomUUID(),
-    name: 'مدير النظام',
-    email: 'admin@example.com',
-    password_hash: 'adminpass', // كلمة مرور نص عادي لسهولة الاختبار
-    role: 'Admin',
-    status: 'Active',
-    createdAt: new Date(),
-    profileImage: '/profiles/admin.jpg'
-  },
-  {
-    id: crypto.randomUUID(),
-    name: 'مستخدم تجريبي',
-    email: 'test@example.com',
-    password_hash: 'test123',
-    role: 'Owner',
-    status: 'Active',
-    createdAt: new Date(),
-    profileImage: '/profiles/admin.jpg'
+export function findUserByEmail(email: string): User | undefined {
+  const normalizedEmail = email.toLowerCase();
+  console.log(`[MockDB findUserByEmail] Searching for: ${normalizedEmail}`);
+  console.log('[MockDB findUserByEmail] Current dbUsers in memory for search:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status, id: u.id}))));
+  const foundUser = dbUsers.find(u => u.email.toLowerCase() === normalizedEmail);
+  if (foundUser) {
+    console.log(`[MockDB findUserByEmail] Found:`, {email: foundUser.email, role: foundUser.role, status: foundUser.status, id: foundUser.id});
+  } else {
+    console.log(`[MockDB findUserByEmail] User ${normalizedEmail} not found.`);
   }
-];
-console.log('[MockDB Initial Load] dbUsers initialized:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status}))));
-
-
-// بيانات الأدوار
-export const roles: Role[] = ['Admin', 'Engineer', 'Owner', 'GeneralUser'];
-
-// بيانات المشاريع
-export let dbProjects: Project[] = [
-  {
-    id: 1,
-    name: "مشروع فيلا الأحلام",
-    engineer: "م. خالد عبد العزيز",
-    clientName: "السيد/ محمد الحسن",
-    status: "قيد التنفيذ",
-    startDate: "2023-03-01",
-    endDate: "2024-09-30",
-    description: "بناء فيلا سكنية فاخرة مكونة من طابقين وملحق خارجي.",
-    location: "الرياض، حي الياسمين",
-    budget: 2500000,
-    overallProgress: 65,
-    quantitySummary: "تم إنجاز أعمال الخرسانة للطابق الأرضي والأول. جاري العمل على التشطيبات الداخلية.",
-    photos: [
-      { id: "p1-img1", src: "https://placehold.co/600x400.png", alt: "موقع المشروع - مرحلة الأساسات", caption: "بداية أعمال الحفر", dataAiHint: "construction site" },
-      { id: "p1-img2", src: "https://placehold.co/600x400.png", alt: "الهيكل الخرساني للطابق الأول", caption: "صب سقف الطابق الأول", dataAiHint: "concrete structure" }
-    ],
-    timelineTasks: [
-      { id: "t1-1", name: "التصميم والموافقات", startDate: "2023-03-01", endDate: "2023-04-15", color: "bg-blue-500", status: "مكتمل" },
-      { id: "t1-2", name: "أعمال الحفر والأساسات", startDate: "2023-04-16", endDate: "2023-06-30", color: "bg-yellow-500", status: "مكتمل" },
-      { id: "t1-3", name: "الهيكل الخرساني", startDate: "2023-07-01", endDate: "2023-12-31", color: "bg-red-500", status: "قيد التنفيذ", progress: 70 },
-      { id: "t1-4", name: "التشطيبات الداخلية والخارجية", startDate: "2024-01-01", endDate: "2024-08-30", color: "bg-green-500", status: "مخطط له" },
-      { id: "t1-5", name: "تسليم المشروع", startDate: "2024-09-01", endDate: "2024-09-30", color: "bg-purple-500", status: "مخطط له" }
-    ],
-    comments: [
-      { id: "c1-1", user: "المالك (محمد الحسن)", text: "متى سيتم الانتهاء من أعمال السباكة في الطابق الأول؟", date: "2023-11-05", avatar: "https://placehold.co/40x40.png?text=MH", dataAiHintAvatar: "owner avatar" },
-      { id: "c1-2", user: "المهندس (خالد)", text: "جاري العمل عليها حاليًا، من المتوقع الانتهاء خلال أسبوعين.", date: "2023-11-06", avatar: "https://placehold.co/40x40.png?text=KA", dataAiHintAvatar: "engineer avatar" }
-    ],
-    linkedOwnerEmail: "owner@example.com"
-  },
-];
-
-// بيانات إعدادات النظام
-export let dbSettings: SystemSettings = {
-  siteName: 'المحترف لحساب الكميات',
-  defaultLanguage: 'ar',
-  maintenanceMode: false,
-  maxUploadSizeMB: 25,
-  emailNotificationsEnabled: true,
-  engineerApprovalRequired: true,
-};
-
-// بيانات سجلات النظام
-export let dbLogs: LogEntry[] = [
-  {
-    id: crypto.randomUUID(),
-    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
-    level: 'INFO',
-    message: 'تم تشغيل النظام بنجاح.',
-    user: 'System',
-    action: 'SYSTEM_START'
-  },
-];
-
-// بيانات الـ Use Cases
-export const useCases: UseCase[] = [
-  // General User
-  { id: 1, title: 'Sign Up', role: 'GeneralUser', description: 'تسجيل كمستخدم جديد' },
-  { id: 2, title: 'Login', role: 'GeneralUser', description: 'تسجيل الدخول', dependsOn: [1] },
-  { id: 3, title: 'Manage Profile', role: 'GeneralUser', description: 'إدارة البيانات الشخصية', dependsOn: [2] },
-  { id: 4, title: 'Forgot Password', role: 'GeneralUser', description: 'استعادة كلمة المرور' },
-  // Owner
-  { id: 5, title: 'View My Projects', role: 'Owner', description: 'عرض المشاريع المرتبطة بك', dependsOn: [2] },
-  { id: 6, title: 'Monitor Construction Project Progress', role: 'Owner', description: 'متابعة تقدم المشروع', dependsOn: [5] },
-  { id: 7, title: 'View Summarized Quantity Reports', role: 'Owner', description: 'عرض تقارير الكميات المجملة', dependsOn: [6] },
-  { id: 8, title: 'View Progress Photos/Videos', role: 'Owner', description: 'مشاهدة الصور والفيديوهات', dependsOn: [6] },
-  { id: 9, title: 'Add Comments/Inquiries', role: 'Owner', description: 'إرسال استفسارات وتعليقات', dependsOn: [6] },
-  { id: 10, title: 'View Project Timeline', role: 'Owner', description: 'عرض الجدول الزمني للمشروع', dependsOn: [6] },
-  // Engineer
-  { id: 11, title: 'Create New Construction Project', role: 'Engineer', description: 'إنشاء مشروع جديد', dependsOn: [2] },
-  { id: 12, title: 'Link Owner to Project', role: 'Engineer', description: 'ربط المشروع بالمالك', dependsOn: [11] },
-  { id: 13, title: 'Define Construction Stages', role: 'Engineer', description: 'تحديد مراحل المشروع', dependsOn: [11] },
-  { id: 14, title: 'Input Structural Element Details', role: 'Engineer', description: 'إدخال تفاصيل العناصر الإنشائية', dependsOn: [13] },
-  { id: 15, title: 'Validate Input Data', role: 'Engineer', description: 'التحقق من صحة البيانات', dependsOn: [14] },
-  { id: 16, title: 'Calculate Material Quantities', role: 'Engineer', description: 'حساب كميات المواد', dependsOn: [15] },
-  { id: 17, title: 'Generate Report Data', role: 'Engineer', description: 'توليد بيانات التقرير', dependsOn: [16] },
-  { id: 18, title: 'View Quantity Reports', role: 'Engineer', description: 'عرض تقارير الكميات', dependsOn: [17] },
-  { id: 19, title: 'Customize Report Display', role: 'Engineer', description: 'تخصيص عرض التقرير', dependsOn: [18] },
-  { id: 20, title: 'Update Construction Progress', role: 'Engineer', description: 'تحديث تقدم المشروع', dependsOn: [13] },
-  { id: 21, title: 'Add Progress Notes', role: 'Engineer', description: 'إضافة ملاحظات حول التقدم', dependsOn: [20] },
-  { id: 22, title: 'Upload Progress Photos/Videos', role: 'Engineer', description: 'رفع الصور والفيديوهات', dependsOn: [20] },
-  { id: 23, title: 'Manage Construction Projects', role: 'Engineer', description: 'إدارة المشاريع الحالية', dependsOn: [2] },
-  { id: 24, title: 'Archive Project', role: 'Engineer', description: 'أرشفة المشروع', dependsOn: [20] },
-  // Admin
-  { id: 25, title: 'View All Users', role: 'Admin', description: 'عرض كل المستخدمين', dependsOn: [2] },
-  { id: 26, title: 'Edit User Details', role: 'Admin', description: 'تعديل بيانات المستخدم', dependsOn: [25] },
-  { id: 27, title: 'Reset User Password', role: 'Admin', description: 'إعادة تعيين كلمة المرور', dependsOn: [25] },
-  { id: 28, title: 'View All Projects', role: 'Admin', description: 'عرض كل المشاريع', dependsOn: [2] },
-  { id: 29, title: 'Delete Project', role: 'Admin', description: 'حذف مشروع نهائيًا', dependsOn: [28] },
-  { id: 30, title: 'Configure System Settings', role: 'Admin', description: 'إعدادات النظام', dependsOn: [2] },
-  { id: 31, title: 'Review System Logs', role: 'Admin', description: 'مراجعة سجلات النظام', dependsOn: [2] },
-];
-
+  return foundUser;
+}
 
 /**
  * تسجيل مستخدم جديد
@@ -258,15 +341,16 @@ export const useCases: UseCase[] = [
 export function registerUser(userData: {
   name: string;
   email: string;
-  password_hash: string; // Expecting plain password here, to be stored as is for mock
+  password_hash: string;
   role: 'Engineer' | 'Owner';
 }): { success: boolean; user?: User; message?: string } {
-  console.log(`[MockDB registerUser] Attempting registration for email: ${userData.email}, role: ${userData.role}`);
+  const normalizedEmail = userData.email.toLowerCase();
+  console.log(`[MockDB registerUser] Attempting registration for email: ${normalizedEmail}, role: ${userData.role}`);
   console.log('[MockDB registerUser] dbUsers BEFORE push:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status}))));
 
-  const existingUser = dbUsers.find(u => u.email.toLowerCase() === userData.email.toLowerCase());
+  const existingUser = findUserByEmail(normalizedEmail); // Use findUserByEmail which logs
   if (existingUser) {
-    console.log(`[MockDB registerUser] Email ${userData.email} already exists.`);
+    console.log(`[MockDB registerUser] Email ${normalizedEmail} already exists.`);
     return { success: false, message: 'البريد الإلكتروني مسجل مسبقاً' };
   }
 
@@ -277,7 +361,7 @@ export function registerUser(userData: {
   const newUser: User = {
     id: crypto.randomUUID(),
     name: userData.name,
-    email: userData.email.toLowerCase(),
+    email: normalizedEmail,
     password_hash: userData.password_hash, // Storing plain password as is
     role: userData.role,
     status,
@@ -292,27 +376,12 @@ export function registerUser(userData: {
     id: crypto.randomUUID(),
     timestamp: new Date(),
     level: 'INFO',
-    message: `تم تسجيل مستخدم جديد: ${newUser.name} (${newUser.role}), الحالة: ${newUser.status}`,
+    message: `تم تسجيل مستخدم جديد: ${newUser.name} (${newUser.role}), الحالة: ${status}`,
     user: newUser.email,
     action: 'USER_REGISTER'
   });
-
+  saveDbStateToFile();
   return { success: true, user: newUser, message: `تم تسجيل حساب ${newUser.role} بنجاح. الحالة: ${status}` };
-}
-
-/**
- * البحث عن مستخدم بواسطة البريد الإلكتروني
- */
-export function findUserByEmail(email: string): User | undefined {
-  console.log(`[MockDB findUserByEmail] Searching for: ${email.toLowerCase()}`);
-  console.log('[MockDB findUserByEmail] Current dbUsers:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status}))));
-  const foundUser = dbUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-  if (foundUser) {
-    console.log(`[MockDB findUserByEmail] Found:`, {email: foundUser.email, role: foundUser.role, status: foundUser.status, id: foundUser.id});
-  } else {
-    console.log(`[MockDB findUserByEmail] User ${email.toLowerCase()} not found.`);
-  }
-  return foundUser;
 }
 
 // Defining a more specific return type for loginUser
@@ -332,7 +401,7 @@ export function loginUser(email: string, password_hash: string): LoginResult {
   console.log(`[MockDB loginUser] Attempting login for email: ${email}`);
   console.log('[MockDB loginUser] dbUsers BEFORE find in loginUser:', JSON.stringify(dbUsers.map(u => ({email: u.email, role: u.role, status: u.status}))));
 
-  const user = findUserByEmail(email.toLowerCase());
+  const user = findUserByEmail(email); // findUserByEmail handles toLowerCase and logging
 
   if (!user) {
     console.log(`[MockDB loginUser] User ${email} not found after findUserByEmail call.`);
@@ -365,7 +434,7 @@ export function loginUser(email: string, password_hash: string): LoginResult {
     user: user.email,
     action: 'USER_LOGIN'
   });
-
+  saveDbStateToFile();
   return { success: true, user };
 }
 
@@ -398,7 +467,7 @@ export function approveEngineer(adminId: string, engineerId: string): { success:
     user: admin.email,
     action: 'ENGINEER_APPROVE'
   });
-
+  saveDbStateToFile();
   return { success: true, message: 'تمت الموافقة على حساب المهندس بنجاح.' };
 }
 
@@ -450,7 +519,7 @@ export function updateUser(
     user: admin.email,
     action: 'USER_UPDATE_BY_ADMIN'
   });
-
+  saveDbStateToFile();
   return { success: true, user: updatedUser, message: "تم تحديث بيانات المستخدم بنجاح." };
 }
 
@@ -483,6 +552,7 @@ export function deleteUser(adminId: string, userIdToDelete: string): { success: 
     user: admin.email,
     action: 'USER_DELETE_BY_ADMIN'
   });
+  saveDbStateToFile();
   return { success: true, message: `تم حذف المستخدم ${userToDelete.name} بنجاح.` };
 }
 
@@ -494,6 +564,7 @@ export function getUsers(adminId: string): { success: boolean; users?: User[]; m
   if (!admin) {
     return { success: false, message: 'غير مصرح لك بعرض قائمة المستخدمين.' };
   }
+  // Return a copy to prevent direct modification of the in-memory array from outside
   return { success: true, users: [...dbUsers] };
 }
 
@@ -527,13 +598,14 @@ export function suspendUser(adminId: string, userIdToSuspend: string): { success
     user: admin.email,
     action: userToModify.status === 'Suspended' ? 'USER_SUSPEND' : 'USER_UNSUSPEND'
   });
+  saveDbStateToFile();
   return { success: true, message: `تم ${actionTaken} حساب المستخدم ${userToModify.name} بنجاح.` };
 }
 
 // ========== دوال إدارة المشاريع ========== //
 
 export function getProjects(userId: string): { success: boolean; projects?: Project[]; message?: string } {
-  const user = dbUsers.find(u => u.id === userId);
+  const user = dbUsers.find(u => u.id === userId); // Assuming userId is passed correctly
   if (!user) {
     return { success: false, message: 'المستخدم غير موجود للتحقق من الصلاحيات.' };
   }
@@ -541,7 +613,8 @@ export function getProjects(userId: string): { success: boolean; projects?: Proj
     return { success: true, projects: [...dbProjects] };
   }
   if (user.role === 'Engineer') {
-    return { success: true, projects: [...dbProjects] }; // Or filter p.engineerId === userId
+    // Engineers can see all projects for now, or filter by engineerId if available and desired
+    return { success: true, projects: [...dbProjects] };
   }
   if (user.role === 'Owner') {
     const ownerProjects = dbProjects.filter(p => p.linkedOwnerEmail === user.email);
@@ -557,7 +630,7 @@ export function addProject(projectData: Omit<Project, 'id' | 'overallProgress' |
     id: newId,
     status: "مخطط له",
     overallProgress: 0,
-    photos: [{ id: "placeholder", src: "https://placehold.co/600x400.png", alt: "Project placeholder", dataAiHint: "construction project" }],
+    photos: [{ id: crypto.randomUUID(), src: "https://placehold.co/600x400.png", alt: "Project placeholder", dataAiHint: "construction project" }],
     timelineTasks: [],
     comments: [],
   };
@@ -567,9 +640,10 @@ export function addProject(projectData: Omit<Project, 'id' | 'overallProgress' |
     timestamp: new Date(),
     level: 'INFO',
     message: `تم إنشاء مشروع جديد: ${newProject.name} (ID: ${newProject.id})`,
-    user: projectData.engineer || 'System',
+    user: projectData.engineer || 'System', // Use engineer name if available
     action: 'PROJECT_CREATE'
   });
+  saveDbStateToFile();
   return newProject;
 }
 
@@ -598,21 +672,23 @@ export function updateProject(
   const currentProject = dbProjects[projectIndex];
   const updatedProjectData = { ...currentProject, ...updates };
 
-  if (updates.photos) {
-    updatedProjectData.photos = [...(currentProject.photos || []), ...updates.photos].filter(
-      (photo, index, self) => index === self.findIndex((p) => p.id === photo.id)
-    );
-  }
-  if (updates.timelineTasks) {
-     updatedProjectData.timelineTasks = [...(currentProject.timelineTasks || []), ...updates.timelineTasks].filter(
-      (task, index, self) => index === self.findIndex((t) => t.id === task.id)
-    );
-  }
-  if (updates.comments) {
-    updatedProjectData.comments = [...(currentProject.comments || []), ...updates.comments].filter(
-      (comment, index, self) => index === self.findIndex((c) => c.id === comment.id)
-    );
-  }
+  // Ensure arrays are merged correctly if provided in updates
+    if (updates.photos) {
+        const existingPhotoIds = new Set(currentProject.photos?.map(p => p.id));
+        const newPhotos = updates.photos.filter(p => !existingPhotoIds.has(p.id));
+        updatedProjectData.photos = [...(currentProject.photos || []), ...newPhotos];
+    }
+    if (updates.timelineTasks) {
+        const existingTaskIds = new Set(currentProject.timelineTasks?.map(t => t.id));
+        const newTasks = updates.timelineTasks.filter(t => !existingTaskIds.has(t.id));
+        updatedProjectData.timelineTasks = [...(currentProject.timelineTasks || []), ...newTasks];
+    }
+    if (updates.comments) {
+        const existingCommentIds = new Set(currentProject.comments?.map(c => c.id));
+        const newComments = updates.comments.filter(c => !existingCommentIds.has(c.id));
+        updatedProjectData.comments = [...(currentProject.comments || []), ...newComments];
+    }
+
 
   dbProjects[projectIndex] = updatedProjectData;
 
@@ -621,10 +697,10 @@ export function updateProject(
     timestamp: new Date(),
     level: 'INFO',
     message: `تم تحديث المشروع: ${updatedProjectData.name} (ID: ${projectId})`,
-    user: 'System/User',
+    user: 'System/User', // Placeholder, ideally identify who made the change
     action: 'PROJECT_UPDATE'
   });
-
+  saveDbStateToFile();
   return { success: true, project: updatedProjectData, message: "تم تحديث المشروع بنجاح." };
 }
 
@@ -650,17 +726,20 @@ export function deleteProject(adminId: string, projectId: number): { success: bo
         user: admin.email,
         action: 'PROJECT_DELETE_BY_ADMIN'
     });
+    saveDbStateToFile();
     return { success: true, message: `تم حذف المشروع "${projectName}" بنجاح.` };
 }
 
 // Default export for easier consumption if needed, though named exports are preferred.
+// This default export structure can sometimes cause issues with tree-shaking or specific bundler configs.
+// It's generally safer to rely on named exports.
 export default {
-  dbUsers,
-  dbProjects,
-  dbSettings,
-  dbLogs,
-  roles,
-  useCases,
+  // dbUsers, // Access via exported dbUsers directly
+  // dbProjects, // Access via exported dbProjects directly
+  // dbSettings, // Access via exported dbSettings directly
+  // dbLogs, // Access via exported dbLogs directly
+  // roles, // Access via exported roles directly
+  // useCases, // Access via exported useCases directly
   registerUser,
   loginUser,
   approveEngineer,
@@ -670,11 +749,8 @@ export default {
   getProjects,
   addProject,
   findProjectById,
-  updateProject, // For project update
-  // deleteProject, // This is now admin-specific
+  updateProject,
   findUserByEmail,
   getUsers,
   suspendUser
 };
-
-    

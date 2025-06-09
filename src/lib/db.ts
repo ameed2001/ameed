@@ -1,16 +1,24 @@
 
 // src/lib/db.ts
 import { MongoClient, ObjectId, type Db, type Collection } from 'mongodb';
-import bcrypt from 'bcryptjs'; // Use bcryptjs for Node.js environment
+import bcrypt from 'bcryptjs';
 
-// Define MongoDB URI and Database Name from environment variables
 const MONGODB_URI = process.env.MONGODB_URI;
-const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || 'muhandis_al_hasib_db'; // Default DB name
+const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || 'muhandis_al_hasib_db';
 
 if (!MONGODB_URI) {
-  // In a server environment, you might throw an error or use a default for local dev
-  // For Firebase Studio, we'll log a warning, but real deployments need this.
-  console.warn('MONGODB_URI is not set. Database functionality will be limited.');
+  console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  console.error("CRITICAL: MONGODB_URI environment variable is NOT SET.");
+  console.error("Database functionality will be severely impacted or unavailable.");
+  console.error("Please ensure MONGODB_URI is defined in your .env file.");
+  console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+} else {
+  console.log(`[db.ts] MONGODB_URI is set. Starts with: ${MONGODB_URI.substring(0, MONGODB_URI.indexOf('@') > 0 ? MONGODB_URI.indexOf('@') : 30)}...`);
+  if(!MONGODB_DB_NAME){
+    console.warn("[db.ts] MONGODB_DB_NAME is not set, using default: ", MONGODB_DB_NAME);
+  } else {
+    console.log("[db.ts] MONGODB_DB_NAME is set to: ", MONGODB_DB_NAME);
+  }
 }
 
 let cachedClient: MongoClient | null = null;
@@ -18,47 +26,64 @@ let cachedDb: Db | null = null;
 
 export async function connectToDatabase(): Promise<{ client: MongoClient | null; db: Db | null }> {
   if (!MONGODB_URI) {
-    console.error("MongoDB URI is not configured. Cannot connect to database.");
+    // This case is already logged loudly above.
     return { client: null, db: null };
   }
+
   if (cachedClient && cachedDb) {
     try {
-      // Ping the database to check if connection is still alive
       await cachedClient.db(MONGODB_DB_NAME).command({ ping: 1 });
+      // console.log("[db.ts] Using cached MongoDB connection.");
       return { client: cachedClient, db: cachedDb };
     } catch (e) {
-      console.warn("MongoDB connection lost, attempting to reconnect.", e);
+      console.warn("[db.ts] Cached MongoDB connection lost, attempting to reconnect.", e);
       cachedClient = null;
       cachedDb = null;
     }
   }
 
-  const client = new MongoClient(MONGODB_URI);
+  let client: MongoClient;
+  try {
+    client = new MongoClient(MONGODB_URI);
+  } catch (error) {
+    console.error("[db.ts] Error creating MongoClient instance:", error);
+    console.error("[db.ts] This often happens if MONGODB_URI is malformed or invalid.");
+    return { client: null, db: null };
+  }
   
   try {
+    console.log("[db.ts] Attempting to connect to MongoDB...");
     await client.connect();
     const db = client.db(MONGODB_DB_NAME);
     
     cachedClient = client;
     cachedDb = db;
     
-    console.log("Successfully connected to MongoDB.");
+    console.log("[db.ts] Successfully connected to MongoDB and database:", MONGODB_DB_NAME);
     return { client, db };
   } catch (error) {
-    console.error("Failed to connect to MongoDB:", error);
-    return { client: null, db: null }; // Return nulls on failure
+    console.error("[db.ts] Failed to connect to MongoDB:", error);
+    // Attempt to close client if it was instantiated but failed to connect fully
+    if (client) {
+        try {
+            await client.close();
+            console.log("[db.ts] MongoDB client closed due to connection error.");
+        } catch (closeError) {
+            console.error("[db.ts] Error closing MongoDB client after connection failure:", closeError);
+        }
+    }
+    cachedClient = null; // Ensure cache is cleared on any connection error
+    cachedDb = null;
+    return { client: null, db: null };
   }
 }
 
-// Define User Roles and Statuses (as strings for MongoDB)
 export type UserRole = 'ADMIN' | 'ENGINEER' | 'OWNER' | 'GENERAL_USER';
 export type UserStatus = 'ACTIVE' | 'PENDING_APPROVAL' | 'SUSPENDED' | 'DELETED';
-export type ProjectStatus = 'PLANNED' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'ARCHIVED';
-export type TaskStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'DELAYED';
+export type ProjectStatusType = 'PLANNED' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'ARCHIVED';
+export type TaskStatusType = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'DELAYED';
 export type LogLevel = 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
 
-
-// Define interfaces for your MongoDB documents
 export interface UserDocument {
   _id?: ObjectId;
   name: string;
@@ -73,15 +98,15 @@ export interface UserDocument {
 }
 
 export interface SystemSettingsDocument {
-  _id?: ObjectId; // Optional: MongoDB will generate it
+  _id?: ObjectId;
   siteName: string;
   defaultLanguage: string;
   maintenanceMode: boolean;
-  maxUploadSizeMb: number; // Corrected casing
+  maxUploadSizeMb: number;
   emailNotificationsEnabled: boolean;
   engineerApprovalRequired: boolean;
   updatedAt?: Date;
-  createdAt?: Date; // Added for consistency
+  createdAt?: Date;
 }
 
 export interface LogEntryDocument {
@@ -95,7 +120,6 @@ export interface LogEntryDocument {
   userId?: ObjectId | string; 
 }
 
-
 export async function logAction(
   action: string, 
   level: LogLevel, 
@@ -107,7 +131,7 @@ export async function logAction(
   try {
     const { db } = await connectToDatabase();
     if (!db) {
-      console.error('logAction: Database connection not available.');
+      console.error('[db.ts] logAction: Database connection not available. Could not log:', {action, level, message, userId});
       return;
     }
     const logsCollection: Collection<LogEntryDocument> = db.collection('logs');
@@ -125,16 +149,15 @@ export async function logAction(
     
     await logsCollection.insertOne(logEntry);
   } catch (error) {
-    console.error('Failed to log action:', error);
+    console.error('[db.ts] Failed to log action:', error);
   }
 }
-
 
 export async function getSystemSettings(): Promise<SystemSettingsDocument | null> {
   try {
     const { db } = await connectToDatabase();
     if (!db) {
-      console.error('getSystemSettings: Database connection not available.');
+      console.error('[db.ts] getSystemSettings: Database connection not available.');
       return null;
     }
     const settingsCollection: Collection<SystemSettingsDocument> = db.collection('system_settings');
@@ -142,28 +165,34 @@ export async function getSystemSettings(): Promise<SystemSettingsDocument | null
     
     if (!settings) {
         console.warn('[db.ts] System settings not found. Creating default settings.');
-        const defaultSettings: Omit<SystemSettingsDocument, '_id'> = {
+        const defaultSettingsData: Omit<SystemSettingsDocument, '_id'> = {
             siteName: "المحترف لحساب الكميات",
             defaultLanguage: "ar",
             maintenanceMode: false,
             maxUploadSizeMb: 25,
             emailNotificationsEnabled: true,
-            engineerApprovalRequired: true, // As per PRD and user's SQL
+            engineerApprovalRequired: true,
             createdAt: new Date(),
             updatedAt: new Date(),
         };
-        const result = await settingsCollection.insertOne(defaultSettings);
-        settings = { _id: result.insertedId, ...defaultSettings };
-        await logAction('SYSTEM_SETTINGS_CREATED_DEFAULT', 'INFO', 'Default system settings created as none were found.');
+        const result = await settingsCollection.insertOne(defaultSettingsData);
+        // MongoDB's insertOne mutates the passed object with _id if it's a class instance,
+        // but for plain objects, it's better to fetch or construct the settings object with the new _id.
+        settings = await settingsCollection.findOne({ _id: result.insertedId });
+        if (settings) {
+          await logAction('SYSTEM_SETTINGS_CREATED_DEFAULT', 'INFO', 'Default system settings created as none were found.');
+        } else {
+          console.error('[db.ts] Failed to retrieve default settings after creation.');
+          return null;
+        }
     }
     return settings;
   } catch (error) {
-    console.error('Error fetching/creating system settings:', error);
+    console.error('[db.ts] Error fetching/creating system settings:', error);
     await logAction('SYSTEM_SETTINGS_FETCH_ERROR', 'ERROR', `Error fetching system settings: ${error instanceof Error ? error.message : String(error)}`);
     return null;
   }
 }
-
 
 export interface RegistrationResult {
   success: boolean;
@@ -176,8 +205,8 @@ export interface RegistrationResult {
 export async function registerUser(userData: {
   name: string;
   email: string;
-  password_input: string; // This matches what signupUserAction sends
-  role: UserRole;
+  password_input: string;
+  role: UserRole; // Expecting uppercase from signupUserAction
   phone?: string;
 }): Promise<RegistrationResult> {
   const { name, email, password_input, role, phone } = userData;
@@ -186,6 +215,7 @@ export async function registerUser(userData: {
   try {
     const { db } = await connectToDatabase();
     if (!db) {
+      console.error("[db.ts] registerUser: Database connection failed.");
       return { success: false, message: "فشل الاتصال بقاعدة البيانات.", errorType: 'db_error' };
     }
     const usersCollection: Collection<UserDocument> = db.collection('users');
@@ -211,7 +241,7 @@ export async function registerUser(userData: {
 
     const hashedPassword = await bcrypt.hash(password_input, 10);
 
-    const newUserDocument: Omit<UserDocument, '_id'> = { // Omit _id as MongoDB generates it
+    const newUserDocument: Omit<UserDocument, '_id'> = {
       name,
       email,
       passwordHash: hashedPassword,
@@ -223,6 +253,11 @@ export async function registerUser(userData: {
     };
 
     const result = await usersCollection.insertOne(newUserDocument);
+    if (!result.insertedId) {
+        console.error("[db.ts] registerUser: Failed to insert new user into database.");
+        await logAction('USER_REGISTRATION_FAILURE_DB_INSERT', 'ERROR', `Database insert failed for ${email}`);
+        return { success: false, message: "فشل إنشاء الحساب في قاعدة البيانات.", errorType: 'db_error' };
+    }
     const newUserId = result.insertedId;
 
     console.log('[db.ts] registerUser (MongoDB): User registered successfully:', email, 'Status:', initialStatus, 'ID:', newUserId.toHexString());
@@ -242,7 +277,7 @@ export async function registerUser(userData: {
     let userMessage = "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.";
     let errorType: RegistrationResult['errorType'] = 'db_error';
 
-    if (error.code === 11000 && error.message.includes('email_1')) { // MongoDB duplicate key error for 'email' index
+    if (error.code === 11000) { 
         userMessage = "البريد الإلكتروني مسجل بالفعل.";
         errorType = 'email_exists';
     }
@@ -252,10 +287,9 @@ export async function registerUser(userData: {
   }
 }
 
-
 export interface LoginResult {
   success: boolean;
-  user?: Omit<UserDocument, 'passwordHash'> & { id: string }; // Use UserDocument from this file
+  user?: Omit<UserDocument, 'passwordHash'> & { id: string };
   message?: string;
   errorType?: 'email_not_found' | 'invalid_password' | 'account_suspended' | 'pending_approval' | 'account_deleted' | 'db_error' | 'other';
 }
@@ -265,6 +299,7 @@ export async function loginUser(email: string, password_input: string): Promise<
   try {
     const { db } = await connectToDatabase();
      if (!db) {
+      console.error("[db.ts] loginUser: Database connection failed.");
       return { success: false, message: "فشل الاتصال بقاعدة البيانات.", errorType: 'db_error' };
     }
     const usersCollection: Collection<UserDocument> = db.collection('users');
@@ -311,10 +346,10 @@ export async function loginUser(email: string, password_input: string): Promise<
     console.log('[db.ts] loginUser (MongoDB): Login successful for:', user.email);
     await logAction('USER_LOGIN_SUCCESS', 'INFO', `User logged in successfully: ${user.email}`, user._id);
     
-    const { passwordHash, _id, ...userWithoutPasswordAndMongoId } = user; // Destructure _id as well
+    const { passwordHash, _id, ...userWithoutPasswordAndMongoId } = user;
     return { 
         success: true, 
-        user: { ...userWithoutPasswordAndMongoId, id: _id!.toHexString() } // Ensure _id is present and convert to string
+        user: { ...userWithoutPasswordAndMongoId, id: _id!.toHexString() }
     };
 
   } catch (error: any) {
@@ -323,3 +358,4 @@ export async function loginUser(email: string, password_input: string): Promise<
     return { success: false, message: "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.", errorType: 'db_error' };
   }
 }
+

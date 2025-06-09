@@ -1,15 +1,14 @@
-
-"use client"; // Ensure this page is a client component
+"use client";
 
 import CostEstimatorForm from '@/components/CostEstimatorForm';
-import AppLayout from '@/components/AppLayout'; // Using AppLayout
+import OwnerAppLayout from '@/components/owner/OwnerAppLayout';
 
 export default function CostEstimatorPage() {
   return (
-    <AppLayout>
-      <div className="min-h-screen py-8 px-4 cost-estimator-body"> {/* Applied class from globals.css */}
+    <OwnerAppLayout>
+      <div className="min-h-screen py-8 px-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
         <CostEstimatorForm />
       </div>
-    </AppLayout>
+    </OwnerAppLayout>
   );
 }

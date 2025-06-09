@@ -2,26 +2,25 @@
 "use client";
 
 import Link from "next/link";
-import { 
-    Briefcase, 
-    ShieldCheck, 
-    BarChart3, 
-    MessageSquare, 
-    GanttChartSquare, 
-    Image as ImageIcon, 
+import {
+    Briefcase,
+    ShieldCheck,
+    BarChart3,
+    MessageSquare,
+    GanttChartSquare,
+    Image as ImageIcon,
     ArrowLeft,
     Calendar,
     Zap as ZapIcon
 } from "lucide-react";
-import CostEstimatorForm from '@/components/CostEstimatorForm';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 
 const actionCardsData = [
-    { 
-      title: "عرض مشاريعي", 
-      href: "/my-projects", 
-      icon: Briefcase, 
+    {
+      title: "عرض مشاريعي",
+      href: "/my-projects",
+      icon: Briefcase,
       description: "تصفح جميع مشاريعك الإنشائية وتابع تفاصيلها.",
       dataAiHint: "my projects list",
       buttonText: "استعراض المشاريع",
@@ -29,10 +28,10 @@ const actionCardsData = [
       bottomBarClass: "bg-gradient-to-r from-amber-400 to-amber-600",
       buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-amber-50 text-amber-700 border-2 border-amber-500 hover:bg-amber-500 hover:text-white",
     },
-    { 
-      title: "متابعة تقدم المشاريع", 
-      href: "/my-projects", // Assuming this links to the general projects page where progress can be seen per project
-      icon: BarChart3, 
+    {
+      title: "متابعة تقدم المشاريع",
+      href: "/my-projects",
+      icon: BarChart3,
       description: "راقب التقدم العام للمشاريع، وشاهد الإنجازات والمراحل المكتملة.",
       dataAiHint: "project progress tracking",
       buttonText: "عرض التقارير",
@@ -40,10 +39,10 @@ const actionCardsData = [
       bottomBarClass: "bg-gradient-to-r from-blue-400 to-blue-600",
       buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white",
     },
-    { 
-      title: "تقارير الكميات الملخصة", 
-      href: "/my-projects", // Assuming quantity reports are within each project's detail page
-      icon: ShieldCheck, 
+    {
+      title: "تقارير الكميات الملخصة",
+      href: "/my-projects",
+      icon: ShieldCheck,
       description: "اطلع على ملخصات كميات المواد المستخدمة في كل مشروع.",
       dataAiHint: "quantity reports summary",
       buttonText: "عرض الكميات",
@@ -51,10 +50,10 @@ const actionCardsData = [
       bottomBarClass: "bg-gradient-to-r from-green-400 to-green-600",
       buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-green-50 text-green-700 border-2 border-green-500 hover:bg-green-500 hover:text-white",
     },
-    { 
-      title: "صور وفيديوهات التقدم", 
-      href: "/my-projects", // Assuming media is within each project's detail page
-      icon: ImageIcon, 
+    {
+      title: "صور وفيديوهات التقدم",
+      href: "/my-projects",
+      icon: ImageIcon,
       description: "شاهد التحديثات المرئية التي يرفعها المهندس لكل مشروع.",
       dataAiHint: "progress photos videos",
       buttonText: "معرض الوسائط",
@@ -62,21 +61,21 @@ const actionCardsData = [
       bottomBarClass: "bg-gradient-to-r from-purple-400 to-purple-600",
       buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-purple-50 text-purple-700 border-2 border-purple-500 hover:bg-purple-500 hover:text-white",
     },
-     { 
-      title: "التعليقات والاستفسارات", 
-      href: "/my-projects", // Assuming comments are within each project's detail page
-      icon: MessageSquare, 
+     {
+      title: "التعليقات والاستفسارات",
+      href: "/my-projects",
+      icon: MessageSquare,
       description: "تواصل مع فريق المشروع وأرسل استفساراتك وتعليقاتك.",
       dataAiHint: "project comments inquiries",
       buttonText: "الرسائل",
-      iconBgClass: "bg-red-50 text-red-600", 
+      iconBgClass: "bg-red-50 text-red-600",
       bottomBarClass: "bg-gradient-to-r from-red-400 to-red-600",
       buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-red-50 text-red-700 border-2 border-red-500 hover:bg-red-500 hover:text-white",
     },
-    { 
-      title: "الجداول الزمنية للمشاريع", 
-      href: "/my-projects", // Assuming timelines are within each project's detail page
-      icon: GanttChartSquare, 
+    {
+      title: "الجداول الزمنية للمشاريع",
+      href: "/my-projects",
+      icon: GanttChartSquare,
       description: "اطلع على الخطط الزمنية والمراحل المنجزة والمقبلة لكل مشروع.",
       dataAiHint: "project timelines",
       buttonText: "عرض الجداول",
@@ -110,19 +109,19 @@ export default function OwnerDashboardPage() {
               </div>
           </div>
       </div>
-      
+
       {/* Quick Action Tools Section */}
       <h2 className="text-2xl font-bold text-app-red mb-6 flex items-center">
           <ZapIcon className="ml-2 text-amber-500 w-6 h-6" />
           أدوات المتابعة السريعة
       </h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {actionCardsData.map((card) => {
           const IconComponent = card.icon;
           return (
-            <div 
-                key={card.title} 
+            <div
+                key={card.title}
                 className="bg-white rounded-xl shadow-md overflow-hidden card-hover-effect border border-gray-200 flex flex-col h-full"
                 data-ai-hint={card.dataAiHint}
             >
@@ -136,8 +135,8 @@ export default function OwnerDashboardPage() {
                     <p className="text-gray-600 text-sm mb-4">{card.description}</p>
                 </div>
                 <div className="px-6 pb-6">
-                    <Link 
-                        href={card.href} 
+                    <Link
+                        href={card.href}
                         className={card.buttonClassName}
                     >
                         <span>{card.buttonText}</span>
@@ -149,16 +148,7 @@ export default function OwnerDashboardPage() {
           );
         })}
       </div>
-
-      {/* Cost Estimator Section */}
-      <Card className="bg-white/95 shadow-xl mt-10">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-app-red text-center">حاسبة تكلفة مواد البناء (بالشيكل)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CostEstimatorForm />
-        </CardContent>
-      </Card>
+      {/* Cost Estimator Section Removed from here */}
     </div>
   );
 }

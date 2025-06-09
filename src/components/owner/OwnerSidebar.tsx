@@ -2,17 +2,17 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, Info, Phone, HelpCircle, UserCircle, LogOut, Briefcase, Settings } from 'lucide-react';
+import { Home, UserCircle as DashboardIcon, Briefcase, Settings, Info, HelpCircle, Phone, LogOut } from 'lucide-react'; // Renamed UserCircle to DashboardIcon for clarity
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
 
 const ownerNavItems = [
-  { href: '/owner/dashboard', label: 'لوحة التحكم', icon: UserCircle },
+  { href: '/', label: 'الرئيسية للموقع', icon: Home },
+  { href: '/owner/dashboard', label: 'لوحة التحكم', icon: DashboardIcon },
   { href: '/my-projects', label: 'مشاريعي', icon: Briefcase },
   { href: '/profile', label: 'الملف الشخصي', icon: Settings },
-  { href: '/', label: 'الرئيسية للموقع', icon: Home },
   { href: '/about', label: 'عن الموقع', icon: Info },
   { href: '/help', label: 'المساعدة', icon: HelpCircle },
   { href: '/contact', label: 'تواصل معنا', icon: Phone },
@@ -53,7 +53,7 @@ export default function OwnerSidebar() {
   return (
     <aside className="w-72 bg-header-bg text-header-fg p-5 h-full shadow-xl flex-shrink-0 flex flex-col">
       <div className="text-center mb-8">
-        <UserCircle className="h-20 w-20 text-app-gold mx-auto mb-3" />
+        <DashboardIcon className="h-20 w-20 text-app-gold mx-auto mb-3" />
         <h2 className="text-xl font-bold text-white">مرحباً، {isClient ? ownerName : "المالك"}</h2>
         <p className="text-sm text-gray-400">لوحة تحكم المالك</p>
       </div>

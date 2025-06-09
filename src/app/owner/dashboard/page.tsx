@@ -1,16 +1,13 @@
 
 "use client";
 
-// Removed AppLayout import as OwnerLayout will handle it
+// Simplified dashboard page content, layout is handled by OwnerAppLayout
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Briefcase, ShieldCheck, BarChart3, MessageSquare, GanttChartSquare, Image as ImageIcon } from "lucide-react";
-// Removed useRouter, useToast, useEffect, useState for logout as sidebar will handle it
 
 export default function OwnerDashboardPage() {
-  // Logout and ownerName logic is now in OwnerSidebar.tsx
-
   const dashboardCards = [
     { 
       title: "عرض مشاريعي", 
@@ -21,35 +18,35 @@ export default function OwnerDashboardPage() {
     },
     { 
       title: "متابعة تقدم المشاريع", 
-      href: "/my-projects", 
+      href: "/my-projects", // Should ideally link to a specific view or filter
       icon: BarChart3, 
       description: "راقب التقدم العام للمشاريع، وشاهد الإنجازات والمراحل المكتملة.",
       dataAiHint: "project progress tracking"
     },
     { 
       title: "تقارير الكميات الملخصة", 
-      href: "/my-projects", 
+      href: "/my-projects", // Link to projects, specific reports inside project detail
       icon: ShieldCheck, 
       description: "اطلع على ملخصات كميات المواد المستخدمة في كل مشروع.",
       dataAiHint: "quantity reports summary"
     },
     { 
       title: "صور وفيديوهات التقدم", 
-      href: "/my-projects", 
+      href: "/my-projects", // Link to projects, photos inside project detail
       icon: ImageIcon, 
       description: "شاهد التحديثات المرئية التي يرفعها المهندس لكل مشروع.",
       dataAiHint: "progress photos videos"
     },
      { 
       title: "التعليقات والاستفسارات", 
-      href: "/my-projects", 
+      href: "/my-projects", // Link to projects, comments inside project detail
       icon: MessageSquare, 
       description: "تواصل مع فريق المشروع وأرسل استفساراتك وتعليقاتك.",
       dataAiHint: "project comments inquiries"
     },
     { 
       title: "الجداول الزمنية للمشاريع", 
-      href: "/my-projects", 
+      href: "/my-projects", // Link to projects, timeline inside project detail
       icon: GanttChartSquare, 
       description: "اطلع على الخطط الزمنية والمراحل المنجزة والمقبلة لكل مشروع.",
       dataAiHint: "project timelines"
@@ -58,21 +55,24 @@ export default function OwnerDashboardPage() {
 
   return (
     // The container, py-10, px-4, and text-right are now handled by OwnerAppLayout's main section
-    <div>
-      <Card className="bg-white/95 shadow-xl mb-10">
-        <CardHeader className="text-center">
-          {/* UserCircle and Welcome message now in OwnerSidebar */}
-          <CardTitle className="text-3xl font-bold text-app-red">
-            لوحة تحكم المالك
-          </CardTitle>
-          <CardDescription className="text-lg text-gray-600 mt-2">
-            نظرة عامة على أدواتك لمتابعة مشاريعك.
+    <div className="text-right">
+      <h1 className="text-3xl font-bold mb-8 text-app-red">لوحة تحكم المالك</h1>
+      
+      <Card className="bg-white/95 shadow-lg mb-10">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-app-red">أهلاً بك</CardTitle>
+          <CardDescription className="text-gray-600 mt-1">
+            من هنا يمكنك متابعة جميع مشاريعك والتفاعل معها بسهولة.
           </CardDescription>
         </CardHeader>
-        {/* Buttons for profile and logout are now in OwnerSidebar */}
+        <CardContent>
+          <p className="text-gray-700">
+            استخدم الشريط الجانبي للتنقل بين الأقسام المختلفة مثل عرض مشاريعك، تعديل ملفك الشخصي، أو الحصول على المساعدة.
+          </p>
+        </CardContent>
       </Card>
 
-      <h2 className="text-2xl font-bold text-app-red mb-8 text-center">أدوات المتابعة السريعة</h2>
+      <h2 className="text-2xl font-bold text-app-red mb-6">أدوات المتابعة السريعة</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {dashboardCards.map((card) => (
           <Card key={card.title} className="bg-white hover:shadow-lg transition-shadow duration-300 text-right">

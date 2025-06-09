@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, UserCircle as DashboardIcon, Briefcase, Settings, Info, HelpCircle, Phone, LogOut } from 'lucide-react';
+import { Home, UserCircle as DashboardIcon, Briefcase, Settings, Info, HelpCircle, Phone, LogOut, Menu, ChevronLeft, ChevronRight } from 'lucide-react'; // Added ChevronRight
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -18,7 +18,12 @@ const ownerNavItems = [
   { href: '/contact', label: 'تواصل معنا', icon: Phone },
 ];
 
-export default function OwnerSidebar() {
+interface OwnerSidebarProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
@@ -32,15 +37,29 @@ export default function OwnerSidebar() {
       if (storedUserName) {
         setOwnerName(storedUserName);
       }
+      const savedSidebarState = localStorage.getItem('ownerSidebarState');
+      if (savedSidebarState === 'closed' && isOpen) { // If localStorage says closed but prop says open (initial)
+        onToggle(); // Sync with localStorage if it was closed
+      } else if (savedSidebarState === 'open' && !isOpen) {
+        onToggle(); // Sync with localStorage if it was open
+      }
     }
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
+
+  useEffect(() => {
+    if (isClient) { // Only run on client after initial mount
+        localStorage.setItem('ownerSidebarState', isOpen ? 'open' : 'closed');
+    }
+  }, [isOpen, isClient]);
+
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
-        localStorage.removeItem('userName');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userId');
     }
     toast({
       title: "تم تسجيل الخروج",
@@ -51,14 +70,40 @@ export default function OwnerSidebar() {
   };
 
   return (
-    <aside className="w-72 bg-header-bg text-header-fg p-5 h-full shadow-xl flex-shrink-0 flex flex-col sticky top-0">
-      <div className="text-center mb-8 flex-shrink-0">
-        <DashboardIcon className="h-20 w-20 text-app-gold mx-auto mb-3" />
-        <h2 className="text-xl font-bold text-white">مرحباً، {isClient ? ownerName : "المالك"}</h2>
-        <p className="text-sm text-gray-400">لوحة تحكم المالك</p>
+    <aside className={cn(
+      "bg-header-bg text-header-fg h-full shadow-xl flex flex-col transition-all duration-300 ease-in-out",
+      "sticky top-0", // Make sidebar sticky within its flex container
+      isOpen ? "w-72" : "w-20"
+    )}>
+      <div className="p-4 flex justify-between items-center border-b border-gray-700 h-[70px] flex-shrink-0"> {/* Fixed height for top bar */}
+        {isOpen ? (
+          <div className="flex items-center gap-2 overflow-hidden">
+            <DashboardIcon className="h-8 w-8 text-app-gold flex-shrink-0" />
+            <h2 className="text-lg font-bold text-white truncate">لوحة التحكم</h2>
+          </div>
+        ) : (
+          <DashboardIcon className="h-8 w-8 text-app-gold mx-auto" />
+        )}
+        <button 
+          onClick={onToggle}
+          className="text-gray-300 hover:text-white p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-app-gold"
+          aria-label={isOpen ? "طي الشريط الجانبي" : "فتح الشريط الجانبي"}
+        >
+          {isOpen ? <ChevronLeft size={24} /> : <ChevronRight size={24} />}
+        </button>
       </div>
-      <nav className="flex-grow"> {/* Removed overflow-y-auto */}
-        <ul className="space-y-2">
+
+      {isOpen && (
+        <div className={cn(
+          "text-center mb-2 p-3 border-b border-gray-700 flex-shrink-0"
+        )}>
+          <h2 className="text-lg font-bold text-white truncate">مرحباً، {isClient ? ownerName : "المالك"}</h2>
+          <p className="text-xs text-gray-400">لوحة تحكم المالك</p>
+        </div>
+      )}
+
+      <nav className="flex-grow overflow-y-auto"> {/* Scrollable nav links */}
+        <ul className="space-y-1 p-2">
           {ownerNavItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -66,30 +111,35 @@ export default function OwnerSidebar() {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3.5 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
-                    "hover:bg-app-gold hover:text-gray-900 transform hover:scale-105",
-                    isActive ? "bg-app-gold text-gray-900 shadow-lg scale-105" : "text-gray-300 hover:text-gray-100"
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
+                    "hover:bg-app-gold hover:text-gray-900",
+                    isActive ? "bg-app-gold text-gray-900 shadow-md" : "text-gray-300 hover:text-gray-100",
+                    !isOpen && "justify-center py-3"
                   )}
+                  title={!isOpen ? item.label : undefined}
                 >
-                  <item.icon size={22} className="opacity-90" />
-                  {item.label}
+                  <item.icon size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0" />
+                  {isOpen && <span className="truncate">{item.label}</span>}
                 </Link>
               </li>
             );
           })}
         </ul>
       </nav>
+
       {isClient && (
-        <div className="mt-auto pt-6 border-t border-gray-700 flex-shrink-0">
+        <div className="mt-auto p-3 border-t border-gray-700 flex-shrink-0"> {/* Fixed height for logout area */}
           <button
             onClick={handleLogout}
             className={cn(
-              "flex items-center gap-3.5 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out w-full text-left",
-              "bg-red-700/50 text-red-100 hover:bg-red-600/70 hover:text-white transform hover:scale-105"
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out w-full",
+              "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white",
+              !isOpen && "justify-center py-3"
             )}
+            title={!isOpen ? "تسجيل الخروج" : undefined}
           >
-            <LogOut size={22} className="opacity-90"/>
-            تسجيل الخروج
+            <LogOut size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0"/>
+            {isOpen && <span className="truncate">تسجيل الخروج</span>}
           </button>
         </div>
       )}

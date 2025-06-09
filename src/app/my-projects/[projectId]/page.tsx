@@ -14,14 +14,15 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Edit, Send, Palette, CheckCircle2, 
-  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2, Loader2 as LoaderIcon
-} from "lucide-react"; // Renamed Loader2 to avoid conflict
+  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2, Loader2 as LoaderIcon, Mail
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose, DialogDescription } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
 import { dbProjects, findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask } from '@/lib/mock-db';
+import Link from 'next/link';
 
 // Simulate logged-in user - replace with actual auth context in a real app
 const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Owner";
@@ -39,6 +40,9 @@ export default function ProjectDetailPage() {
   const [linkedOwnerEmailInput, setLinkedOwnerEmailInput] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [isContactEngineerModalOpen, setIsContactEngineerModalOpen] = useState(false);
+  const [engineerMessage, setEngineerMessage] = useState('');
+
 
   const isOwnerView = MOCK_CURRENT_USER_ROLE === "Owner";
 
@@ -49,7 +53,7 @@ export default function ProjectDetailPage() {
         toast({ title: "غير مصرح به", description: "ليس لديك صلاحية لعرض هذا المشروع.", variant: "destructive" });
         return;
     }
-    setProject(currentProject ? {...currentProject} : null); // Create a new object to trigger re-render
+    setProject(currentProject ? {...currentProject} : null); 
     if (currentProject?.linkedOwnerEmail) {
       setLinkedOwnerEmailInput(currentProject.linkedOwnerEmail);
     }
@@ -111,7 +115,7 @@ export default function ProjectDetailPage() {
     if (updatedProject) {
         refreshProjectFromDb();
         toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%. ${progressUpdate.notes ? 'الملاحظات: ' + progressUpdate.notes : ''}` });
-        setProgressUpdate(prev => ({ ...prev, notes: '' })); // Clear only notes
+        setProgressUpdate(prev => ({ ...prev, notes: '' })); 
     } else {
         toast({ title: "خطأ", description: "فشل تحديث التقدم.", variant: "destructive" });
     }
@@ -172,6 +176,19 @@ export default function ProjectDetailPage() {
     setIsUploadingFile(false);
   };
 
+  const handleSendEngineerMessage = (e: FormEvent) => {
+    e.preventDefault();
+    if (!engineerMessage.trim() || !project || !project.engineer) {
+        toast({ title: "خطأ", description: "يرجى كتابة رسالة.", variant: "destructive" });
+        return;
+    }
+    // Simulate sending message
+    console.log("Sending message to engineer:", project.engineer, "Message:", engineerMessage);
+    toast({ title: "تم إرسال الرسالة", description: `تم إرسال رسالتك إلى المهندس ${project.engineer} (محاكاة).` });
+    setEngineerMessage('');
+    setIsContactEngineerModalOpen(false);
+};
+
   const projectStartDate = project?.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.min(...project.timelineTasks.map(task => new Date(task.startDate).getTime()))) : new Date();
   const projectEndDate = project?.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.max(...project.timelineTasks.map(task => new Date(task.endDate).getTime()))) : new Date();
   let totalProjectDurationDays = project?.timelineTasks && project.timelineTasks.length > 0 ? Math.ceil((projectEndDate.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1 : 30;
@@ -209,14 +226,11 @@ export default function ProjectDetailPage() {
 
   const simulateAction = (actionName: string) => {
     toast({ title: "محاكاة إجراء", description: `تم تنفيذ "${actionName}" (محاكاة).` });
-    // For actual actions like editing project details, you'd open a form, then:
-    // dbUpdateProject(project.id, { ... updated data ... });
-    // refreshProjectFromDb();
   };
 
   return (
     <AppLayout>
-      <Dialog> 
+      <Dialog open={isContactEngineerModalOpen} onOpenChange={setIsContactEngineerModalOpen}>
         <div className="container mx-auto py-8 px-4 text-right">
           <Card className="bg-white/95 shadow-xl mb-8">
             <CardHeader>
@@ -225,11 +239,18 @@ export default function ProjectDetailPage() {
                       <CardTitle className="text-3xl font-bold text-app-red">{project.name}</CardTitle>
                       <CardDescription className="text-gray-700 mt-1">{project.description}</CardDescription>
                   </div>
-                  {!isOwnerView && (
-                    <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل تفاصيل المشروع")}>
-                        <FileEdit size={18} className="ms-1.5" /> تعديل التفاصيل
-                    </Button>
-                  )}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    {!isOwnerView && (
+                        <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل تفاصيل المشروع")}>
+                            <FileEdit size={18} className="ms-1.5" /> تعديل التفاصيل
+                        </Button>
+                    )}
+                    {isOwnerView && project.engineer && (
+                        <Button variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500/10" onClick={() => setIsContactEngineerModalOpen(true)}>
+                            <Mail size={18} className="ms-1.5" /> مراسلة المهندس
+                        </Button>
+                    )}
+                  </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-sm text-gray-600 mt-3">
                   <span><strong>الموقع:</strong> {project.location || 'غير محدد'}</span>
@@ -250,7 +271,7 @@ export default function ProjectDetailPage() {
                 <p className={`text-sm font-semibold mt-1.5 ${
                       project.status === 'مكتمل' ? 'text-green-600' :
                       project.status === 'قيد التنفيذ' ? 'text-yellow-600' :
-                      'text-blue-600' // for 'مخطط له' and 'مؤرشف' (though 'مؤرشف' has its own styling elsewhere)
+                      'text-blue-600' 
                     }`}>
                       الحالة الحالية: {project.status}
                 </p>
@@ -277,10 +298,6 @@ export default function ProjectDetailPage() {
                         <UploadCloud size={18} className="ms-2"/> رفع صورة/فيديو
                     </Button>
                   </DialogTrigger>
-                  {/* Actual form for progress update is below, this button can be removed or repurposed */}
-                  {/* <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تحديث تقدم الإنشاء")}>
-                      <Percent size={18} className="ms-2"/> تحديث التقدم
-                  </Button> */}
                   <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("إدارة مراحل المشروع")}>
                       <GanttChartSquare size={18} className="ms-2"/> إدارة المراحل
                   </Button>
@@ -508,6 +525,8 @@ export default function ProjectDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* File Upload Dialog */}
         <DialogContent className="sm:max-w-[425px] bg-white/95 custom-dialog-overlay">
           <DialogHeader>
             <DialogTitle className="text-app-red text-right">رفع ملف جديد</DialogTitle>
@@ -528,9 +547,44 @@ export default function ProjectDetailPage() {
               <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-app-red"><X size={20}/></Button>
           </DialogClose>
         </DialogContent>
+        
+        {/* Contact Engineer Dialog */}
+        <DialogContent className="sm:max-w-md bg-white/95 custom-dialog-overlay">
+            <DialogHeader className="text-right">
+                <DialogTitle className="text-app-red text-xl font-bold">
+                    مراسلة المهندس: {project?.engineer || "غير محدد"}
+                </DialogTitle>
+                <DialogDescription className="text-gray-600">
+                    أرسل رسالة مباشرة إلى المهندس المسؤول عن هذا المشروع.
+                </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSendEngineerMessage} className="space-y-4 py-2 text-right">
+                <div>
+                    <Label htmlFor="engineerMessage" className="font-semibold text-gray-700">نص الرسالة:</Label>
+                    <Textarea
+                        id="engineerMessage"
+                        value={engineerMessage}
+                        onChange={(e) => setEngineerMessage(e.target.value)}
+                        placeholder="اكتب رسالتك هنا..."
+                        rows={5}
+                        className="mt-1 bg-white focus:border-app-gold"
+                    />
+                </div>
+                <div className="flex justify-start gap-2">
+                    <Button type="submit" className="bg-app-red hover:bg-red-700 text-white">
+                        <Send size={18} className="ms-2"/> إرسال الرسالة
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => setIsContactEngineerModalOpen(false)}>
+                        إلغاء
+                    </Button>
+                </div>
+            </form>
+             <DialogClose asChild>
+              <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-app-red"><X size={20}/></Button>
+          </DialogClose>
+        </DialogContent>
+
       </Dialog>
     </AppLayout>
   );
 }
-
-// Removed duplicate Loader2 definition, assuming it's imported from lucide-react as LoaderIcon

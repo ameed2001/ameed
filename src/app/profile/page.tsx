@@ -170,7 +170,7 @@ function ProfilePageContent() {
                 <Input id="profileEmail" type="email" {...registerProfile("email")} className="bg-white focus:border-app-gold" />
                 {profileErrors.email && <p className="text-red-500 text-sm mt-1">{profileErrors.email.message}</p>}
               </div>
-              <Button type="submit" className="w-full bg-app-gold hover:bg-yellow-600 text-primary-foreground font-bold py-2.5 text-lg" disabled={isProfileLoading}>
+              <Button type="submit" className="w-full bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-600 font-bold py-2.5 text-lg" disabled={isProfileLoading}>
                 {isProfileLoading ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <Edit3 className="ms-2 h-5 w-5" />}
                 حفظ تعديلات الملف الشخصي
               </Button>
@@ -199,7 +199,7 @@ function ProfilePageContent() {
                 <Input id="confirmNewPassword" type="password" {...registerPassword("confirmNewPassword")} className="bg-white focus:border-app-gold" />
                 {passwordErrors.confirmNewPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.confirmNewPassword.message}</p>}
               </div>
-              <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-bold py-2.5 text-lg" disabled={isPasswordLoading}>
+              <Button type="submit" className="w-full bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-600 font-bold py-2.5 text-lg" disabled={isPasswordLoading}>
                 {isPasswordLoading ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <Edit3 className="ms-2 h-5 w-5" />}
                 تغيير كلمة المرور
               </Button>

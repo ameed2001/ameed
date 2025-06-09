@@ -34,16 +34,26 @@ export interface SystemSettingsDocument {
 
 export type LogLevel = 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
 
-export interface LogEntryDocument {
+export interface LogEntryDocument { // This is the structure in db.json
   id: string;
   action: string;
   level: LogLevel;
   message: string;
   ipAddress?: string;
   userAgent?: string;
-  timestamp: string;
-  user?: string;
+  timestamp: string; // ISO string
+  user?: string; // User ID or name
 }
+
+export interface LogEntry { // This is the type expected by the AdminLogsPage component
+  id: string;
+  timestamp: Date; // Date object
+  level: LogLevel;
+  message: string;
+  user?: string;
+  action?: string;
+}
+
 
 // ----- Project Related Types -----
 export type ProjectStatusType = "مكتمل" | "قيد التنفيذ" | "مخطط له" | "مؤرشف";
@@ -175,6 +185,7 @@ export async function getSystemSettings(): Promise<SystemSettingsDocument> {
         return db.settings;
     } else {
         console.warn('[db.ts] getSystemSettings: System settings not found in db.json. Returning hardcoded defaults.');
+        // This default ensures the app can run even if settings are missing, but logs a warning.
         const defaultSettings: SystemSettingsDocument = {
             siteName: 'المحترف لحساب الكميات',
             defaultLanguage: 'ar',
@@ -183,12 +194,14 @@ export async function getSystemSettings(): Promise<SystemSettingsDocument> {
             emailNotificationsEnabled: true,
             engineerApprovalRequired: true,
         };
-        await logAction('SYSTEM_SETTINGS_MISSING', 'WARNING', 'System settings were missing, default values returned.');
+        // Optionally, log this event or attempt to write defaults back to db.json if that's desired.
+        await logAction('SYSTEM_SETTINGS_MISSING', 'WARNING', 'System settings were missing from db.json, default values returned.');
         return defaultSettings;
     }
   } catch (error) {
     console.error('[db.ts] getSystemSettings: Error fetching system settings:', error);
     await logAction('SYSTEM_SETTINGS_FETCH_ERROR', 'ERROR', `Error fetching system settings: ${error instanceof Error ? error.message : String(error)}`);
+    // Return a safe default in case of error
     return {
         siteName: 'المحترف لحساب الكميات',
         defaultLanguage: 'ar',
@@ -351,7 +364,12 @@ export interface UpdateResult {
   message?: string;
 }
 
-export async function updateProject(projectId: number, updates: Partial<Project>): Promise<UpdateResult> {
+export async function updateProject(projectIdString: string, updates: Partial<Project>): Promise<UpdateResult> {
+  const projectId = parseInt(projectIdString);
+   if (isNaN(projectId)) {
+    console.warn(`[db.ts] updateProject (JSON): Invalid project ID format: ${projectIdString}`);
+    return { success: false, message: "معرف المشروع غير صالح." };
+  }
   console.log(`[db.ts] updateProject (JSON): Updating project ID ${projectId}`);
   try {
     const db = await readDb();
@@ -434,7 +452,11 @@ export interface DeleteResult {
   message?: string;
 }
 
-export async function deleteProject(projectId: number): Promise<DeleteResult> {
+export async function deleteProject(projectIdString: string): Promise<DeleteResult> {
+    const projectId = parseInt(projectIdString);
+    if (isNaN(projectId)) {
+      return { success: false, message: "معرف المشروع غير صالح." };
+    }
     console.log(`[db.ts] deleteProject (JSON): Deleting project ID ${projectId}`);
     try {
         const db = await readDb();
@@ -555,47 +577,23 @@ export async function suspendUser(adminUserId: string, targetUserId: string): Pr
     return { success: false, message: result.message || "فشل تعديل حالة المستخدم." };
 }
 
-export interface LogEntry {
-  id: string;
-  timestamp: Date;
-  level: LogLevel;
-  message: string;
-  user?: string;
-  action?: string; // Added to match admin/logs/page.tsx usage
-}
-
-// Default settings if db.json is missing or malformed for settings
-export const dbSettings: SystemSettingsDocument = {
-  siteName: "المحترف لحساب الكميات",
-  defaultLanguage: "ar",
-  maintenanceMode: false,
-  maxUploadSizeMB: 25,
-  emailNotificationsEnabled: true,
-  engineerApprovalRequired: true,
-};
-
-// Mock logs for admin/logs/page.tsx if db.json doesn't load logs
-export const dbLogs: LogEntry[] = [
-  {
-    id: "7223649e-130b-491c-9e84-931ad5d3b8ba",
-    timestamp: new Date("2025-06-09T08:35:32.224Z"),
-    level: "INFO",
-    message: "تم تشغيل النظام بنجاح (بيانات افتراضية).",
-    user: "System",
-    action: "SYSTEM_STARTUP_DEFAULT_LOAD"
+export async function getLogs(): Promise<LogEntry[]> {
+  console.log('[db.ts] getLogs: Attempting to retrieve logs.');
+  try {
+    const db = await readDb();
+    // Convert LogEntryDocument[] to LogEntry[] (string timestamp to Date object)
+    const logsWithDateObjects: LogEntry[] = db.logs.map(logDoc => ({
+      ...logDoc,
+      timestamp: new Date(logDoc.timestamp) 
+    }));
+    console.log(`[db.ts] getLogs: Retrieved ${logsWithDateObjects.length} logs successfully.`);
+    return logsWithDateObjects;
+  } catch (error) {
+    console.error('[db.ts] getLogs: Error fetching logs:', error);
+    await logAction('LOGS_FETCH_FAILURE', 'ERROR', `Error fetching logs: ${error instanceof Error ? error.message : String(error)}`);
+    return []; // Return empty array on error
   }
-];
-
-// Mock users if db.json doesn't load users for admin/users/page.tsx
-export const dbUsers: UserDocument[] = [
-   {
-      id: "user-001",
-      name: "مدير النظام (افتراضي)",
-      email: "admin@example.com",
-      password_hash: "adminpass_hashed", // Should be a real hash
-      role: "ADMIN",
-      status: "ACTIVE",
-      createdAt: "2025-06-09T11:35:32.224Z",
-      profileImage: "/profiles/admin.jpg"
-    }
-];
+}
+// Removed direct export of dbSettings, dbLogs, dbUsers
+// Functions like getSystemSettings, getLogs, getUsers should be used instead.
+    

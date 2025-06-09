@@ -1,28 +1,50 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from '@/components/ui/button';
-import { ScrollText, Search, Download } from 'lucide-react'; 
+import { ScrollText, Search, Download, Loader2 } from 'lucide-react'; 
 import { format } from 'date-fns';
 import { arSA } from 'date-fns/locale'; 
 import { useToast } from "@/hooks/use-toast";
-import { dbLogs, type LogEntry, type LogLevel } from '@/lib/mock-db';
+import { getLogs, type LogEntry, type LogLevel } from '@/lib/db'; // Updated import
 
 
 export default function AdminLogsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [logLevelFilter, setLogLevelFilter] = useState<string>('all');
-  // const [logs, setLogsState] = useState<LogEntry[]>(dbLogs); // If manipulation needed
+  const [logs, setLogsState] = useState<LogEntry[]>([]); 
+  const [isFetching, setIsFetching] = useState(true);
+  const [totalLogsCount, setTotalLogsCount] = useState(0);
+
+
+  useEffect(() => {
+    async function fetchLogs() {
+      setIsFetching(true);
+      try {
+        const fetchedLogs = await getLogs();
+        setLogsState(fetchedLogs);
+        setTotalLogsCount(fetchedLogs.length);
+      } catch (error) {
+        toast({ title: "خطأ", description: "فشل تحميل سجلات النظام.", variant: "destructive" });
+        console.error("Error fetching logs:", error);
+        setLogsState([]);
+        setTotalLogsCount(0);
+      }
+      setIsFetching(false);
+    }
+    fetchLogs();
+  }, [toast]);
+
 
   const filteredLogs = useMemo(() => {
-    return dbLogs // Directly use dbLogs if no client-side manipulation before filtering
+    return logs
       .filter(log => {
         const matchesSearch = searchTerm === '' || 
                               log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -31,7 +53,7 @@ export default function AdminLogsPage() {
         return matchesSearch && matchesLevel;
       })
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-  }, [searchTerm, logLevelFilter]);
+  }, [logs, searchTerm, logLevelFilter]);
 
   const getLogLevelStyles = (level: LogLevel) => {
     switch (level) {
@@ -44,6 +66,10 @@ export default function AdminLogsPage() {
   };
   
   const handleExportLogs = () => {
+    if (filteredLogs.length === 0) {
+      toast({ title: "لا توجد سجلات للتصدير", description: "يرجى تعديل الفلاتر إذا كنت تتوقع وجود سجلات.", variant: "default" });
+      return;
+    }
     const logData = filteredLogs.map(log => `${format(log.timestamp, "yyyy/MM/dd HH:mm:ss", { locale: arSA })} | ${log.level} | ${log.user || 'N/A'} | ${log.message}`).join("\n");
     const blob = new Blob([logData], { type: 'text/plain;charset=utf-8' });
     const link = document.createElement('a');
@@ -93,45 +119,59 @@ export default function AdminLogsPage() {
             </SelectContent>
           </Select>
         </div>
-
-        <ScrollArea className="h-[500px] rounded-lg border">
-          <Table>
-            <TableHeader className="sticky top-0 bg-gray-100 z-10">
-              <TableRow>
-                <TableHead className="w-[180px] text-right font-semibold text-gray-700">الوقت والتاريخ</TableHead>
-                <TableHead className="w-[100px] text-right font-semibold text-gray-700">المستوى</TableHead>
-                <TableHead className="w-[150px] text-right font-semibold text-gray-700">المستخدم</TableHead>
-                <TableHead className="text-right font-semibold text-gray-700">الرسالة</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredLogs.length > 0 ? filteredLogs.map((log) => (
-                <TableRow key={log.id} className="hover:bg-gray-50/50 text-sm">
-                  <TableCell className="whitespace-nowrap">
-                    {format(log.timestamp, "yyyy/MM/dd HH:mm:ss", { locale: arSA })}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getLogLevelStyles(log.level)}`}>
-                      {log.level}
-                    </span>
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap">{log.user || 'نظام'}</TableCell>
-                  <TableCell className="leading-relaxed">{log.message}</TableCell>
-                </TableRow>
-              )) : (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center text-gray-500 py-10">
-                    لا توجد سجلات تطابق معايير البحث أو التصفية.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </ScrollArea>
-        {filteredLogs.length > 0 && (
-            <p className="text-xs text-gray-500 text-center">يتم عرض {filteredLogs.length} من إجمالي {dbLogs.length} سجل.</p>
+        
+        {isFetching ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-12 w-12 animate-spin text-app-gold" />
+            <p className="ms-3 text-lg">جاري تحميل السجلات...</p>
+          </div>
+        ) : (
+          <>
+            <ScrollArea className="h-[500px] rounded-lg border">
+              <Table>
+                <TableHeader className="sticky top-0 bg-gray-100 z-10">
+                  <TableRow>
+                    <TableHead className="w-[180px] text-right font-semibold text-gray-700">الوقت والتاريخ</TableHead>
+                    <TableHead className="w-[100px] text-right font-semibold text-gray-700">المستوى</TableHead>
+                    <TableHead className="w-[150px] text-right font-semibold text-gray-700">المستخدم</TableHead>
+                    <TableHead className="text-right font-semibold text-gray-700">الرسالة</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredLogs.length > 0 ? filteredLogs.map((log) => (
+                    <TableRow key={log.id} className="hover:bg-gray-50/50 text-sm">
+                      <TableCell className="whitespace-nowrap">
+                        {format(new Date(log.timestamp), "yyyy/MM/dd HH:mm:ss", { locale: arSA })}
+                      </TableCell>
+                      <TableCell>
+                        <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getLogLevelStyles(log.level)}`}>
+                          {log.level}
+                        </span>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">{log.user || 'نظام'}</TableCell>
+                      <TableCell className="leading-relaxed">{log.message}</TableCell>
+                    </TableRow>
+                  )) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center text-gray-500 py-10">
+                        لا توجد سجلات تطابق معايير البحث أو التصفية.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+            {filteredLogs.length > 0 && (
+                <p className="text-xs text-gray-500 text-center">يتم عرض {filteredLogs.length} من إجمالي {totalLogsCount} سجل.</p>
+            )}
+             {totalLogsCount === 0 && !isFetching && (
+                <p className="text-center text-gray-500 py-10">لا توجد سجلات في النظام حالياً.</p>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
   );
 }
+
+    

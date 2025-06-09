@@ -56,9 +56,9 @@ export default function LoginPage() {
     setError
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "ameed@admin.com",
-      password_input: "admin2001",
+    defaultValues: { // Removed default admin credentials
+      email: "", 
+      password_input: "",
     }
   });
 

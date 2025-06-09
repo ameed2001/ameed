@@ -43,10 +43,17 @@ export async function loginUserAction(data: { email: string; password_input: str
     };
   }
 
-  const user = result.user; 
+  const userFromDb = result.user; 
+   const userForClient = {
+      id: userFromDb.id,
+      name: userFromDb.name,
+      email: userFromDb.email,
+      role: userFromDb.role,
+  };
+
 
   let redirectTo = "/"; 
-  switch (user.role) { // user.role is UserRole (uppercase)
+  switch (userFromDb.role) { // user.role is UserRole (uppercase)
     case 'ENGINEER':
       redirectTo = "/my-projects";
       break;
@@ -60,15 +67,17 @@ export async function loginUserAction(data: { email: string; password_input: str
        redirectTo = "/"; 
        break;
     default:
-      console.warn(`[LoginAction JSON_DB] Unknown role for user ${user.email}: ${user.role}`);
+      console.warn(`[LoginAction JSON_DB] Unknown role for user ${userFromDb.email}: ${userFromDb.role}`);
       redirectTo = "/";
   }
 
-  console.log(`[LoginAction JSON_DB] Login successful for ${user.email} (Role: ${user.role}). Redirecting to ${redirectTo}`);
+  console.log(`[LoginAction JSON_DB] Login successful for ${userFromDb.email} (Role: ${userFromDb.role}). Redirecting to ${redirectTo}`);
 
   return {
     success: true,
     message: "تم تسجيل الدخول بنجاح!",
-    redirectTo: redirectTo
+    redirectTo: redirectTo,
+    user: userForClient,
   };
 }
+

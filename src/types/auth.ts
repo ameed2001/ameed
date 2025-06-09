@@ -13,4 +13,11 @@ export type LoginActionResponse = {
     password?: string[];
     [key: string]: string[] | undefined; // للسماح بأخطاء حقول إضافية
   };
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    role: string; // UserRole as a string
+  };
 };
+

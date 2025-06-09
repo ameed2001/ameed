@@ -19,6 +19,17 @@
       "status": "Active",
       "createdAt": "2025-06-09T11:35:32.224Z",
       "profileImage": "/profiles/test.jpg"
+    },
+    {
+      "id": "user-1749486065534-3",
+      "name": "عميد سماره",
+      "email": "ameed2001@gmail.com",
+      "password_hash": "$2a$10$Hv8OUsCCe0FecNSHrO7ya.YZZH0QKVhrYNA2iH/m03dK0k1DFoupW",
+      "role": "OWNER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-09T16:21:05.534Z",
+      "updatedAt": "2025-06-09T16:21:05.534Z",
+      "profileImage": "https://placehold.co/100x100.png?text=عم"
     }
   ],
   "projects": [
@@ -131,6 +142,22 @@
       "message": "تم تشغيل النظام بنجاح.",
       "user": "System",
       "action": "SYSTEM_STARTUP_FILE_LOAD"
+    },
+    {
+      "id": "log-1749486065540-9tvy6",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed2001@gmail.com registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-06-09T16:21:05.540Z",
+      "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749486073839-y6nst",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-09T16:21:13.839Z",
+      "user": "user-1749486065534-3"
     }
   ],
   "roles": [

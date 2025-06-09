@@ -53,6 +53,14 @@ export default function LoginPage() {
           variant: "default",
         });
         reset();
+        
+        if (result.user) {
+            localStorage.setItem('userName', result.user.name);
+            localStorage.setItem('userRole', result.user.role); 
+            localStorage.setItem('userEmail', result.user.email); 
+            localStorage.setItem('userId', result.user.id); 
+        }
+
         if (result.redirectTo) {
           router.push(result.redirectTo);
         } else {
@@ -162,3 +170,4 @@ export default function LoginPage() {
     </AppLayout>
   );
 }
+

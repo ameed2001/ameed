@@ -8,16 +8,39 @@ import Link from "next/link";
 import { Briefcase, UserCircle, Settings, LogOut, ShieldCheck, BarChart3, MessageSquare, GanttChartSquare, Image as ImageIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-
-// Mock current user - replace with actual auth context
-const MOCK_OWNER_NAME = "صاحب المشروع (مثال)";
+import { useEffect, useState } from "react";
 
 export default function OwnerDashboardPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const [ownerName, setOwnerName] = useState("المالك"); // Default name
+
+  useEffect(() => {
+    // In a real app, fetch user data from auth context or localStorage
+    // This is a simplified approach for the current setup
+    if (typeof window !== 'undefined') {
+        const storedUserName = localStorage.getItem('userName');
+        if (storedUserName) {
+        setOwnerName(storedUserName);
+        } else {
+        // Fallback if no name is found, or direct to login
+        console.warn("User name not found in localStorage for owner dashboard.");
+        // Optionally, redirect to login if no user info is found
+        // router.push('/login'); 
+        }
+    }
+  }, [router]);
+
 
   const handleLogout = () => {
     // In a real app, this would call an actual logout API endpoint
+    // and clear localStorage/session
+    if (typeof window !== 'undefined') {
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userId');
+    }
     toast({
       title: "تم تسجيل الخروج",
       description: "تم تسجيل خروجك بنجاح.",
@@ -79,7 +102,7 @@ export default function OwnerDashboardPage() {
             <div>
               <UserCircle className="h-16 w-16 text-app-gold mb-3" />
               <CardTitle className="text-3xl font-bold text-app-red">
-                مرحباً بك، {MOCK_OWNER_NAME}!
+                مرحباً بك، {ownerName}!
               </CardTitle>
               <CardDescription className="text-lg text-gray-600 mt-2">
                 هذه هي لوحة التحكم الخاصة بك كمالك للمشاريع.
@@ -123,3 +146,4 @@ export default function OwnerDashboardPage() {
     </div>
   );
 }
+

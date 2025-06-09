@@ -242,5 +242,3 @@ const PriceForm = () => {
 };
 
 export default PriceForm;
-
-    

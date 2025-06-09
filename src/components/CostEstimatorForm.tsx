@@ -7,8 +7,29 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Printer, PlusCircle, Trash2, Calculator, Coins, DollarSign, Shekel } from 'lucide-react';
+import { Printer, PlusCircle, Trash2, Calculator, Coins, DollarSign } from 'lucide-react'; // Removed Shekel
 import { useToast } from '@/hooks/use-toast'; // Corrected path
+
+// Inline SVG for Shekel symbol
+const ShekelIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M6 18V6"/>
+    <path d="M18 6v12"/>
+    <path d="M14 6h-4a4 4 0 0 0-4 4v0a4 4 0 0 0 4 4h4"/>
+    <path d="M10 18h4a4 4 0 0 0 4-4v0a4 4 0 0 0-4-4h-4"/>
+  </svg>
+);
 
 interface MaterialItem {
   id: string;
@@ -30,17 +51,6 @@ const units: Record<string, string> = {
   sand: "م³"
 };
 
-const materialTypes: Record<string, string[]> = {
-  brick: ["طوب أسمنتي", "طوب أحمر", "طوب زجاجي", "طوب بخاري"],
-  iron: ["8 ملم", "10 ملم", "12 ملم", "14 ملم", "16 ملم", "18 ملم", "20 ملم"],
-  concrete: ["خرسانة عادية", "خرسانة مسلحة"],
-  mesh: ["سلك خرسانة"],
-  nails: ["مسامير خشب", "مسامير حديد"],
-  cuttingDiscs: ["أقراص قطع حديد", "أقراص قطع خرسانة"],
-  cement: ["إسمنت بورتلاندي"],
-  sand: ["رمل ناعم", "رمل خشن"]
-};
-
 // Helper function to get material display name (Arabic)
 const getMaterialDisplayName = (key: string): string => {
   const names: Record<string, string> = {
@@ -57,6 +67,18 @@ const getMaterialDisplayName = (key: string): string => {
 };
 
 
+const materialTypes: Record<string, string[]> = {
+  brick: ["طوب أسمنتي", "طوب أحمر", "طوب زجاجي", "طوب بخاري"],
+  iron: ["8 ملم", "10 ملم", "12 ملم", "14 ملم", "16 ملم", "18 ملم", "20 ملم"],
+  concrete: ["خرسانة عادية", "خرسانة مسلحة"],
+  mesh: ["سلك خرسانة"],
+  nails: ["مسامير خشب", "مسامير حديد"],
+  cuttingDiscs: ["أقراص قطع حديد", "أقراص قطع خرسانة"],
+  cement: ["إسمنت بورتلاندي"],
+  sand: ["رمل ناعم", "رمل خشن"]
+};
+
+
 export default function CostEstimatorForm() {
   const { toast } = useToast();
   const [currency, setCurrency] = useState<'dinar' | 'dollar' | 'shekel'>('dinar');
@@ -66,6 +88,8 @@ export default function CostEstimatorForm() {
   const [quantity, setQuantity] = useState<string>('');
   const [items, setItems] = useState<MaterialItem[]>([]);
   const [showReport, setShowReport] = useState(false);
+  const [currentUnit, setCurrentUnit] = useState<string>('--');
+
 
   const currencySymbols = {
     dinar: 'دينار',
@@ -82,25 +106,32 @@ export default function CostEstimatorForm() {
   // Converts an amount from a given currency TO Dinar (base)
   const convertToDinar = (amount: number, fromCurrency: keyof typeof exchangeRates): number => {
     if (fromCurrency === 'dinar') return amount;
-    // To convert *from* other currency *to* Dinar, we divide by the rate (since rate is Dinar to Other)
-    // e.g., if amount is 1 USD, and 1 Dinar = 0.71 USD, then 1 USD = 1/0.71 Dinar
     if (fromCurrency === 'dollar') return amount / exchangeRates.dollar;
     if (fromCurrency === 'shekel') return amount / exchangeRates.shekel;
-    return amount; // Fallback, should not happen
+    return amount;
   };
 
   // Converts an amount FROM Dinar (base) to the target currency
   const convertFromDinar = (amountInDinar: number, toCurrency: keyof typeof exchangeRates): number => {
     if (toCurrency === 'dinar') return amountInDinar;
-    // To convert *from* Dinar *to* other currency, we multiply by the rate
     if (toCurrency === 'dollar') return amountInDinar * exchangeRates.dollar;
     if (toCurrency === 'shekel') return amountInDinar * exchangeRates.shekel;
-    return amountInDinar; // Fallback
+    return amountInDinar;
   };
   
   const calculateTotalInDinar = () => {
-    return items.reduce((sum, item) => sum + item.total, 0); // item.total is already in Dinar
+    return items.reduce((sum, item) => sum + item.total, 0);
   };
+
+  useEffect(() => {
+    if (selectedMaterialKey) {
+        setSelectedType(''); 
+        setPrice(''); 
+        setCurrentUnit(units[selectedMaterialKey as keyof typeof units] || '--');
+    } else {
+        setCurrentUnit('--');
+    }
+  }, [selectedMaterialKey]);
 
 
   const handleCalculate = () => {
@@ -113,7 +144,7 @@ export default function CostEstimatorForm() {
       return;
     }
 
-    const priceInputAsNumber = parseFloat(price); // This is in the 'currency' selected by user
+    const priceInputAsNumber = parseFloat(price);
     const quantityValue = parseFloat(quantity);
     
     if (isNaN(priceInputAsNumber) || priceInputAsNumber < 0) {
@@ -142,29 +173,21 @@ export default function CostEstimatorForm() {
       name: `${getMaterialDisplayName(selectedMaterialKey)} (${selectedType})`,
       quantity: quantityValue,
       unit: units[selectedMaterialKey as keyof typeof units],
-      pricePerUnit: pricePerUnitInDinar, // Store in Dinar
-      total: totalCostInDinar          // Store in Dinar
+      pricePerUnit: pricePerUnitInDinar,
+      total: totalCostInDinar
     };
 
     setItems(prevItems => [...prevItems, newItem]);
-    if (!showReport && items.length === 0) {
-        setShowReport(true);
-    } else if (items.length >= 0 && !showReport) { // Ensure report shows if items are added
-        setShowReport(true);
-    }
+    setShowReport(true);
     
     // Reset form for next entry
-    // Keep selectedMaterialKey and selectedType for potentially faster input of same item
     setPrice('');
     setQuantity('');
+    // Optionally keep selectedMaterialKey and selectedType or reset them:
+    // setSelectedMaterialKey(''); 
+    // setSelectedType('');
+    // setCurrentUnit('--');
   };
-  
-  useEffect(() => {
-    if (selectedMaterialKey) {
-        setSelectedType(''); // Reset type when material changes
-        setPrice(''); // Optionally reset price or load a default
-    }
-  }, [selectedMaterialKey]);
 
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
@@ -185,7 +208,6 @@ export default function CostEstimatorForm() {
       const totalCostInDinar = calculateTotalInDinar();
       const totalCostDisplay = convertFromDinar(totalCostInDinar, currency).toFixed(2);
 
-      // Corrected line: removed backslash before backtick
       printWindow.document.write(`
         <html>
           <head>
@@ -237,6 +259,7 @@ export default function CostEstimatorForm() {
     }
   };
 
+
   const handleClear = () => {
     setItems([]);
     setShowReport(false);
@@ -244,15 +267,15 @@ export default function CostEstimatorForm() {
     setSelectedType('');
     setPrice('');
     setQuantity('');
+    setCurrentUnit('--');
   };
 
   const handleAddAnother = () => {
     // Reset only type, price, quantity. Keep material selected if user wants.
-    // For now, let's clear type, price, quantity
     setSelectedType('');
     setPrice('');
     setQuantity('');
-    // Consider focusing the type or price input after this
+    // currentUnit will update via useEffect when selectedMaterialKey is potentially changed by user
   };
   
   const handleRemoveItem = (itemId: string) => {
@@ -304,7 +327,7 @@ export default function CostEstimatorForm() {
               onClick={() => setCurrency('shekel')}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white data-[state=inactive]:bg-gray-200 data-[state=inactive]:text-gray-700 data-[state=inactive]:hover:bg-gray-300"
             >
-              <Shekel className="ml-1 h-4 w-4" />
+              <ShekelIcon className="ml-1 h-4 w-4" />
               شيكل
             </Button>
           </div>
@@ -385,16 +408,16 @@ export default function CostEstimatorForm() {
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder="أدخل الكمية المطلوبة"
-                className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-16"
+                className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-16" 
                  min="0"
                  step="any"
               />
               <div className="absolute left-3 top-1/2 -translate-y-1/2 bg-gray-200 px-3 py-1 rounded text-sm text-gray-700 pointer-events-none">
-                {selectedMaterialKey ? units[selectedMaterialKey as keyof typeof units] : '--'}
+                {currentUnit}
               </div>
             </div>
           </div>
-
+          
           <Button
             onClick={handleCalculate}
             className="w-full bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white font-bold py-3 text-lg transform hover:scale-105 transition-transform"
@@ -512,4 +535,3 @@ export default function CostEstimatorForm() {
   );
 }
 
-    

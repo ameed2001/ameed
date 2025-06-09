@@ -2,7 +2,6 @@
 'use server';
 
 import { z } from 'zod';
-// Import types and functions for MongoDB from the updated db.ts
 import { registerUser, type RegistrationResult, type UserRole } from '@/lib/db';
 
 export interface SignupActionResponse {
@@ -13,38 +12,57 @@ export interface SignupActionResponse {
   fieldErrors?: Record<string, string[] | undefined>;
 }
 
-// Schema for client-side validation, role will be 'OWNER' or 'ENGINEER' string
-const signupSchemaClient = z.object({
-  name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
-  email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
-  confirmPassword: z.string().min(6, { message: "تأكيد كلمة المرور مطلوب." }),
-  role: z.enum(["OWNER", "ENGINEER"], { required_error: "يرجى اختيار الدور." }), // Ensure these match UserRole type
-  phone: z.string().optional(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "كلمتا المرور غير متطابقتين.",
-  path: ["confirmPassword"],
+// This schema defines the shape of data COMING FROM THE CLIENT FORM
+// after client-side Zod validation. It matches the `signupSchema`
+// in `src/app/signup/page.tsx`.
+const clientSignupFormSchema = z.object({
+  name: z.string(), // Assuming min length validation is done on client
+  email: z.string().email(), // Assuming email format validation is done on client
+  password: z.string(), // Assuming min length validation is done on client
+  confirmPassword: z.string(), // Server-side check for equality will be done
+  role: z.enum(["owner", "engineer"]), // Expecting lowercase from client RadioGroup
+  // phone: z.string().optional(), // phone is not currently in the client form
 });
-
+type ClientSignupFormDataType = z.infer<typeof clientSignupFormSchema>;
 
 export async function signupUserAction(
-  data: z.infer<typeof signupSchemaClient>
+  data: ClientSignupFormDataType // Use the type that reflects actual client data
 ): Promise<SignupActionResponse> {
   console.log("[SignupAction MongoDB] Server Action called with:", {
     name: data.name,
     email: data.email,
-    role: data.role,
-    phone: data.phone
+    role: data.role, // This will be 'owner' or 'engineer' (lowercase)
+    // phone: data.phone // if phone was part of ClientSignupFormDataType
   });
   
-  // The role from the client form is already 'OWNER' or 'ENGINEER' string.
-  // This directly matches the UserRole type defined in db.ts.
+  // Server-side validation for critical aspects like password confirmation
+  if (data.password !== data.confirmPassword) {
+    return {
+      success: false,
+      message: "كلمتا المرور غير متطابقتين.",
+      fieldErrors: { confirmPassword: ["كلمتا المرور غير متطابقتين."] }
+    };
+  }
+
+  // Defensive check for role, though client-side Zod should make it required.
+  // The error "Expected 'owner' | 'engineer', received null" suggests this might be an issue.
+  if (!data.role) {
+      return {
+          success: false,
+          message: "يرجى اختيار الدور. القيمة المستلمة للدور غير صالحة أو مفقودة.",
+          fieldErrors: { role: ["يرجى اختيار الدور."] }
+      };
+  }
+
+  // Convert role to uppercase for UserRole type compatibility in db.ts
+  const roleForDb = data.role.toUpperCase() as UserRole;
+
   const registrationResult: RegistrationResult = await registerUser({
       name: data.name,
       email: data.email,
-      password_input: data.password, // Pass the password
-      role: data.role as UserRole, // Cast to UserRole, as z.enum ensures it's one of these
-      phone: data.phone,
+      password: data.password, // This now correctly matches the field name used in registerUser
+      role: roleForDb,
+      // phone: data.phone, // Pass if/when phone is added to the form and schema
   });
 
   if (!registrationResult.success) {
@@ -52,7 +70,7 @@ export async function signupUserAction(
     if (registrationResult.errorType === 'email_exists' && registrationResult.message) {
         fieldErrors.email = [registrationResult.message];
     }
-    // Add more specific field error handling if needed
+    // Add more specific field error handling if needed from registrationResult.errorType
     return {
         success: false,
         message: registrationResult.message || "فشل إنشاء الحساب.",

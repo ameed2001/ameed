@@ -1,11 +1,10 @@
-
 {
   "users": [
     {
       "id": "user-001",
       "name": "مدير النظام",
       "email": "ameed@admin.com",
-      "password_hash": "admin2001",
+      "password_hash": "$2a$10$7QY.UvSSvyyU7B0o5UjNl.JImQJm5.xLAZ.G/u80sR6U9n8zJ/yJq",
       "role": "Admin",
       "status": "Active",
       "createdAt": "2025-06-09T11:35:32.224Z",
@@ -231,6 +230,46 @@
       "message": "User logged in successfully: ameed2001@gmail.com",
       "timestamp": "2025-06-09T21:18:48.307Z",
       "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749505619980-5gezh",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:46:59.980Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505629662-icgye",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:47:09.662Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505639244-pkkwj",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:47:19.244Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505646471-bzsdy",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-09T21:47:26.471Z",
+      "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749505679019-dvgtt",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:47:59.019Z",
+      "user": "user-001"
     }
   ],
   "roles": [

@@ -14,13 +14,6 @@ import {
     Zap as ZapIcon
 } from "lucide-react";
 
-// Dummy data for stats bar - will be removed as it's moving to sidebar
-// const stats = {
-//   activeProjects: 4,
-//   newMessages: 2,
-//   overdueTasks: 1,
-//   completedProjects: 7,
-// };
 
 const actionCardsData = [
     { 
@@ -32,6 +25,7 @@ const actionCardsData = [
       buttonText: "استعراض المشاريع",
       iconBgClass: "bg-amber-50 text-amber-600",
       bottomBarClass: "bg-gradient-to-r from-amber-400 to-amber-600",
+      buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-amber-50 text-amber-700 border-2 border-amber-500 hover:bg-amber-500 hover:text-white",
     },
     { 
       title: "متابعة تقدم المشاريع", 
@@ -70,7 +64,7 @@ const actionCardsData = [
       description: "تواصل مع فريق المشروع وأرسل استفساراتك وتعليقاتك.",
       dataAiHint: "project comments inquiries",
       buttonText: "الرسائل",
-      iconBgClass: "bg-red-50 text-red-600", // Matching app-red, assuming direct use
+      iconBgClass: "bg-red-50 text-red-600", 
       bottomBarClass: "bg-gradient-to-r from-red-400 to-red-600",
     },
     { 
@@ -82,6 +76,7 @@ const actionCardsData = [
       buttonText: "عرض الجداول",
       iconBgClass: "bg-teal-50 text-teal-600",
       bottomBarClass: "bg-gradient-to-r from-teal-400 to-teal-600",
+      buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-teal-50 text-teal-700 border-2 border-teal-600 hover:bg-teal-600 hover:text-white",
     },
   ];
 
@@ -135,9 +130,15 @@ export default function OwnerDashboardPage() {
                     <p className="text-gray-600 text-sm mb-4">{card.description}</p>
                 </div>
                 <div className="px-6 pb-6">
-                    <Link href={card.href} className={`w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center 
-                        ${card.iconBgClass.replace('text-', 'hover:bg-').replace('-50', '-100')} 
-                        ${card.iconBgClass.replace('bg-', 'text-')}`}>
+                    <Link 
+                        href={card.href} 
+                        className={
+                            (card as any).buttonClassName || // Use custom class if provided
+                            `w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center 
+                            ${card.iconBgClass.replace('text-', 'hover:bg-').replace('-50', '-100')} 
+                            ${card.iconBgClass.replace('bg-', 'text-')}`
+                        }
+                    >
                         <span>{card.buttonText}</span>
                         <ArrowLeft className="mr-2 w-5 h-5" />
                     </Link>
@@ -147,32 +148,7 @@ export default function OwnerDashboardPage() {
           );
         })}
       </div>
-
-      {/* Stats Bar at Bottom - THIS SECTION IS REMOVED */}
-      {/* 
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-20">
-          <div className="container mx-auto px-4 py-3">
-              <div className="flex justify-around items-center">
-                  <div className="text-center">
-                      <div className="text-gray-500 text-xs sm:text-sm">المشاريع النشطة</div>
-                      <div className="text-xl sm:text-2xl font-bold text-amber-600">{stats.activeProjects}</div>
-                  </div>
-                  <div className="text-center">
-                      <div className="text-gray-500 text-xs sm:text-sm">الرسائل الجديدة</div>
-                      <div className="text-xl sm:text-2xl font-bold text-blue-600">{stats.newMessages}</div>
-                  </div>
-                  <div className="text-center">
-                      <div className="text-gray-500 text-xs sm:text-sm">المهام المتأخرة</div>
-                      <div className="text-xl sm:text-2xl font-bold text-red-600">{stats.overdueTasks}</div>
-                  </div>
-                  <div className="text-center">
-                      <div className="text-gray-500 text-xs sm:text-sm">المشاريع المكتملة</div>
-                      <div className="text-xl sm:text-2xl font-bold text-green-600">{stats.completedProjects}</div>
-                  </div>
-              </div>
-          </div>
-      </div> 
-      */}
     </div>
   );
 }
+

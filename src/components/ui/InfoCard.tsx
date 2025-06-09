@@ -1,3 +1,4 @@
+"use client"; // Add this directive
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
@@ -103,33 +104,29 @@ const InfoCard = (props: InfoCardProps) => {
     </div>
   );
 
-  if (href && applyFlipEffect) { // Flip cards that are links
+  if (href && !onClickProp) { // If there's an href and no onClick, always use Link
     return (
       <Link
         href={href}
         className={cn("outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg block", baseCardContainerClasses)}
-        onClick={onClickProp} // onClick can be passed directly to Link
       >
         {cardStructure}
       </Link>
     );
   }
   
-  // For non-flip cards or cards that shouldn't navigate via href directly when flipping is off
+  // For cards with onClick, or cards that are not links (even if applyFlipEffect is true for visual reasons)
   return (
     <div
       className={cn(
         "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg block", 
         baseCardContainerClasses,
-        (onClickProp && !applyFlipEffect) && "cursor-pointer" // Add cursor pointer only if onClick is for non-flip and exists
+        (onClickProp) && "cursor-pointer" 
       )}
-      onClick={(!applyFlipEffect && href) ? () => {} : onClickProp} // If it's a link but not flipping, onClick is handled by Link. Otherwise, use onClickProp.
-                                                                // If not flipping AND href is present, Link handles click.
-                                                                // If not flipping AND no href, onClickProp handles click.
-                                                                // If flipping, Link (with onClickProp for potential analytics) handles click.
-      role={(onClickProp && !applyFlipEffect && !href) ? "button" : undefined}
-      tabIndex={(onClickProp && !applyFlipEffect && !href) ? 0 : undefined}
-      onKeyDown={(onClickProp && !applyFlipEffect && !href) ? (e) => (e.key === 'Enter' || e.key === ' ') && onClickProp?.() : undefined}
+      onClick={onClickProp} 
+      role={(onClickProp) ? "button" : undefined}
+      tabIndex={(onClickProp) ? 0 : undefined}
+      onKeyDown={(onClickProp) ? (e) => (e.key === 'Enter' || e.key === ' ') && onClickProp?.() : undefined}
     >
       {cardStructure}
     </div>

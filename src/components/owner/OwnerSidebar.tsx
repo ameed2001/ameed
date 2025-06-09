@@ -36,7 +36,6 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
       if (storedUserName) {
         setOwnerName(storedUserName);
       }
-      // Sidebar open state is now managed by OwnerAppLayout
     }
   }, []);
 
@@ -46,7 +45,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
       localStorage.removeItem('userRole');
       localStorage.removeItem('userEmail');
       localStorage.removeItem('userId');
-      localStorage.removeItem('ownerSidebarState'); // Clear sidebar state on logout
+      localStorage.removeItem('ownerSidebarState');
     }
     toast({
       title: "تم تسجيل الخروج",
@@ -58,7 +57,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
 
   return (
     <aside className={cn(
-      "bg-header-bg text-header-fg h-full shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out",
+      "bg-header-bg text-header-fg shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0", // Removed h-full
       isOpen ? "w-72" : "w-20"
     )}>
       <div className="p-4 flex justify-between items-center border-b border-gray-700 h-[70px] flex-shrink-0">
@@ -88,7 +87,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         </div>
       )}
 
-      <nav className="flex-grow overflow-y-auto">
+      <nav className="flex-grow"> {/* Removed overflow-y-auto */}
         <ul className="space-y-1 p-2">
           {ownerNavItems.map((item) => {
             const isActive = pathname === item.href;

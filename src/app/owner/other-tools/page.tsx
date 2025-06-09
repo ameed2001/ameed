@@ -1,7 +1,7 @@
 
 import InfoCard from '@/components/ui/InfoCard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { DollarSign, Wrench, PlusCircle } from 'lucide-react';
+import { Wrench, PlusCircle } from 'lucide-react';
 
 export default function OtherToolsPage() {
   return (
@@ -19,20 +19,6 @@ export default function OtherToolsPage() {
         
         <CardContent className="px-4 md:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {/* بطاقة حساب أسعار المواد */}
-            <InfoCard
-              title="حساب أسعار المواد"
-              description="تقدير التكاليف الإجمالية لمواد البناء الأساسية مثل الحديد، الخرسانة، والطوب."
-              icon={<DollarSign className="w-8 h-8" />}
-              iconWrapperClass="bg-yellow-100 dark:bg-yellow-800"
-              iconColorClass="text-yellow-500 dark:text-yellow-400"
-              href="/cost-estimator"
-              dataAiHint="cost estimation tool"
-              cardHeightClass="h-full min-h-[280px]"
-              applyFlipEffect={false}
-              className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-200/80 dark:border-gray-700/60"
-            />
-
             {/* بطاقة أدوات مستقبلية */}
             <InfoCard
               title="المزيد قريباً"

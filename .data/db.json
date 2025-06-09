@@ -182,6 +182,14 @@
       "message": "User logged in successfully: ameed2001@gmail.com",
       "timestamp": "2025-06-09T19:01:50.697Z",
       "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749497358828-1oade",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-09T19:29:18.829Z",
+      "user": "user-1749486065534-3"
     }
   ],
   "roles": [

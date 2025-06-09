@@ -2,30 +2,13 @@
 "use client";
 
 import InfoCard from '@/components/ui/InfoCard';
-import { Box, BarChart3, DollarSign, LogIn, UserPlus } from 'lucide-react';
+import { Box, BarChart3 } from 'lucide-react'; // Removed DollarSign
 import { useState } from 'react';
-import AuthRequiredModal from '@/components/modals/AuthRequiredModal'; // Import the new modal
+import AuthRequiredModal from '@/components/modals/AuthRequiredModal';
 
 const MainDashboardClient = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  // Remove states for individual calculation modals as they are now handled by AuthRequiredModal first
-  // const [isConcreteModalOpen, setIsConcreteModalOpen] = useState(false);
-  // const [concreteModalCategory, setConcreteModalCategory] = useState('');
-  // const [isSteelModalOpen, setIsSteelModalOpen] = useState(false);
-  // const [steelModalCategory, setSteelModalCategory] = useState('');
-  // const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
-
-  // const handleOpenConcreteModal = (category: string) => {
-  //   setConcreteModalCategory(category);
-  //   setIsConcreteModalOpen(true);
-  // };
-  // const handleOpenSteelModal = (category: string) => {
-  //   setSteelModalCategory(category);
-  //   setIsSteelModalOpen(true);
-  // };
-  // const handleOpenPriceModal = () => setIsPriceModalOpen(true);
-  
   const handleFeatureClick = () => {
     setIsAuthModalOpen(true);
   };
@@ -37,7 +20,7 @@ const MainDashboardClient = () => {
       icon: <Box />, 
       iconWrapperClass: "bg-red-100 dark:bg-red-900",
       iconColorClass: "text-red-500 dark:text-red-400",
-      onClick: handleFeatureClick, // Updated onClick
+      onClick: handleFeatureClick,
       dataAiHint: "concrete calculation",
       cardHeightClass: "h-72",
       applyFlipEffect: false,
@@ -48,22 +31,12 @@ const MainDashboardClient = () => {
       icon: <BarChart3 />,
       iconWrapperClass: "bg-blue-100 dark:bg-blue-900",
       iconColorClass: "text-blue-500 dark:text-blue-400",
-      onClick: handleFeatureClick, // Updated onClick
+      onClick: handleFeatureClick,
       dataAiHint: "steel calculation",
       cardHeightClass: "h-72",
       applyFlipEffect: false,
     },
-    {
-      title: "حساب الأسعار",
-      description: "تقدير التكاليف الإجمالية لمواد البناء الأساسية.",
-      icon: <DollarSign />,
-      iconWrapperClass: "bg-yellow-100 dark:bg-yellow-700",
-      iconColorClass: "text-yellow-500 dark:text-yellow-400",
-      onClick: handleFeatureClick, // Updated onClick
-      dataAiHint: "cost estimation",
-      cardHeightClass: "h-72",
-      applyFlipEffect: false,
-    },
+    // Card for "حساب الأسعار" has been removed
   ];
 
   return (
@@ -86,31 +59,6 @@ const MainDashboardClient = () => {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
-
-      {/* 
-        The following modals are no longer directly triggered by these cards.
-        They can be removed if not used elsewhere or kept if other parts of the app
-        (e.g., authenticated sections) might trigger them.
-        For this request, they are effectively replaced by AuthRequiredModal for these dashboard cards.
-      */}
-      {/*
-      <CalculationModal
-        isOpen={isConcreteModalOpen}
-        onClose={() => setIsConcreteModalOpen(false)}
-        calculationType="concrete"
-        category={concreteModalCategory}
-      />
-      <CalculationModal
-        isOpen={isSteelModalOpen}
-        onClose={() => setIsSteelModalOpen(false)}
-        calculationType="steel"
-        category={steelModalCategory}
-      />
-      <PriceCalculationModal
-        isOpen={isPriceModalOpen}
-        onClose={() => setIsPriceModalOpen(false)}
-      />
-      */}
     </>
   );
 };

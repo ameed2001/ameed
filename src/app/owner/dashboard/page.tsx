@@ -29,54 +29,58 @@ const actionCardsData = [
     },
     { 
       title: "متابعة تقدم المشاريع", 
-      href: "/my-projects", 
+      href: "/my-projects", // Assuming this links to the general projects page where progress can be seen per project
       icon: BarChart3, 
       description: "راقب التقدم العام للمشاريع، وشاهد الإنجازات والمراحل المكتملة.",
       dataAiHint: "project progress tracking",
       buttonText: "عرض التقارير",
       iconBgClass: "bg-blue-50 text-blue-600",
       bottomBarClass: "bg-gradient-to-r from-blue-400 to-blue-600",
+      buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white",
     },
     { 
       title: "تقارير الكميات الملخصة", 
-      href: "/my-projects", 
+      href: "/my-projects", // Assuming quantity reports are within each project's detail page
       icon: ShieldCheck, 
       description: "اطلع على ملخصات كميات المواد المستخدمة في كل مشروع.",
       dataAiHint: "quantity reports summary",
       buttonText: "عرض الكميات",
       iconBgClass: "bg-green-50 text-green-600",
       bottomBarClass: "bg-gradient-to-r from-green-400 to-green-600",
+      buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-green-50 text-green-700 border-2 border-green-500 hover:bg-green-500 hover:text-white",
     },
     { 
       title: "صور وفيديوهات التقدم", 
-      href: "/my-projects", 
+      href: "/my-projects", // Assuming media is within each project's detail page
       icon: ImageIcon, 
       description: "شاهد التحديثات المرئية التي يرفعها المهندس لكل مشروع.",
       dataAiHint: "progress photos videos",
       buttonText: "معرض الوسائط",
       iconBgClass: "bg-purple-50 text-purple-600",
       bottomBarClass: "bg-gradient-to-r from-purple-400 to-purple-600",
+      buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-purple-50 text-purple-700 border-2 border-purple-500 hover:bg-purple-500 hover:text-white",
     },
      { 
       title: "التعليقات والاستفسارات", 
-      href: "/my-projects", 
+      href: "/my-projects", // Assuming comments are within each project's detail page
       icon: MessageSquare, 
       description: "تواصل مع فريق المشروع وأرسل استفساراتك وتعليقاتك.",
       dataAiHint: "project comments inquiries",
       buttonText: "الرسائل",
       iconBgClass: "bg-red-50 text-red-600", 
       bottomBarClass: "bg-gradient-to-r from-red-400 to-red-600",
+      buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-red-50 text-red-700 border-2 border-red-500 hover:bg-red-500 hover:text-white",
     },
     { 
       title: "الجداول الزمنية للمشاريع", 
-      href: "/my-projects", 
+      href: "/my-projects", // Assuming timelines are within each project's detail page
       icon: GanttChartSquare, 
       description: "اطلع على الخطط الزمنية والمراحل المنجزة والمقبلة لكل مشروع.",
       dataAiHint: "project timelines",
       buttonText: "عرض الجداول",
       iconBgClass: "bg-teal-50 text-teal-600",
       bottomBarClass: "bg-gradient-to-r from-teal-400 to-teal-600",
-      buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-teal-50 text-teal-700 border-2 border-teal-600 hover:bg-teal-600 hover:text-white",
+      buttonClassName: "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center bg-teal-50 text-teal-700 border-2 border-teal-500 hover:bg-teal-500 hover:text-white",
     },
   ];
 
@@ -132,12 +136,7 @@ export default function OwnerDashboardPage() {
                 <div className="px-6 pb-6">
                     <Link 
                         href={card.href} 
-                        className={
-                            (card as any).buttonClassName || // Use custom class if provided
-                            `w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center 
-                            ${card.iconBgClass.replace('text-', 'hover:bg-').replace('-50', '-100')} 
-                            ${card.iconBgClass.replace('bg-', 'text-')}`
-                        }
+                        className={card.buttonClassName}
                     >
                         <span>{card.buttonText}</span>
                         <ArrowLeft className="mr-2 w-5 h-5" />
@@ -151,4 +150,3 @@ export default function OwnerDashboardPage() {
     </div>
   );
 }
-

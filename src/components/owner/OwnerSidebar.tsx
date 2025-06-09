@@ -57,7 +57,7 @@ export default function OwnerSidebar() {
         <h2 className="text-xl font-bold text-white">مرحباً، {isClient ? ownerName : "المالك"}</h2>
         <p className="text-sm text-gray-400">لوحة تحكم المالك</p>
       </div>
-      <nav className="flex-grow overflow-y-auto">
+      <nav className="flex-grow"> {/* Removed overflow-y-auto */}
         <ul className="space-y-2">
           {ownerNavItems.map((item) => {
             const isActive = pathname === item.href;

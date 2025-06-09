@@ -2,6 +2,8 @@
 'use server';
 
 import { z } from 'zod';
+// Import UserRole from @prisma/client is no longer valid.
+// UserRole type is now defined in src/lib/db.ts
 import { registerUser, type RegistrationResult, type UserRole } from '@/lib/db';
 
 export interface SignupActionResponse {
@@ -13,29 +15,24 @@ export interface SignupActionResponse {
 }
 
 // This schema defines the shape of data COMING FROM THE CLIENT FORM
-// after client-side Zod validation. It matches the `signupSchema`
-// in `src/app/signup/page.tsx`.
 const clientSignupFormSchema = z.object({
-  name: z.string(), // Assuming min length validation is done on client
-  email: z.string().email(), // Assuming email format validation is done on client
-  password: z.string(), // Assuming min length validation is done on client
-  confirmPassword: z.string(), // Server-side check for equality will be done
+  name: z.string(),
+  email: z.string().email(),
+  password: z.string(),
+  confirmPassword: z.string(),
   role: z.enum(["owner", "engineer"]), // Expecting lowercase from client RadioGroup
-  // phone: z.string().optional(), // phone is not currently in the client form
 });
 type ClientSignupFormDataType = z.infer<typeof clientSignupFormSchema>;
 
 export async function signupUserAction(
-  data: ClientSignupFormDataType // Use the type that reflects actual client data
+  data: ClientSignupFormDataType
 ): Promise<SignupActionResponse> {
-  console.log("[SignupAction MongoDB] Server Action called with:", {
+  console.log("[SignupAction] Server Action called with:", {
     name: data.name,
     email: data.email,
     role: data.role, // This will be 'owner' or 'engineer' (lowercase)
-    // phone: data.phone // if phone was part of ClientSignupFormDataType
   });
   
-  // Server-side validation for critical aspects like password confirmation
   if (data.password !== data.confirmPassword) {
     return {
       success: false,
@@ -44,8 +41,6 @@ export async function signupUserAction(
     };
   }
 
-  // Defensive check for role, though client-side Zod should make it required.
-  // The error "Expected 'owner' | 'engineer', received null" suggests this might be an issue.
   if (!data.role) {
       return {
           success: false,
@@ -55,14 +50,24 @@ export async function signupUserAction(
   }
 
   // Convert role to uppercase for UserRole type compatibility in db.ts
+  // UserRole type expects 'OWNER' or 'ENGINEER' (uppercase)
   const roleForDb = data.role.toUpperCase() as UserRole;
+  if (roleForDb !== 'OWNER' && roleForDb !== 'ENGINEER' && roleForDb !== 'ADMIN' && roleForDb !== 'GENERAL_USER') {
+    // This check is defensive, as clientSignupFormSchema already limits it
+    console.error(`[SignupAction] Invalid role after uppercase conversion: ${roleForDb}`);
+    return {
+        success: false,
+        message: "الدور المحدد غير صالح.",
+        fieldErrors: { role: ["الدور المحدد غير صالح."] }
+    };
+  }
 
   const registrationResult: RegistrationResult = await registerUser({
       name: data.name,
       email: data.email,
-      password: data.password, // This now correctly matches the field name used in registerUser
+      password_input: data.password, // Pass the raw password
       role: roleForDb,
-      // phone: data.phone, // Pass if/when phone is added to the form and schema
+      // phone: data.phone, // Pass if/when phone is added
   });
 
   if (!registrationResult.success) {
@@ -70,7 +75,6 @@ export async function signupUserAction(
     if (registrationResult.errorType === 'email_exists' && registrationResult.message) {
         fieldErrors.email = [registrationResult.message];
     }
-    // Add more specific field error handling if needed from registrationResult.errorType
     return {
         success: false,
         message: registrationResult.message || "فشل إنشاء الحساب.",
@@ -82,6 +86,6 @@ export async function signupUserAction(
     success: true,
     message: registrationResult.message || "تم إنشاء حسابك بنجاح!",
     isPendingApproval: registrationResult.isPendingApproval,
-    redirectTo: registrationResult.isPendingApproval ? undefined : "/login" // Redirect to login only if not pending approval
+    redirectTo: registrationResult.isPendingApproval ? undefined : "/login"
   };
 }

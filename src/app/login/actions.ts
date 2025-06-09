@@ -3,18 +3,18 @@
 'use server';
 
 import { z } from 'zod';
-// Import types and functions for MongoDB from the updated db.ts
 import { loginUser, type LoginResult, type UserRole } from '@/lib/db'; 
 import { type LoginActionResponse } from '@/types/auth';
-import type { UserDocument } from '@/lib/db'; // Using UserDocument type from db.ts
+import type { UserDocument } from '@/lib/db';
 
-export async function loginUserAction(data: { email: string; password: string; }): Promise<LoginActionResponse> {
-  console.log("[LoginAction MongoDB] محاولة تسجيل دخول للبريد:", data.email);
+export async function loginUserAction(data: { email: string; password_input: string; }): Promise<LoginActionResponse> {
+  console.log("[LoginAction MongoDB] Attempting login for email:", data.email);
 
-  const result: LoginResult = await loginUser(data.email, data.password);
+  // The loginUser function in db.ts expects 'password_input'
+  const result: LoginResult = await loginUser(data.email, data.password_input);
 
   if (!result.success || !result.user) {
-    console.error("[LoginAction MongoDB] فشل تسجيل الدخول:", result.message);
+    console.error("[LoginAction MongoDB] Login failed:", result.message);
     const fieldErrors: LoginActionResponse['fieldErrors'] = {};
     let generalMessage = result.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
 
@@ -34,11 +34,12 @@ export async function loginUserAction(data: { email: string; password: string; }
         generalMessage = result.message || "حسابك قيد المراجعة. يرجى الانتظار حتى الموافقة عليه.";
         break;
       default:
+        // Avoid overly generic error on email/password fields if the error isn't specific to them
         if (!result.message?.includes("البريد الإلكتروني") && !result.message?.includes("كلمة المرور")) {
-            fieldErrors.email = ["البيانات المدخلة غير صحيحة."];
-            fieldErrors.password = ["البيانات المدخلة غير صحيحة."];
+             // generalMessage is already set
+        } else {
+            // If message is specific, let it be the general message without field errors
         }
-        generalMessage = result.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
         break;
     }
 
@@ -49,11 +50,11 @@ export async function loginUserAction(data: { email: string; password: string; }
     };
   }
 
-  const user = result.user; // User object from MongoDB (without passwordHash)
+  // At this point, result.user is guaranteed to be defined
+  const user = result.user; 
 
-  let redirectTo = "/"; // Default redirect
-  // UserRole is a string type: 'ADMIN' | 'ENGINEER' | 'OWNER' | 'GENERAL_USER'
-  switch (user.role) {
+  let redirectTo = "/"; 
+  switch (user.role) { // user.role is UserRole (uppercase)
     case 'ENGINEER':
       redirectTo = "/my-projects";
       break;
@@ -63,20 +64,20 @@ export async function loginUserAction(data: { email: string; password: string; }
     case 'OWNER':
       redirectTo = "/owner/dashboard"; 
       break;
-    case 'GENERAL_USER': // Handle GENERAL_USER if applicable
+    case 'GENERAL_USER': 
        redirectTo = "/"; 
        break;
     default:
+      // This should ideally not happen if roles are strictly managed
+      console.warn(`[LoginAction MongoDB] Unknown role for user ${user.email}: ${user.role}`);
       redirectTo = "/";
   }
 
-  console.log(`[LoginAction MongoDB] تم تسجيل دخول ${user.email} (الدور: ${user.role}) بنجاح. التوجيه إلى ${redirectTo}`);
+  console.log(`[LoginAction MongoDB] Login successful for ${user.email} (Role: ${user.role}). Redirecting to ${redirectTo}`);
 
   return {
     success: true,
     message: "تم تسجيل الدخول بنجاح!",
     redirectTo: redirectTo
-    // Optionally, you can pass user data if needed by the client, but be careful with sensitive info
-    // user: { id: user.id, name: user.name, email: user.email, role: user.role } 
   };
 }

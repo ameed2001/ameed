@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -13,16 +14,14 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, LogIn } from 'lucide-react';
 import { loginUserAction } from './actions';
-import { type LoginActionResponse } from '@/types/auth'; // <--- هنا التعديل: استيراد من ملف الأنواع
+import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
 
-// تحديد مخطط Zod للتحقق من صحة المدخلات
 const loginSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  password: z.string().min(1, { message: "كلمة المرور مطلوبة." }),
+  password_input: z.string().min(1, { message: "كلمة المرور مطلوبة." }), // Changed from password to password_input
 });
 
-// استنتاج نوع البيانات من مخطط Zod
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
@@ -35,17 +34,17 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
     reset,
-    setError // يستخدم لتعيين الأخطاء القادمة من الخادم
+    setError
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
 
-  // دالة التعامل مع إرسال النموذج
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
-    setIsLoading(true); // تفعيل حالة التحميل
+    setIsLoading(true);
     try {
-      const result: LoginActionResponse = await loginUserAction(data);
-      setIsLoading(false); // إيقاف حالة التحميل بعد الاستجابة
+      // data already contains email and password_input
+      const result: LoginActionResponse = await loginUserAction(data); 
+      setIsLoading(false);
 
       if (result.success) {
         toast({
@@ -53,8 +52,7 @@ export default function LoginPage() {
           description: result.message || "مرحباً بعودتك!",
           variant: "default",
         });
-        reset(); // مسح حقول النموذج عند النجاح
-        // إعادة التوجيه بناءً على redirectTo من الخادم أو للصفحة الرئيسية افتراضيًا
+        reset();
         if (result.redirectTo) {
           router.push(result.redirectTo);
         } else {
@@ -66,22 +64,28 @@ export default function LoginPage() {
           description: result.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
           variant: "destructive",
         });
-        // عرض الأخطاء الخاصة بالحقول إذا كانت موجودة من الخادم
         if (result.fieldErrors) {
           for (const [fieldName, fieldErrorMessages] of Object.entries(result.fieldErrors)) {
-            // التحقق من أن fieldErrorMessages ليس فارغًا قبل تعيين الخطأ
             if (fieldErrorMessages && fieldErrorMessages.length > 0) {
-              setError(fieldName as keyof LoginFormValues, {
-                type: "server",
-                message: fieldErrorMessages.join(", "), // دمج رسائل الخطأ إذا كانت متعددة
-              });
+              // Adjust fieldName mapping if necessary; for now, assume it matches LoginFormValues
+              if (fieldName === 'password') { // If server returns 'password' but form uses 'password_input'
+                 setError('password_input' as keyof LoginFormValues, {
+                    type: "server",
+                    message: fieldErrorMessages.join(", "),
+                 });
+              } else {
+                 setError(fieldName as keyof LoginFormValues, {
+                    type: "server",
+                    message: fieldErrorMessages.join(", "),
+                 });
+              }
             }
           }
         }
       }
     } catch (error) {
-      setIsLoading(false); // إيقاف التحميل حتى في حالة حدوث خطأ غير متوقع
-      console.error("Login submission error:", error); // تسجيل الخطأ للمساعدة في التصحيح
+      setIsLoading(false);
+      console.error("Login submission error:", error);
       toast({
         title: "خطأ غير متوقع",
         description: "حدث خطأ أثناء محاولة تسجيل الدخول. يرجى المحاولة مرة أخرى.",
@@ -116,18 +120,18 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <Label htmlFor="password" className="block mb-1.5 font-semibold text-gray-700">كلمة المرور</Label>
+                <Label htmlFor="password_input" className="block mb-1.5 font-semibold text-gray-700">كلمة المرور</Label>
                 <Input
-                  id="password"
+                  id="password_input" // Changed from password to password_input
                   type="password"
-                  {...register("password")}
+                  {...register("password_input")} // Changed from password to password_input
                   className="bg-white focus:border-app-gold"
                   placeholder="********"
                 />
-                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+                {errors.password_input && <p className="text-red-500 text-sm mt-1">{errors.password_input.message}</p>}
               </div>
 
-              <div className="text-sm text-left"> {/* تغيير هذا من text-left إلى text-right إذا كان النص عربيًا */}
+              <div className="text-sm text-left">
                 <Link href="/forgot-password" className="font-medium text-app-gold hover:underline">
                   هل نسيت كلمة المرور؟
                 </Link>

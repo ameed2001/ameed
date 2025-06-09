@@ -1,15 +1,2 @@
-version: '3.8'
-services:
-  db:
-    image: postgres:16-alpine
-    restart: always
-    environment:
-      POSTGRES_DB: myappdb # اسم قاعدة البيانات
-      POSTGRES_USER: user # اسم المستخدم
-      POSTGRES_PASSWORD: password # كلمة المرور
-    ports:
-      - "5432:5432" # ربط المنفذ
-    volumes:
-      - pgdata:/var/lib/postgresql/data # تخزين دائم للبيانات
-volumes:
-  pgdata:
+# This file is no longer needed as the project is moving to MongoDB (potentially hosted).
+# If local MongoDB development is desired, a new docker-compose.yml for MongoDB can be created.

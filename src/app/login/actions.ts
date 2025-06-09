@@ -3,20 +3,18 @@
 'use server';
 
 import { z } from 'zod';
-// Updated imports to use Prisma-based functions and types
-import { loginUser, type LoginResult } from '@/lib/db'; 
-import { UserRole as PrismaUserRole } from '@prisma/client'; // Corrected import for UserRole
+// Import types and functions for MongoDB from the updated db.ts
+import { loginUser, type LoginResult, type UserRole } from '@/lib/db'; 
 import { type LoginActionResponse } from '@/types/auth';
-import type { User } from '@prisma/client';
-
+import type { UserDocument } from '@/lib/db'; // Using UserDocument type from db.ts
 
 export async function loginUserAction(data: { email: string; password: string; }): Promise<LoginActionResponse> {
-  console.log("[LoginAction] محاولة تسجيل دخول للبريد:", data.email);
+  console.log("[LoginAction MongoDB] محاولة تسجيل دخول للبريد:", data.email);
 
   const result: LoginResult = await loginUser(data.email, data.password);
 
-  if (!result.success) {
-    console.error("[LoginAction] فشل تسجيل الدخول:", result.message);
+  if (!result.success || !result.user) {
+    console.error("[LoginAction MongoDB] فشل تسجيل الدخول:", result.message);
     const fieldErrors: LoginActionResponse['fieldErrors'] = {};
     let generalMessage = result.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
 
@@ -51,31 +49,34 @@ export async function loginUserAction(data: { email: string; password: string; }
     };
   }
 
-  const user = result.user!;
+  const user = result.user; // User object from MongoDB (without passwordHash)
 
-  let redirectTo = "/";
+  let redirectTo = "/"; // Default redirect
+  // UserRole is a string type: 'ADMIN' | 'ENGINEER' | 'OWNER' | 'GENERAL_USER'
   switch (user.role) {
-    case PrismaUserRole.ENGINEER:
+    case 'ENGINEER':
       redirectTo = "/my-projects";
       break;
-    case PrismaUserRole.ADMIN:
+    case 'ADMIN':
       redirectTo = "/admin";
       break;
-    case PrismaUserRole.OWNER:
+    case 'OWNER':
       redirectTo = "/owner/dashboard"; 
       break;
-    case PrismaUserRole.GENERAL_USER:
+    case 'GENERAL_USER': // Handle GENERAL_USER if applicable
        redirectTo = "/"; 
        break;
     default:
       redirectTo = "/";
   }
 
-  console.log(`[LoginAction] تم تسجيل دخول ${user.email} (الدور: ${user.role}) بنجاح. التوجيه إلى ${redirectTo}`);
+  console.log(`[LoginAction MongoDB] تم تسجيل دخول ${user.email} (الدور: ${user.role}) بنجاح. التوجيه إلى ${redirectTo}`);
 
   return {
     success: true,
     message: "تم تسجيل الدخول بنجاح!",
     redirectTo: redirectTo
+    // Optionally, you can pass user data if needed by the client, but be careful with sensitive info
+    // user: { id: user.id, name: user.name, email: user.email, role: user.role } 
   };
 }

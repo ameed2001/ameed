@@ -1,9 +1,2 @@
-
-// src/global.d.ts
-import { PrismaClient } from '@prisma/client';
-
-declare global {
-  // allow global `var` declarations
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
-}
+// This file can be deleted as Prisma is being removed.
+// If global types are needed for MongoDB, they can be defined elsewhere or here.

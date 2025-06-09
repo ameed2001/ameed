@@ -1,33 +1,16 @@
-// prisma/schema.prisma
 
-generator client {
-  provider = "prisma-client-js"
-}
+// prisma/schema.prisma
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// User Model
-model User {
-  id             String      @id @default(uuid())
-  name           String
-  email          String      @unique
-  passwordHash   String      @map("password_hash")
-  role           UserRole    @default(OWNER)
-  status         UserStatus  @default(ACTIVE)
-  createdAt      DateTime    @default(now())
-  phone          String?
-  profileImage   String?
-
-  ownedProjects  Project[]   @relation("OwnerProjects")
-  engineeredProjects Project[] @relation("EngineerProjects")
-  logs           LogEntry[]
-
-  @@map("users")
+generator client {
+  provider = "prisma-client-js"
 }
 
+// أنواع الأدوار والصلاحيات
 enum UserRole {
   ADMIN
   ENGINEER
@@ -39,117 +22,290 @@ enum UserStatus {
   ACTIVE
   PENDING_APPROVAL
   SUSPENDED
+  DELETED
 }
 
-// Project Model
-model Project {
-  id                Int                  @id @default(autoincrement())
-  name              String
-  engineerId        String?
-  ownerId           String?
-  engineerName      String? // Storing as string for simplicity from mock, could be derived from relation
-  clientName        String?
-  status            ProjectStatusType    @default(PLANNED)
-  startDate         String? // Storing as String based on mock-db, consider DateTime if calculations needed
-  endDate           String? // Storing as String based on mock-db
-  linkedOwnerEmail  String?              @unique // Assuming one project per owner email for linking simplicity
-  description       String?              @db.Text
-  location          String?
-  budget            Float?               @db.DoublePrecision // Use Float for monetary values
-  overallProgress   Int?                 @default(0)
-  quantitySummary   String?              @db.Text
-  
-  photos            ProjectPhoto[]
-  timelineTasks     ProjectTimelineTask[]
-  comments          ProjectComment[]
+// نموذج المستخدم
+model User {
+  id             String       @id @default(uuid())
+  name           String
+  email          String       @unique
+  passwordHash   String       @map("password_hash")
+  role           UserRole
+  status         UserStatus   @default(ACTIVE)
+  phone          String?
+  profileImage   String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
-  owner             User?                @relation("OwnerProjects", fields: [ownerId], references: [id], onDelete: SetNull)
-  engineer          User?                @relation("EngineerProjects", fields: [engineerId], references: [id], onDelete: SetNull)
+  // العلاقات
+  ownedProjects  Project[]    @relation("ProjectOwner")
+  projects       ProjectUser[]
+  comments       Comment[]
+  resetTokens    PasswordResetToken[]
+  logs           LogEntry[]
+
+  @@map("users")
+}
+
+// نموذج المشروع
+model Project {
+  id               String      @id @default(uuid())
+  name             String
+  description      String?     @db.Text
+  location         String?
+  startDate        DateTime?
+  endDate          DateTime?
+  budget           Float?
+  status           ProjectStatus @default(PLANNED)
+  overallProgress  Int         @default(0)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  // العلاقات
+  owner            User?       @relation("ProjectOwner", fields: [ownerId], references: [id])
+  ownerId          String?
+  projectUsers     ProjectUser[]
+  stages           ProjectStage[]
+  tasks            Task[]      // Tasks directly under project, not belonging to a stage
+  materials        Material[]
+  quantityReports  QuantityReport[]
+  progressUpdates  ProgressUpdate[]
+  photos           ProjectPhoto[]
+  comments         Comment[]
+  documents        Document[]
 
   @@map("projects")
 }
 
-enum ProjectStatusType {
-  COMPLETED     @map("مكتمل")
-  IN_PROGRESS   @map("قيد التنفيذ")
-  PLANNED       @map("مخطط له")
-  ARCHIVED      @map("مؤرشف")
+// حالة المشروع
+enum ProjectStatus {
+  PLANNED
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  ARCHIVED
 }
 
-// ProjectPhoto Model
+// علاقة المستخدم بالمشروع (للمهندسين وغيرهم من المشاركين)
+model ProjectUser {
+  id        String   @id @default(uuid())
+  role      String   // مثل 'LEAD_ENGINEER', 'VIEWER', etc.
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  @@unique([userId, projectId])
+  @@map("project_users")
+}
+
+// مراحل المشروع
+model ProjectStage {
+  id          String    @id @default(uuid())
+  name        String
+  description String?   @db.Text
+  startDate   DateTime?
+  endDate     DateTime?
+  progress    Int       @default(0)
+  
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  tasks       Task[]    // Tasks belonging to this stage
+
+  @@map("project_stages")
+}
+
+// المهام
+model Task {
+  id          String       @id @default(uuid())
+  name        String
+  description String?      @db.Text
+  startDate   DateTime?
+  endDate     DateTime?
+  status      TaskStatus   @default(NOT_STARTED)
+  progress    Int          @default(0)
+  
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade) // Task must belong to a project
+  projectId   String
+  stage       ProjectStage? @relation(fields: [stageId], references: [id], onDelete: SetNull) // Task can optionally belong to a stage
+  stageId     String?
+  
+  materials   Material[]
+  comments    Comment[]
+  photos      ProjectPhoto[] @relation("TaskPhotos")
+
+
+  @@map("tasks")
+}
+
+// حالة المهمة
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+  ON_HOLD
+}
+
+// المواد
+model Material {
+  id          String    @id @default(uuid())
+  name        String
+  description String?   @db.Text
+  unit        String    // e.g., m³, kg, piece
+  quantity    Float
+  unitPrice   Float?    // Price per unit
+  totalCost   Float?    // Calculated: quantity * unitPrice
+  
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  stage       ProjectStage? @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  stageId     String?
+  task        Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  taskId      String?
+
+  @@map("materials")
+}
+
+// تقارير الكميات
+model QuantityReport {
+  id          String    @id @default(uuid())
+  name        String
+  description String?   @db.Text
+  reportDate  DateTime  @default(now())
+  fileUrl     String?   // URL if the report is a generated file
+  
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  items       QuantityReportItem[]
+
+  @@map("quantity_reports")
+}
+
+// عناصر تقرير الكميات
+model QuantityReportItem {
+  id               String         @id @default(uuid())
+  materialName     String
+  unit             String
+  plannedQuantity  Float
+  actualQuantity   Float?
+  variance         Float?         // Calculated: actualQuantity - plannedQuantity
+  
+  report           QuantityReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  reportId         String
+
+  @@map("quantity_report_items")
+}
+
+// تحديثات التقدم
+model ProgressUpdate {
+  id          String    @id @default(uuid())
+  title       String
+  description String    @db.Text
+  progress    Int       // Percentage or a value indicating progress
+  date        DateTime  @default(now())
+  
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  photos      ProjectPhoto[] @relation("ProgressUpdatePhotos")
+  comments    Comment[]
+
+  @@map("progress_updates")
+}
+
+// صور المشروع/المهام/التحديثات
 model ProjectPhoto {
-  id           String    @id @default(uuid())
-  src          String
-  alt          String
-  caption      String?
-  dataAiHint   String?   @map("data_ai_hint")
-  projectId    Int
-  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id               String         @id @default(uuid())
+  url              String         @db.Text // Can be long for data URIs if used initially
+  caption          String?
+  uploadDate       DateTime       @default(now())
+  dataAiHint       String?
+  
+  project          Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId        String?
+  progressUpdate   ProgressUpdate? @relation("ProgressUpdatePhotos", fields: [progressUpdateId], references: [id], onDelete: Cascade)
+  progressUpdateId String?
+  task             Task?          @relation("TaskPhotos", fields: [taskId], references: [id], onDelete: Cascade)
+  taskId           String?
 
   @@map("project_photos")
 }
 
-// ProjectTimelineTask Model
-model ProjectTimelineTask {
-  id           String    @id @default(uuid())
-  name         String
-  startDate    String    // Storing as String based on mock-db
-  endDate      String    // Storing as String based on mock-db
-  color        String
-  status       TaskStatus @default(PLANNED)
-  progress     Int?
-  projectId    Int
-  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+// التعليقات
+model Comment {
+  id          String    @id @default(uuid())
+  text        String    @db.Text
+  createdAt   DateTime  @default(now())
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String?
+  task        Task?     @relation(fields: [taskId], references: [id], onDelete: Cascade) // Comment can be on a task
+  taskId      String?
+  update      ProgressUpdate? @relation(fields: [updateId], references: [id], onDelete: Cascade) // Comment can be on a progress update
+  updateId    String?
 
-  @@map("project_timeline_tasks")
+  @@map("comments")
 }
 
-enum TaskStatus {
-  COMPLETED     @map("مكتمل")
-  IN_PROGRESS   @map("قيد التنفيذ")
-  PLANNED       @map("مخطط له")
+// المستندات
+model Document {
+  id          String    @id @default(uuid())
+  name        String
+  description String?   @db.Text
+  url         String    @db.Text // URL to the stored document
+  fileType    String?   // e.g., "pdf", "docx"
+  fileSizeKB  Int?      // Size in kilobytes
+  uploadDate  DateTime  @default(now())
+  
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+
+  @@map("documents")
 }
 
-// ProjectComment Model
-model ProjectComment {
-  id                String    @id @default(uuid())
-  userDisplay       String    @map("user_display_name") // Name of the user who commented
-  text              String    @db.Text
-  date              DateTime  // Using DateTime for proper date handling
-  avatar            String?
-  dataAiHintAvatar  String?   @map("data_ai_hint_avatar")
-  projectId         Int
-  project           Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  // Optional: Link to actual User model if comments are by registered users
-  // userId         String?
-  // commentingUser User?   @relation("UserComments", fields: [userId], references: [id])
+// إعادة تعيين كلمة المرور
+model PasswordResetToken {
+  id          String   @id @default(uuid())
+  token       String   @unique
+  expiresAt   DateTime
+  
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
 
-  @@map("project_comments")
+  @@map("password_reset_tokens")
 }
 
-// SystemSettings Model (Single row table)
+// إعدادات النظام (جدول بصف واحد عادةً)
 model SystemSettings {
-  id                          Int      @id @default(1) // Fixed ID for single row
+  id                          String   @id @default(uuid()) // Using UUID for consistency, though Int autoincrement is also fine for single row
   siteName                    String   @default("المحترف لحساب الكميات")
   defaultLanguage             String   @default("ar")
   maintenanceMode             Boolean  @default(false)
   maxUploadSizeMB             Int      @default(25)
   emailNotificationsEnabled   Boolean  @default(true)
-  engineerApprovalRequired    Boolean  @default(true)
+  engineerApprovalRequired    Boolean  @default(true) // From your mock data
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
 
   @@map("system_settings")
 }
 
-// LogEntry Model
+// سجلات النظام
 model LogEntry {
-  id           String     @id @default(uuid())
-  timestamp    DateTime   @default(now())
-  level        LogLevel
-  message      String     @db.Text
-  userId       String?    // Link to User who performed the action
-  user         User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
-  ipAddress    String?    @map("ip_address")
-  action       String?
+  id          String     @id @default(uuid())
+  action      String
+  level       LogLevel
+  message     String     @db.Text
+  ipAddress   String?
+  userAgent   String?    @db.Text
+  createdAt   DateTime   @default(now())
+  
+  user        User?      @relation(fields: [userId], references: [id], onDelete: SetNull) // If user deleted, log remains
+  userId      String?
 
   @@map("logs")
 }
@@ -159,15 +315,7 @@ enum LogLevel {
   WARNING
   ERROR
   SUCCESS
+  DEBUG
 }
 
-// UseCase Model (Static data, can be seeded)
-model UseCase {
-  id          Int      @id @default(autoincrement())
-  title       String
-  role        UserRole // Maps to UserRole enum
-  description String   @db.Text
-  dependsOn   Int[]    @map("depends_on") // Array of integers for dependencies
-
-  @@map("use_cases")
-}
+    

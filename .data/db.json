@@ -1,10 +1,11 @@
+
 {
   "users": [
     {
       "id": "user-001",
       "name": "مدير النظام",
-      "email": "admin@example.com",
-      "password_hash": "adminpass",
+      "email": "ameed@admin.com",
+      "password_hash": "admin2001",
       "role": "Admin",
       "status": "Active",
       "createdAt": "2025-06-09T11:35:32.224Z",

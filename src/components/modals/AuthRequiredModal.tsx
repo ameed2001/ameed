@@ -3,8 +3,10 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { LogIn, UserPlus } from 'lucide-react'; // Removed X icon as it's replaced by text
+import { LogIn, UserPlus, Home, X } from 'lucide-react'; 
 import Link from 'next/link';
+import { useEffect, useState } from 'react'; 
+import { useRouter } from 'next/navigation'; 
 
 interface AuthRequiredModalProps {
   isOpen: boolean;
@@ -12,31 +14,72 @@ interface AuthRequiredModalProps {
 }
 
 const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined') {
+      const role = localStorage.getItem('userRole');
+      if (role === 'OWNER' || role === 'ENGINEER') {
+        setIsLoggedIn(true);
+        setUserRole(role);
+      } else {
+        setIsLoggedIn(false);
+        setUserRole(null);
+      }
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
+
+  const handleGoToAccount = () => {
+    const dashboardPath = userRole === 'OWNER' ? '/owner/dashboard' : '/my-projects';
+    router.push(dashboardPath);
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-card text-card-foreground sm:max-w-md custom-dialog-overlay animate-modal-fade-in p-6 rounded-lg shadow-xl">
         <DialogHeader className="relative text-right mb-4">
-          <DialogTitle className="text-app-red text-2xl font-bold text-center">الوصول يتطلب تسجيل الدخول</DialogTitle>
-          {/* DialogClose is now part of the footer for a more standard modal pattern */}
+          <DialogTitle className="text-app-red text-2xl font-bold text-center">
+            {isLoggedIn ? "أنت مسجل الدخول بالفعل" : "الوصول يتطلب تسجيل الدخول"}
+          </DialogTitle>
         </DialogHeader>
         <DialogDescription className="text-gray-700 text-right text-base leading-relaxed mb-6">
-          لاستخدام هذه الميزة وغيرها من الميزات المتقدمة في منصة "المحترف لحساب الكميات"، يرجى تسجيل الدخول إلى حسابك أو إنشاء حساب جديد إذا لم تكن مسجلاً بعد.
+          {isLoggedIn 
+            ? "يمكنك الوصول إلى هذه الميزات من خلال لوحة التحكم الخاصة بك. اضغط على الزر أدناه للانتقال إلى حسابك."
+            : "لاستخدام هذه الميزة وغيرها من الميزات المتقدمة في منصة \"المحترف لحساب الكميات\"، يرجى تسجيل الدخول إلى حسابك أو إنشاء حساب جديد إذا لم تكن مسجلاً بعد."
+          }
         </DialogDescription>
         <DialogFooter className="flex flex-col sm:flex-row-reverse gap-3 pt-2">
-          <Button asChild className="w-full sm:flex-1 bg-app-red hover:bg-red-700 text-white font-semibold py-2.5 text-base">
-            <Link href="/login" onClick={onClose}>
-              <LogIn className="ms-2 h-5 w-5" />
-              تسجيل الدخول
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full sm:flex-1 bg-green-700 hover:bg-green-800 text-white border-green-700 hover:border-green-800 font-semibold py-2.5 text-base">
-            <Link href="/signup" onClick={onClose}>
-              <UserPlus className="ms-2 h-5 w-5" />
-              إنشاء حساب جديد
-            </Link>
-          </Button>
+          {isLoggedIn ? (
+            <>
+              <Button onClick={handleGoToAccount} className="w-full sm:flex-1 bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold py-2.5 text-base">
+                <Home className="ms-2 h-5 w-5" />
+                العودة إلى حسابي
+              </Button>
+               <Button variant="outline" onClick={onClose} className="w-full sm:flex-1 py-2.5 text-base">
+                إغلاق
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button asChild className="w-full sm:flex-1 bg-app-red hover:bg-red-700 text-white font-semibold py-2.5 text-base">
+                <Link href="/login" onClick={onClose}>
+                  <LogIn className="ms-2 h-5 w-5" />
+                  تسجيل الدخول
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full sm:flex-1 bg-green-700 hover:bg-green-800 text-white border-green-700 hover:border-green-800 font-semibold py-2.5 text-base">
+                <Link href="/signup" onClick={onClose}>
+                  <UserPlus className="ms-2 h-5 w-5" />
+                  إنشاء حساب جديد
+                </Link>
+              </Button>
+            </>
+          )}
         </DialogFooter>
          <DialogClose asChild>
             <Button 
@@ -45,6 +88,7 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
               aria-label="Close"
               onClick={onClose}
             >
+              <X size={18} className="ml-1" />
               إغلاق
             </Button>
           </DialogClose>

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  password_input: z.string().min(1, { message: "كلمة المرور مطلوبة." }), // Changed from password to password_input
+  password_input: z.string().min(1, { message: "كلمة المرور مطلوبة." }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -28,6 +28,25 @@ export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Check if user is already logged in
+    if (typeof window !== 'undefined') {
+      const userRole = localStorage.getItem('userRole');
+      const userName = localStorage.getItem('userName'); 
+
+      if (userRole === 'OWNER' || userRole === 'ENGINEER') {
+        const dashboardPath = userRole === 'OWNER' ? '/owner/dashboard' : '/my-projects';
+        toast({
+          title: "تم تسجيل الدخول بالفعل",
+          description: `مرحباً ${userName || 'بعودتك'}! أنت مسجل الدخول حالياً وجاري توجيهك...`,
+          variant: "default",
+        });
+        router.push(dashboardPath);
+      }
+    }
+  }, [router, toast]);
+
 
   const {
     register,
@@ -42,8 +61,7 @@ export default function LoginPage() {
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     setIsLoading(true);
     try {
-      // data already contains email and password_input
-      const result: LoginActionResponse = await loginUserAction(data); 
+      const result: LoginActionResponse = await loginUserAction(data);
       setIsLoading(false);
 
       if (result.success) {
@@ -75,8 +93,7 @@ export default function LoginPage() {
         if (result.fieldErrors) {
           for (const [fieldName, fieldErrorMessages] of Object.entries(result.fieldErrors)) {
             if (fieldErrorMessages && fieldErrorMessages.length > 0) {
-              // Adjust fieldName mapping if necessary; for now, assume it matches LoginFormValues
-              if (fieldName === 'password') { // If server returns 'password' but form uses 'password_input'
+              if (fieldName === 'password') {
                  setError('password_input' as keyof LoginFormValues, {
                     type: "server",
                     message: fieldErrorMessages.join(", "),
@@ -130,9 +147,9 @@ export default function LoginPage() {
               <div>
                 <Label htmlFor="password_input" className="block mb-1.5 font-semibold text-gray-700">كلمة المرور</Label>
                 <Input
-                  id="password_input" // Changed from password to password_input
+                  id="password_input"
                   type="password"
-                  {...register("password_input")} // Changed from password to password_input
+                  {...register("password_input")}
                   className="bg-white focus:border-app-gold"
                   placeholder="********"
                 />
@@ -170,4 +187,3 @@ export default function LoginPage() {
     </AppLayout>
   );
 }
-

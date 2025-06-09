@@ -1,10 +1,11 @@
+
 {
   "users": [
     {
       "id": "user-001",
       "name": "مدير النظام",
       "email": "ameed@admin.com",
-      "password_hash": "$2a$10$7QY.UvSSvyyU7B0o5UjNl.JImQJm5.xLAZ.G/u80sR6U9n8zJ/yJq",
+      "password_hash": "$2a$10$E1r.nF9jK6pB3sC.dE5gHuL.pA2sR7tU8vW0xY1zZ2aB3cE4dF5gH",
       "role": "Admin",
       "status": "Active",
       "createdAt": "2025-06-09T11:35:32.224Z",
@@ -269,6 +270,110 @@
       "level": "WARNING",
       "message": "Invalid password attempt for user: ameed@admin.com",
       "timestamp": "2025-06-09T21:47:59.019Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505796987-lro9l",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:49:56.987Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505811723-rkcwv",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:50:11.723Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505813140-vseky",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:50:13.140Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505814259-hhtni",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:50:14.259Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505866768-0cll9",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:51:06.768Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505868219-qh3d0",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:51:08.219Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505869384-6c37a",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:51:09.384Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505870371-i13kb",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:51:10.371Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505871369-9nfxg",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:51:11.369Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505872399-6pxdr",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:51:12.399Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505873546-ndzge",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:51:13.546Z",
+      "user": "user-001"
+    },
+    {
+      "id": "log-1749505928216-eentw",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-09T21:52:08.216Z",
+      "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749506057698-t82ip",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-09T21:54:17.698Z",
       "user": "user-001"
     }
   ],
@@ -554,3 +659,5 @@
     }
   ]
 }
+
+    

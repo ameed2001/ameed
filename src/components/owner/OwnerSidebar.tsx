@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, UserCircle as DashboardIcon, Briefcase, Settings, Info, HelpCircle, Phone, LogOut } from 'lucide-react'; // Renamed UserCircle to DashboardIcon for clarity
+import { Home, UserCircle as DashboardIcon, Briefcase, Settings, Info, HelpCircle, Phone, LogOut } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -57,7 +57,7 @@ export default function OwnerSidebar() {
         <h2 className="text-xl font-bold text-white">مرحباً، {isClient ? ownerName : "المالك"}</h2>
         <p className="text-sm text-gray-400">لوحة تحكم المالك</p>
       </div>
-      <nav className="flex-grow">
+      <nav className="flex-grow overflow-y-auto"> {/* Added overflow-y-auto */}
         <ul className="space-y-2">
           {ownerNavItems.map((item) => {
             const isActive = pathname === item.href;

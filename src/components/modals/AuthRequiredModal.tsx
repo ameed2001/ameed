@@ -3,7 +3,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { LogIn, UserPlus, Home, X } from 'lucide-react'; 
+import { LogIn, UserPlus, Home, X, UserCircle } from 'lucide-react'; 
 import Link from 'next/link';
 import { useEffect, useState } from 'react'; 
 import { useRouter } from 'next/navigation'; 
@@ -44,12 +44,12 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
       <DialogContent className="bg-card text-card-foreground sm:max-w-md custom-dialog-overlay animate-modal-fade-in p-6 rounded-lg shadow-xl">
         <DialogHeader className="relative text-right mb-4">
           <DialogTitle className="text-app-red text-2xl font-bold text-center">
-            {isLoggedIn ? "أنت مسجل الدخول بالفعل" : "الوصول يتطلب تسجيل الدخول"}
+            {isLoggedIn ? "تم تسجيل الدخول" : "الوصول يتطلب تسجيل الدخول"}
           </DialogTitle>
         </DialogHeader>
         <DialogDescription className="text-gray-700 text-right text-base leading-relaxed mb-6">
           {isLoggedIn 
-            ? "يمكنك الوصول إلى هذه الميزات من خلال لوحة التحكم الخاصة بك. اضغط على الزر أدناه للانتقال إلى حسابك."
+            ? "انت قد قمت بتسجيل دخولك مسبقا يرجى النقر على زر حسابي لنقلك لحسابك."
             : "لاستخدام هذه الميزة وغيرها من الميزات المتقدمة في منصة \"المحترف لحساب الكميات\"، يرجى تسجيل الدخول إلى حسابك أو إنشاء حساب جديد إذا لم تكن مسجلاً بعد."
           }
         </DialogDescription>
@@ -57,8 +57,8 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
           {isLoggedIn ? (
             <>
               <Button onClick={handleGoToAccount} className="w-full sm:flex-1 bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold py-2.5 text-base">
-                <Home className="ms-2 h-5 w-5" />
-                العودة إلى حسابي
+                <UserCircle className="ms-2 h-5 w-5" />
+                حسابي
               </Button>
                <Button variant="outline" onClick={onClose} className="w-full sm:flex-1 py-2.5 text-base">
                 إغلاق

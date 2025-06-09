@@ -2,7 +2,7 @@
 "use client";
 
 import InfoCard from '@/components/ui/InfoCard';
-import { Box, BarChart3 } from 'lucide-react'; // Removed DollarSign
+import { Box, BarChart3, Calculator } from 'lucide-react'; // Added Calculator icon
 import { useState } from 'react';
 import AuthRequiredModal from '@/components/modals/AuthRequiredModal';
 
@@ -36,7 +36,17 @@ const MainDashboardClient = () => {
       cardHeightClass: "h-72",
       applyFlipEffect: false,
     },
-    // Card for "حساب الأسعار" has been removed
+    {
+      title: "حساب الأسعار",
+      description: "تقدير التكلفة الإجمالية لمواد البناء المختلفة لمشروعك.",
+      icon: <Calculator />, // Using Calculator icon
+      iconWrapperClass: "bg-green-100 dark:bg-green-900", // Different color for distinction
+      iconColorClass: "text-green-500 dark:text-green-400",
+      onClick: handleFeatureClick,
+      dataAiHint: "price calculation",
+      cardHeightClass: "h-72",
+      applyFlipEffect: false,
+    },
   ];
 
   return (

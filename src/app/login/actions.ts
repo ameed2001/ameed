@@ -4,7 +4,8 @@
 
 import { z } from 'zod';
 // Updated imports to use Prisma-based functions and types
-import { loginUser, type LoginResult, UserRole as PrismaUserRole } from '@/lib/db'; 
+import { loginUser, type LoginResult } from '@/lib/db'; 
+import { UserRole as PrismaUserRole } from '@prisma/client'; // Corrected import for UserRole
 import { type LoginActionResponse } from '@/types/auth';
 import type { User } from '@prisma/client';
 

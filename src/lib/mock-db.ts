@@ -1,47 +1,55 @@
+// prisma/seed.ts
+// This file will be used to seed initial data into the database
+// based on the new schema.prisma.
+// Content cleared to be re-written.
+import { PrismaClient, UserRole, UserStatus, ProjectStatus, TaskStatus, LogLevel } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
-// src/lib/mock-db.ts
-// هذا الملف أصبح الآن مهملًا (deprecated).
-// يتم الآن التعامل مع جميع عمليات قاعدة البيانات من خلال Prisma Client
-// في الملف: src/lib/db.ts
+const prisma = new PrismaClient();
 
-// يمكنك حذف هذا الملف إذا لم تعد هناك أي مكونات تستورده مباشرة.
-// إذا كانت هناك استيرادات، يجب تحديثها لتشير إلى src/lib/db.ts
-// واستخدام الدوال المعرفة هناك.
+async function main() {
+  console.log(`Start seeding ...`);
 
-console.warn(
-  "DEPRECATION WARNING: src/lib/mock-db.ts is deprecated. " +
-  "Use src/lib/db.ts and Prisma client for database operations."
-);
+  // TODO: Populate with seed data according to the new schema
+  // Example: Create SystemSettings
+  const settings = await prisma.systemSettings.upsert({
+    where: { id: 1 }, // Assuming only one row for settings
+    update: {},
+    create: {
+      siteName: "المحترف لحساب الكميات (نظام جديد)",
+      defaultLanguage: "ar",
+      maintenanceMode: false,
+      maxUploadSizeMb: 50,
+      emailNotificationsEnabled: true,
+      engineerApprovalRequired: true,
+    },
+  });
+  console.log(`Created/Ensured system settings with id: ${settings.id}`);
+  
+  // Example: Create Admin User
+  const adminPassword = await bcrypt.hash('adminpass123', 10);
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin_new@example.com' },
+    update: {},
+    create: {
+      name: 'المشرف العام للنظام الجديد',
+      email: 'admin_new@example.com',
+      passwordHash: adminPassword,
+      role: UserRole.ADMIN,
+      status: UserStatus.ACTIVE,
+    }
+  });
+  console.log(`Created admin user: ${adminUser.email}`);
 
-// اترك الملف فارغًا أو احذف محتواه بالكامل إذا كنت متأكدًا
-// أنه لم يعد مستخدمًا.
-// للحفاظ على التطبيق من التعطل فورًا إذا كان لا يزال هناك استيراد،
-// يمكن ترك بعض الصادرات الوهمية الفارغة أو التي تُرجع أخطاءً.
 
-export const dbUsers = [];
-export const dbProjects = [];
-export const dbSettings = {};
-export const dbLogs = [];
-export const roles = [];
-export const useCases = [];
-
-export function findUserByEmail(email: string) {
-  console.error("MockDB Deprecated: findUserByEmail called. Use Prisma version.");
-  return undefined;
+  console.log(`Seeding finished.`);
 }
 
-export function registerUser(userData: any) {
-  console.error("MockDB Deprecated: registerUser called. Use Prisma version.");
-  return { success: false, message: "MockDB is deprecated." };
-}
-
-export function loginUser(email: string, password_hash: string) {
-  console.error("MockDB Deprecated: loginUser called. Use Prisma version.");
-  return { success: false, message: "MockDB is deprecated." };
-}
-
-// ... وهكذا لباقي الدوال إذا أردت ...
-
-export default {
-  // اترك هذا فارغًا أو قم بتصدير كائنات وهمية
-};
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

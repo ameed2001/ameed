@@ -2,9 +2,8 @@
 'use server';
 
 import { z } from 'zod';
-// Updated import to use Prisma-based registerUser and UserRole
-import { registerUser, UserRole as PrismaUserRole } from '@/lib/db'; 
-import type { User } from '@prisma/client'; // Import User type from Prisma
+import { registerUser, type RegistrationResult } from '@/lib/db'; 
+import { UserRole as PrismaUserRole } from '@prisma/client'; 
 
 export interface SignupActionResponse {
   success: boolean;
@@ -14,49 +13,68 @@ export interface SignupActionResponse {
   fieldErrors?: Record<string, string[] | undefined>;
 }
 
-export async function signupUserAction(data: { name: string; email: string; password: string; role: "owner" | "engineer"; confirmPassword?: string }): Promise<SignupActionResponse> {
-  console.log("Server Action: signupUserAction called with:", { name: data.name, email: data.email, role: data.role });
+const signupSchemaServer = z.object({
+  name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
+  email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
+  password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
+  confirmPassword: z.string().min(6, { message: "تأكيد كلمة المرور مطلوب." }),
+  role: z.enum(["owner", "engineer"], { required_error: "يرجى اختيار الدور." }),
+  phone: z.string().optional(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "كلمتا المرور غير متطابقتين.",
+  path: ["confirmPassword"],
+});
 
-  // Basic validation matching client-side
-  if (data.password.length < 6) {
-     return {
-      success: false,
-      message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل.",
-      fieldErrors: { password: ["كلمة المرور يجب أن تكون 6 أحرف على الأقل."] }
-    };
-  }
 
-  if (data.password !== data.confirmPassword) {
+export async function signupUserAction(
+  data: z.infer<typeof signupSchemaServer>
+): Promise<SignupActionResponse> {
+  console.log("[SignupAction] Server Action: signupUserAction called with:", { name: data.name, email: data.email, role: data.role });
+
+  const validation = signupSchemaServer.safeParse(data);
+  if (!validation.success) {
+    const fieldErrors: Record<string, string[]> = {};
+    for (const issue of validation.error.issues) {
+      const path = issue.path.join(".");
+      if (!fieldErrors[path]) {
+        fieldErrors[path] = [];
+      }
+      fieldErrors[path].push(issue.message);
+    }
     return {
       success: false,
-      message: "كلمتا المرور غير متطابقتين.",
-      fieldErrors: { confirmPassword: ["كلمتا المرور غير متطابقتين."] }
+      message: "البيانات المدخلة غير صالحة. يرجى مراجعة الحقول.",
+      fieldErrors,
     };
   }
   
-  // Map client role to Prisma UserRole enum
   const roleForDb: PrismaUserRole = data.role === 'engineer' ? PrismaUserRole.ENGINEER : PrismaUserRole.OWNER;
 
-  const registrationResult = await registerUser({
+  const registrationResult: RegistrationResult = await registerUser({
       name: data.name,
       email: data.email, 
-      password: data.password, // Pass plain password, hashing is done in registerUser
+      password: data.password,
       role: roleForDb,
+      phone: data.phone,
   });
 
 
   if (!registrationResult.success || !registrationResult.user) {
+    const fieldErrors: Record<string, string[]> = {};
+    if (registrationResult.errorType === 'email_exists' && registrationResult.message) {
+        fieldErrors.email = [registrationResult.message];
+    }
     return {
         success: false,
         message: registrationResult.message || "فشل إنشاء الحساب.",
-        fieldErrors: registrationResult.message?.includes("البريد الإلكتروني مسجل") ? { email: [registrationResult.message] } : undefined,
+        fieldErrors: Object.keys(fieldErrors).length > 0 ? fieldErrors : undefined,
     };
   }
 
   const newUser = registrationResult.user;
 
   if (newUser.role === PrismaUserRole.ENGINEER && registrationResult.isPendingApproval) {
-    console.log(`Engineer account ${newUser.email} created, pending approval.`);
+    console.log(`[SignupAction] Engineer account ${newUser.email} created, pending approval.`);
     return {
       success: true,
       message: "تم إنشاء حسابك كمهندس بنجاح. حسابك حاليًا قيد المراجعة والموافقة من قبل الإدارة. سيتم إعلامك عند التفعيل.",
@@ -64,11 +82,11 @@ export async function signupUserAction(data: { name: string; email: string; pass
     };
   }
 
-  console.log(`${newUser.role} account ${newUser.email} created and activated.`);
+  console.log(`[SignupAction] ${newUser.role} account ${newUser.email} created and activated.`);
+  // For owners, or engineers if approval is not required by system settings
   return {
     success: true,
-    message: "تم إنشاء حسابك كمالك بنجاح. يمكنك الآن تسجيل الدخول.",
-    redirectTo: "/login"
+    message: "تم إنشاء حسابك بنجاح. يمكنك الآن تسجيل الدخول.",
+    redirectTo: "/login" // Redirect to login after successful registration
   };
 }
-

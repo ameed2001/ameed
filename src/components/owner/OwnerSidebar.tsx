@@ -13,9 +13,9 @@ import {
     LogOut, 
     Menu as MenuIcon, 
     ChevronLeft,
-    Mail, // For New Messages
-    AlertTriangle, // For Overdue Tasks
-    CheckCircle2 // For Completed Projects
+    Mail,
+    AlertTriangle,
+    CheckCircle2
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -32,7 +32,7 @@ const ownerNavItems = [
   { href: '/contact', label: 'تواصل معنا', icon: Phone },
 ];
 
-// Data for stats section in the sidebar, matching the user-provided image order
+// Data for stats section in the sidebar
 const sidebarStats = [
   { label: "المشاريع النشطة", value: 0, icon: Briefcase, color: "text-amber-400" },
   { label: "الرسائل الجديدة", value: 0, icon: Mail, color: "text-blue-400" },
@@ -80,7 +80,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
 
   return (
     <aside className={cn(
-      "bg-header-bg text-header-fg shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0",
+      "bg-header-bg text-header-fg shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0" , // Removed h-full
       isOpen ? "w-72" : "w-20"
     )}>
       <div className="p-4 flex justify-between items-center border-b border-gray-700 h-[70px] flex-shrink-0">
@@ -110,7 +110,6 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         </div>
       )}
 
-      {/* Stats Section - Only visible when sidebar is open */}
       {isOpen && (
         <div className="p-3 border-b border-gray-700 flex-shrink-0">
           <h3 className="text-sm font-semibold text-white mb-2 px-1 text-right">نظرة عامة سريعة</h3>
@@ -129,7 +128,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         </div>
       )}
 
-      <nav className="flex-grow overflow-y-auto">
+      <nav className="flex-grow"> {/* Removed overflow-y-auto to allow natural flex grow/shrink */}
         <ul className="space-y-1 p-2">
           {ownerNavItems.map((item) => {
             const isActive = pathname === item.href;
@@ -139,9 +138,10 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
                   href={item.href}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
-                    "hover:bg-app-gold hover:text-gray-900",
-                    isActive ? "bg-app-gold text-gray-900 shadow-md" : "text-gray-300 hover:text-gray-100",
-                    !isOpen && "justify-center py-3"
+                    !isOpen && "justify-center py-3",
+                    isActive
+                      ? "bg-app-gold text-gray-900 shadow-md" // Active state: gold bg, text-gray-900
+                      : "text-gray-300 hover:bg-app-gold hover:text-gray-900" // Inactive state: gray-300 text, on hover: gold bg, text-gray-900
                   )}
                   title={!isOpen ? item.label : undefined}
                 >

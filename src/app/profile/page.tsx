@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -13,12 +13,12 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, UserCircle, Edit3, Trash2 } from 'lucide-react';
 
-// Mock current user data - In a real app, this would come from auth context or API
-const currentUser = {
-  name: "المستخدم الحالي", // Replace with actual dynamic data
-  email: "user@example.com", // Replace with actual dynamic data
-  role: "owner", // Replace with actual dynamic data ('owner', 'engineer', 'admin')
-};
+// Define a type for the user data we'll store and retrieve
+interface UserProfileData {
+  name: string;
+  email: string;
+  role: string;
+}
 
 const profileSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }).optional(),
@@ -41,8 +41,13 @@ function ProfilePageContent() {
   const { toast } = useToast();
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserProfileData>({
+    name: "جاري التحميل...",
+    email: "جاري التحميل...",
+    role: "جاري التحميل...",
+  });
 
-  const { register: registerProfile, handleSubmit: handleSubmitProfile, formState: { errors: profileErrors }, reset: resetProfile } = useForm<ProfileFormValues>({
+  const { register: registerProfile, handleSubmit: handleSubmitProfile, formState: { errors: profileErrors }, reset: resetProfile, setValue: setProfileValue } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: currentUser.name,
@@ -54,6 +59,20 @@ function ProfilePageContent() {
     resolver: zodResolver(passwordSchema),
   });
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedName = localStorage.getItem('userName') || "مستخدم";
+      const storedEmail = localStorage.getItem('userEmail') || "email@example.com";
+      const storedRole = localStorage.getItem('userRole') || "GeneralUser";
+      
+      setCurrentUser({ name: storedName, email: storedEmail, role: storedRole });
+      // Set form default values after fetching from localStorage
+      setProfileValue("name", storedName);
+      setProfileValue("email", storedEmail);
+    }
+  }, [setProfileValue]);
+
+
   const onProfileSubmit: SubmitHandler<ProfileFormValues> = async (data) => {
     setIsProfileLoading(true);
     console.log("Update profile data (simulation):", data);
@@ -61,8 +80,14 @@ function ProfilePageContent() {
     await new Promise(resolve => setTimeout(resolve, 1000));
     toast({ title: "تم تحديث الملف الشخصي بنجاح (محاكاة)" });
     // Update mock data if needed for UI reflect (not persistent)
-    currentUser.name = data.name || currentUser.name;
-    currentUser.email = data.email || currentUser.email;
+    if (data.name && typeof window !== 'undefined') localStorage.setItem('userName', data.name);
+    if (data.email && typeof window !== 'undefined') localStorage.setItem('userEmail', data.email);
+    
+    setCurrentUser(prev => ({
+        ...prev,
+        name: data.name || prev.name,
+        email: data.email || prev.email,
+    }));
     setIsProfileLoading(false);
   };
 
@@ -96,10 +121,11 @@ function ProfilePageContent() {
   };
   
   const displayRole = (role: string) => {
-    switch (role.toLowerCase()) {
-      case 'owner': return 'مالك';
-      case 'engineer': return 'مهندس';
-      case 'admin': return 'مشرف';
+    switch (role.toUpperCase()) { // Ensure comparison is case-insensitive for safety
+      case 'OWNER': return 'مالك';
+      case 'ENGINEER': return 'مهندس';
+      case 'ADMIN': return 'مشرف';
+      case 'GENERAL_USER': return 'مستخدم عام';
       default: return role;
     }
   };

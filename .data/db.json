@@ -222,6 +222,14 @@
       "message": "User logged in successfully: ameed2001@gmail.com",
       "timestamp": "2025-06-09T21:13:37.047Z",
       "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749503928307-auogp",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-09T21:18:48.307Z",
+      "user": "user-1749486065534-3"
     }
   ],
   "roles": [

@@ -1,0 +1,417 @@
+{
+  "users": [
+    {
+      "id": "user-001",
+      "name": "مدير النظام",
+      "email": "admin@example.com",
+      "password_hash": "adminpass",
+      "role": "Admin",
+      "status": "Active",
+      "createdAt": "2025-06-09T11:35:32.224Z",
+      "profileImage": "/profiles/admin.jpg"
+    },
+    {
+      "id": "user-002",
+      "name": "مستخدم تجريبي",
+      "email": "test@example.com",
+      "password_hash": "test123",
+      "role": "Owner",
+      "status": "Active",
+      "createdAt": "2025-06-09T11:35:32.224Z",
+      "profileImage": "/profiles/test.jpg"
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "name": "مشروع فيلا الأحلام",
+      "engineer": "م. خالد عبد العزيز",
+      "clientName": "السيد/ محمد الحسن",
+      "status": "قيد التنفيذ",
+      "startDate": "2023-03-01",
+      "endDate": "2024-09-30",
+      "description": "بناء فيلا سكنية فاخرة مكونة من طابقين وملحق خارجي.",
+      "location": "الرياض، حي الياسمين",
+      "budget": 2500000,
+      "overallProgress": 65,
+      "quantitySummary": "تم إنجاز أعمال الخرسانة للطابق الأرضي والأول. جاري العمل على التشطيبات الداخلية.",
+      "photos": [
+        {
+          "id": "p1-img1",
+          "src": "https://placehold.co/600x400.png",
+          "alt": "موقع المشروع - مرحلة الأساسات",
+          "caption": "بداية أعمال الحفر",
+          "dataAiHint": "construction site"
+        },
+        {
+          "id": "p1-img2",
+          "src": "https://placehold.co/600x400.png",
+          "alt": "الهيكل الخرساني للطابق الأول",
+          "caption": "صب سقف الطابق الأول",
+          "dataAiHint": "concrete structure"
+        }
+      ],
+      "timelineTasks": [
+        {
+          "id": "t1-1",
+          "name": "التصميم والموافقات",
+          "startDate": "2023-03-01",
+          "endDate": "2023-04-15",
+          "color": "bg-blue-500",
+          "status": "مكتمل"
+        },
+        {
+          "id": "t1-2",
+          "name": "أعمال الحفر والأساسات",
+          "startDate": "2023-04-16",
+          "endDate": "2023-06-30",
+          "color": "bg-yellow-500",
+          "status": "مكتمل"
+        },
+        {
+          "id": "t1-3",
+          "name": "الهيكل الخرساني",
+          "startDate": "2023-07-01",
+          "endDate": "2023-12-31",
+          "color": "bg-red-500",
+          "status": "قيد التنفيذ",
+          "progress": 70
+        },
+        {
+          "id": "t1-4",
+          "name": "التشطيبات الداخلية والخارجية",
+          "startDate": "2024-01-01",
+          "endDate": "2024-08-30",
+          "color": "bg-green-500",
+          "status": "مخطط له"
+        },
+        {
+          "id": "t1-5",
+          "name": "تسليم المشروع",
+          "startDate": "2024-09-01",
+          "endDate": "2024-09-30",
+          "color": "bg-purple-500",
+          "status": "مخطط له"
+        }
+      ],
+      "comments": [
+        {
+          "id": "c1-1",
+          "user": "المالك (محمد الحسن)",
+          "text": "متى سيتم الانتهاء من أعمال السباكة في الطابق الأول؟",
+          "date": "2023-11-05T00:00:00.000Z",
+          "avatar": "https://placehold.co/40x40.png?text=MH",
+          "dataAiHintAvatar": "owner avatar"
+        },
+        {
+          "id": "c1-2",
+          "user": "المهندس (خالد)",
+          "text": "جاري العمل عليها حاليًا، من المتوقع الانتهاء خلال أسبوعين.",
+          "date": "2023-11-06T00:00:00.000Z",
+          "avatar": "https://placehold.co/40x40.png?text=KA",
+          "dataAiHintAvatar": "engineer avatar"
+        }
+      ],
+      "linkedOwnerEmail": "owner@example.com"
+    }
+  ],
+  "settings": {
+    "siteName": "المحترف لحساب الكميات",
+    "defaultLanguage": "ar",
+    "maintenanceMode": false,
+    "maxUploadSizeMB": 25,
+    "emailNotificationsEnabled": true,
+    "engineerApprovalRequired": true
+  },
+  "logs": [
+    {
+      "id": "7223649e-130b-491c-9e84-931ad5d3b8ba",
+      "timestamp": "2025-06-09T08:35:32.224Z",
+      "level": "INFO",
+      "message": "تم تشغيل النظام بنجاح.",
+      "user": "System",
+      "action": "SYSTEM_STARTUP_FILE_LOAD"
+    }
+  ],
+  "roles": [
+    "Admin",
+    "Engineer",
+    "Owner",
+    "GeneralUser"
+  ],
+  "useCases": [
+    {
+      "id": 1,
+      "title": "Sign Up",
+      "role": "GeneralUser",
+      "description": "تسجيل كمستخدم جديد"
+    },
+    {
+      "id": 2,
+      "title": "Login",
+      "role": "GeneralUser",
+      "description": "تسجيل الدخول",
+      "dependsOn": [
+        1
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Manage Profile",
+      "role": "GeneralUser",
+      "description": "إدارة البيانات الشخصية",
+      "dependsOn": [
+        2
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Forgot Password",
+      "role": "GeneralUser",
+      "description": "استعادة كلمة المرور"
+    },
+    {
+      "id": 5,
+      "title": "View My Projects",
+      "role": "Owner",
+      "description": "عرض المشاريع المرتبطة بك",
+      "dependsOn": [
+        2
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Monitor Construction Project Progress",
+      "role": "Owner",
+      "description": "متابعة تقدم المشروع",
+      "dependsOn": [
+        5
+      ]
+    },
+    {
+      "id": 7,
+      "title": "View Summarized Quantity Reports",
+      "role": "Owner",
+      "description": "عرض تقارير الكميات المجملة",
+      "dependsOn": [
+        6
+      ]
+    },
+    {
+      "id": 8,
+      "title": "View Progress Photos/Videos",
+      "role": "Owner",
+      "description": "مشاهدة الصور والفيديوهات",
+      "dependsOn": [
+        6
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Add Comments/Inquiries",
+      "role": "Owner",
+      "description": "إرسال استفسارات وتعليقات",
+      "dependsOn": [
+        6
+      ]
+    },
+    {
+      "id": 10,
+      "title": "View Project Timeline",
+      "role": "Owner",
+      "description": "عرض الجدول الزمني للمشروع",
+      "dependsOn": [
+        6
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Create New Construction Project",
+      "role": "Engineer",
+      "description": "إنشاء مشروع جديد",
+      "dependsOn": [
+        2
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Link Owner to Project",
+      "role": "Engineer",
+      "description": "ربط المشروع بالمالك",
+      "dependsOn": [
+        11
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Define Construction Stages",
+      "role": "Engineer",
+      "description": "تحديد مراحل المشروع",
+      "dependsOn": [
+        11
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Input Structural Element Details",
+      "role": "Engineer",
+      "description": "إدخال تفاصيل العناصر الإنشائية",
+      "dependsOn": [
+        13
+      ]
+    },
+    {
+      "id": 15,
+      "title": "Validate Input Data",
+      "role": "Engineer",
+      "description": "التحقق من صحة البيانات",
+      "dependsOn": [
+        14
+      ]
+    },
+    {
+      "id": 16,
+      "title": "Calculate Material Quantities",
+      "role": "Engineer",
+      "description": "حساب كميات المواد",
+      "dependsOn": [
+        15
+      ]
+    },
+    {
+      "id": 17,
+      "title": "Generate Report Data",
+      "role": "Engineer",
+      "description": "توليد بيانات التقرير",
+      "dependsOn": [
+        16
+      ]
+    },
+    {
+      "id": 18,
+      "title": "View Quantity Reports",
+      "role": "Engineer",
+      "description": "عرض تقارير الكميات",
+      "dependsOn": [
+        17
+      ]
+    },
+    {
+      "id": 19,
+      "title": "Customize Report Display",
+      "role": "Engineer",
+      "description": "تخصيص عرض التقرير",
+      "dependsOn": [
+        18
+      ]
+    },
+    {
+      "id": 20,
+      "title": "Update Construction Progress",
+      "role": "Engineer",
+      "description": "تحديث تقدم المشروع",
+      "dependsOn": [
+        13
+      ]
+    },
+    {
+      "id": 21,
+      "title": "Add Progress Notes",
+      "role": "Engineer",
+      "description": "إضافة ملاحظات حول التقدم",
+      "dependsOn": [
+        20
+      ]
+    },
+    {
+      "id": 22,
+      "title": "Upload Progress Photos/Videos",
+      "role": "Engineer",
+      "description": "رفع الصور والفيديوهات",
+      "dependsOn": [
+        20
+      ]
+    },
+    {
+      "id": 23,
+      "title": "Manage Construction Projects",
+      "role": "Engineer",
+      "description": "إدارة المشاريع الحالية",
+      "dependsOn": [
+        2
+      ]
+    },
+    {
+      "id": 24,
+      "title": "Archive Project",
+      "role": "Engineer",
+      "description": "أرشفة المشروع",
+      "dependsOn": [
+        20
+      ]
+    },
+    {
+      "id": 25,
+      "title": "View All Users",
+      "role": "Admin",
+      "description": "عرض كل المستخدمين",
+      "dependsOn": [
+        2
+      ]
+    },
+    {
+      "id": 26,
+      "title": "Edit User Details",
+      "role": "Admin",
+      "description": "تعديل بيانات المستخدم",
+      "dependsOn": [
+        25
+      ]
+    },
+    {
+      "id": 27,
+      "title": "Reset User Password",
+      "role": "Admin",
+      "description": "إعادة تعيين كلمة المرور",
+      "dependsOn": [
+        25
+      ]
+    },
+    {
+      "id": 28,
+      "title": "View All Projects",
+      "role": "Admin",
+      "description": "عرض كل المشاريع",
+      "dependsOn": [
+        2
+      ]
+    },
+    {
+      "id": 29,
+      "title": "Delete Project",
+      "role": "Admin",
+      "description": "حذف مشروع نهائيًا",
+      "dependsOn": [
+        28
+      ]
+    },
+    {
+      "id": 30,
+      "title": "Configure System Settings",
+      "role": "Admin",
+      "description": "إعدادات النظام",
+      "dependsOn": [
+        2
+      ]
+    },
+    {
+      "id": 31,
+      "title": "Review System Logs",
+      "role": "Admin",
+      "description": "مراجعة سجلات النظام",
+      "dependsOn": [
+        2
+      ]
+    }
+  ]
+}

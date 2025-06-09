@@ -36,10 +36,7 @@ export async function loginUserAction(data: { email: string; password: string; }
         generalMessage = result.message || "حسابك قيد المراجعة. يرجى الانتظار حتى الموافقة عليه.";
         break;
       default:
-        // For 'other' or undefined errorType, keep a general message
-        // and potentially set errors on both fields if appropriate
         if (!result.message?.includes("البريد الإلكتروني") && !result.message?.includes("كلمة المرور")) {
-            // Only set generic field errors if the message isn't already specific
             fieldErrors.email = ["البيانات المدخلة غير صحيحة."];
             fieldErrors.password = ["البيانات المدخلة غير صحيحة."];
         }
@@ -57,7 +54,6 @@ export async function loginUserAction(data: { email: string; password: string; }
   const user = result.user!;
 
   let redirectTo = "/";
-  // Use PrismaUserRole for comparison
   switch (user.role) {
     case PrismaUserRole.ENGINEER:
       redirectTo = "/my-projects";
@@ -66,10 +62,10 @@ export async function loginUserAction(data: { email: string; password: string; }
       redirectTo = "/admin";
       break;
     case PrismaUserRole.OWNER:
-      redirectTo = "/owner/dashboard"; // Default for owner
+      redirectTo = "/owner/dashboard"; 
       break;
     case PrismaUserRole.GENERAL_USER:
-       redirectTo = "/"; // Default for general user
+       redirectTo = "/"; 
        break;
     default:
       redirectTo = "/";
@@ -83,4 +79,3 @@ export async function loginUserAction(data: { email: string; password: string; }
     redirectTo: redirectTo
   };
 }
-

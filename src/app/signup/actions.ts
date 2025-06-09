@@ -2,9 +2,8 @@
 'use server';
 
 import { z } from 'zod';
-import { registerUser, type RegistrationResult } from '@/lib/db'; 
-// UserRole is now PrismaUserRole from @prisma/client, but registerUser in db.ts takes string
-// import { UserRole as PrismaUserRole } from '@prisma/client'; 
+import { registerUser, type RegistrationResult } from '@/lib/db';
+import { UserRole } from '@prisma/client'; // Corrected import for UserRole
 
 export interface SignupActionResponse {
   success: boolean;
@@ -15,13 +14,14 @@ export interface SignupActionResponse {
 }
 
 // This schema is for client-side validation and data shaping before sending to server action
+// Prisma UserRole: ADMIN, ENGINEER, OWNER, GENERAL_USER
 const signupSchemaClient = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
   confirmPassword: z.string().min(6, { message: "تأكيد كلمة المرور مطلوب." }),
-  role: z.enum(["OWNER", "ENGINEER"], { required_error: "يرجى اختيار الدور." }), // Adjusted to match common string values
-  phone: z.string().optional(), // Assuming phone is optional
+  role: z.enum([UserRole.OWNER, UserRole.ENGINEER], { required_error: "يرجى اختيار الدور." }),
+  phone: z.string().optional(),
 }).refine(data => data.password === data.confirmPassword, {
   message: "كلمتا المرور غير متطابقتين.",
   path: ["confirmPassword"],
@@ -29,24 +29,24 @@ const signupSchemaClient = z.object({
 
 
 export async function signupUserAction(
-  data: z.infer<typeof signupSchemaClient> // Use the client schema for input type
+  data: z.infer<typeof signupSchemaClient>
 ): Promise<SignupActionResponse> {
-  // Server-side validation should ideally re-validate or trust client validation if simple
-  // For this example, we'll pass data through. A more robust app might re-validate.
-  console.log("[SignupAction] Server Action: signupUserAction called with:", { 
-    name: data.name, 
-    email: data.email, 
+  console.log("[SignupAction] Server Action called with:", {
+    name: data.name,
+    email: data.email,
     role: data.role,
-    phone: data.phone 
+    phone: data.phone
   });
 
-  // The `registerUser` function in `src/lib/db.ts` now expects `password_input`
-  // and role as 'ENGINEER' or 'OWNER' etc.
+  // The role from the client form is already of type UserRole (OWNER or ENGINEER)
+  // due to the z.enum([UserRole.OWNER, UserRole.ENGINEER]) schema definition.
+  // So, no explicit mapping is needed here if the client sends the correct enum values.
+
   const registrationResult: RegistrationResult = await registerUser({
       name: data.name,
-      email: data.email, 
-      password_input: data.password, // Pass the password directly
-      role: data.role, // Pass role as 'OWNER' or 'ENGINEER'
+      email: data.email,
+      password: data.password, // Pass the password
+      role: data.role, // Pass the Prisma UserRole enum directly
       phone: data.phone,
   });
 
@@ -55,6 +55,7 @@ export async function signupUserAction(
     if (registrationResult.errorType === 'email_exists' && registrationResult.message) {
         fieldErrors.email = [registrationResult.message];
     }
+    // Add more specific field error handling if needed
     return {
         success: false,
         message: registrationResult.message || "فشل إنشاء الحساب.",
@@ -62,12 +63,10 @@ export async function signupUserAction(
     };
   }
 
-  // Success case
   return {
     success: true,
-    message: registrationResult.message || "تم إنشاء حسابك بنجاح!", // Use message from registrationResult
+    message: registrationResult.message || "تم إنشاء حسابك بنجاح!",
     isPendingApproval: registrationResult.isPendingApproval,
-    redirectTo: registrationResult.isPendingApproval ? undefined : "/login" // Redirect to login if not pending
+    redirectTo: registrationResult.isPendingApproval ? undefined : "/login" // Redirect to login only if not pending approval
   };
 }
-

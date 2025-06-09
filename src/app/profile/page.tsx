@@ -170,7 +170,7 @@ function ProfilePageContent() {
                 <Input id="profileEmail" type="email" {...registerProfile("email")} className="bg-white focus:border-app-gold" />
                 {profileErrors.email && <p className="text-red-500 text-sm mt-1">{profileErrors.email.message}</p>}
               </div>
-              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 text-lg" disabled={isProfileLoading}>
+              <Button type="submit" className="w-full bg-green-50 hover:bg-green-100 text-green-700 border border-green-600 font-bold py-2.5 text-lg" disabled={isProfileLoading}>
                 {isProfileLoading ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <Save className="ms-2 h-5 w-5" />}
                 حفظ تعديلات الملف الشخصي
               </Button>

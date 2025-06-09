@@ -13,6 +13,8 @@ import {
     Calendar,
     Zap as ZapIcon
 } from "lucide-react";
+import CostEstimatorForm from '@/components/CostEstimatorForm';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 
 const actionCardsData = [
@@ -147,6 +149,16 @@ export default function OwnerDashboardPage() {
           );
         })}
       </div>
+
+      {/* Cost Estimator Section */}
+      <Card className="bg-white/95 shadow-xl mt-10">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-app-red text-center">حاسبة تكلفة مواد البناء (بالشيكل)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CostEstimatorForm />
+        </CardContent>
+      </Card>
     </div>
   );
 }

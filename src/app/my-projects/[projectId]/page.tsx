@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Edit, Send, Palette, CheckCircle2, 
-  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2, Loader2 as LoaderIcon, Mail
+  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2, Loader2 as LoaderIcon, Mail, Calculator
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -23,10 +23,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { X } from 'lucide-react';
 import { dbProjects, findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask } from '@/lib/mock-db';
 import Link from 'next/link';
+import CostEstimatorForm from '@/components/CostEstimatorForm';
 
 // Simulate logged-in user - replace with actual auth context in a real app
-const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Owner";
-const MOCK_CURRENT_USER_EMAIL: string = "owner@example.com";
+const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Engineer"; // Changed to Engineer for testing calculator
+const MOCK_CURRENT_USER_EMAIL: string = "engineer@example.com"; // Changed for testing
 
 
 export default function ProjectDetailPage() {
@@ -449,6 +450,17 @@ export default function ProjectDetailPage() {
                           <Link2 size={18} className="ms-2"/> {project.linkedOwnerEmail ? "تحديث ربط المالك" : "ربط المالك"}
                         </Button>
                       </form>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-white/95 shadow-lg">
+                    <CardHeader>
+                        <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                            <Calculator size={28}/> حاسبة تكلفة المواد (للمهندس)
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <CostEstimatorForm />
                     </CardContent>
                   </Card>
                 </>

@@ -1,7 +1,22 @@
+
 "use client";
 
 import Link from 'next/link';
-import { Home, UserCircle as DashboardIcon, Briefcase, Settings, Info, HelpCircle, Phone, LogOut, Menu as MenuIcon, ChevronLeft } from 'lucide-react';
+import { 
+    Home, 
+    UserCircle as DashboardIcon, 
+    Briefcase, 
+    Settings, 
+    Info, 
+    HelpCircle, 
+    Phone, 
+    LogOut, 
+    Menu as MenuIcon, 
+    ChevronLeft,
+    Mail, // For New Messages
+    AlertTriangle, // For Overdue Tasks
+    CheckCircle2 // For Completed Projects
+} from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -15,6 +30,14 @@ const ownerNavItems = [
   { href: '/about', label: 'عن الموقع', icon: Info },
   { href: '/help', label: 'المساعدة', icon: HelpCircle },
   { href: '/contact', label: 'تواصل معنا', icon: Phone },
+];
+
+// Zeroed-out stats data
+const sidebarStats = [
+  { label: "المشاريع النشطة", value: 0, icon: Briefcase, color: "text-amber-400" },
+  { label: "الرسائل الجديدة", value: 0, icon: Mail, color: "text-blue-400" },
+  { label: "المهام المتأخرة", value: 0, icon: AlertTriangle, color: "text-red-400" },
+  { label: "المشاريع المكتملة", value: 0, icon: CheckCircle2, color: "text-green-400" },
 ];
 
 interface OwnerSidebarProps {
@@ -57,7 +80,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
 
   return (
     <aside className={cn(
-      "bg-header-bg text-header-fg shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0", // Removed h-full
+      "bg-header-bg text-header-fg shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0",
       isOpen ? "w-72" : "w-20"
     )}>
       <div className="p-4 flex justify-between items-center border-b border-gray-700 h-[70px] flex-shrink-0">
@@ -87,7 +110,26 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         </div>
       )}
 
-      <nav className="flex-grow"> {/* Removed overflow-y-auto */}
+      {/* Stats Section - Only visible when sidebar is open */}
+      {isOpen && (
+        <div className="p-3 border-b border-gray-700 flex-shrink-0">
+          <h3 className="text-sm font-semibold text-gray-400 mb-2 px-1 text-right">نظرة عامة سريعة</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {sidebarStats.map(stat => {
+              const IconComponent = stat.icon;
+              return (
+                <div key={stat.label} className="bg-gray-700/50 p-2 rounded-md text-center">
+                  <IconComponent className={cn("h-5 w-5 mx-auto mb-1", stat.color)} />
+                  <div className="text-xs text-gray-300 truncate">{stat.label}</div>
+                  <div className="text-lg font-bold text-white">{stat.value}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <nav className="flex-grow overflow-y-auto">
         <ul className="space-y-1 p-2">
           {ownerNavItems.map((item) => {
             const isActive = pathname === item.href;

@@ -11,16 +11,16 @@ import {
     Image as ImageIcon, 
     ArrowLeft,
     Calendar,
-    Zap as ZapIcon // Renamed to avoid conflict with other Zap if any
+    Zap as ZapIcon
 } from "lucide-react";
 
-// Dummy data for stats bar - replace with actual data source later
-const stats = {
-  activeProjects: 4,
-  newMessages: 2,
-  overdueTasks: 1,
-  completedProjects: 7,
-};
+// Dummy data for stats bar - will be removed as it's moving to sidebar
+// const stats = {
+//   activeProjects: 4,
+//   newMessages: 2,
+//   overdueTasks: 1,
+//   completedProjects: 7,
+// };
 
 const actionCardsData = [
     { 
@@ -116,7 +116,7 @@ export default function OwnerDashboardPage() {
           أدوات المتابعة السريعة
       </h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24"> {/* Added mb-24 for stats bar */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {actionCardsData.map((card) => {
           const IconComponent = card.icon;
           return (
@@ -148,8 +148,9 @@ export default function OwnerDashboardPage() {
         })}
       </div>
 
-      {/* Stats Bar at Bottom */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-20"> {/* Added z-20 */}
+      {/* Stats Bar at Bottom - THIS SECTION IS REMOVED */}
+      {/* 
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-20">
           <div className="container mx-auto px-4 py-3">
               <div className="flex justify-around items-center">
                   <div className="text-center">
@@ -170,7 +171,8 @@ export default function OwnerDashboardPage() {
                   </div>
               </div>
           </div>
-      </div>
+      </div> 
+      */}
     </div>
   );
 }

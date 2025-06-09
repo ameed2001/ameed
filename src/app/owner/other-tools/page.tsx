@@ -3,7 +3,7 @@
 
 import InfoCard from '@/components/ui/InfoCard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Wrench, PlusCircle, Calculator } from 'lucide-react'; // Added Calculator icon
+import { Wrench, PlusCircle, Calculator } from 'lucide-react'; 
 
 export default function OtherToolsPage() {
   return (
@@ -22,16 +22,16 @@ export default function OtherToolsPage() {
         <CardContent className="px-4 md:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <InfoCard
-              title="حاسبة أسعار المواد (تجريبية)"
-              description="أداة جديدة لحساب تكاليف مواد البناء المختلفة. تعمل كصفحة HTML مستقلة."
+              title="حاسبة أسعار المواد (جديدة)"
+              description="أداة جديدة لحساب تكاليف مواد البناء المختلفة. تعمل كصفحة تفاعلية داخل التطبيق."
               icon={<Calculator className="w-8 h-8" />}
               iconWrapperClass="bg-blue-100 dark:bg-blue-700"
               iconColorClass="text-blue-500 dark:text-blue-400"
-              href="/cost-estimator.html" // Link to the new HTML page
+              href="/cost-estimator" // Link to the new Next.js page
               applyFlipEffect={false}
               className="hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-200/80 dark:border-gray-700/60"
               cardHeightClass="h-full min-h-[280px]"
-              dataAiHint="price calculator html"
+              dataAiHint="price calculator react"
             />
             <InfoCard
               title="المزيد قريباً"

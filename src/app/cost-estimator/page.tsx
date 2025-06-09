@@ -1,3 +1,4 @@
+"use client";
 
 import OwnerAppLayout from "@/components/owner/OwnerAppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";

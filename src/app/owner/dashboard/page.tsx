@@ -1,108 +1,176 @@
 
 "use client";
 
-// Simplified dashboard page content, layout is handled by OwnerAppLayout
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Briefcase, ShieldCheck, BarChart3, MessageSquare, GanttChartSquare, Image as ImageIcon, ArrowLeft } from "lucide-react";
+import { 
+    Briefcase, 
+    ShieldCheck, 
+    BarChart3, 
+    MessageSquare, 
+    GanttChartSquare, 
+    Image as ImageIcon, 
+    ArrowLeft,
+    Calendar,
+    Zap as ZapIcon // Renamed to avoid conflict with other Zap if any
+} from "lucide-react";
 
-export default function OwnerDashboardPage() {
-  const dashboardCards = [
+// Dummy data for stats bar - replace with actual data source later
+const stats = {
+  activeProjects: 4,
+  newMessages: 2,
+  overdueTasks: 1,
+  completedProjects: 7,
+};
+
+const actionCardsData = [
     { 
       title: "عرض مشاريعي", 
       href: "/my-projects", 
       icon: Briefcase, 
       description: "تصفح جميع مشاريعك الإنشائية وتابع تفاصيلها.",
-      dataAiHint: "my projects list"
+      dataAiHint: "my projects list",
+      buttonText: "استعراض المشاريع",
+      iconBgClass: "bg-amber-50 text-amber-600",
+      bottomBarClass: "bg-gradient-to-r from-amber-400 to-amber-600",
     },
     { 
       title: "متابعة تقدم المشاريع", 
-      href: "/my-projects", // Should ideally link to a specific view or filter
+      href: "/my-projects", 
       icon: BarChart3, 
       description: "راقب التقدم العام للمشاريع، وشاهد الإنجازات والمراحل المكتملة.",
-      dataAiHint: "project progress tracking"
+      dataAiHint: "project progress tracking",
+      buttonText: "عرض التقارير",
+      iconBgClass: "bg-blue-50 text-blue-600",
+      bottomBarClass: "bg-gradient-to-r from-blue-400 to-blue-600",
     },
     { 
       title: "تقارير الكميات الملخصة", 
-      href: "/my-projects", // Link to projects, specific reports inside project detail
+      href: "/my-projects", 
       icon: ShieldCheck, 
       description: "اطلع على ملخصات كميات المواد المستخدمة في كل مشروع.",
-      dataAiHint: "quantity reports summary"
+      dataAiHint: "quantity reports summary",
+      buttonText: "عرض الكميات",
+      iconBgClass: "bg-green-50 text-green-600",
+      bottomBarClass: "bg-gradient-to-r from-green-400 to-green-600",
     },
     { 
       title: "صور وفيديوهات التقدم", 
-      href: "/my-projects", // Link to projects, photos inside project detail
+      href: "/my-projects", 
       icon: ImageIcon, 
       description: "شاهد التحديثات المرئية التي يرفعها المهندس لكل مشروع.",
-      dataAiHint: "progress photos videos"
+      dataAiHint: "progress photos videos",
+      buttonText: "معرض الوسائط",
+      iconBgClass: "bg-purple-50 text-purple-600",
+      bottomBarClass: "bg-gradient-to-r from-purple-400 to-purple-600",
     },
      { 
       title: "التعليقات والاستفسارات", 
-      href: "/my-projects", // Link to projects, comments inside project detail
+      href: "/my-projects", 
       icon: MessageSquare, 
       description: "تواصل مع فريق المشروع وأرسل استفساراتك وتعليقاتك.",
-      dataAiHint: "project comments inquiries"
+      dataAiHint: "project comments inquiries",
+      buttonText: "الرسائل",
+      iconBgClass: "bg-red-50 text-red-600", // Matching app-red, assuming direct use
+      bottomBarClass: "bg-gradient-to-r from-red-400 to-red-600",
     },
     { 
       title: "الجداول الزمنية للمشاريع", 
-      href: "/my-projects", // Link to projects, timeline inside project detail
+      href: "/my-projects", 
       icon: GanttChartSquare, 
       description: "اطلع على الخطط الزمنية والمراحل المنجزة والمقبلة لكل مشروع.",
-      dataAiHint: "project timelines"
+      dataAiHint: "project timelines",
+      buttonText: "عرض الجداول",
+      iconBgClass: "bg-teal-50 text-teal-600",
+      bottomBarClass: "bg-gradient-to-r from-teal-400 to-teal-600",
     },
   ];
 
+export default function OwnerDashboardPage() {
   return (
-    // The container, py-10, px-4, and text-right are now handled by OwnerAppLayout's main section
     <div className="text-right">
-      <h1 className="text-3xl font-bold mb-8 text-app-red">لوحة تحكم المالك</h1>
-      
-      <Card className="bg-white/95 shadow-lg mb-10 border border-gray-200/80 rounded-xl">
-        <CardHeader className="p-6">
-          <CardTitle className="text-2xl font-bold text-app-red">أهلاً بك</CardTitle>
-          <CardDescription className="text-gray-600 mt-1">
-            من هنا يمكنك متابعة جميع مشاريعك والتفاعل معها بسهولة.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-6 pt-0">
-          <p className="text-gray-700 leading-relaxed">
-            استخدم الشريط الجانبي للتنقل بين الأقسام المختلفة مثل عرض مشاريعك، تعديل ملفك الشخصي، أو الحصول على المساعدة.
-          </p>
-        </CardContent>
-      </Card>
-
-      <h2 className="text-2xl font-bold text-app-red mb-6">أدوات المتابعة السريعة</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {dashboardCards.map((card) => (
-          <Card 
-            key={card.title} 
-            className="bg-white shadow-lg rounded-xl hover:shadow-2xl hover:-translate-y-1.5 transform transition-all duration-300 ease-in-out flex flex-col text-right group overflow-hidden border border-gray-200 hover:border-app-gold/60 min-h-[270px] md:min-h-[290px]"
-            data-ai-hint={card.dataAiHint}
-          >
-            <CardHeader className="p-5 pb-3">
-              <div className="flex items-center justify-end gap-3 mb-1">
-                <div className="p-2.5 bg-app-gold/10 rounded-full group-hover:bg-app-gold/20 transition-colors duration-300">
-                  <card.icon className="h-6 w-6 text-app-gold transition-transform duration-300 group-hover:scale-110" />
-                </div>
-                <CardTitle className="text-lg font-bold text-app-red group-hover:text-yellow-600 transition-colors duration-300">{card.title}</CardTitle>
+      {/* Welcome Card */}
+      <div className="bg-white rounded-xl shadow-md overflow-hidden mb-10 border border-gray-100 relative">
+          <div className="absolute top-0 right-0 w-full h-1 gold-gradient"></div>
+          <div className="p-6">
+              <h2 className="text-2xl md:text-3xl font-bold text-app-red mb-2">أهلاً بك في لوحة التحكم</h2>
+              <p className="text-gray-600 mb-4">من هنا يمكنك متابعة جميع مشاريعك والتفاعل معها بسهولة.</p>
+              <p className="text-gray-700 leading-relaxed">
+                  استخدم الشريط الجانبي للتنقل بين الأقسام المختلفة مثل عرض مشاريعك، تعديل ملفك الشخصي، أو الحصول على المساعدة.
+              </p>
+          </div>
+          <div className="p-4 bg-gray-50 flex justify-between items-center text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                  <Calendar className="text-amber-500 w-4 h-4" />
+                  <span>آخر دخول: اليوم</span>
               </div>
-            </CardHeader>
-            <CardContent className="px-5 pb-5 flex-grow">
-              <p className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors duration-300 leading-relaxed">{card.description}</p>
-            </CardContent>
-            <CardFooter className="p-5 pt-4 mt-auto bg-gray-50 group-hover:bg-gray-100/70 transition-colors duration-300">
-              <Button asChild className="w-full bg-app-gold hover:bg-yellow-500 text-gray-900 font-semibold shadow-md hover:shadow-lg group-hover:scale-105 transform transition-transform duration-300 py-2.5 text-base">
-                <Link href={card.href}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> {/* Changed icon to ArrowLeft */}
-                  استعراض
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+              <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                  <span>جميع الأنظمة تعمل</span>
+              </div>
+          </div>
+      </div>
+      
+      {/* Quick Action Tools Section */}
+      <h2 className="text-2xl font-bold text-app-red mb-6 flex items-center">
+          <ZapIcon className="ml-2 text-amber-500 w-6 h-6" />
+          أدوات المتابعة السريعة
+      </h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24"> {/* Added mb-24 for stats bar */}
+        {actionCardsData.map((card) => {
+          const IconComponent = card.icon;
+          return (
+            <div 
+                key={card.title} 
+                className="bg-white rounded-xl shadow-md overflow-hidden card-hover-effect border border-gray-200 flex flex-col h-full"
+                data-ai-hint={card.dataAiHint}
+            >
+                <div className="p-6 pb-4 flex-grow">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className={`p-3 rounded-full ${card.iconBgClass}`}>
+                            <IconComponent className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-800">{card.title}</h3>
+                    </div>
+                    <p className="text-gray-600 text-sm mb-4">{card.description}</p>
+                </div>
+                <div className="px-6 pb-6">
+                    <Link href={card.href} className={`w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center 
+                        ${card.iconBgClass.replace('text-', 'hover:bg-').replace('-50', '-100')} 
+                        ${card.iconBgClass.replace('bg-', 'text-')}`}>
+                        <span>{card.buttonText}</span>
+                        <ArrowLeft className="mr-2 w-5 h-5" />
+                    </Link>
+                </div>
+                <div className={`h-1 ${card.bottomBarClass}`}></div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Stats Bar at Bottom */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-20"> {/* Added z-20 */}
+          <div className="container mx-auto px-4 py-3">
+              <div className="flex justify-around items-center">
+                  <div className="text-center">
+                      <div className="text-gray-500 text-xs sm:text-sm">المشاريع النشطة</div>
+                      <div className="text-xl sm:text-2xl font-bold text-amber-600">{stats.activeProjects}</div>
+                  </div>
+                  <div className="text-center">
+                      <div className="text-gray-500 text-xs sm:text-sm">الرسائل الجديدة</div>
+                      <div className="text-xl sm:text-2xl font-bold text-blue-600">{stats.newMessages}</div>
+                  </div>
+                  <div className="text-center">
+                      <div className="text-gray-500 text-xs sm:text-sm">المهام المتأخرة</div>
+                      <div className="text-xl sm:text-2xl font-bold text-red-600">{stats.overdueTasks}</div>
+                  </div>
+                  <div className="text-center">
+                      <div className="text-gray-500 text-xs sm:text-sm">المشاريع المكتملة</div>
+                      <div className="text-xl sm:text-2xl font-bold text-green-600">{stats.completedProjects}</div>
+                  </div>
+              </div>
+          </div>
       </div>
     </div>
   );
 }
-

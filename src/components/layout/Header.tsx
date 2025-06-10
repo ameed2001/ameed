@@ -45,7 +45,7 @@ const Header = () => {
 
     const fetchCurrencyRates = async () => {
       try {
-        const apiKey = "e256bd321903a099d3e8e81e"; 
+        const apiKey = "424268c285e3df502f41a8a3"; 
         const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/ILS`);
         if (!response.ok) {
             // This includes handling for 429 errors
@@ -140,3 +140,4 @@ const Header = () => {
 };
 
 export default Header;
+

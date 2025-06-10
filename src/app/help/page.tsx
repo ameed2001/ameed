@@ -30,7 +30,15 @@ const faqs = [
 const helpCenterFaqs = [
   {
     question: "هل يمكنني استخدام الموقع بدون تسجيل؟",
-    answer: "نعم، يمكنك إجراء الحسابات الأساسية بدون تسجيل، لكن التسجيل يمنحك ميزات إضافية مثل حفظ المشاريع وتتبعها."
+    answer: (
+      <>
+        لا تستطيع استخدام الموقع أو أي ميزة فيه دون تسجيل الدخول. يمكنك{" "}
+        <Link href="/login" className="text-app-gold hover:underline">
+          تسجيل الدخول من هنا
+        </Link>
+        .
+      </>
+    ),
   },
   {
     question: "هل يمكنني طلب ميزة جديدة أو اقتراح تعديل؟",
@@ -83,7 +91,7 @@ export default function HelpPage() {
                     🔹 {faq.question}
                   </AccordionTrigger>
                   <AccordionContent className="pb-4 pt-2 text-gray-600 leading-relaxed text-base">
-                    {faq.answer}
+                    {typeof faq.answer === 'string' ? faq.answer : <>{faq.answer}</>}
                   </AccordionContent>
                 </AccordionItem>
               ))}

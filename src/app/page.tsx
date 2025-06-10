@@ -1,9 +1,14 @@
+import AppLayout from "@/components/AppLayout";
+import HeroSection from "@/components/main-dashboard/HeroSection";
+import FeaturesSection from "@/components/main-dashboard/FeaturesSection";
+import MainDashboardClient from "@/components/main-dashboard/MainDashboardClient";
 
 export default function HomePage() {
   return (
-    <div style={{ padding: '20px', textAlign: 'center', border: '2px solid blue', margin: '20px' }}>
-      <h1>Root Page (Simplified)</h1>
-      <p>If you see this, the basic root page is rendering.</p>
-    </div>
+    <AppLayout>
+      <HeroSection />
+      <MainDashboardClient />
+      <FeaturesSection />
+    </AppLayout>
   );
 }

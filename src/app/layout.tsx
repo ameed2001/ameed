@@ -1,9 +1,8 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
-// import { Toaster } from "@/components/ui/toaster"; // Temporarily removed
-// import AppProviders from '@/components/AppProviders'; // Temporarily removed
-// import InitialLoader from '@/components/loading/InitialLoader'; // Temporarily removed
+import { Toaster } from "@/components/ui/toaster";
+import AppProviders from '@/components/AppProviders';
+import InitialLoader from '@/components/loading/InitialLoader';
 
 export const metadata: Metadata = {
   title: 'المحترف لحساب الكميات',
@@ -23,11 +22,10 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        {/* <AppProviders> */}
-          {/* <InitialLoader>{children}</InitialLoader> */}
-          {children} {/* Render children directly */}
-          {/* <Toaster /> */} {/* Temporarily removed */}
-        {/* </AppProviders> */}
+        <AppProviders>
+          <InitialLoader>{children}</InitialLoader>
+          <Toaster />
+        </AppProviders>
       </body>
     </html>
   );

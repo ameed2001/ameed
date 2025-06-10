@@ -1,36 +1,17 @@
+
 // src/app/login/actions.ts
 'use server';
 
 import { type LoginActionResponse } from '@/types/auth';
-// import { loginUser, type LoginResult, type UserDocument } from '@/lib/db'; // Original import
+import { loginUser, type LoginResult } from '@/lib/db'; // Restored import
 
 export async function loginUserAction(data: { email: string; password_input: string; }): Promise<LoginActionResponse> {
-  console.log("[LoginAction JSON_DB] DEBUG: Action reached. Email:", data.email);
-  
-  // Temporarily bypass actual login logic for debugging
-  if (data.email && data.password_input) {
-    // Simulate a successful login response
-    return {
-      success: true,
-      message: "DEBUG: Login action reached and processed successfully (SIMULATED)!",
-      redirectTo: "/", // Or a relevant dashboard
-      user: { id: 'debug-user', name: 'Debug User', email: data.email, role: 'OWNER' } // Mock user
-    };
-  }
-  
-  // Simulate a failure if data is missing (basic check)
-  return { 
-    success: false, 
-    message: "DEBUG: Login action reached, but required data missing (SIMULATED)." 
-  };
-
-  /* Original Code:
   console.log("[LoginAction JSON_DB] Attempting login for email:", data.email);
 
   const result: LoginResult = await loginUser(data.email, data.password_input);
 
   if (!result.success || !result.user) {
-    console.error("[LoginAction JSON_DB] Login failed:", result.message);
+    console.error("[LoginAction JSON_DB] Login failed:", result.message, "ErrorType:", result.errorType);
     const fieldErrors: LoginActionResponse['fieldErrors'] = {};
     let generalMessage = result.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.";
 
@@ -40,7 +21,7 @@ export async function loginUserAction(data: { email: string; password_input: str
         generalMessage = result.message || "البريد الإلكتروني غير مسجل.";
         break;
       case "invalid_password":
-        fieldErrors.password = [result.message || "كلمة المرور غير صحيحة."];
+        fieldErrors.password_input = [result.message || "كلمة المرور غير صحيحة."]; // Ensure field name matches form
         generalMessage = result.message || "كلمة المرور غير صحيحة.";
         break;
       case "account_suspended":
@@ -49,7 +30,12 @@ export async function loginUserAction(data: { email: string; password_input: str
       case "pending_approval":
         generalMessage = result.message || "حسابك قيد المراجعة. يرجى الانتظار حتى الموافقة عليه.";
         break;
+      case "account_deleted":
+        generalMessage = result.message || "هذا الحساب تم حذفه.";
+        break;
       default:
+        // For other or db_error, generalMessage is already set.
+        // If no specific field errors, the form can display the general message.
         break;
     }
 
@@ -60,8 +46,8 @@ export async function loginUserAction(data: { email: string; password_input: str
     };
   }
 
-  const userFromDb = result.user; 
-   const userForClient = {
+  const userFromDb = result.user; // This is Omit<UserDocument, 'password_hash'>
+   const userForClient = { // This structure matches LoginActionResponse.user
       id: userFromDb.id,
       name: userFromDb.name,
       email: userFromDb.email,
@@ -74,7 +60,7 @@ export async function loginUserAction(data: { email: string; password_input: str
     case 'ENGINEER':
       redirectTo = "/my-projects";
       break;
-    case 'ADMIN':
+    case 'ADMIN': // Admins typically use /admin-login, but handle if they use main form
       redirectTo = "/admin";
       break;
     case 'OWNER':
@@ -85,7 +71,7 @@ export async function loginUserAction(data: { email: string; password_input: str
        break;
     default:
       console.warn(`[LoginAction JSON_DB] Unknown role for user ${userFromDb.email}: ${userFromDb.role}`);
-      redirectTo = "/";
+      redirectTo = "/"; // Fallback to home for unknown roles
   }
 
   console.log(`[LoginAction JSON_DB] Login successful for ${userFromDb.email} (Role: ${userFromDb.role}). Redirecting to ${redirectTo}`);
@@ -96,5 +82,4 @@ export async function loginUserAction(data: { email: string; password_input: str
     redirectTo: redirectTo,
     user: userForClient,
   };
-  */
 }

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -101,14 +101,14 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
   return (
     <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay text-right">
-        <DialogHeader className="text-center mb-6">
+        <DialogHeader className="mb-6"> {/* Removed text-center */}
             <div className="flex justify-center mb-4">
                 <UsersIcon className="h-10 w-10 text-app-gold" />
             </div>
-            <DialogTitle className="text-gray-800 text-2xl font-bold">
+            <DialogTitle className="text-gray-800 text-2xl font-bold text-center"> {/* Added text-center here */}
                 إضافة مستخدم جديد
             </DialogTitle>
-            <DialogDescription className="text-gray-500 mt-2 text-sm">
+            <DialogDescription className="text-gray-500 mt-2 text-sm text-right"> {/* Added text-right here */}
                 أدخل بيانات المستخدم الجديد للتمكن من الوصول إلى النظام
             </DialogDescription>
         </DialogHeader>
@@ -133,7 +133,7 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
             <Label htmlFor="add-password" className="text-sm font-medium text-gray-700">كلمة المرور</Label>
             <div className="relative">
                 <Input id="add-password" type={showPassword ? "text" : "password"} {...register("password")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
             </div>
@@ -143,7 +143,7 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
             <Label htmlFor="add-confirmPassword" className="text-sm font-medium text-gray-700">تأكيد كلمة المرور</Label>
             <div className="relative">
                 <Input id="add-confirmPassword" type={showConfirmPassword ? "text" : "password"} {...register("confirmPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
-                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer">
+                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showConfirmPassword ? "إخفاء تأكيد كلمة المرور" : "إظهار تأكيد كلمة المرور"}>
                     {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
             </div>
@@ -191,9 +191,17 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
             </Button>
           </DialogFooter>
         </form>
-        {/* The default X button from DialogContent will be used. No need for an extra one here. */}
+         <DialogClose asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="absolute top-3 left-3 text-gray-500 hover:text-destructive-foreground hover:bg-destructive rounded-full w-8 h-8 p-1.5"
+                aria-label="Close"
+              >
+                <X size={20} />
+              </Button>
+          </DialogClose>
       </DialogContent>
     </Dialog>
   );
 }
-

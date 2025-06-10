@@ -3,21 +3,32 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LogIn, UserPlus, HardHat, Home as HomeIcon, ShieldCheck, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import InfoCard from '@/components/ui/InfoCard'; // Import InfoCard
+import InfoCard from '@/components/ui/InfoCard';
 
 export default function AuthCardsSection() {
   const authCardActions = [
     {
-      id: "login",
+      id: "user-login",
       title: "تسجيل الدخول",
-      description: "لديك حساب بالفعل؟ قم بتسجيل الدخول للوصول إلى لوحة التحكم الخاصة بك.",
+      description: "لديك حساب مهندس أو مالك؟ قم بتسجيل الدخول للوصول إلى لوحة التحكم الخاصة بك.",
       icon: <LogIn className="h-10 w-10 text-app-gold mb-4" />,
-      dataAiHint: "login section",
+      dataAiHint: "user login section",
       backTitle: "خيارات تسجيل الدخول",
       backDescription: "اختر نوع الحساب الذي ترغب بتسجيل الدخول إليه.",
       actions: [
         { label: "دخول كمهندس", href: "/login", icon: <HardHat className="ms-2 h-5 w-5" />, variant: "default" as const, className: "bg-green-600 hover:bg-green-700 text-white"},
         { label: "دخول كمالك", href: "/owner-login", icon: <HomeIcon className="ms-2 h-5 w-5" />, variant: "default" as const, className: "bg-purple-600 hover:bg-purple-700 text-white"},
+      ]
+    },
+    {
+      id: "admin-login",
+      title: "تسجيل دخول المسؤول",
+      description: "هل أنت مسؤول النظام؟ قم بتسجيل الدخول للوصول إلى لوحة تحكم المسؤول.",
+      icon: <ShieldCheck className="h-10 w-10 text-app-red mb-4" />,
+      dataAiHint: "admin login section",
+      backTitle: "دخول المسؤول",
+      backDescription: "تسجيل الدخول إلى لوحة تحكم إدارة النظام.",
+      actions: [
         { label: "دخول كمسؤول", href: "/admin-login", icon: <ShieldCheck className="ms-2 h-5 w-5" />, variant: "destructive" as const },
       ]
     },
@@ -42,7 +53,7 @@ export default function AuthCardsSection() {
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-app-red">
           ابدأ رحلتك معنا
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Updated grid to lg:grid-cols-3 */}
           {authCardActions.map((card) => (
             <InfoCard
               key={card.id}
@@ -51,9 +62,9 @@ export default function AuthCardsSection() {
               icon={card.icon}
               dataAiHint={card.dataAiHint}
               applyFlipEffect={true}
-              cardHeightClass="min-h-[320px] h-auto" // Adjust height as needed
-              iconWrapperClass="bg-transparent" // Icon is already styled
-              iconColorClass="" // Icon is already styled
+              cardHeightClass="min-h-[320px] h-auto" 
+              iconWrapperClass="bg-transparent" 
+              iconColorClass="" 
               backTitle={card.backTitle}
               backDescription={card.backDescription}
               backCustomContent={

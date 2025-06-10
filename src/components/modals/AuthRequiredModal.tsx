@@ -7,6 +7,7 @@ import { LogIn, UserPlus, Home, X, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react'; 
 import { useRouter } from 'next/navigation'; 
+import { cn } from '@/lib/utils';
 
 interface AuthRequiredModalProps {
   isOpen: boolean;
@@ -43,7 +44,18 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-card text-card-foreground sm:max-w-md custom-dialog-overlay animate-modal-fade-in p-6 rounded-lg shadow-xl">
         <DialogHeader className="relative text-right mb-4">
-          <DialogTitle className="text-app-red text-2xl font-bold text-center">
+          <DialogClose asChild>
+            <Button
+              variant="ghost"
+              className="absolute top-0 left-0 text-sm text-app-red hover:text-app-red/80 rounded-md p-2 flex items-center gap-1 focus-visible:ring-0 focus-visible:ring-offset-0"
+              aria-label="إغلاق"
+              onClick={onClose}
+            >
+              <X size={18} />
+              <span className="mr-1">إغلاق</span>
+            </Button>
+          </DialogClose>
+          <DialogTitle className="text-app-red text-2xl font-bold text-center pt-8 sm:pt-2">
             {isLoggedIn ? "تم تسجيل الدخول" : "الوصول يتطلب تسجيل الدخول"}
           </DialogTitle>
         </DialogHeader>
@@ -60,13 +72,7 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
                 <UserCircle className="ms-2 h-5 w-5" />
                 حسابي
               </Button>
-               <Button 
-                 variant="secondary" 
-                 onClick={onClose} 
-                 className="w-full sm:flex-1 py-2.5 text-base font-semibold bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground"
-               >
-                إغلاق
-              </Button>
+              {/* Footer close button removed as per request */}
             </>
           ) : (
             <>
@@ -85,21 +91,9 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
             </>
           )}
         </DialogFooter>
-         <DialogClose asChild>
-            <Button 
-              variant="ghost" 
-              className="absolute top-3 left-3 text-sm text-gray-500 hover:bg-destructive hover:text-destructive-foreground rounded-md px-3 py-1.5"
-              aria-label="Close"
-              onClick={onClose}
-            >
-              <X size={18} className="ml-1" />
-              إغلاق
-            </Button>
-          </DialogClose>
       </DialogContent>
     </Dialog>
   );
 };
 
 export default AuthRequiredModal;
-

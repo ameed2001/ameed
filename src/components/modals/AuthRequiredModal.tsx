@@ -1,9 +1,9 @@
 
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { LogIn, UserPlus, Home, X, UserCircle } from 'lucide-react'; 
+import { LogIn, UserPlus, UserCircle } from 'lucide-react'; 
 import Link from 'next/link';
 import { useEffect, useState } from 'react'; 
 import { useRouter } from 'next/navigation'; 
@@ -44,17 +44,7 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-card text-card-foreground sm:max-w-md custom-dialog-overlay animate-modal-fade-in p-6 rounded-lg shadow-xl">
         <DialogHeader className="relative text-right mb-4">
-          <DialogClose asChild>
-            <Button
-              variant="ghost"
-              className="absolute top-0 left-0 text-sm text-app-red hover:text-app-red/80 rounded-md p-2 flex items-center gap-1 focus-visible:ring-0 focus-visible:ring-offset-0"
-              aria-label="إغلاق"
-              onClick={onClose}
-            >
-              <X size={18} />
-              <span className="mr-1">إغلاق</span>
-            </Button>
-          </DialogClose>
+          {/* Removed the explicit DialogClose button from here */}
           <DialogTitle className="text-app-red text-2xl font-bold text-center pt-8 sm:pt-2">
             {isLoggedIn ? "تم تسجيل الدخول" : "الوصول يتطلب تسجيل الدخول"}
           </DialogTitle>
@@ -72,7 +62,6 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
                 <UserCircle className="ms-2 h-5 w-5" />
                 حسابي
               </Button>
-              {/* Footer close button removed as per request */}
             </>
           ) : (
             <>

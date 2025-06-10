@@ -13,83 +13,97 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="bg-[rgba(var(--header-bg-rgb),0.98)] text-gray-300 mt-auto shadow-inner">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-right">
-          {/* About Section */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center justify-end sm:justify-start mb-4">
-              <Image 
-                src="https://i.imgur.com/79bO3U2.jpg" 
-                alt="شعار الموقع" 
-                width={50} 
-                height={50} 
-                className="rounded-full border-2 border-app-gold"
-                data-ai-hint="logo construction"
-              />
-              <h3 className="text-app-red text-xl font-bold mr-3">المحترف لحساب الكميات</h3>
+    <footer className="mt-auto">
+      {/* Top Grey Section */}
+      <div className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-right">
+            {/* About Section - Far Right in RTL */}
+            <div className="sm:col-span-2 lg:col-span-1 lg:order-last">
+              <div className="flex items-center justify-end mb-4">
+                <Image 
+                  src="https://i.imgur.com/79bO3U2.jpg" 
+                  alt="شعار الموقع" 
+                  width={50} 
+                  height={50} 
+                  className="rounded-full border-2 border-app-gold"
+                  data-ai-hint="logo construction"
+                />
+                <h3 className="text-app-red text-xl font-bold mr-3">المحترف لحساب الكميات</h3>
+              </div>
+              <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+                نقدم أدوات دقيقة وسهلة الاستخدام لحساب كميات مواد البناء لمشاريعكم الإنشائية، مع إرشادات ونصائح هندسية قيمة.
+              </p>
+              {/* Social Media Icons - Styled as squares */}
+              <div className="flex justify-end gap-2 mt-4">
+                <Link href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" title="WhatsApp"
+                      className="p-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white transition-colors">
+                  <WhatsAppIcon className="h-5 w-5" />
+                </Link>
+                <Link href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" title="Instagram"
+                      className="p-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white transition-colors">
+                  <Instagram size={20} />
+                </Link>
+                <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" title="Facebook"
+                      className="p-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white transition-colors">
+                  <Facebook size={20} />
+                </Link>
+              </div>
             </div>
-            <p className="text-sm leading-relaxed">
-              نقدم أدوات دقيقة وسهلة الاستخدام لحساب كميات مواد البناء لمشاريعكم الإنشائية، مع إرشادات ونصائح هندسية قيمة.
-            </p>
-          </div>
 
-          {/* Quick Links Section */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4 border-b-2 border-app-gold pb-2 inline-block">روابط سريعة</h4>
-            <ul className="space-y-2 text-sm">
-              <li><Link href="/" className="hover:text-app-gold transition-colors duration-200">الرئيسية</Link></li>
-              <li><Link href="/about" className="hover:text-app-gold transition-colors duration-200">عن الموقع</Link></li>
-              <li><Link href="/contact" className="hover:text-app-gold transition-colors duration-200">تواصل معنا</Link></li>
-              <li><Link href="/help" className="hover:text-app-gold transition-colors duration-200">مركز المساعدة</Link></li>
-              <li><Link href="/login" className="hover:text-app-gold transition-colors duration-200">تسجيل الدخول</Link></li>
-               <li><Link href="/signup" className="hover:text-app-gold transition-colors duration-200">إنشاء حساب</Link></li>
-            </ul>
-          </div>
+            {/* Quick Links Section */}
+            <div className="lg:order-2">
+              <h4 className="text-lg font-bold text-app-red border-b-2 border-app-red pb-1 mb-3 inline-block">روابط سريعة</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">الرئيسية</Link></li>
+                <li><Link href="/about" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">عن الموقع</Link></li>
+                <li><Link href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">تواصل معنا</Link></li>
+                <li><Link href="/help" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">مركز المساعدة</Link></li>
+                <li><Link href="/login" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">تسجيل الدخول</Link></li>
+                <li><Link href="/signup" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">إنشاء حساب</Link></li>
+              </ul>
+            </div>
 
-          {/* Contact Info Section */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4 border-b-2 border-app-gold pb-2 inline-block">معلومات الاتصال</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-center justify-end sm:justify-start gap-3">
-                <Mail size={18} className="text-app-gold shrink-0" />
-                <a href="mailto:mediaplus64@gmail.com" className="hover:text-app-gold transition-colors duration-200">mediaplus64@gmail.com</a>
-              </li>
-              <li className="flex items-center justify-end sm:justify-start gap-3">
-                <Phone size={18} className="text-app-gold shrink-0" />
-                <span>+972594371424</span>
-              </li>
-              <li className="flex items-center justify-end sm:justify-start gap-3">
-                <MapPin size={18} className="text-app-gold shrink-0" />
-                <span>سلفيت فلسطين</span>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Social Media Section */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4 border-b-2 border-app-gold pb-2 inline-block">تابعنا</h4>
-            <div className="flex justify-end sm:justify-start gap-3">
-              <Link href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" title="WhatsApp"
-                    className="p-2.5 rounded-full bg-gray-700 hover:bg-social-whatsapp text-white hover:text-white transition-all duration-300 transform hover:scale-110">
-                <WhatsAppIcon className="h-5 w-5" />
-              </Link>
-              <Link href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" title="Instagram"
-                    className="p-2.5 rounded-full bg-gray-700 hover:bg-social-instagram text-white hover:text-white transition-all duration-300 transform hover:scale-110">
-                <Instagram size={20} />
-              </Link>
-              <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" title="Facebook"
-                    className="p-2.5 rounded-full bg-gray-700 hover:bg-social-facebook text-white hover:text-white transition-all duration-300 transform hover:scale-110">
-                <Facebook size={20} />
-              </Link>
+            {/* Contact Info Section */}
+            <div className="lg:order-1">
+              <h4 className="text-lg font-bold text-app-red border-b-2 border-app-red pb-1 mb-3 inline-block">اتصل بنا</h4>
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-center justify-end gap-2">
+                  <span className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200"><a href="mailto:mediaplus64@gmail.com">mediaplus64@gmail.com</a></span>
+                  <Mail size={18} className="text-app-red shrink-0" />
+                </li>
+                <li className="flex items-center justify-end gap-2">
+                  <span className="text-gray-700 dark:text-gray-300">+972594371424</span>
+                  <Phone size={18} className="text-app-red shrink-0" />
+                </li>
+                <li className="flex items-center justify-end gap-2">
+                  <span className="text-gray-700 dark:text-gray-300">سلفيت فلسطين</span>
+                  <MapPin size={18} className="text-app-red shrink-0" />
+                </li>
+              </ul>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-700 text-center">
-          <p className="text-xs text-gray-400">&copy; {currentYear} المحترف لحساب الكميات. جميع الحقوق محفوظة.</p>
-          <p className="text-xs text-gray-500 mt-1">تصميم وتطوير: <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors">عميد سماره</Link></p>
+      {/* Middle Silhouette Section */}
+      <div className="bg-gray-100 dark:bg-gray-800 py-0 md:py-0"> {/* Reduced padding */}
+        <div className="container mx-auto px-0">
+          <Image
+            src="https://placehold.co/1200x100/E8E8E8/B40404?text=Construction+Silhouette" // Placeholder with red text on grey
+            alt="Construction Silhouette"
+            width={1200}
+            height={100} // Adjusted height
+            className="w-full h-auto max-h-[100px] object-cover" // Made responsive and constrained height
+            data-ai-hint="construction workers silhouette"
+          />
         </div>
+      </div>
+
+      {/* Bottom Red Bar */}
+      <div className="bg-app-red text-white text-xs text-center py-3">
+        <p>&copy; {currentYear} المحترف لحساب الكميات. جميع الحقوق محفوظة.</p>
+        <p className="mt-1">تصميم وتطوير: <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors">عميد سماره</Link></p>
       </div>
     </footer>
   );
@@ -97,3 +111,4 @@ const Footer = () => {
 
 export default Footer;
 
+    

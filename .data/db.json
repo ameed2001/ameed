@@ -383,6 +383,22 @@
       "message": "User logged in successfully: ameed2001@gmail.com",
       "timestamp": "2025-06-10T07:37:24.813Z",
       "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749543991415-ockn0",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed001@gmail.com registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-06-10T08:26:31.415Z",
+      "user": "user-1749543991406-3"
+    },
+    {
+      "id": "log-1749544010127-3y1ii",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed001@gmail.com",
+      "timestamp": "2025-06-10T08:26:50.127Z",
+      "user": "user-1749543991406-3"
     }
   ],
   "roles": [

@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, UserPlus, X } from 'lucide-react';
 import { adminCreateUserAction } from '@/app/admin/users/actions'; 
-import type { SignupActionResponse } from '@/app/signup/actions'; // Re-use or create a specific admin version
+import type { SignupActionResponse } from '@/app/signup/actions';
 import type { UserRole } from '@/lib/db';
 
 const addUserSchema = z.object({
@@ -53,7 +53,7 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
       email: "",
       password: "",
       confirmPassword: "",
-      role: undefined, // Or a default role like 'GENERAL_USER'
+      role: undefined, 
     }
   });
 
@@ -69,7 +69,7 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
         variant: "default",
       });
       reset();
-      onUserAdded(); // This will refresh the user list and close the dialog
+      onUserAdded(); 
     } else {
       toast({
         title: "خطأ في إضافة المستخدم",
@@ -90,13 +90,13 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
   };
   
   const handleCloseDialog = () => {
-    reset(); // Reset form fields when dialog is closed
+    reset(); 
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
-      <DialogContent className="sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay animate-modal-fade-in">
+      <DialogContent className="sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay"> {/* Removed animate-modal-fade-in */}
         <DialogHeader className="text-right mb-4">
           <DialogTitle className="text-app-red text-2xl font-bold flex items-center justify-center gap-2">
             <UserPlus className="h-7 w-7" /> إضافة مستخدم جديد
@@ -129,7 +129,7 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
           <div>
             <Label htmlFor="add-role">الدور</Label>
             <Select
-              onValueChange={(value: UserRole) => control._formValues.role = value} // Using control to set value for react-hook-form
+              onValueChange={(value: UserRole) => control._formValues.role = value} 
               defaultValue={control._formValues.role}
               dir="rtl"
             >

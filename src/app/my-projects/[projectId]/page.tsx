@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Edit, Send, Palette, CheckCircle2, 
-  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2, Loader2 as LoaderIcon, Mail, Calculator
+  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2, Loader2 as LoaderIcon, Mail, Calculator, Wrench, ListChecks
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -23,7 +23,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { X } from 'lucide-react';
 import { findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask } from '@/lib/db'; // Using new db.ts
 import Link from 'next/link';
-// Removed import for CostEstimatorForm
 
 // Simulate logged-in user - replace with actual auth context in a real app
 const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Engineer"; 
@@ -47,8 +46,8 @@ export default function ProjectDetailPage() {
 
   const isOwnerView = MOCK_CURRENT_USER_ROLE === "Owner";
 
-  const refreshProjectFromDb = async () => { // Made async for consistency
-    const currentProject = await findProjectById(projectId); // Made async
+  const refreshProjectFromDb = async () => { 
+    const currentProject = await findProjectById(projectId); 
      if (isOwnerView && currentProject && currentProject.linkedOwnerEmail !== MOCK_CURRENT_USER_EMAIL) {
         setProject(null);
         toast({ title: "غير مصرح به", description: "ليس لديك صلاحية لعرض هذا المشروع.", variant: "destructive" });
@@ -66,9 +65,9 @@ export default function ProjectDetailPage() {
   useEffect(() => {
     refreshProjectFromDb();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId]); // Removed isOwnerView, toast from deps as refreshProjectFromDb is now stable
+  }, [projectId]); 
 
-  const handleCommentSubmit = async (e: FormEvent) => { // Made async
+  const handleCommentSubmit = async (e: FormEvent) => { 
     e.preventDefault();
     if (!newComment.trim() || !project) return;
     setIsSubmittingComment(true);
@@ -82,7 +81,7 @@ export default function ProjectDetailPage() {
       dataAiHintAvatar: isOwnerView ? "owner avatar" : "my avatar"
     };
     
-    const updatedProjectResult = await dbUpdateProject(project.id.toString(), { // project.id is number
+    const updatedProjectResult = await dbUpdateProject(project.id.toString(), { 
         comments: [...(project.comments || []), commentToAdd]
     });
 
@@ -96,7 +95,7 @@ export default function ProjectDetailPage() {
     setIsSubmittingComment(false);
   };
 
-  const handleProgressSubmit = async (e: FormEvent) => { // Made async
+  const handleProgressSubmit = async (e: FormEvent) => { 
     e.preventDefault();
     if (!project || !progressUpdate.percentage) {
       toast({ title: "خطأ", description: "يرجى إدخال نسبة التقدم.", variant: "destructive"});
@@ -108,7 +107,7 @@ export default function ProjectDetailPage() {
       return;
     }
     
-    const updatedProjectResult = await dbUpdateProject(project.id.toString(), { // project.id is number
+    const updatedProjectResult = await dbUpdateProject(project.id.toString(), { 
         overallProgress: newProgress,
         quantitySummary: (project.quantitySummary || '') + \` (ملاحظة تقدم: \${progressUpdate.notes || 'لا يوجد'})\`
     });
@@ -122,14 +121,14 @@ export default function ProjectDetailPage() {
     }
   };
 
-  const handleLinkOwnerSubmit = async (e: FormEvent) => { // Made async
+  const handleLinkOwnerSubmit = async (e: FormEvent) => { 
     e.preventDefault();
     if (!project || !linkedOwnerEmailInput.trim()) {
       toast({ title: "خطأ", description: "يرجى إدخال بريد إلكتروني للمالك.", variant: "destructive"});
       return;
     }
     
-    const updatedProjectResult = await dbUpdateProject(project.id.toString(), { linkedOwnerEmail: linkedOwnerEmailInput }); // project.id is number
+    const updatedProjectResult = await dbUpdateProject(project.id.toString(), { linkedOwnerEmail: linkedOwnerEmailInput }); 
     if (updatedProjectResult.success) {
         refreshProjectFromDb();
         toast({ title: "تم ربط المالك", description: \`تم ربط المالك بالبريد الإلكتروني: \${linkedOwnerEmailInput}.\` });
@@ -161,7 +160,7 @@ export default function ProjectDetailPage() {
       caption: \`تم الرفع: \${selectedFile.name}\`
     };
     
-    const updatedProjectResult = await dbUpdateProject(project.id.toString(), { // project.id is number
+    const updatedProjectResult = await dbUpdateProject(project.id.toString(), { 
         photos: [...(project.photos || []), newPhoto]
     });
 
@@ -241,8 +240,8 @@ export default function ProjectDetailPage() {
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2">
                     {!isOwnerView && (
-                        <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل تفاصيل المشروع")}>
-                            <FileEdit size={18} className="ms-1.5" /> تعديل التفاصيل
+                        <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل بيانات المشروع")}>
+                            <FileEdit size={18} className="ms-1.5" /> تعديل بيانات المشروع
                         </Button>
                     )}
                     {isOwnerView && project.engineer && (
@@ -283,26 +282,29 @@ export default function ProjectDetailPage() {
             <Card className="bg-white/95 shadow-lg mb-8">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                  <Settings2 size={28}/> لوحة تحكم المهندس
+                  <Wrench size={28}/> أدوات إدارة المشروع
                 </CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الباطون")}>
+                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج إدخال تفاصيل العناصر الإنشائية")}>
+                    <ListChecks size={18} className="ms-2"/> إدخال تفاصيل العناصر
+                </Button>
+                 <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الباطون لهذا المشروع")}>
                     <HardHat size={18} className="ms-2"/> حساب كميات الباطون
                 </Button>
-                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الحديد")}>
+                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الحديد لهذا المشروع")}>
                     <BarChart3 size={18} className="ms-2"/> حساب كميات الحديد
                 </Button>
                  <DialogTrigger asChild>
                     <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10">
-                        <UploadCloud size={18} className="ms-2"/> رفع صورة/فيديو
+                        <UploadCloud size={18} className="ms-2"/> رفع صور/فيديو للمشروع
                     </Button>
                   </DialogTrigger>
-                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("إدارة مراحل المشروع")}>
-                      <GanttChartSquare size={18} className="ms-2"/> إدارة المراحل
+                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("إدارة مراحل المشروع (تحديد/تعديل)")}>
+                      <GanttChartSquare size={18} className="ms-2"/> تحديد/إدارة المراحل
                   </Button>
-                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقرير الكميات")}>
-                      <Download size={18} className="ms-2"/> تصدير التقارير
+                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقارير الكميات والتقدم")}>
+                      <Download size={18} className="ms-2"/> توليد/تصدير التقارير
                   </Button>
               </CardContent>
             </Card>
@@ -316,8 +318,8 @@ export default function ProjectDetailPage() {
                     <GanttChartSquare size={28} /> الجدول الزمني للمشروع
                   </CardTitle>
                   {!isOwnerView && (
-                    <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل مراحل الإنشاء")}>
-                        <CalendarDays size={18} className="ms-1.5" /> تعديل المراحل
+                    <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل مراحل الإنشاء في الجدول")}>
+                        <CalendarDays size={18} className="ms-1.5" /> تعديل مهام الجدول
                     </Button>
                   )}
                 </CardHeader>
@@ -451,7 +453,6 @@ export default function ProjectDetailPage() {
                       </form>
                     </CardContent>
                   </Card>
-                  {/* Cost Estimator Form Removed from here for Engineer role */}
                 </>
               )}
               
@@ -594,4 +595,3 @@ export default function ProjectDetailPage() {
     </AppLayout>
   );
 }
-

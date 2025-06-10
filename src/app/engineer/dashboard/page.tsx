@@ -25,7 +25,7 @@ const engineerActions = [
         title: "إنشاء مشروع بناء جديد",
         href: "/engineer/create-project",
         icon: PlusSquare,
-        description: "بدء وتحديد مشروع بناء جديد، إدخال التفاصيل الأساسية، وتحديد مراحله الأولية لتمكين المتابعة الفعالة.",
+        description: "بدء وتعريف مشروع بناء جديد، إدخال المعلومات الأساسية مثل اسم المشروع، الموقع، والنطاق الأولي.", // Aligns with Step 3
         iconBgClass: "bg-green-50 text-green-600 dark:bg-green-900/50 dark:text-green-400",
         bottomBarClass: "bg-gradient-to-r from-green-400 to-green-600",
         buttonClassName: "bg-green-50 text-green-700 border-2 border-green-500 hover:bg-green-500 hover:text-white dark:bg-green-700/30 dark:text-green-300 dark:border-green-600 dark:hover:bg-green-600 dark:hover:text-white",
@@ -36,7 +36,7 @@ const engineerActions = [
         title: "إدارة المشاريع الإنشائية",
         href: "/my-projects",
         icon: Briefcase,
-        description: "عرض وتعديل مشاريعك. يشمل: إدارة التفاصيل (العناصر، المراحل)، تحديث التقدم (ملاحظات، صور/فيديو)، ربط المالك، عرض وتخصيص التقارير، تصدير البيانات، وأرشفة المشاريع.",
+        description: "الوصول إلى مشاريعك لعرضها، إدارتها، تعديل تفاصيلها (مثل العناصر الإنشائية والمراحل)، تحديث التقدم (بالملاحظات والصور/الفيديو)، ربط المالك، عرض وتخصيص وتصدير التقارير، وأرشفة المشاريع.", // Aligns with Steps 4, 5, 6, 9, 10, 11, 12, 13, 15, 16, 17
         iconBgClass: "bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400",
         bottomBarClass: "bg-gradient-to-r from-blue-400 to-blue-600",
         buttonClassName: "bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white dark:bg-blue-700/30 dark:text-blue-300 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white",
@@ -44,10 +44,10 @@ const engineerActions = [
         dataAiHint: "manage projects"
     },
     {
-        title: "حساب كميات الباطون",
+        title: "حساب كميات الباطون", // Part of Step 8
         href: "/concrete-estimator", 
         icon: Calculator, 
-        description: "أداة لحساب كميات الباطون المطلوبة لمختلف العناصر الإنشائية (مثل الأعمدة، الجوائز، الأساسات) بناءً على الأبعاد والتفاصيل المدخلة.",
+        description: "أداة لحساب كميات الباطون المطلوبة لمختلف العناصر الإنشائية بناءً على الأبعاد والتفاصيل المدخلة.",
         iconBgClass: "bg-amber-50 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400",
         bottomBarClass: "bg-gradient-to-r from-amber-400 to-amber-600",
         buttonClassName: "bg-amber-50 text-amber-700 border-2 border-amber-500 hover:bg-amber-500 hover:text-white dark:bg-amber-700/30 dark:text-amber-300 dark:border-amber-600 dark:hover:bg-amber-600 dark:hover:text-white",
@@ -55,7 +55,7 @@ const engineerActions = [
         dataAiHint: "concrete estimator tool"
     },
     {
-        title: "حساب كميات الحديد",
+        title: "حساب كميات الحديد", // Part of Step 8
         href: "/steel-calculator", 
         icon: BarChart3, 
         description: "أداة لتقدير كميات حديد التسليح اللازمة لمشروعك بناءً على تفاصيل العناصر الإنشائية ونسب الحديد المحددة.",
@@ -66,7 +66,7 @@ const engineerActions = [
         dataAiHint: "steel calculator tool"
     },
     {
-        title: "إدارة المستندات",
+        title: "إدارة المستندات", // General feature, not directly in algorithm steps but useful
         href: "/documents",
         icon: FolderArchive,
         description: "إدارة المستندات الهندسية الهامة مثل المخططات، العقود، والفواتير، ورفعها لتكون متاحة ضمن تفاصيل المشروع.",
@@ -77,7 +77,7 @@ const engineerActions = [
         dataAiHint: "document management"
     },
     {
-        title: "إنشاء تقرير بالذكاء الاصطناعي",
+        title: "إنشاء تقرير بالذكاء الاصطناعي", // Relates to Step 13, 14 (AI powered report generation)
         href: "/ai-report-generator",
         icon: Cpu,
         description: "استخدام الذكاء الاصطناعي لتجميع وتحليل بيانات المشروع وتوليد تقارير مفصلة للكميات والتقدم، وتصديرها بصيغ PDF أو Excel.",
@@ -146,5 +146,3 @@ export default function EngineerDashboardPage() {
     </AppLayout>
   );
 }
-
-    

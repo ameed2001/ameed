@@ -90,7 +90,11 @@ export default function AdminLogsPage() {
             </CardTitle>
             <CardDescription className="text-gray-600 mt-1">مراجعة وتصفية أنشطة وأحداث النظام الهامة.</CardDescription>
         </div>
-        <Button onClick={handleExportLogs} variant="outline" className="mt-4 sm:mt-0 border-app-gold text-app-gold hover:bg-app-gold/10">
+        <Button 
+          onClick={handleExportLogs} 
+          variant="outline" 
+          className="mt-4 sm:mt-0 border-app-gold text-app-gold bg-gray-50 hover:bg-gray-100 hover:text-app-gold focus-visible:ring-app-gold font-semibold shadow-sm"
+        >
           <Download className="ms-2 h-4 w-4" /> تصدير السجلات
         </Button>
       </CardHeader>

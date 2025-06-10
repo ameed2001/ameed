@@ -1,16 +1,6 @@
 {
   "users": [
     {
-      "id": "user-001",
-      "name": "مدير النظام",
-      "email": "ameed@admin.com",
-      "password_hash": "$2a$10$8iG.xK9F7O.y0z.V3u.hPexkPq9jF.tW1o.N7u.M0r.I4x.O2q.S2",
-      "role": "Admin",
-      "status": "Active",
-      "createdAt": "2025-06-09T11:35:32.224Z",
-      "profileImage": "/profiles/admin.jpg"
-    },
-    {
       "id": "user-1749486065534-3",
       "name": "عميد سماره",
       "email": "ameed2001@gmail.com",
@@ -399,6 +389,14 @@
       "message": "User logged in successfully: ameed001@gmail.com",
       "timestamp": "2025-06-10T08:26:50.127Z",
       "user": "user-1749543991406-3"
+    },
+    {
+      "id": "log-1749545370046-lkohs",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed2001@a.com registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-06-10T08:49:30.046Z",
+      "user": "user-1749545370034-2"
     }
   ],
   "roles": [

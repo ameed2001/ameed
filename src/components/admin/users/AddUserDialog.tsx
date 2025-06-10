@@ -11,11 +11,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, UserPlus, X, Users as UsersIcon, Mail, Eye, ChevronDown } from 'lucide-react';
+import { Loader2, UserPlus, X, Users as UsersIcon, Mail, Eye } from 'lucide-react';
 import { adminCreateUserAction } from '@/app/admin/users/actions';
 import type { SignupActionResponse } from '@/app/signup/actions';
 import type { UserRole } from '@/lib/db';
-import { cn } from '@/lib/utils';
 
 const addUserSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
@@ -51,7 +50,7 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
     resolver: zodResolver(addUserSchema),
     defaultValues: {
       name: "",
-      email: "ameed2001@admin.com", // Matching placeholder
+      email: "",
       password: "",
       confirmPassword: "",
       role: undefined,
@@ -96,105 +95,100 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
-      <DialogContent className="sm:max-w-md bg-white text-foreground p-0 rounded-xl shadow-xl custom-dialog-overlay overflow-hidden">
-        <div className="p-6">
-            <DialogHeader className="text-center mb-6">
-                <div className="flex justify-center mb-4">
-                    <UsersIcon className="h-10 w-10 text-gray-700" />
-                </div>
-                <DialogTitle className="text-gray-800 text-2xl font-bold">
-                    إضافة مستخدم جديد
-                </DialogTitle>
-                <DialogDescription className="text-gray-500 mt-2 text-sm">
-                    أدخل بيانات المستخدم الجديد للتمكن من الوصول إلى النظام
-                </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-right">
-              <div className="space-y-1.5">
-                <Label htmlFor="add-name" className="text-sm font-medium text-gray-700">الاسم الكامل</Label>
-                <div className="relative">
-                    <Input id="add-name" {...register("name")} placeholder="مثال: علي محمد" className="bg-gray-50 border-gray-300 pr-10" />
-                    <UserPlus className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                </div>
-                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="add-email" className="text-sm font-medium text-gray-700">البريد الإلكتروني</Label>
-                 <div className="relative">
-                    <Input id="add-email" type="email" {...register("email")} placeholder="ameed2001@admin.com" className="bg-gray-50 border-gray-300 pr-10" />
-                    <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                </div>
-                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="add-password" className="text-sm font-medium text-gray-700">كلمة المرور</Label>
-                <div className="relative">
-                    <Input id="add-password" type="password" {...register("password")} placeholder="********" className="bg-gray-50 border-gray-300 pr-10" />
-                    <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                </div>
-                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="add-confirmPassword" className="text-sm font-medium text-gray-700">تأكيد كلمة المرور</Label>
-                <div className="relative">
-                    <Input id="add-confirmPassword" type="password" {...register("confirmPassword")} placeholder="********" className="bg-gray-50 border-gray-300 pr-10" />
-                    <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                </div>
-                {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="add-role" className="text-sm font-medium text-gray-700">الدور</Label>
-                <Controller
-                    name="role"
-                    control={control}
-                    render={({ field }) => (
-                        <Select onValueChange={field.onChange} value={field.value} dir="rtl">
-                        <SelectTrigger id="add-role" className="w-full text-right bg-gray-50 border-gray-300">
-                            <SelectValue placeholder="اختر دور المستخدم..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {roleOptions.map(option => (
-                            <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                            </SelectItem>
-                            ))}
-                        </SelectContent>
-                        </Select>
-                    )}
-                />
-                {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role.message}</p>}
-              </div>
-              <DialogFooter className="pt-5 flex flex-col sm:flex-row gap-3 sm:gap-2">
-                <Button
-                  type="submit"
-                  className="w-full sm:flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold py-2.5 rounded-lg"
-                  disabled={isLoading}
-                >
-                  {isLoading ? <Loader2 className="ml-2 h-5 w-5 animate-spin" /> : <UsersIcon className="ml-2 h-5 w-5" />}
-                  {isLoading ? "جاري الإضافة..." : "إضافة المستخدم"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCloseDialog}
-                  className="w-full sm:flex-1 border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold py-2.5 rounded-lg"
-                >
-                  <X className="ml-2 h-5 w-5" />
-                  إلغاء
-                </Button>
-              </DialogFooter>
-            </form>
-        </div>
-        <DialogClose asChild>
-          <Button variant="ghost" size="icon" className="absolute top-4 left-4 text-gray-400 hover:text-gray-600" onClick={handleCloseDialog}>
-            <X size={20} />
-            <span className="sr-only">إغلاق</span>
-          </Button>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay">
+        <DialogHeader className="text-center mb-6">
+            <div className="flex justify-center mb-4">
+                <UsersIcon className="h-10 w-10 text-gray-700" />
+            </div>
+            <DialogTitle className="text-gray-800 text-2xl font-bold">
+                إضافة مستخدم جديد
+            </DialogTitle>
+            <DialogDescription className="text-gray-500 mt-2 text-sm">
+                أدخل بيانات المستخدم الجديد للتمكن من الوصول إلى النظام
+            </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-right">
+          <div className="space-y-1.5">
+            <Label htmlFor="add-name" className="text-sm font-medium text-gray-700">الاسم الكامل</Label>
+            <div className="relative">
+                <Input id="add-name" {...register("name")} placeholder="مثال: علي محمد" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
+                <UserPlus className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="add-email" className="text-sm font-medium text-gray-700">البريد الإلكتروني</Label>
+             <div className="relative">
+                <Input id="add-email" type="email" {...register("email")} placeholder="example@admin.com" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
+                <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="add-password" className="text-sm font-medium text-gray-700">كلمة المرور</Label>
+            <div className="relative">
+                <Input id="add-password" type="password" {...register("password")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
+                <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="add-confirmPassword" className="text-sm font-medium text-gray-700">تأكيد كلمة المرور</Label>
+            <div className="relative">
+                <Input id="add-confirmPassword" type="password" {...register("confirmPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
+                <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            </div>
+            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="add-role" className="text-sm font-medium text-gray-700">الدور</Label>
+            <Controller
+                name="role"
+                control={control}
+                render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value} dir="rtl">
+                    <SelectTrigger id="add-role" className="w-full text-right bg-gray-50 border-gray-300 focus:border-blue-500">
+                        <SelectValue placeholder="اختر دور المستخدم..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {roleOptions.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                        </SelectItem>
+                        ))}
+                    </SelectContent>
+                    </Select>
+                )}
+            />
+            {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role.message}</p>}
+          </div>
+          <DialogFooter className="pt-5 flex flex-col sm:flex-row gap-3 sm:gap-2">
+            <Button
+              type="submit"
+              className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg"
+              disabled={isLoading}
+            >
+              {isLoading ? <Loader2 className="ml-2 h-5 w-5 animate-spin" /> : <UsersIcon className="ml-2 h-5 w-5" />}
+              {isLoading ? "جاري الإضافة..." : "إضافة المستخدم"}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary" // Using secondary variant for cancel button
+              onClick={handleCloseDialog}
+              className="w-full sm:flex-1 font-semibold py-2.5 rounded-lg"
+            >
+              <X className="ml-2 h-5 w-5" />
+              إلغاء
+            </Button>
+          </DialogFooter>
+        </form>
+        <DialogClose className="absolute left-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
         </DialogClose>
       </DialogContent>
     </Dialog>
   );
 }
 
-    

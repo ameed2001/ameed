@@ -12,13 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, HardHat, Info } from 'lucide-react'; // Icon for Engineer
-import { engineerSignupUserAction, type SignupActionResponse } from './actions'; // Uses engineerSignupUserAction
+import { Loader2, UserPlus, Home } from 'lucide-react'; // Changed icon to Home for Owner
+import { ownerSignupUserAction, type SignupActionResponse } from '../signup/actions'; // Uses ownerSignupUserAction
 import { useRouter } from 'next/navigation';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-// Schema for engineer signup
-const engineerSignupSchema = z.object({
+// Schema for owner signup (remains the same)
+const ownerSignupSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
@@ -28,44 +27,33 @@ const engineerSignupSchema = z.object({
   path: ["confirmPassword"],
 });
 
-type EngineerSignupFormValues = z.infer<typeof engineerSignupSchema>;
+type OwnerSignupFormValues = z.infer<typeof ownerSignupSchema>;
 
-export default function EngineerSignupPage() { // Renamed component for clarity, path is /signup
+export default function OwnerSignupPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [showPendingApprovalMessage, setShowPendingApprovalMessage] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<EngineerSignupFormValues>({
-    resolver: zodResolver(engineerSignupSchema),
+  const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<OwnerSignupFormValues>({
+    resolver: zodResolver(ownerSignupSchema),
   });
 
-  const onSubmit: SubmitHandler<EngineerSignupFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<OwnerSignupFormValues> = async (data) => {
     setIsLoading(true);
-    setShowPendingApprovalMessage(false);
-    const result: SignupActionResponse = await engineerSignupUserAction(data); // Calling engineer specific action
+    const result: SignupActionResponse = await ownerSignupUserAction(data); // Calling owner specific action
     setIsLoading(false);
 
     if (result.success) {
       reset();
-      if (result.isPendingApproval) {
-        toast({
-          title: "تم التسجيل بنجاح",
-          description: "حسابك كمهندس قيد المراجعة. يرجى مراجعة الملاحظة أدناه.",
-          variant: "default",
-        });
-        setShowPendingApprovalMessage(true);
+      toast({
+        title: "تم إنشاء حساب المالك",
+        description: result.message || "تم إنشاء حساب المالك بنجاح!",
+        variant: "default",
+      });
+      if (result.redirectTo) {
+        router.push(result.redirectTo);
       } else {
-        toast({
-          title: "تم إنشاء الحساب",
-          description: result.message || "تم إنشاء حساب المهندس بنجاح!",
-          variant: "default",
-        });
-        if (result.redirectTo) {
-          router.push(result.redirectTo);
-        } else {
-          router.push('/login'); // Redirect to login after engineer signup (if not pending)
-        }
+        router.push('/login'); // Redirect to login after owner signup
       }
     } else {
       toast({
@@ -76,7 +64,7 @@ export default function EngineerSignupPage() { // Renamed component for clarity,
       if (result.fieldErrors) {
         for (const [fieldName, fieldErrorMessages] of Object.entries(result.fieldErrors)) {
           if (fieldErrorMessages && fieldErrorMessages.length > 0) {
-            setError(fieldName as keyof EngineerSignupFormValues, {
+            setError(fieldName as keyof OwnerSignupFormValues, {
               type: "server",
               message: fieldErrorMessages.join(", "),
             });
@@ -91,32 +79,23 @@ export default function EngineerSignupPage() { // Renamed component for clarity,
       <div className="container mx-auto py-8 px-4">
         <Card className="max-w-lg mx-auto bg-white/95 shadow-xl">
           <CardHeader className="text-center">
-            <HardHat className="mx-auto h-12 w-12 text-app-gold mb-3" /> {/* Icon for Engineer */}
-            <CardTitle className="text-3xl font-bold text-app-red">إنشاء حساب مهندس جديد</CardTitle>
+            <Home className="mx-auto h-12 w-12 text-app-gold mb-3" /> {/* Icon for Owner */}
+            <CardTitle className="text-3xl font-bold text-app-red">إنشاء حساب مالك مشروع جديد</CardTitle>
             <CardDescription className="text-gray-600 mt-1">
-              انضم إلينا كمهندس للاستفادة من أدوات إدارة المشاريع وحساب الكميات.
+              انضم إلينا كمالك مشروع للاستفادة من ميزات تتبع مشاريعك.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {showPendingApprovalMessage && (
-              <Alert variant="default" className="mb-6 bg-blue-50 border-blue-300 text-blue-700">
-                <Info className="h-5 w-5 text-blue-700" />
-                <AlertTitle className="font-semibold">حسابك قيد المراجعة</AlertTitle>
-                <AlertDescription>
-                  شكرا على انشائك حساب مهندس وفي هذه اللحظات تم ارسال حسابك الى مدير المنصة حتى يوافق على تفعيله.
-                </AlertDescription>
-              </Alert>
-            )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-right">
               <div>
                 <Label htmlFor="name" className="block mb-1.5 font-semibold text-gray-700">الاسم الكامل</Label>
-                <Input id="name" type="text" {...register("name")} className="bg-white focus:border-app-gold" placeholder="مثال: م. خالد أحمد" />
+                <Input id="name" type="text" {...register("name")} className="bg-white focus:border-app-gold" placeholder="مثال: أحمد عبدالله" />
                 {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
               </div>
 
               <div>
                 <Label htmlFor="email" className="block mb-1.5 font-semibold text-gray-700">البريد الإلكتروني</Label>
-                <Input id="email" type="email" {...register("email")} className="bg-white focus:border-app-gold" placeholder="engineer@example.com" />
+                <Input id="email" type="email" {...register("email")} className="bg-white focus:border-app-gold" placeholder="owner@example.com" />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
               </div>
 
@@ -139,7 +118,7 @@ export default function EngineerSignupPage() { // Renamed component for clarity,
                     جاري الإنشاء...
                   </>
                 ) : (
-                  "إنشاء حساب مهندس"
+                  "إنشاء حساب المالك"
                 )}
               </Button>
             </form>
@@ -152,9 +131,9 @@ export default function EngineerSignupPage() { // Renamed component for clarity,
               </Link>
             </p>
             <p className="text-sm text-gray-600">
-              هل أنت مالك مشروع؟{' '}
-              <Link href="/owner-signup" className="font-semibold text-blue-600 hover:underline">
-                إنشاء حساب مالك
+              هل أنت مهندس؟{' '}
+              <Link href="/signup" className="font-semibold text-blue-600 hover:underline">
+                إنشاء حساب مهندس
               </Link>
             </p>
           </CardFooter>

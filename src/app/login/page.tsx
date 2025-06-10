@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react'; // Added useEffect
+import { useState, useEffect } from 'react'; 
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, LogIn, ShieldCheck } from 'lucide-react'; // Added ShieldCheck
+import { Loader2, LogIn, ShieldCheck } from 'lucide-react'; 
 import { loginUserAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
@@ -30,7 +30,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in
     if (typeof window !== 'undefined') {
       const userRole = localStorage.getItem('userRole');
       const userName = localStorage.getItem('userName'); 
@@ -56,7 +55,7 @@ export default function LoginPage() {
     setError
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { // Removed default admin credentials
+    defaultValues: { 
       email: "", 
       password_input: "",
     }
@@ -181,11 +180,11 @@ export default function LoginPage() {
           <CardFooter className="flex flex-col items-center mt-4 space-y-3">
             <p className="text-sm text-gray-600">
               ليس لديك حساب؟ إنشاء حساب جديد كـ{' '}
-              <Link href="/engineer-signup" className="font-semibold text-blue-700 underline hover:text-blue-800">
+              <Link href="/signup" className="font-semibold text-blue-700 underline hover:text-blue-800"> {/* Engineer signup now at /signup */}
                 مهندس
               </Link>
               {' '}أو كـ{' '}
-              <Link href="/signup" className="font-semibold text-blue-700 underline hover:text-blue-800">
+              <Link href="/owner-signup" className="font-semibold text-blue-700 underline hover:text-blue-800"> {/* Owner signup now at /owner-signup */}
                 مالك
               </Link>
             </p>

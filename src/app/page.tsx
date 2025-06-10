@@ -8,7 +8,7 @@ import HeroSection from '@/components/main-dashboard/HeroSection';
 import MainDashboardClient from '@/components/main-dashboard/MainDashboardClient';
 import FeaturesSection from '@/components/main-dashboard/FeaturesSection';
 import InfoCard from '@/components/ui/InfoCard';
-import { LogIn, UserPlus, ShieldCheck, HardHat, ArrowLeft } from 'lucide-react';
+import { LogIn, UserPlus, ShieldCheck, HardHat, ArrowLeft, Home as HomeIcon } from 'lucide-react'; // Added HomeIcon
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -65,13 +65,13 @@ export default function Home() {
       backCustomContent: (
         <div className="space-y-3 w-full px-4">
           <Button asChild size="lg" className="w-full bg-white/20 hover:bg-white/30 text-white">
-            <Link href="/signup">
-              <UserPlus className="ml-2 h-5 w-5" />
+            <Link href="/owner-signup"> {/* Updated link for Owner */}
+              <HomeIcon className="ml-2 h-5 w-5" /> {/* Changed icon for Owner */}
               إنشاء حساب مالك
             </Link>
           </Button>
           <Button asChild size="lg" className="w-full bg-white/20 hover:bg-white/30 text-white">
-            <Link href="/engineer-signup">
+            <Link href="/signup"> {/* Updated link for Engineer */}
               <HardHat className="ml-2 h-5 w-5" />
               إنشاء حساب مهندس
             </Link>
@@ -126,8 +126,8 @@ export default function Home() {
               dataAiHint={cardProps.dataAiHint}
               cardHeightClass={cardProps.cardHeightClass}
               className={cn(
-                cardProps.title === "إنشاء حساب جديد" && "sm:col-span-1 md:col-span-1", // Adjust general card width
-                cardProps.title === "تسجيل دخول المدير" && "sm:col-span-1 md:col-span-1" // Adjust admin login card width
+                cardProps.title === "إنشاء حساب جديد" && "sm:col-span-1 md:col-span-1", 
+                cardProps.title === "تسجيل دخول المدير" && "sm:col-span-1 md:col-span-1" 
               )}
             />
           ))}

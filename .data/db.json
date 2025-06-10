@@ -10,17 +10,6 @@
       "profileImage": "https://placehold.co/100x100.png?text=عم",
       "password_hash": "$2a$10$M8XhwePcbG/GsRKF5X3twuN5VWhcp8Mc2BqPwCHjIJlLrkv0i49gG",
       "createdAt": "2025-06-10T16:37:30.057Z"
-    },
-    {
-      "id": "user-1749573914693-u1xrs",
-      "name": "Ameed Samara",
-      "email": "ameed@malik.com",
-      "password_hash": "$2a$10$xtao5XR8nJPxTrQ87nWyj.0mh8yCBLhOi7GEDjjiU5qma1eSgaYUW",
-      "role": "OWNER",
-      "status": "ACTIVE",
-      "createdAt": "2025-06-10T16:45:14.693Z",
-      "updatedAt": "2025-06-10T16:45:14.693Z",
-      "profileImage": "https://placehold.co/100x100.png?text=AM"
     }
   ],
   "projects": [],
@@ -368,6 +357,14 @@
       "message": "User logged in successfully: ameed@malik.com",
       "timestamp": "2025-06-10T20:21:54.969Z",
       "user": "user-1749573914693-u1xrs"
+    },
+    {
+      "id": "log-1749587923979-6l9o4",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749573914693-u1xrs deleted by admin.",
+      "timestamp": "2025-06-10T20:38:43.979Z",
+      "user": "Admin"
     }
   ],
   "roles": [

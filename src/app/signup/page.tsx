@@ -43,23 +43,30 @@ export default function SignupPage() {
 
   const onSubmit: SubmitHandler<SignupFormValues> = async (data) => {
     setIsLoading(true);
-    setShowPendingApprovalMessage(false); // Reset message on new submission
+    setShowPendingApprovalMessage(false); 
     const result: SignupActionResponse = await signupUserAction(data);
     setIsLoading(false);
 
     if (result.success) {
-      toast({
-        title: "تم إنشاء الحساب",
-        description: result.message,
-        variant: "default",
-      });
-      reset();
+      reset(); 
       if (result.isPendingApproval) {
+        toast({
+          title: "تم التسجيل بنجاح",
+          description: "حسابك كمهندس قيد المراجعة. يرجى مراجعة الملاحظة أدناه.",
+          variant: "default",
+        });
         setShowPendingApprovalMessage(true);
-      } else if (result.redirectTo) {
-        router.push(result.redirectTo);
       } else {
-        router.push('/login'); 
+        toast({
+          title: "تم إنشاء الحساب",
+          description: result.message || "تم إنشاء حسابك بنجاح!",
+          variant: "default",
+        });
+        if (result.redirectTo) {
+          router.push(result.redirectTo);
+        } else {
+          router.push('/login'); 
+        }
       }
     } else {
       toast({
@@ -97,7 +104,7 @@ export default function SignupPage() {
                 <Info className="h-5 w-5 text-blue-700" />
                 <AlertTitle className="font-semibold">حسابك قيد المراجعة</AlertTitle>
                 <AlertDescription>
-                  شكراً لتسجيلك كمهندس. حسابك قيد المراجعة حالياً من قبل الإدارة. ستتلقى إشعاراً عند تفعيله.
+                  شكرا على انشائك حساب مهندس وفي هذه اللحظات تم ارسال حسابك الى مدير المنصة حتى يوفق على تفعيلة.
                 </AlertDescription>
               </Alert>
             )}

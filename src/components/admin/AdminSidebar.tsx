@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut } from 'lucide-react';
+import { Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut, Home } from 'lucide-react'; // Added Home icon
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,6 +13,7 @@ const adminNavItems = [
   { href: '/admin/projects', label: 'إدارة المشاريع', icon: Briefcase },
   { href: '/admin/settings', label: 'إعدادات النظام', icon: Settings },
   { href: '/admin/logs', label: 'سجلات النظام', icon: ScrollText },
+  { href: '/', label: 'الرئيسية للموقع', icon: Home }, // Added new item
 ];
 
 export default function AdminSidebar() {
@@ -44,7 +45,7 @@ export default function AdminSidebar() {
         <nav>
           <ul className="space-y-1.5">
             {adminNavItems.map((item) => {
-              const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/admin');
+              const isActive = pathname === item.href || (item.href !== '/' && item.href !== '/admin' && pathname.startsWith(item.href));
               return (
                 <li key={item.href}>
                   <Link

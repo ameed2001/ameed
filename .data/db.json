@@ -21,6 +21,28 @@
       "createdAt": "2025-06-10T20:54:41.407Z",
       "updatedAt": "2025-06-10T20:54:41.407Z",
       "profileImage": "https://placehold.co/100x100.png?text=سا"
+    },
+    {
+      "id": "user-1749591955995-m1u08",
+      "name": "Hadel Asad",
+      "email": "hivitijihur@gotgel.org",
+      "password_hash": "$2a$10$D83HTRyvTcOeuBoEfJGxcOoqdNRt7xG4PhXzeIdSTpOfdpNubHPAG",
+      "role": "OWNER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-10T21:45:55.995Z",
+      "updatedAt": "2025-06-10T21:45:55.995Z",
+      "profileImage": "https://placehold.co/100x100.png?text=HA"
+    },
+    {
+      "id": "user-1749593366082-4dte5",
+      "name": "علي محمود",
+      "email": "ahmad@gmail.com",
+      "password_hash": "$2a$10$uV9qXjawd8cUs/7e7w3ENeZWhoifjmQEsChOFKA2fhr81iKlcu2QW",
+      "role": "OWNER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-10T22:09:26.082Z",
+      "updatedAt": "2025-06-10T22:09:26.082Z",
+      "profileImage": "https://placehold.co/100x100.png?text=عل"
     }
   ],
   "projects": [],
@@ -560,6 +582,54 @@
       "message": "User logged in successfully: www@gmail.com",
       "timestamp": "2025-06-10T21:24:38.615Z",
       "user": "user-1749588881407-acagf"
+    },
+    {
+      "id": "log-1749591955998-11pkh",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User hivitijihur@gotgel.org registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-06-10T21:45:55.998Z",
+      "user": "user-1749591955995-m1u08"
+    },
+    {
+      "id": "log-1749591961360-jcvco",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: hivitijihur@gotgel.org",
+      "timestamp": "2025-06-10T21:46:01.360Z",
+      "user": "user-1749591955995-m1u08"
+    },
+    {
+      "id": "log-1749592249893-feuwx",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: hivitijihur@gotgel.org",
+      "timestamp": "2025-06-10T21:50:49.893Z",
+      "user": "user-1749591955995-m1u08"
+    },
+    {
+      "id": "log-1749593366090-wzsk0",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ahmad@gmail.com registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-06-10T22:09:26.090Z",
+      "user": "user-1749593366082-4dte5"
+    },
+    {
+      "id": "log-1749593379023-e5zdj",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ahmad@gmail.com",
+      "timestamp": "2025-06-10T22:09:39.023Z",
+      "user": "user-1749593366082-4dte5"
+    },
+    {
+      "id": "log-1749593645801-2k5f6",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ahmad@gmail.com",
+      "timestamp": "2025-06-10T22:14:05.801Z",
+      "user": "user-1749593366082-4dte5"
     }
   ],
   "roles": [

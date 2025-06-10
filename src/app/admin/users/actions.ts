@@ -25,7 +25,8 @@ export async function adminCreateUserAction(
     name: data.name,
     email: data.email,
     password_input: data.password,
-    role: data.role as UserRole, 
+    role: data.role as UserRole,
+    status: data.role === 'OWNER' ? 'ACTIVE' : undefined, // Set status to ACTIVE for OWNER role, otherwise let registerUser decide (likely PENDING_APPROVAL for ENGINEER)
   });
 
   if (!registrationResult.success) {

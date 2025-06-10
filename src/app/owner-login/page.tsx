@@ -39,7 +39,7 @@ export default function OwnerLoginPage() {
           description: `مرحباً ${userName || 'بعودتك'} أيها المالك! أنت مسجل الدخول حالياً وجاري توجيهك...`,
           variant: "default",
         });
-        router.push('/owner/dashboard');
+        router.push('/owner-account');
       }
     }
   }, [router, toast]);

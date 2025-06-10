@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, Info, Phone, HelpCircle, UserCircle, Briefcase, ShieldCheck } from 'lucide-react'; // Added ShieldCheck
+import { Home, Info, Phone, HelpCircle, UserCircle, Briefcase, ShieldCheck } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 // import { useToast } from '@/hooks/use-toast'; // Kept for potential future use
@@ -62,6 +62,27 @@ const Navbar = () => {
       <ul className="container mx-auto flex justify-center flex-wrap gap-x-2 md:gap-x-4 gap-y-2 items-center">
         {navItemsToDisplay.map((item) => {
           const isActive = pathname === item.href;
+          const isSpecialButton = item.href === '/owner/dashboard' || item.href === '/admin';
+
+          if (isSpecialButton) {
+            return (
+              <li key={item.href}>
+                <div className="p-0.5 rounded-lg bg-gradient-to-r from-fuchsia-500 via-purple-600 to-cyan-500 shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "flex items-center justify-center min-w-[90px] md:min-w-[120px] px-3 py-2 text-center font-semibold text-sm md:text-base transition-colors",
+                      "bg-slate-900 text-white rounded-[0.45rem] hover:bg-slate-800"
+                    )}
+                  >
+                    <item.icon size={18} className="ml-1.5 md:ml-2" />
+                    {item.label}
+                  </Link>
+                </div>
+              </li>
+            );
+          }
+
           return (
             <li key={item.href}>
               <Link

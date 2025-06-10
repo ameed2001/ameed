@@ -36,6 +36,7 @@ const Navbar = () => {
     if (userRole === 'OWNER') {
       navItemsToDisplay.push({ href: '/owner/dashboard', label: 'حسابي (مالك)', icon: UserCircle });
     } else if (userRole === 'ENGINEER') {
+      // Ensure this uses the briefcase icon and points to a relevant engineer page like /my-projects
       navItemsToDisplay.push({ href: '/my-projects', label: 'مشاريعي (مهندس)', icon: Briefcase });
     } else if (userRole === 'ADMIN') {
       navItemsToDisplay.push({ href: '/admin', label: 'حساب المسؤول', icon: ShieldCheck });
@@ -62,7 +63,8 @@ const Navbar = () => {
       <ul className="container mx-auto flex justify-center flex-wrap gap-x-2 md:gap-x-4 gap-y-2 items-center">
         {navItemsToDisplay.map((item) => {
           const isActive = pathname === item.href;
-          const isSpecialButton = item.href === '/owner/dashboard' || item.href === '/admin';
+          // Apply special styling if the link is for owner dashboard, admin dashboard, or engineer projects
+          const isSpecialButton = item.href === '/owner/dashboard' || item.href === '/admin' || (item.href === '/my-projects' && userRole === 'ENGINEER');
 
           if (isSpecialButton) {
             return (

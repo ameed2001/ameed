@@ -21,6 +21,7 @@ import {
   approveEngineer
 } from '@/lib/db'; 
 import AddUserDialog from '@/components/admin/users/AddUserDialog'; 
+import ResetPasswordDialog from '@/components/admin/users/ResetPasswordDialog';
 
 export default function AdminUsersPage() {
   const { toast } = useToast();
@@ -31,8 +32,10 @@ export default function AdminUsersPage() {
   const [isFetching, setIsFetching] = useState(true);
   const [totalUsersCount, setTotalUsersCount] = useState(0);
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false); 
+  const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] = useState(false);
+  const [selectedUserForPasswordReset, setSelectedUserForPasswordReset] = useState<{id: string, name: string} | null>(null);
 
-  const currentUser = { id: 'admin-001', role: 'Admin' }; 
+  const currentUser = { id: 'admin-001', role: 'Admin' }; // Mock admin user ID
 
   const refreshUsersFromDb = async () => {
      setIsFetching(true);
@@ -100,8 +103,9 @@ export default function AdminUsersPage() {
     }
   };
   
-  const handleResetPassword = (userName: string) => {
-    toast({ title: "إعادة تعيين كلمة المرور", description: `تم إرسال رابط إعادة تعيين كلمة المرور إلى ${userName} (محاكاة).` });
+  const handleOpenResetPasswordDialog = (userId: string, userName: string) => {
+    setSelectedUserForPasswordReset({ id: userId, name: userName });
+    setIsResetPasswordDialogOpen(true);
   };
 
   const handleApproveEngineer = async (userId: string, userName: string) => {
@@ -182,10 +186,10 @@ export default function AdminUsersPage() {
             </Select>
             <Button 
               onClick={() => setIsAddUserDialogOpen(true)} 
-              variant="default" // Uses primary color from theme (app-gold)
-              className="w-full sm:w-auto" // Removed specific bg/hover colors
+              variant="default" 
+              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              <UserPlus className="h-5 w-5" /> {/* Icon first for RTL, gap handles spacing */}
+              <UserPlus className="mr-2 h-5 w-5" /> 
               إضافة مستخدم جديد
             </Button>
           </div>
@@ -274,7 +278,14 @@ export default function AdminUsersPage() {
                               </AlertDialogContent>
                               </AlertDialog>
                           )}
-                          <Button variant="ghost" size="icon" className="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100" title="إعادة تعيين كلمة المرور" onClick={() => handleResetPassword(user.name)}>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100" 
+                            title="إعادة تعيين كلمة المرور" 
+                            onClick={() => handleOpenResetPasswordDialog(user.id, user.name)}
+                            disabled={user.role === 'ADMIN'} // Optionally disable for admins
+                          >
                             <KeyRound className="h-5 w-5" /><span className="sr-only">إعادة تعيين كلمة المرور</span>
                           </Button>
                         </TableCell>
@@ -304,6 +315,18 @@ export default function AdminUsersPage() {
         onClose={() => setIsAddUserDialogOpen(false)}
         onUserAdded={handleUserAdded}
       />
+      {selectedUserForPasswordReset && (
+        <ResetPasswordDialog
+          isOpen={isResetPasswordDialogOpen}
+          onClose={() => {
+            setIsResetPasswordDialogOpen(false);
+            setSelectedUserForPasswordReset(null);
+          }}
+          userId={selectedUserForPasswordReset.id}
+          userName={selectedUserForPasswordReset.name}
+          adminUserId={currentUser.id} // Pass the admin's ID
+        />
+      )}
     </>
   );
 }

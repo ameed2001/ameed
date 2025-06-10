@@ -2,8 +2,8 @@
 "use server";
 
 import { z } from 'zod';
-import { registerUser, type UserRole } from '@/lib/db';
-import type { SignupActionResponse } from '@/app/signup/actions'; // Can re-use this response type
+import { registerUser, type UserRole, adminResetUserPassword as dbAdminResetUserPassword } from '@/lib/db';
+import type { SignupActionResponse } from '@/app/signup/actions'; 
 
 // Schema for admin creating a user - very similar to signup
 const adminCreateUserSchema = z.object({
@@ -49,5 +49,40 @@ export async function adminCreateUserAction(
     success: true,
     message: registrationResult.message || "تم إنشاء حساب المستخدم بنجاح.",
     // isPendingApproval: registrationResult.isPendingApproval, // Could be useful to inform admin
+  };
+}
+
+// Schema for admin resetting a user's password
+const adminResetPasswordSchema = z.object({
+  userId: z.string().min(1, { message: "معرف المستخدم مطلوب." }),
+  newPassword: z.string().min(6, { message: "كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل." }),
+});
+
+type AdminResetPasswordFormValues = z.infer<typeof adminResetPasswordSchema>;
+
+interface AdminResetPasswordActionResponse {
+  success: boolean;
+  message: string;
+  fieldErrors?: Record<string, string[] | undefined>;
+}
+
+export async function adminResetPasswordAction(
+  data: AdminResetPasswordFormValues,
+  adminUserId: string // ID of the admin performing the action, for logging
+): Promise<AdminResetPasswordActionResponse> {
+  console.log(`[AdminResetPasswordAction] Admin ${adminUserId} attempting to reset password for user ID: ${data.userId}`);
+
+  const result = await dbAdminResetUserPassword(adminUserId, data.userId, data.newPassword);
+
+  if (!result.success) {
+    return {
+      success: false,
+      message: result.message || "فشل إعادة تعيين كلمة المرور.",
+    };
+  }
+
+  return {
+    success: true,
+    message: result.message || "تم إعادة تعيين كلمة مرور المستخدم بنجاح.",
   };
 }

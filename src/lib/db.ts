@@ -241,7 +241,7 @@ export async function registerUser(userData: {
     const settings = await getSystemSettings();
     let initialStatus: UserStatus = (role === 'ENGINEER' && settings.engineerApprovalRequired) ? 'PENDING_APPROVAL' : 'ACTIVE';
     const hashedPassword = await bcrypt.hash(password_input, 10);
-    const newUserId = `user-${Date.now()}-${db.users.length + 1}`;
+    const newUserId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const newUserDocument: UserDocument = {
       id: newUserId,
       name,
@@ -509,23 +509,56 @@ export async function updateUser(userId: string, updates: Partial<UserDocument>)
         if (userIndex === -1) {
             return { success: false, message: "المستخدم غير موجود." };
         }
-
-        // Prevent password_hash from being updated directly if it's part of 'updates'
-        // Password changes should go through a dedicated function that re-hashes.
-        if (updates.password_hash) {
-            console.warn(`[db.ts] updateUser: Attempt to update password_hash directly for user ${userId}. This is not allowed. Use a dedicated password reset function.`);
-            delete updates.password_hash; 
-        }
         
         const originalUser = db.users[userIndex];
+
+        // If password_hash is part of updates, ensure it's already hashed
+        // This function is generic, so hashing logic should be in the calling action if new password is plain text
+        if (updates.password_hash && !updates.password_hash.startsWith('$2a$')) {
+             console.warn(`[db.ts] updateUser: Attempt to update password_hash with a non-hashed value for user ${userId}. Hashing now.`);
+             updates.password_hash = await bcrypt.hash(updates.password_hash, 10);
+        }
+        
         db.users[userIndex] = { ...originalUser, ...updates, id: originalUser.id, updatedAt: new Date().toISOString() };
         
         await writeDb(db);
         const { password_hash, ...updatedUserSafe } = db.users[userIndex];
+        await logAction('USER_UPDATE_SUCCESS_BY_ADMIN', 'INFO', `Admin updated user ID ${userId}. Fields: ${Object.keys(updates).join(', ')}`, 'Admin');
         return { success: true, user: updatedUserSafe as UserDocument, message: "تم تحديث بيانات المستخدم بنجاح." };
     } catch (error: any) {
         console.error(`[db.ts] updateUser (JSON): Error updating user ID ${userId}:`, error);
+        await logAction('USER_UPDATE_FAILURE_BY_ADMIN', 'ERROR', `Error updating user ID ${userId} by admin: ${error.message || String(error)}`, 'Admin');
         return { success: false, message: "فشل تحديث بيانات المستخدم." };
+    }
+}
+
+export async function adminResetUserPassword(adminUserId: string, targetUserId: string, newPassword_input: string): Promise<{success: boolean, message?: string}> {
+    console.log(`[db.ts] adminResetUserPassword (JSON): Admin ${adminUserId} attempting to reset password for user ${targetUserId}`);
+    try {
+        const db = await readDb();
+        const userIndex = db.users.findIndex(u => u.id === targetUserId);
+
+        if (userIndex === -1) {
+            return { success: false, message: "المستخدم المستهدف غير موجود." };
+        }
+        
+        // Add check to prevent admin from resetting other admin's password if needed, or self.
+        // const adminUser = db.users.find(u => u.id === adminUserId);
+        // if (db.users[userIndex].role === 'ADMIN' && adminUserId !== targetUserId) {
+        //    return { success: false, message: "لا يمكن للمسؤول إعادة تعيين كلمة مرور مسؤول آخر." };
+        // }
+
+        const newPasswordHash = await bcrypt.hash(newPassword_input, 10);
+        db.users[userIndex].password_hash = newPasswordHash;
+        db.users[userIndex].updatedAt = new Date().toISOString();
+        
+        await writeDb(db);
+        await logAction('USER_PASSWORD_RESET_BY_ADMIN', 'INFO', `Admin ${adminUserId} reset password for user ${targetUserId}.`, adminUserId);
+        return { success: true, message: "تم إعادة تعيين كلمة مرور المستخدم بنجاح." };
+    } catch (error: any) {
+        console.error(`[db.ts] adminResetUserPassword (JSON): Error resetting password for user ID ${targetUserId}:`, error);
+        await logAction('USER_PASSWORD_RESET_FAILURE_BY_ADMIN', 'ERROR', `Error resetting password for user ID ${targetUserId} by admin ${adminUserId}: ${error.message || String(error)}`, adminUserId);
+        return { success: false, message: "فشل إعادة تعيين كلمة مرور المستخدم." };
     }
 }
 
@@ -541,9 +574,11 @@ export async function deleteUser(userId: string): Promise<DeleteResult> {
             return { success: false, message: "المستخدم غير موجود ليتم حذفه." };
         }
         await writeDb(db);
+        await logAction('USER_DELETE_SUCCESS_BY_ADMIN', 'INFO', `User ID ${userId} deleted by admin.`, 'Admin');
         return { success: true, message: "تم حذف المستخدم بنجاح." };
     } catch (error: any) {
         console.error(`[db.ts] deleteUser (JSON): Error deleting user ID ${userId}:`, error);
+        await logAction('USER_DELETE_FAILURE_BY_ADMIN', 'ERROR', `Error deleting user ID ${userId} by admin: ${error.message || String(error)}`, 'Admin');
         return { success: false, message: "فشل حذف المستخدم." };
     }
 }
@@ -553,8 +588,10 @@ export async function approveEngineer(adminUserId: string, engineerUserId: strin
     console.log(`[db.ts] approveEngineer (JSON): Admin ${adminUserId} attempting to approve engineer ${engineerUserId}`);
     const result = await updateUser(engineerUserId, { status: 'ACTIVE', updatedAt: new Date().toISOString() });
     if (result.success) {
+        await logAction('ENGINEER_APPROVAL_SUCCESS', 'INFO', `Admin ${adminUserId} approved engineer ${engineerUserId}.`, adminUserId);
         return { success: true, message: `تمت الموافقة على المهندس وتنشيط حسابه.` };
     }
+    await logAction('ENGINEER_APPROVAL_FAILURE', 'WARNING', `Admin ${adminUserId} failed to approve engineer ${engineerUserId}: ${result.message}`, adminUserId);
     return { success: false, message: result.message || "فشل الموافقة على المهندس." };
 }
 
@@ -572,8 +609,10 @@ export async function suspendUser(adminUserId: string, targetUserId: string): Pr
     
     if (result.success) {
         const actionMessage = newStatus === 'SUSPENDED' ? "تعليق المستخدم" : "إلغاء تعليق المستخدم";
+        await logAction(newStatus === 'SUSPENDED' ? 'USER_SUSPEND_SUCCESS' : 'USER_UNSUSPEND_SUCCESS', 'INFO', `Admin ${adminUserId} ${newStatus === 'SUSPENDED' ? 'suspended' : 'unsuspended'} user ${targetUserId}.`, adminUserId);
         return { success: true, message: `تم ${actionMessage} بنجاح.` };
     }
+    await logAction(newStatus === 'SUSPENDED' ? 'USER_SUSPEND_FAILURE' : 'USER_UNSUSPEND_FAILURE', 'WARNING', `Admin ${adminUserId} failed to ${newStatus === 'SUSPENDED' ? 'suspend' : 'unsuspend'} user ${targetUserId}: ${result.message}`, adminUserId);
     return { success: false, message: result.message || "فشل تعديل حالة المستخدم." };
 }
 

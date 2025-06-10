@@ -45,7 +45,7 @@ const Header = () => {
 
     const fetchCurrencyRates = async () => {
       try {
-        const apiKey = "cur_live_x4C1YHa6BzDF7zhm3cQhhHumrYKTksHzM9JCx5w7"; 
+        const apiKey = "rJazBtzJrIw_PUmHUCjC8OpnWM3pluKV"; 
         const response = await fetch(`https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=ILS&currencies=USD,EUR,JOD`);
         
         if (!response.ok) {

@@ -13,102 +13,71 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="mt-auto">
-      {/* Top Grey Section */}
-      <div className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-right">
-            {/* About Section - Far Right in RTL */}
-            <div className="sm:col-span-2 lg:col-span-1 lg:order-last">
-              <div className="flex items-center justify-end mb-4">
-                <Image 
-                  src="https://i.imgur.com/79bO3U2.jpg" 
-                  alt="شعار الموقع" 
-                  width={50} 
-                  height={50} 
-                  className="rounded-full border-2 border-app-gold"
-                  data-ai-hint="logo construction"
-                />
-                <h3 className="text-app-red text-xl font-bold mr-3">المحترف لحساب الكميات</h3>
-              </div>
-              <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
-                نقدم أدوات دقيقة وسهلة الاستخدام لحساب كميات مواد البناء لمشاريعكم الإنشائية، مع إرشادات ونصائح هندسية قيمة.
-              </p>
-              {/* Social Media Icons - Styled as squares */}
-              <div className="flex justify-end gap-2 mt-4">
-                <Link href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" title="WhatsApp"
-                      className="p-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white transition-colors">
-                  <WhatsAppIcon className="h-5 w-5" />
-                </Link>
-                <Link href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" title="Instagram"
-                      className="p-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white transition-colors">
-                  <Instagram size={20} />
-                </Link>
-                <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" title="Facebook"
-                      className="p-2 rounded-md bg-gray-600 hover:bg-gray-500 text-white transition-colors">
-                  <Facebook size={20} />
-                </Link>
-              </div>
-            </div>
+    <footer className="bg-header-bg text-header-fg py-8 px-4 md:px-6 shadow-header-footer mt-auto">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-right">
+        
+        <div>
+          <div className="flex items-center justify-end mb-4">
+            <Image 
+              src="https://i.imgur.com/79bO3U2.jpg" 
+              alt="شعار الموقع" 
+              width={50} 
+              height={50} 
+              className="rounded-full border-2 border-app-gold"
+              data-ai-hint="logo construction"
+            />
+            <h3 className="text-app-red text-xl font-bold mr-3">المحترف لحساب الكميات</h3>
+          </div>
+          <p className="text-sm text-gray-300">
+            نقدم أدوات دقيقة وسهلة الاستخدام لحساب كميات مواد البناء لمشاريعكم الإنشائية.
+          </p>
+        </div>
 
-            {/* Quick Links Section */}
-            <div className="lg:order-2">
-              <h4 className="text-lg font-bold text-app-red border-b-2 border-app-red pb-1 mb-3 inline-block">روابط سريعة</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link href="/" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">الرئيسية</Link></li>
-                <li><Link href="/about" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">عن الموقع</Link></li>
-                <li><Link href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">تواصل معنا</Link></li>
-                <li><Link href="/help" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">مركز المساعدة</Link></li>
-                <li><Link href="/login" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">تسجيل الدخول</Link></li>
-                <li><Link href="/signup" className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200">إنشاء حساب</Link></li>
-              </ul>
-            </div>
+        <div>
+          <h4 className="text-lg font-semibold text-app-gold mb-3">روابط سريعة</h4>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/" className="text-gray-300 hover:text-app-gold">الرئيسية</Link></li>
+            <li><Link href="/about" className="text-gray-300 hover:text-app-gold">عن الموقع</Link></li>
+            <li><Link href="/contact" className="text-gray-300 hover:text-app-gold">تواصل معنا</Link></li>
+            <li><Link href="/help" className="text-gray-300 hover:text-app-gold">مركز المساعدة</Link></li>
+          </ul>
+        </div>
 
-            {/* Contact Info Section */}
-            <div className="lg:order-1">
-              <h4 className="text-lg font-bold text-app-red border-b-2 border-app-red pb-1 mb-3 inline-block">اتصل بنا</h4>
-              <ul className="space-y-3 text-sm">
-                <li className="flex items-center justify-end gap-2">
-                  <span className="text-gray-700 dark:text-gray-300 hover:text-app-gold transition-colors duration-200"><a href="mailto:mediaplus64@gmail.com">mediaplus64@gmail.com</a></span>
-                  <Mail size={18} className="text-app-red shrink-0" />
-                </li>
-                <li className="flex items-center justify-end gap-2">
-                  <span className="text-gray-700 dark:text-gray-300">+972594371424</span>
-                  <Phone size={18} className="text-app-red shrink-0" />
-                </li>
-                <li className="flex items-center justify-end gap-2">
-                  <span className="text-gray-700 dark:text-gray-300">سلفيت فلسطين</span>
-                  <MapPin size={18} className="text-app-red shrink-0" />
-                </li>
-              </ul>
-            </div>
+        <div>
+          <h4 className="text-lg font-semibold text-app-gold mb-3">تواصل معنا</h4>
+          <ul className="space-y-3 text-sm">
+            <li className="flex items-center justify-end gap-2">
+              <span className="text-gray-300"><a href="mailto:mediaplus64@gmail.com">mediaplus64@gmail.com</a></span>
+              <Mail size={18} className="text-app-gold shrink-0" />
+            </li>
+            <li className="flex items-center justify-end gap-2">
+              <span className="text-gray-300">+972594371424</span>
+              <Phone size={18} className="text-app-gold shrink-0" />
+            </li>
+            <li className="flex items-center justify-end gap-2">
+              <span className="text-gray-300">سلفيت فلسطين</span>
+              <MapPin size={18} className="text-app-gold shrink-0" />
+            </li>
+          </ul>
+          <div className="flex justify-end gap-3 mt-4">
+            <Link href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-social-whatsapp">
+              <WhatsAppIcon className="h-6 w-6" />
+            </Link>
+            <Link href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-social-instagram">
+              <Instagram size={24} />
+            </Link>
+            <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-social-facebook">
+              <Facebook size={24} />
+            </Link>
           </div>
         </div>
       </div>
-
-      {/* Middle Silhouette Section */}
-      <div className="bg-gray-100 dark:bg-gray-800 py-0 md:py-0"> {/* Reduced padding */}
-        <div className="container mx-auto px-0">
-          <Image
-            src="https://placehold.co/1200x100/E8E8E8/B40404?text=Construction+Silhouette" // Placeholder with red text on grey
-            alt="Construction Silhouette"
-            width={1200}
-            height={100} // Adjusted height
-            className="w-full h-auto max-h-[100px] object-cover" // Made responsive and constrained height
-            data-ai-hint="construction workers silhouette"
-          />
-        </div>
-      </div>
-
-      {/* Bottom Red Bar */}
-      <div className="bg-app-red text-white text-xs text-center py-3">
+      <div className="text-center text-xs text-gray-400 pt-8 mt-8 border-t border-gray-700">
         <p>&copy; {currentYear} المحترف لحساب الكميات. جميع الحقوق محفوظة.</p>
-        <p className="mt-1">تصميم وتطوير: <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors">عميد سماره</Link></p>
+        <p>تصميم وتطوير: <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="text-app-gold hover:underline">عميد سماره</Link></p>
       </div>
     </footer>
   );
 };
 
 export default Footer;
-
-    

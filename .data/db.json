@@ -446,6 +446,14 @@
       "message": "Invalid password attempt for user: ameed@admin.com",
       "timestamp": "2025-06-10T06:59:12.263Z",
       "user": "user-001"
+    },
+    {
+      "id": "log-1749539016823-c7xo4",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-10T07:03:36.823Z",
+      "user": "user-001"
     }
   ],
   "roles": [

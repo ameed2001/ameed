@@ -49,7 +49,7 @@ export default function Home() {
             icon={<ShieldCheck />} // Using ShieldCheck for admin
             iconWrapperClass="bg-sky-100 dark:bg-sky-900" // Different color for admin card
             iconColorClass="text-sky-500 dark:text-sky-400"
-            href="/login" // Still points to the same login page
+            href="/admin-login" // Updated href to point to the new admin login page
             applyFlipEffect={true}
             backTitle="لوحة تحكم المشرف"
             backDescription="أدخل بيانات اعتماد المسؤول للوصول إلى أدوات الإدارة المتقدمة."

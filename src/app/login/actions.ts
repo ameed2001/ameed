@@ -1,14 +1,32 @@
 // src/app/login/actions.ts
 'use server';
 
-import { z } from 'zod';
-import { loginUser, type LoginResult, type UserDocument } from '@/lib/db'; // Use UserDocument from db.ts
 import { type LoginActionResponse } from '@/types/auth';
+// import { loginUser, type LoginResult, type UserDocument } from '@/lib/db'; // Original import
 
 export async function loginUserAction(data: { email: string; password_input: string; }): Promise<LoginActionResponse> {
+  console.log("[LoginAction JSON_DB] DEBUG: Action reached. Email:", data.email);
+  
+  // Temporarily bypass actual login logic for debugging
+  if (data.email && data.password_input) {
+    // Simulate a successful login response
+    return {
+      success: true,
+      message: "DEBUG: Login action reached and processed successfully (SIMULATED)!",
+      redirectTo: "/", // Or a relevant dashboard
+      user: { id: 'debug-user', name: 'Debug User', email: data.email, role: 'OWNER' } // Mock user
+    };
+  }
+  
+  // Simulate a failure if data is missing (basic check)
+  return { 
+    success: false, 
+    message: "DEBUG: Login action reached, but required data missing (SIMULATED)." 
+  };
+
+  /* Original Code:
   console.log("[LoginAction JSON_DB] Attempting login for email:", data.email);
 
-  // The loginUser function in db.ts expects 'password_input'
   const result: LoginResult = await loginUser(data.email, data.password_input);
 
   if (!result.success || !result.user) {
@@ -22,7 +40,6 @@ export async function loginUserAction(data: { email: string; password_input: str
         generalMessage = result.message || "البريد الإلكتروني غير مسجل.";
         break;
       case "invalid_password":
-        // Changed to 'password_input' to match form field name if needed for setError
         fieldErrors.password = [result.message || "كلمة المرور غير صحيحة."];
         generalMessage = result.message || "كلمة المرور غير صحيحة.";
         break;
@@ -53,7 +70,7 @@ export async function loginUserAction(data: { email: string; password_input: str
 
 
   let redirectTo = "/"; 
-  switch (userFromDb.role) { // user.role is UserRole (uppercase)
+  switch (userFromDb.role) {
     case 'ENGINEER':
       redirectTo = "/my-projects";
       break;
@@ -79,5 +96,5 @@ export async function loginUserAction(data: { email: string; password_input: str
     redirectTo: redirectTo,
     user: userForClient,
   };
+  */
 }
-

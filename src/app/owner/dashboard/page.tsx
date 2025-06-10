@@ -1,11 +1,30 @@
+'use client';
 
-// src/app/owner/dashboard/page.tsx
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Home } from "lucide-react";
+
 export default function OwnerDashboardPage() {
   return (
-    <div style={{ border: '2px solid blue', padding: '20px', margin: '20px', direction: 'rtl' }}>
-      <h1 style={{ fontSize: '22px', color: 'blue', marginBottom: '10px' }}>صفحة لوحة تحكم المالك - اختبار الحد الأدنى</h1>
-      <p>إذا رأيت هذه الرسالة، فهذا يعني أن مسار /owner/dashboard يعمل وهذه الصفحة يتم عرضها.</p>
-      <a href="/" style={{ color: 'darkblue', textDecoration: 'underline' }}>العودة إلى الصفحة الرئيسية</a>
+    <div className="container mx-auto py-8 px-4">
+      <Card className="bg-white/95 shadow-xl">
+        <CardHeader className="text-center">
+          <Home className="mx-auto h-12 w-12 text-app-gold mb-3" />
+          <CardTitle className="text-3xl font-bold text-app-red">لوحة تحكم المالك</CardTitle>
+          <CardDescription className="text-gray-600 mt-1">
+            مرحباً بك في لوحة التحكم الخاصة بك. (محتوى تجريبي)
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-center">
+          <p className="text-lg text-gray-700 mb-6">
+            هنا ستجد نظرة عامة على مشاريعك، الإشعارات الهامة، والوصول السريع إلى أدوات إدارة المشروع.
+          </p>
+          <Button asChild className="bg-app-gold hover:bg-yellow-600 text-primary-foreground">
+            <Link href="/my-projects">عرض مشاريعي</Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

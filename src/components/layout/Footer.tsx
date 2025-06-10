@@ -21,71 +21,40 @@ const Footer = () => {
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-app-gold via-app-red to-app-gold"></div>
       
       <div className="container mx-auto px-6 py-12 relative z-10">
-        {/* Main content grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
+        {/* Main content grid - Four columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
           
-          {/* Company Info Section */}
-          <div className="lg:col-span-2 text-center lg:text-right">
-            <div className="flex items-center justify-center lg:justify-end mb-6">
+          {/* Column 1: Company Info */}
+          <div className="text-center lg:text-right">
+            <div className="flex items-center justify-center lg:justify-start mb-4">
               <div className="relative">
                 <Image 
                   src="https://i.imgur.com/79bO3U2.jpg" 
                   alt="شعار الموقع" 
-                  width={60} 
-                  height={60} 
-                  className="rounded-full border-3 border-app-gold shadow-lg shadow-app-gold/30"
+                  width={50}
+                  height={50} 
+                  className="rounded-full border-2 border-app-gold shadow-md shadow-app-gold/30"
                   data-ai-hint="logo construction"
                 />
-                <div className="absolute -inset-1 bg-gradient-to-r from-app-gold to-app-red rounded-full opacity-75 blur animate-pulse"></div>
               </div>
-              <div className="mr-4">
-                <h3 className="text-app-red text-2xl font-bold leading-tight">المحترف لحساب الكميات</h3>
-                <p className="text-app-gold text-sm font-medium">دقة في الحساب • ثقة في النتائج</p>
+              <div className="mr-3">
+                <h3 className="text-app-red text-xl font-bold leading-tight">المحترف لحساب الكميات</h3>
+                <p className="text-app-gold text-xs font-medium">دقة في الحساب • ثقة في النتائج</p>
               </div>
             </div>
-            
-            <p className="text-gray-300 leading-relaxed max-w-lg mx-auto lg:mx-0 lg:mr-0">
-              نقدم أدوات دقيقة وسهلة الاستخدام لحساب كميات مواد البناء لمشاريعكم الإنشائية. 
-              خبرة متخصصة وحلول عملية لجميع احتياجاتكم الهندسية.
+            <p className="text-gray-300 text-sm leading-relaxed">
+              نقدم أدوات دقيقة وسهلة الاستخدام لحساب كميات مواد البناء لمشاريعكم الإنشائية.
             </p>
-            
-            {/* Social Media Icons */}
-            <div className="flex justify-center lg:justify-end gap-4 mt-6">
-              <Link 
-                href="https://wa.me/972594371424" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="group bg-slate-800 hover:bg-green-600 p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
-              >
-                <WhatsAppIcon className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
-              </Link>
-              <Link 
-                href="https://www.instagram.com/a.w.samarah3/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="group bg-slate-800 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
-              >
-                <Instagram className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
-              </Link>
-              <Link 
-                href="https://www.facebook.com/a.w.samarah4" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="group bg-slate-800 hover:bg-blue-600 p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
-              >
-                <Facebook className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
-              </Link>
-            </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Column 2: Quick Links */}
           <div className="text-center lg:text-right">
-            <h4 className="text-xl font-bold text-app-gold mb-6 relative">
+            <h4 className="text-lg font-semibold text-app-gold mb-4 relative pb-1">
               روابط سريعة
-              <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-app-gold"></span>
+              <span className="block absolute bottom-0 right-0 w-10 h-0.5 bg-app-gold"></span>
             </h4>
             <nav>
-              <ul className="space-y-3">
+              <ul className="space-y-1.5 text-sm">
                 {[
                   { href: '/', label: 'الرئيسية' },
                   { href: '/about', label: 'عن الموقع' },
@@ -95,7 +64,7 @@ const Footer = () => {
                   <li key={link.href}>
                     <Link 
                       href={link.href} 
-                      className="group flex items-center justify-center lg:justify-end gap-2 text-gray-300 hover:text-app-gold transition-all duration-300 py-1"
+                      className="group flex items-center justify-center lg:justify-start gap-1.5 text-gray-300 hover:text-app-gold transition-colors duration-200 py-0.5"
                     >
                       <span>{link.label}</span>
                       <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -106,64 +75,89 @@ const Footer = () => {
             </nav>
           </div>
 
-          {/* Contact Info */}
+          {/* Column 3: Contact Info */}
           <div className="text-center lg:text-right">
-            <h4 className="text-xl font-bold text-app-gold mb-6 relative">
-              تواصل معنا
-              <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-app-gold"></span>
+            <h4 className="text-lg font-semibold text-app-gold mb-4 relative pb-1">
+              اتصل بنا
+              <span className="block absolute bottom-0 right-0 w-10 h-0.5 bg-app-gold"></span>
             </h4>
-            <div className="space-y-4">
-              <div className="group flex items-center justify-center lg:justify-end gap-3 text-gray-300 hover:text-white transition-colors duration-300">
-                <div className="flex-1 lg:text-right">
-                  <a 
-                    href="mailto:mediaplus64@gmail.com" 
-                    className="hover:text-app-gold transition-colors"
-                  >
-                    mediaplus64@gmail.com
-                  </a>
-                </div>
-                <div className="bg-slate-800 group-hover:bg-app-gold p-2 rounded-lg transition-colors duration-300">
-                  <Mail className="h-4 w-4 text-app-gold group-hover:text-slate-900" />
-                </div>
+            <div className="space-y-2.5 text-sm">
+              <div className="group flex items-center justify-center lg:justify-start gap-2 text-gray-300">
+                <Mail className="h-4 w-4 text-app-gold group-hover:text-app-red flex-shrink-0 transition-colors" />
+                <a 
+                  href="mailto:mediaplus64@gmail.com" 
+                  className="hover:text-app-gold transition-colors truncate"
+                >
+                  mediaplus64@gmail.com
+                </a>
               </div>
-              
-              <div className="group flex items-center justify-center lg:justify-end gap-3 text-gray-300 hover:text-white transition-colors duration-300">
-                <div className="flex-1 lg:text-right">
-                  <a 
-                    href="tel:+972594371424" 
-                    className="hover:text-app-gold transition-colors"
-                  >
-                    +972594371424
-                  </a>
-                </div>
-                <div className="bg-slate-800 group-hover:bg-app-gold p-2 rounded-lg transition-colors duration-300">
-                  <Phone className="h-4 w-4 text-app-gold group-hover:text-slate-900" />
-                </div>
+              <div className="group flex items-center justify-center lg:justify-start gap-2 text-gray-300">
+                <Phone className="h-4 w-4 text-app-gold group-hover:text-app-red flex-shrink-0 transition-colors" />
+                <a 
+                  href="tel:+972594371424" 
+                  className="hover:text-app-gold transition-colors"
+                >
+                  +972594371424
+                </a>
               </div>
-              
-              <div className="group flex items-center justify-center lg:justify-end gap-3 text-gray-300 hover:text-white transition-colors duration-300">
-                <div className="flex-1 lg:text-right">سلفيت، فلسطين</div>
-                <div className="bg-slate-800 group-hover:bg-app-gold p-2 rounded-lg transition-colors duration-300">
-                  <MapPin className="h-4 w-4 text-app-gold group-hover:text-slate-900" />
-                </div>
+              <div className="group flex items-center justify-center lg:justify-start gap-2 text-gray-300">
+                <MapPin className="h-4 w-4 text-app-gold group-hover:text-app-red flex-shrink-0 transition-colors" />
+                <span>سلفيت، فلسطين</span>
               </div>
+            </div>
+          </div>
+          
+          {/* Column 4: Social Media */}
+          <div className="text-center lg:text-right">
+             <h4 className="text-lg font-semibold text-app-gold mb-4 relative pb-1">
+              تابعنا
+              <span className="block absolute bottom-0 right-0 w-10 h-0.5 bg-app-gold"></span>
+            </h4>
+            <div className="flex justify-center lg:justify-start gap-3">
+              <Link 
+                href="https://wa.me/972594371424" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group bg-slate-800/70 hover:bg-green-600 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
+                title="تواصل عبر واتساب"
+              >
+                <WhatsAppIcon className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+              </Link>
+              <Link 
+                href="https://www.instagram.com/a.w.samarah3/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group bg-slate-800/70 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
+                title="تابعنا على إنستغرام"
+              >
+                <Instagram className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+              </Link>
+              <Link 
+                href="https://www.facebook.com/a.w.samarah4" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group bg-slate-800/70 hover:bg-blue-600 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
+                title="تابعنا على فيسبوك"
+              >
+                <Facebook className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+              </Link>
             </div>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="my-8">
-          <div className="h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
+        <div className="my-10">
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
         </div>
 
         {/* Copyright Section */}
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-2 text-gray-400">
+        <div className="text-center space-y-1">
+          <div className="flex items-center justify-center gap-1 text-sm text-gray-400">
             <span>&copy; {currentYear} المحترف لحساب الكميات. جميع الحقوق محفوظة.</span>
           </div>
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center justify-center gap-1 text-xs text-gray-500">
             <span>صُنع بـ</span>
-            <Heart className="h-4 w-4 text-red-500 animate-pulse" />
+            <Heart className="h-3.5 w-3.5 text-red-500 animate-pulse" />
             <span>في فلسطين | تصميم وتطوير:</span>
             <Link 
               href="https://www.facebook.com/a.w.samarah4" 

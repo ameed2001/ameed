@@ -1,5 +1,5 @@
 
-"use client"; // Required for useEffect, useState, useRouter, useToast
+"use client"; 
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,8 +8,11 @@ import HeroSection from '@/components/main-dashboard/HeroSection';
 import MainDashboardClient from '@/components/main-dashboard/MainDashboardClient';
 import FeaturesSection from '@/components/main-dashboard/FeaturesSection';
 import InfoCard from '@/components/ui/InfoCard';
-import { LogIn, UserPlus, ShieldCheck, HardHat } from 'lucide-react'; // Added HardHat
+import { LogIn, UserPlus, ShieldCheck, HardHat, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -51,34 +54,33 @@ export default function Home() {
       onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("تسجيل الدخول") : undefined,
     },
     {
-      title: "إنشاء حساب مالك", // Changed title
-      description: "لأصحاب المشاريع لمتابعة مشاريعهم والحصول على التقديرات.", // Changed description
-      icon: <UserPlus />, // Kept UserPlus, or could be <User />
+      title: "إنشاء حساب جديد",
+      description: "سجل كمالك مشروع أو كمهندس للوصول إلى الأدوات والخدمات المخصصة.",
+      icon: <UserPlus />,
       iconWrapperClass: "bg-purple-100 dark:bg-purple-900",
       iconColorClass: "text-purple-500 dark:text-purple-400",
-      href: "/signup", // Links to owner signup page
       applyFlipEffect: true,
-      backTitle: "حساب مالك جديد", // Changed backTitle
-      backDescription: "أنشئ حسابك كمالك مشروع للوصول إلى لوحة التحكم الخاصة بك.", // Changed backDescription
-      backCtaText: "إنشاء حساب مالك", // Changed backCtaText
-      dataAiHint: "owner registration", // Changed dataAiHint
+      backTitle: "اختر نوع الحساب",
+      backDescription: "حدد نوع الحساب الذي ترغب في إنشائه للوصول إلى الميزات المناسبة.",
+      backCustomContent: (
+        <div className="space-y-3 w-full px-4">
+          <Button asChild size="lg" className="w-full bg-white/20 hover:bg-white/30 text-white">
+            <Link href="/signup">
+              <UserPlus className="ml-2 h-5 w-5" />
+              إنشاء حساب مالك
+            </Link>
+          </Button>
+          <Button asChild size="lg" className="w-full bg-white/20 hover:bg-white/30 text-white">
+            <Link href="/engineer-signup">
+              <HardHat className="ml-2 h-5 w-5" />
+              إنشاء حساب مهندس
+            </Link>
+          </Button>
+        </div>
+      ),
+      dataAiHint: "account registration",
       cardHeightClass: "h-72 sm:h-80",
-      onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("إنشاء حساب مالك") : undefined,
-    },
-    {
-      title: "إنشاء حساب مهندس", // New card
-      description: "للمهندسين للاستفادة من أدوات حساب الكميات وإدارة المشاريع.",
-      icon: <HardHat />,
-      iconWrapperClass: "bg-yellow-100 dark:bg-yellow-900",
-      iconColorClass: "text-yellow-600 dark:text-yellow-400",
-      href: "/engineer-signup", // Links to engineer signup page
-      applyFlipEffect: true,
-      backTitle: "حساب مهندس جديد",
-      backDescription: "سجل كمهندس للاستفادة من أدواتنا المتقدمة في إدارة المشاريع.",
-      backCtaText: "إنشاء حساب مهندس",
-      dataAiHint: "engineer registration",
-      cardHeightClass: "h-72 sm:h-80",
-      onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("إنشاء حساب مهندس") : undefined,
+      onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("إنشاء حساب جديد") : undefined,
     },
     {
       title: "تسجيل دخول المدير",
@@ -93,7 +95,6 @@ export default function Home() {
       backCtaText: "دخول المسؤول",
       dataAiHint: "admin login",
       cardHeightClass: "h-72 sm:h-80",
-      // Removed special className to allow natural flow in a 2x2 grid
       onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("تسجيل دخول المدير") : undefined,
     },
   ];
@@ -106,8 +107,7 @@ export default function Home() {
         <h2 className="text-3xl md:text-4xl font-bold text-app-red mb-12">
           ابدأ رحلتك معنا
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-5xl mx-auto"> 
-          {/* Changed grid to sm:grid-cols-2 for a 2x2 layout with 4 cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 max-w-6xl mx-auto"> 
           {authCards.map(cardProps => (
             <InfoCard
               key={cardProps.title}
@@ -116,15 +116,19 @@ export default function Home() {
               icon={cardProps.icon}
               iconWrapperClass={cardProps.iconWrapperClass}
               iconColorClass={cardProps.iconColorClass}
-              href={isAdminLoggedIn ? undefined : cardProps.href}
+              href={!isAdminLoggedIn && !cardProps.backCustomContent ? cardProps.href : undefined}
               onClick={cardProps.onClick}
               applyFlipEffect={cardProps.applyFlipEffect}
               backTitle={cardProps.backTitle}
               backDescription={cardProps.backDescription}
               backCtaText={cardProps.backCtaText}
+              backCustomContent={cardProps.backCustomContent}
               dataAiHint={cardProps.dataAiHint}
               cardHeightClass={cardProps.cardHeightClass}
-              className={cardProps.className} // Pass className if it exists (though Admin card's was removed)
+              className={cn(
+                cardProps.title === "إنشاء حساب جديد" && "sm:col-span-1 md:col-span-1", // Adjust general card width
+                cardProps.title === "تسجيل دخول المدير" && "sm:col-span-1 md:col-span-1" // Adjust admin login card width
+              )}
             />
           ))}
         </div>

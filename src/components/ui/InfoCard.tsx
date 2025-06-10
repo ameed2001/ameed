@@ -1,14 +1,14 @@
-"use client"; // Add this directive
+"use client";
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import type { ReactNode } from 'react';
-import { ArrowLeft } from 'lucide-react'; // Assuming ArrowLeft might be used as backCtaIcon
+import { ArrowLeft } from 'lucide-react';
 
 interface InfoCardProps {
   title: string;
-  description?: string; // For front
+  description?: string; 
   onClick?: () => void;
   href?: string;
   className?: string;
@@ -16,12 +16,13 @@ interface InfoCardProps {
   iconWrapperClass?: string;
   iconColorClass?: string;
   dataAiHint?: string;
-  cardHeightClass?: string; // e.g., "h-72"
-  backTitle?: string; // Title for the back
-  backDescription?: string; // Description for the back
-  backCtaText?: string; // Call to action text for the back
-  backCtaIcon?: ReactNode; // Icon for the back CTA
-  applyFlipEffect?: boolean; // To conditionally apply flip
+  cardHeightClass?: string; 
+  backTitle?: string; 
+  backDescription?: string; 
+  backCtaText?: string; 
+  backCtaIcon?: ReactNode; 
+  applyFlipEffect?: boolean; 
+  backCustomContent?: ReactNode; // New prop for custom back content
 }
 
 const InfoCard = (props: InfoCardProps) => {
@@ -35,24 +36,23 @@ const InfoCard = (props: InfoCardProps) => {
     iconWrapperClass,
     iconColorClass,
     dataAiHint,
-    cardHeightClass = "h-72", // Default height to h-72 as per example
+    cardHeightClass = "h-72",
     backTitle,
     backDescription,
     backCtaText = "اضغط للدخول",
     backCtaIcon,
     applyFlipEffect = false,
+    backCustomContent, // Destructure new prop
   } = props;
 
-  const isInteractive = !!href || !!onClickProp;
+  const isInteractive = !!href || !!onClickProp || !!backCustomContent;
 
   const baseCardContainerClasses = cn(
     "w-full rounded-lg",
     cardHeightClass,
     isInteractive && applyFlipEffect && "card-container-3d",
     isInteractive && "group/card",
-    // Non-flip card specific hover
     isInteractive && !applyFlipEffect && "hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out",
-    // Flip card specific hover (lift and shadow)
     applyFlipEffect && "group-hover/card:translate-y-[-10px] group-hover/card:shadow-2xl transition-transform duration-600 ease-card-container",
     className
   );
@@ -65,7 +65,7 @@ const InfoCard = (props: InfoCardProps) => {
     )}>
       {icon && (
         <div className={cn(
-          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 transition-transform duration-500 ease-card-flip card-icon", // Added card-icon class
+          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 transition-transform duration-500 ease-card-flip card-icon",
           iconWrapperClass,
           (isInteractive) && "group-hover/card:scale-110 group-hover/card:rotate-[5deg]"
         )}>
@@ -84,12 +84,15 @@ const InfoCard = (props: InfoCardProps) => {
       )}>
       <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-white">{backTitle || title}</h3>
       {backDescription && <p className="text-sm sm:text-base mb-3 sm:mb-4 text-white/90 flex-grow">{backDescription}</p>}
-      {(href || onClickProp) && (
+      
+      {backCustomContent ? ( // Render custom back content if provided
+        <div className="mt-auto w-full">{backCustomContent}</div>
+      ) : (href || onClickProp) && backCtaText ? ( // Else, render default CTA button
         <div className="mt-auto bg-white/20 hover:bg-white/30 py-2 px-4 rounded-lg inline-flex items-center gap-2 transition-colors">
-          {backCtaIcon || <ArrowLeft className="h-4 w-4" />} {/* Default icon if not provided */}
+          {backCtaIcon || <ArrowLeft className="h-4 w-4" />}
           <span className="font-semibold">{backCtaText}</span>
         </div>
-      )}
+      ) : null}
     </div>
   );
 
@@ -104,7 +107,7 @@ const InfoCard = (props: InfoCardProps) => {
     </div>
   );
 
-  if (href && !onClickProp) { // If there's an href and no onClick, always use Link
+  if (href && !onClickProp && !backCustomContent) {
     return (
       <Link
         href={href}
@@ -115,18 +118,17 @@ const InfoCard = (props: InfoCardProps) => {
     );
   }
   
-  // For cards with onClick, or cards that are not links (even if applyFlipEffect is true for visual reasons)
   return (
     <div
       className={cn(
         "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg block", 
         baseCardContainerClasses,
-        (onClickProp) && "cursor-pointer" 
+        (onClickProp || (applyFlipEffect && backCustomContent)) && "cursor-pointer" 
       )}
       onClick={onClickProp} 
-      role={(onClickProp) ? "button" : undefined}
-      tabIndex={(onClickProp) ? 0 : undefined}
-      onKeyDown={(onClickProp) ? (e) => (e.key === 'Enter' || e.key === ' ') && onClickProp?.() : undefined}
+      role={(onClickProp || (applyFlipEffect && backCustomContent)) ? "button" : undefined}
+      tabIndex={(onClickProp || (applyFlipEffect && backCustomContent)) ? 0 : undefined}
+      onKeyDown={(onClickProp || (applyFlipEffect && backCustomContent)) ? (e) => (e.key === 'Enter' || e.key === ' ') && onClickProp?.() : undefined}
     >
       {cardStructure}
     </div>

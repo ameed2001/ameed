@@ -410,8 +410,8 @@ export default function CostEstimatorForm() {
                           {item.totalCost_ILS.toFixed(2)}
                         </td>
                         <td className="px-4 py-3 text-center print:hidden">
-                           <Button variant="ghost" size="sm" onClick={() => handleDeleteItem(item.id)} className="text-red-500 hover:text-red-700">
-                               <Trash2 size={16} />
+                           <Button variant="ghost" size="icon" onClick={() => handleDeleteItem(item.id)} className="text-red-500 hover:text-red-700 hover:bg-red-100/50 p-1">
+                               <Trash2 size={18} />
                            </Button>
                         </td>
                       </tr>
@@ -481,3 +481,4 @@ export default function CostEstimatorForm() {
     </div>
   );
 }
+

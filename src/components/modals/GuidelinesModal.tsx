@@ -43,9 +43,14 @@ const GuidelinesModal = ({ isOpen, onClose, type }: GuidelinesModalProps) => {
         <DialogHeader className="relative">
           <DialogTitle className="text-white text-2xl text-center mb-4">{title}</DialogTitle>
            <DialogClose asChild>
-            <button className="html-modal-close-btn" aria-label="Close">
-              &times;
-            </button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="absolute top-[-5px] left-[-5px] text-white hover:bg-destructive hover:text-destructive-foreground rounded-full w-8 h-8 p-1.5" /* Adjusted position */
+              aria-label="Close"
+            >
+              <X size={20} />
+            </Button>
           </DialogClose>
         </DialogHeader>
         <DialogDescription asChild>
@@ -64,4 +69,3 @@ const GuidelinesModal = ({ isOpen, onClose, type }: GuidelinesModalProps) => {
 
 export default GuidelinesModal;
 
-    

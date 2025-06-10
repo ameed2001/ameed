@@ -5,13 +5,13 @@ import { useState } from 'react';
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, UserPlus, X, Users as UsersIcon, Mail, Eye } from 'lucide-react';
+import { Loader2, UserPlus, X, Users as UsersIcon, Mail, Eye, EyeOff } from 'lucide-react';
 import { adminCreateUserAction } from '@/app/admin/users/actions';
 import type { SignupActionResponse } from '@/app/signup/actions';
 import type { UserRole } from '@/lib/db';
@@ -45,6 +45,8 @@ const roleOptions: { value: UserRole; label: string }[] = [
 export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserDialogProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset, control, setError } = useForm<AddUserFormValues>({
     resolver: zodResolver(addUserSchema),
@@ -91,15 +93,17 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
 
   const handleCloseDialog = () => {
     reset();
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay">
+    <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
+      <DialogContent className="sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay text-right">
         <DialogHeader className="text-center mb-6">
             <div className="flex justify-center mb-4">
-                <UsersIcon className="h-10 w-10 text-gray-700" />
+                <UsersIcon className="h-10 w-10 text-app-gold" />
             </div>
             <DialogTitle className="text-gray-800 text-2xl font-bold">
                 إضافة مستخدم جديد
@@ -108,7 +112,7 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
                 أدخل بيانات المستخدم الجديد للتمكن من الوصول إلى النظام
             </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-right">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="space-y-1.5">
             <Label htmlFor="add-name" className="text-sm font-medium text-gray-700">الاسم الكامل</Label>
             <div className="relative">
@@ -128,16 +132,20 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
           <div className="space-y-1.5">
             <Label htmlFor="add-password" className="text-sm font-medium text-gray-700">كلمة المرور</Label>
             <div className="relative">
-                <Input id="add-password" type="password" {...register("password")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
-                <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input id="add-password" type={showPassword ? "text" : "password"} {...register("password")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer">
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
             </div>
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="add-confirmPassword" className="text-sm font-medium text-gray-700">تأكيد كلمة المرور</Label>
             <div className="relative">
-                <Input id="add-confirmPassword" type="password" {...register("confirmPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
-                <Eye className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input id="add-confirmPassword" type={showConfirmPassword ? "text" : "password"} {...register("confirmPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
+                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer">
+                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
             </div>
             {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
           </div>
@@ -174,19 +182,16 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
             </Button>
             <Button
               type="button"
-              variant="secondary" // Using secondary variant for cancel button
+              variant="secondary"
               onClick={handleCloseDialog}
-              className="w-full sm:flex-1 font-semibold py-2.5 rounded-lg"
+              className="w-full sm:flex-1 font-semibold py-2.5 rounded-lg bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground"
             >
               <X className="ml-2 h-5 w-5" />
               إلغاء
             </Button>
           </DialogFooter>
         </form>
-        <DialogClose className="absolute left-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
+        {/* The default X button from DialogContent will be used. No need for an extra one here. */}
       </DialogContent>
     </Dialog>
   );

@@ -60,7 +60,11 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
                 <UserCircle className="ms-2 h-5 w-5" />
                 حسابي
               </Button>
-               <Button variant="outline" onClick={onClose} className="w-full sm:flex-1 py-2.5 text-base">
+               <Button 
+                 variant="secondary" 
+                 onClick={onClose} 
+                 className="w-full sm:flex-1 py-2.5 text-base font-semibold bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground"
+               >
                 إغلاق
               </Button>
             </>
@@ -84,7 +88,7 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
          <DialogClose asChild>
             <Button 
               variant="ghost" 
-              className="absolute top-3 left-3 text-sm text-gray-500 hover:text-app-red hover:bg-red-100/50 rounded-md px-3 py-1.5"
+              className="absolute top-3 left-3 text-sm text-gray-500 hover:bg-destructive hover:text-destructive-foreground rounded-md px-3 py-1.5"
               aria-label="Close"
               onClick={onClose}
             >
@@ -98,3 +102,4 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
 };
 
 export default AuthRequiredModal;
+

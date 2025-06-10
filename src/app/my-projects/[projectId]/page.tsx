@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useParams } from 'next/navigation';
@@ -544,7 +545,7 @@ export default function ProjectDetailPage() {
               {isOwnerView && <p className="text-xs text-red-500 text-center">المالك لا يمكنه رفع الملفات.</p>}
           </div>
           <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-app-red"><X size={20}/></Button>
+              <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-destructive-foreground hover:bg-destructive"><X size={20}/></Button>
           </DialogClose>
         </DialogContent>
         
@@ -574,13 +575,18 @@ export default function ProjectDetailPage() {
                     <Button type="submit" className="bg-app-red hover:bg-red-700 text-white">
                         <Send size={18} className="ms-2"/> إرسال الرسالة
                     </Button>
-                    <Button type="button" variant="outline" onClick={() => setIsContactEngineerModalOpen(false)}>
+                    <Button 
+                        type="button" 
+                        variant="secondary" 
+                        onClick={() => setIsContactEngineerModalOpen(false)}
+                        className="bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground"
+                    >
                         إلغاء
                     </Button>
                 </div>
             </form>
              <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-app-red"><X size={20}/></Button>
+              <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-destructive-foreground hover:bg-destructive"><X size={20}/></Button>
           </DialogClose>
         </DialogContent>
 
@@ -588,3 +594,4 @@ export default function ProjectDetailPage() {
     </AppLayout>
   );
 }
+

@@ -261,7 +261,7 @@ export default function AdminUsersPage() {
                                   </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                  <AlertDialogCancel className="bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground">إلغاء</AlertDialogCancel>
                                   <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="bg-destructive hover:bg-destructive/90">
                                       حذف
                                   </AlertDialogAction>

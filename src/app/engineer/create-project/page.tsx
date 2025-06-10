@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, PlusCircle, MapPin, CalendarRange } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Import useRouter
-import { addProject as dbAddProject, type Project } from '@/lib/mock-db';
+import { addProject as dbAddProject, type Project } from '@/lib/db'; // Updated import path
 
 
 const createProjectSchema = z.object({
@@ -63,7 +63,7 @@ export default function CreateProjectPage() {
         quantitySummary: "" // Initial empty summary
     };
 
-    const newProject = dbAddProject(projectDataForDb);
+    const newProject = await dbAddProject(projectDataForDb); // addProject is now async
 
     if (newProject) {
         toast({
@@ -177,7 +177,12 @@ export default function CreateProjectPage() {
                     </>
                   )}
                 </Button>
-                <Button type="button" variant="outline" className="w-full sm:w-auto" asChild>
+                <Button 
+                    type="button" 
+                    variant="secondary" 
+                    className="w-full sm:w-auto bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground" 
+                    asChild
+                >
                   <Link href="/my-projects">إلغاء</Link>
                 </Button>
               </div>
@@ -188,3 +193,4 @@ export default function CreateProjectPage() {
     </AppLayout>
   );
 }
+

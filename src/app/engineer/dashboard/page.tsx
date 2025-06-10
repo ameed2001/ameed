@@ -25,7 +25,7 @@ const engineerActions = [
         title: "إنشاء مشروع بناء جديد",
         href: "/engineer/create-project",
         icon: PlusSquare,
-        description: "بدء وتحديد مشروع بناء جديد وإدخال التفاصيل الأساسية.",
+        description: "بدء وتحديد مشروع بناء جديد، إدخال التفاصيل الأساسية، وتحديد مراحله الأولية لتمكين المتابعة الفعالة.",
         iconBgClass: "bg-green-50 text-green-600 dark:bg-green-900/50 dark:text-green-400",
         bottomBarClass: "bg-gradient-to-r from-green-400 to-green-600",
         buttonClassName: "bg-green-50 text-green-700 border-2 border-green-500 hover:bg-green-500 hover:text-white dark:bg-green-700/30 dark:text-green-300 dark:border-green-600 dark:hover:bg-green-600 dark:hover:text-white",
@@ -36,7 +36,7 @@ const engineerActions = [
         title: "إدارة المشاريع الإنشائية",
         href: "/my-projects",
         icon: Briefcase,
-        description: "عرض، تعديل، ومتابعة جميع مشاريعك. (يشمل: إدارة التفاصيل، تحديث التقدم، رفع الوسائط، ربط المالك، أرشفة، إلخ).",
+        description: "عرض وتعديل مشاريعك. يشمل: إدارة التفاصيل (العناصر، المراحل)، تحديث التقدم (ملاحظات، صور/فيديو)، ربط المالك، عرض وتخصيص التقارير، تصدير البيانات، وأرشفة المشاريع.",
         iconBgClass: "bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400",
         bottomBarClass: "bg-gradient-to-r from-blue-400 to-blue-600",
         buttonClassName: "bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white dark:bg-blue-700/30 dark:text-blue-300 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white",
@@ -47,7 +47,7 @@ const engineerActions = [
         title: "حساب كميات الباطون",
         href: "/concrete-estimator", 
         icon: Calculator, 
-        description: "أداة لحساب كميات الباطون المطلوبة لمختلف العناصر الإنشائية.",
+        description: "أداة لحساب كميات الباطون المطلوبة لمختلف العناصر الإنشائية (مثل الأعمدة، الجوائز، الأساسات) بناءً على الأبعاد والتفاصيل المدخلة.",
         iconBgClass: "bg-amber-50 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400",
         bottomBarClass: "bg-gradient-to-r from-amber-400 to-amber-600",
         buttonClassName: "bg-amber-50 text-amber-700 border-2 border-amber-500 hover:bg-amber-500 hover:text-white dark:bg-amber-700/30 dark:text-amber-300 dark:border-amber-600 dark:hover:bg-amber-600 dark:hover:text-white",
@@ -58,7 +58,7 @@ const engineerActions = [
         title: "حساب كميات الحديد",
         href: "/steel-calculator", 
         icon: BarChart3, 
-        description: "أداة لتقدير كميات حديد التسليح اللازمة لمشروعك.",
+        description: "أداة لتقدير كميات حديد التسليح اللازمة لمشروعك بناءً على تفاصيل العناصر الإنشائية ونسب الحديد المحددة.",
         iconBgClass: "bg-purple-50 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400",
         bottomBarClass: "bg-gradient-to-r from-purple-400 to-purple-600",
         buttonClassName: "bg-purple-50 text-purple-700 border-2 border-purple-500 hover:bg-purple-500 hover:text-white dark:bg-purple-700/30 dark:text-purple-300 dark:border-purple-600 dark:hover:bg-purple-600 dark:hover:text-white",
@@ -69,7 +69,7 @@ const engineerActions = [
         title: "إدارة المستندات",
         href: "/documents",
         icon: FolderArchive,
-        description: "إدارة المستندات الهندسية الهامة مثل المخططات، العقود، والفواتير.",
+        description: "إدارة المستندات الهندسية الهامة مثل المخططات، العقود، والفواتير، ورفعها لتكون متاحة ضمن تفاصيل المشروع.",
         iconBgClass: "bg-teal-50 text-teal-600 dark:bg-teal-900/50 dark:text-teal-400",
         bottomBarClass: "bg-gradient-to-r from-teal-400 to-teal-600",
         buttonClassName: "bg-teal-50 text-teal-700 border-2 border-teal-500 hover:bg-teal-500 hover:text-white dark:bg-teal-700/30 dark:text-teal-300 dark:border-teal-600 dark:hover:bg-teal-600 dark:hover:text-white",
@@ -80,7 +80,7 @@ const engineerActions = [
         title: "إنشاء تقرير بالذكاء الاصطناعي",
         href: "/ai-report-generator",
         icon: Cpu,
-        description: "استخدام الذكاء الاصطناعي لتجميع تقارير مفصلة عن المشاريع.",
+        description: "استخدام الذكاء الاصطناعي لتجميع وتحليل بيانات المشروع وتوليد تقارير مفصلة للكميات والتقدم، وتصديرها بصيغ PDF أو Excel.",
         iconBgClass: "bg-red-50 text-red-600 dark:bg-red-900/50 dark:text-red-400",
         bottomBarClass: "bg-gradient-to-r from-red-400 to-red-600",
         buttonClassName: "bg-red-50 text-red-700 border-2 border-red-500 hover:bg-red-500 hover:text-white dark:bg-red-700/30 dark:text-red-300 dark:border-red-600 dark:hover:bg-red-600 dark:hover:text-white",
@@ -146,3 +146,5 @@ export default function EngineerDashboardPage() {
     </AppLayout>
   );
 }
+
+    

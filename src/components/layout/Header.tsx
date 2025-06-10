@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Instagram, Facebook, Clock, BookOpen } from 'lucide-react';
+import { getSystemSettings, type SystemSettingsDocument } from '@/lib/db';
 
 // SVG for WhatsApp icon
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -26,6 +27,7 @@ const surahAlFatiha = [
 const Header = () => {
   const [formattedDisplayTime, setFormattedDisplayTime] = useState('');
   const [dailyVerse, setDailyVerse] = useState('');
+  const [siteName, setSiteName] = useState('Loading...'); // State for site name
 
   useEffect(() => {
     const updateTime = () => {
@@ -49,6 +51,15 @@ const Header = () => {
 
     updateTime();
     const timerId = setInterval(updateTime, 1000);
+
+    // Fetch site name from settings
+    async function fetchSiteName() {
+      const settings = await getSystemSettings();
+      if (settings) {
+        setSiteName(settings.siteName);
+      }
+    }
+    fetchSiteName();
 
     // Select daily verse
     const today = new Date();
@@ -81,7 +92,7 @@ const Header = () => {
           />
           <div className="mr-3 text-right">
             <h1 className="text-app-red text-2xl md:text-3xl font-bold">
-              المحترف لحساب الكميات
+ {siteName} {/* Display dynamic site name */}
             </h1>
             <p className="text-sm text-gray-300">الحديد والباطون للأبنية الإنشائية</p>
           </div>

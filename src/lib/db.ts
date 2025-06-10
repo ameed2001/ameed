@@ -213,6 +213,24 @@ export async function getSystemSettings(): Promise<SystemSettingsDocument> {
   }
 }
 
+export async function updateSystemSettings(settings: SystemSettingsDocument): Promise<{ success: boolean; message?: string }> {
+  console.log('[db.ts] updateSystemSettings: Attempting to update system settings.');
+  try {
+    const db = await readDb();
+    // Ensure we're not losing other potential future settings fields
+    db.settings = { ...db.settings, ...settings }; 
+    await writeDb(db);
+    console.log('[db.ts] updateSystemSettings: System settings updated successfully.');
+    await logAction('SYSTEM_SETTINGS_UPDATE_SUCCESS', 'INFO', 'System settings updated.');
+    return { success: true, message: "تم حفظ الإعدادات بنجاح." };
+  } catch (error: any) {
+    console.error('[db.ts] updateSystemSettings: Error updating system settings:', error);
+    await logAction('SYSTEM_SETTINGS_UPDATE_FAILURE', 'ERROR', `Error updating system settings: ${error.message || String(error)}`);
+    return { success: false, message: "فشل حفظ الإعدادات." };
+  }
+}
+
+
 export interface RegistrationResult {
   success: boolean;
   userId?: string;

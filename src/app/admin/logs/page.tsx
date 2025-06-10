@@ -92,8 +92,7 @@ export default function AdminLogsPage() {
         </div>
         <Button 
           onClick={handleExportLogs} 
-          variant="outline" 
-          className="mt-4 sm:mt-0 border-app-gold text-app-gold bg-gray-50 hover:bg-gray-100 hover:text-app-gold focus-visible:ring-app-gold font-semibold shadow-sm"
+          className="mt-4 sm:mt-0 bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white dark:bg-blue-700/30 dark:text-blue-300 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white font-medium"
         >
           <Download className="ms-2 h-4 w-4" /> تصدير السجلات
         </Button>

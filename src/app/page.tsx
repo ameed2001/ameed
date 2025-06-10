@@ -8,7 +8,7 @@ import HeroSection from '@/components/main-dashboard/HeroSection';
 import MainDashboardClient from '@/components/main-dashboard/MainDashboardClient';
 import FeaturesSection from '@/components/main-dashboard/FeaturesSection';
 import InfoCard from '@/components/ui/InfoCard';
-import { LogIn, UserPlus, ShieldCheck } from 'lucide-react';
+import { LogIn, UserPlus, ShieldCheck, HardHat } from 'lucide-react'; // Added HardHat
 import { useToast } from '@/hooks/use-toast';
 
 export default function Home() {
@@ -51,19 +51,34 @@ export default function Home() {
       onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("تسجيل الدخول") : undefined,
     },
     {
-      title: "إنشاء حساب جديد",
-      description: "انضم للاستفادة من جميع أدوات حساب الكميات وإدارة المشاريع.",
-      icon: <UserPlus />,
+      title: "إنشاء حساب مالك", // Changed title
+      description: "لأصحاب المشاريع لمتابعة مشاريعهم والحصول على التقديرات.", // Changed description
+      icon: <UserPlus />, // Kept UserPlus, or could be <User />
       iconWrapperClass: "bg-purple-100 dark:bg-purple-900",
       iconColorClass: "text-purple-500 dark:text-purple-400",
-      href: "/signup",
+      href: "/signup", // Links to owner signup page
       applyFlipEffect: true,
-      backTitle: "انضم إلى المحترفين!",
-      backDescription: "أنشئ حسابك مجانًا وابدأ في استخدام أدواتنا المتقدمة اليوم.",
-      backCtaText: "إنشاء حساب",
-      dataAiHint: "user registration",
+      backTitle: "حساب مالك جديد", // Changed backTitle
+      backDescription: "أنشئ حسابك كمالك مشروع للوصول إلى لوحة التحكم الخاصة بك.", // Changed backDescription
+      backCtaText: "إنشاء حساب مالك", // Changed backCtaText
+      dataAiHint: "owner registration", // Changed dataAiHint
       cardHeightClass: "h-72 sm:h-80",
-      onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("إنشاء حساب جديد") : undefined,
+      onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("إنشاء حساب مالك") : undefined,
+    },
+    {
+      title: "إنشاء حساب مهندس", // New card
+      description: "للمهندسين للاستفادة من أدوات حساب الكميات وإدارة المشاريع.",
+      icon: <HardHat />,
+      iconWrapperClass: "bg-yellow-100 dark:bg-yellow-900",
+      iconColorClass: "text-yellow-600 dark:text-yellow-400",
+      href: "/engineer-signup", // Links to engineer signup page
+      applyFlipEffect: true,
+      backTitle: "حساب مهندس جديد",
+      backDescription: "سجل كمهندس للاستفادة من أدواتنا المتقدمة في إدارة المشاريع.",
+      backCtaText: "إنشاء حساب مهندس",
+      dataAiHint: "engineer registration",
+      cardHeightClass: "h-72 sm:h-80",
+      onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("إنشاء حساب مهندس") : undefined,
     },
     {
       title: "تسجيل دخول المدير",
@@ -78,7 +93,7 @@ export default function Home() {
       backCtaText: "دخول المسؤول",
       dataAiHint: "admin login",
       cardHeightClass: "h-72 sm:h-80",
-      className: "lg:col-start-auto sm:col-span-2 lg:col-span-1 sm:mx-auto lg:mx-0 max-w-md lg:max-w-none",
+      // Removed special className to allow natural flow in a 2x2 grid
       onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("تسجيل دخول المدير") : undefined,
     },
   ];
@@ -91,7 +106,8 @@ export default function Home() {
         <h2 className="text-3xl md:text-4xl font-bold text-app-red mb-12">
           ابدأ رحلتك معنا
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-5xl mx-auto"> 
+          {/* Changed grid to sm:grid-cols-2 for a 2x2 layout with 4 cards */}
           {authCards.map(cardProps => (
             <InfoCard
               key={cardProps.title}
@@ -100,7 +116,7 @@ export default function Home() {
               icon={cardProps.icon}
               iconWrapperClass={cardProps.iconWrapperClass}
               iconColorClass={cardProps.iconColorClass}
-              href={isAdminLoggedIn ? undefined : cardProps.href} // Pass href only if not admin or no custom onClick
+              href={isAdminLoggedIn ? undefined : cardProps.href}
               onClick={cardProps.onClick}
               applyFlipEffect={cardProps.applyFlipEffect}
               backTitle={cardProps.backTitle}
@@ -108,7 +124,7 @@ export default function Home() {
               backCtaText={cardProps.backCtaText}
               dataAiHint={cardProps.dataAiHint}
               cardHeightClass={cardProps.cardHeightClass}
-              className={cardProps.className}
+              className={cardProps.className} // Pass className if it exists (though Admin card's was removed)
             />
           ))}
         </div>

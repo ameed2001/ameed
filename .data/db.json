@@ -10,6 +10,17 @@
       "createdAt": "2025-06-09T16:21:05.534Z",
       "updatedAt": "2025-06-10T11:06:53.301Z",
       "profileImage": "https://placehold.co/100x100.png?text=عم"
+    },
+    {
+      "id": "user-1749568642905-z7c3l",
+      "name": "عميد سماره",
+      "email": "ameed201@gmail.com",
+      "role": "ENGINEER",
+      "status": "ACTIVE",
+      "updatedAt": "2025-06-10T15:18:14.100Z",
+      "profileImage": "https://placehold.co/100x100.png?text=عم",
+      "password_hash": "$2a$10$x4/lKj1cOOp5Fhl7wiH5c.A7w2gM1cZS6VpReQj3JPH4x4zza3WDK",
+      "createdAt": "2025-06-10T15:17:22.905Z"
     }
   ],
   "projects": [],
@@ -517,6 +528,70 @@
       "message": "User logged in successfully: ameed2001@gmail.com",
       "timestamp": "2025-06-10T14:38:54.765Z",
       "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749568567827-b2jin",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-10T15:16:07.827Z",
+      "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749568642923-2dhmw",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed201@gmail.com registered. Role: ENGINEER, Status: PENDING_APPROVAL.",
+      "timestamp": "2025-06-10T15:17:22.923Z",
+      "user": "user-1749568642905-z7c3l"
+    },
+    {
+      "id": "log-1749568694106-ufd2r",
+      "action": "USER_UPDATE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "Admin updated user ID user-1749568642905-z7c3l. Fields: status, updatedAt",
+      "timestamp": "2025-06-10T15:18:14.106Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749568694114-4iuxr",
+      "action": "ENGINEER_APPROVAL_SUCCESS",
+      "level": "INFO",
+      "message": "Admin admin-001 approved engineer user-1749568642905-z7c3l.",
+      "timestamp": "2025-06-10T15:18:14.114Z",
+      "user": "admin-001"
+    },
+    {
+      "id": "log-1749568735754-98690",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: ameed001@gmail.com",
+      "timestamp": "2025-06-10T15:18:55.754Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749568740637-8v5et",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed201@gmail.com",
+      "timestamp": "2025-06-10T15:19:00.638Z",
+      "user": "user-1749568642905-z7c3l"
+    },
+    {
+      "id": "log-1749568784820-rgni6",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-10T15:19:44.820Z",
+      "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749568800833-vd7bo",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed201@gmail.com",
+      "timestamp": "2025-06-10T15:20:00.833Z",
+      "user": "user-1749568642905-z7c3l"
     }
   ],
   "roles": [

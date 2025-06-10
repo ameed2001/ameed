@@ -59,7 +59,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
 
   useEffect(() => {
     if (!isLoading) return;
-    let currentPercentage = 0;
+    let currentPercentageValue = 0; // Use a local variable for accumulating percentage
     let localCurrentMessageIndex = 0;
     
     const loadingMessages = [
@@ -79,30 +79,31 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     updateLoadingTextInternal(localCurrentMessageIndex);
 
     const progressInterval = setInterval(() => {
-      if (currentPercentage < 100) {
+      if (currentPercentageValue < 100) {
         let increment = Math.random() * 2 + 0.5;
-        if (currentPercentage > 90) increment = Math.random() * 0.5 + 0.1;
-        else if (currentPercentage > 70) increment = Math.random() * 1 + 0.3;
+        if (currentPercentageValue > 90) increment = Math.random() * 0.5 + 0.1;
+        else if (currentPercentageValue > 70) increment = Math.random() * 1 + 0.3;
         
-        currentPercentage += increment;
-        if (currentPercentage > 100) currentPercentage = 100;
+        currentPercentageValue += increment;
+        if (currentPercentageValue > 100) currentPercentageValue = 100;
 
-        setPercentage(Math.floor(currentPercentage));
+        setPercentage(Math.floor(currentPercentageValue));
 
-        if (percentageElementRef.current) {
-          percentageElementRef.current.style.transform = 'scale(1.05)';
-          setTimeout(() => {
-            if (percentageElementRef.current) percentageElementRef.current.style.transform = 'scale(1)';
-          }, 100);
-        }
+        // Removed direct DOM manipulation for scaling animation:
+        // if (percentageElementRef.current) {
+        //   percentageElementRef.current.style.transform = 'scale(1.05)';
+        //   setTimeout(() => {
+        //     if (percentageElementRef.current) percentageElementRef.current.style.transform = 'scale(1)';
+        //   }, 100);
+        // }
 
-        const messageIndex = Math.floor((currentPercentage / 100) * (loadingMessages.length - 1));
+        const messageIndex = Math.floor((currentPercentageValue / 100) * (loadingMessages.length - 1));
         if (messageIndex !== localCurrentMessageIndex && messageIndex < loadingMessages.length) {
           localCurrentMessageIndex = messageIndex;
           updateLoadingTextInternal(localCurrentMessageIndex);
         }
 
-        if (currentPercentage >= 100) {
+        if (currentPercentageValue >= 100) {
           clearInterval(progressInterval);
           if (percentageElementRef.current) {
             percentageElementRef.current.style.animation = 'none'; 

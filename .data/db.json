@@ -509,6 +509,14 @@
       "message": "User logged in successfully: ameed2001@gmail.com",
       "timestamp": "2025-06-10T11:24:29.443Z",
       "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749566334765-ldsvb",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-10T14:38:54.765Z",
+      "user": "user-1749486065534-3"
     }
   ],
   "roles": [

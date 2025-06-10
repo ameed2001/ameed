@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'; // Removed DialogClose
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,7 @@ import { Loader2, UserPlus, X, Users as UsersIcon, Mail, Eye, EyeOff } from 'luc
 import { adminCreateUserAction } from '@/app/admin/users/actions';
 import type { SignupActionResponse } from '@/app/signup/actions';
 import type { UserRole } from '@/lib/db';
+import { cn } from '@/lib/utils';
 
 const addUserSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
@@ -100,15 +101,21 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
-      <DialogContent className="sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay text-right">
-        <DialogHeader className="mb-6"> {/* Removed text-center */}
+      <DialogContent 
+        className={cn(
+            "sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay text-right",
+            "add-user-dialog-no-x" // Added class to target default close button
+        )}
+        onInteractOutside={(e) => e.preventDefault()} // Optional: prevent closing on outside click if no X
+      >
+        <DialogHeader className="mb-6 text-center"> 
             <div className="flex justify-center mb-4">
                 <UsersIcon className="h-10 w-10 text-app-gold" />
             </div>
-            <DialogTitle className="text-gray-800 text-2xl font-bold text-center"> {/* Added text-center here */}
+            <DialogTitle className="text-gray-800 text-2xl font-bold"> 
                 إضافة مستخدم جديد
             </DialogTitle>
-            <DialogDescription className="text-gray-500 mt-2 text-sm text-right"> {/* Added text-right here */}
+            <DialogDescription className="text-gray-500 mt-2 text-sm text-right"> 
                 أدخل بيانات المستخدم الجديد للتمكن من الوصول إلى النظام
             </DialogDescription>
         </DialogHeader>
@@ -191,16 +198,6 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
             </Button>
           </DialogFooter>
         </form>
-         <DialogClose asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="absolute top-3 left-3 text-gray-500 hover:text-destructive-foreground hover:bg-destructive rounded-full w-8 h-8 p-1.5"
-                aria-label="Close"
-              >
-                <X size={20} />
-              </Button>
-          </DialogClose>
       </DialogContent>
     </Dialog>
   );

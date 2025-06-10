@@ -1,15 +1,14 @@
 
 import type { ReactNode } from 'react';
 
-// This is now a Server Component by default (no 'use client')
+// This is a Server Component by default
 
-export default function OwnerSegmentLayout({ children }: { children: ReactNode }) {
-  // console.log("Rendering OwnerSegmentLayout (Server Component - Highly Simplified)"); // Console log here would be on server
+export default function OwnerSegmentMinimalLayout({ children }: { children: ReactNode }) {
   return (
-    <div style={{ border: '2px solid green', padding: '20px', margin: '20px', backgroundColor: 'lightgreen' }}>
-      <h2 style={{ color: 'darkgreen', textAlign: 'center', marginBottom: '15px' }}>
-        Owner Segment Layout (Server Component Test)
-      </h2>
+    <div style={{ border: '2px dashed blue', padding: '20px', margin: '20px', backgroundColor: 'lightblue' }}>
+      <h1 style={{ color: 'navy', textAlign: 'center', marginBottom: '15px' }}>
+        تخطيط قسم المالك (إعادة بناء بسيطة - خادم)
+      </h1>
       {children}
     </div>
   );

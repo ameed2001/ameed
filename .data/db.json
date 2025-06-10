@@ -360,6 +360,14 @@
       "message": "User logged in successfully: ameed@malik.com",
       "timestamp": "2025-06-10T19:57:36.387Z",
       "user": "user-1749573914693-u1xrs"
+    },
+    {
+      "id": "log-1749586914969-k49lr",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@malik.com",
+      "timestamp": "2025-06-10T20:21:54.969Z",
+      "user": "user-1749573914693-u1xrs"
     }
   ],
   "roles": [

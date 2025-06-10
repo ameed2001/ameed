@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Instagram, Facebook, Clock, Home as HomeIcon, HardHat, TrendingUp, FileText } from 'lucide-react';
+import { Instagram, Facebook, Clock, BookOpen } from 'lucide-react';
 
 // SVG for WhatsApp icon
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -13,52 +13,62 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+const surahAlFatiha = [
+  "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+  "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+  "الرَّحْمَٰنِ الرَّحِيمِ",
+  "مَالِكِ يَوْمِ الدِّينِ",
+  "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+  "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+  "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ"
+];
+
 const Header = () => {
   const [formattedDisplayTime, setFormattedDisplayTime] = useState('');
+  const [dailyVerse, setDailyVerse] = useState('');
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      // Get time in "HH:MM:SS AM/PM" format using en-US locale
       const timeString = now.toLocaleTimeString('en-US', {
         timeZone: "Asia/Jerusalem",
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
         hour12: true,
-      }); // Example output: "08:14:30 PM"
-
-      // Split to reorder as "PM HH:MM:SS"
-      const parts = timeString.split(' '); // Should be ["HH:MM:SS", "AM/PM"]
+      });
+      const parts = timeString.split(' '); 
       if (parts.length === 2) {
         const timePart = parts[0];
         const periodPart = parts[1];
-        setFormattedDisplayTime(`${periodPart} ${timePart}`); // Example: "PM 08:14:30"
+        setFormattedDisplayTime(`${periodPart} ${timePart}`);
       } else {
-        setFormattedDisplayTime(timeString); // Fallback in case split fails
+        setFormattedDisplayTime(timeString);
       }
     };
 
-    updateTime(); // Initial call to set time immediately
-    const timerId = setInterval(updateTime, 1000); // Update every second
+    updateTime();
+    const timerId = setInterval(updateTime, 1000);
+
+    // Select daily verse
+    const today = new Date();
+    const startOfYear = new Date(today.getFullYear(), 0, 0);
+    const diff = today.getTime() - startOfYear.getTime();
+    const oneDay = 1000 * 60 * 60 * 24;
+    const dayOfYear = Math.floor(diff / oneDay);
+    const verseIndex = (dayOfYear - 1) % surahAlFatiha.length;
+    setDailyVerse(surahAlFatiha[verseIndex >= 0 ? verseIndex : surahAlFatiha.length -1]);
+
 
     return () => {
-      clearInterval(timerId); // Cleanup interval on component unmount
+      clearInterval(timerId);
     }
   }, []);
-
-  const constructionIndicators = [
-    { label: "متوسط تكلفة البناء (م²)", value: "150 ألف شيكل", icon: HomeIcon, dataAiHint: "construction cost" },
-    { label: "أسعار الأيدي العاملة (يومية)", value: "150 شيكل", icon: HardHat, dataAiHint: "labor cost" },
-    { label: "مؤشر أسعار المعدات الإنشائية", value: null, icon: TrendingUp, dataAiHint: "equipment prices" },
-    { label: "تكلفة التراخيص الإنشائية", value: "2000 شيكل", icon: FileText, dataAiHint: "license cost" },
-  ];
 
   return (
     <header className="bg-header-bg text-header-fg py-3 px-4 md:px-6 shadow-header-footer">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-y-3">
         
-        {/* Right Section: Logo & Titles (RTL) */}
         <div className="flex items-center">
           <Image 
             src="https://i.imgur.com/79bO3U2.jpg" 
@@ -77,33 +87,25 @@ const Header = () => {
           </div>
         </div>
         
-        {/* Left Section: Info (Time, Construction Indicators, Social) (RTL) */}
         <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3 text-right">
-          {/* Time Display - styled to match screenshot */}
           <div 
             className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center justify-start gap-2"
-            dir="ltr" // Force LTR for this element to ensure icon stays on the right of the time
+            dir="ltr"
           >
-            <span className="tabular-nums font-medium min-w-[10ch] text-left"> 
+            <span className="tabular-nums font-medium min-w-[10ch] text-left text-xl"> 
               {formattedDisplayTime || 'Loading...'}
             </span>
-            <Clock size={16} className="flex-shrink-0" />
+            <Clock size={20} className="flex-shrink-0" />
           </div>
 
-          <div className="bg-header-info-bg text-white p-3 rounded-lg text-xs shadow-md min-w-[250px]">
-            <h4 className="font-semibold block mb-2 text-gray-200 text-sm">مؤشرات إنشائية:</h4>
-            <div className="space-y-1.5">
-              {constructionIndicators.map((indicator, index) => {
-                const IconComponent = indicator.icon;
-                return (
-                  <div key={index} className="flex items-center gap-2" data-ai-hint={indicator.dataAiHint}>
-                    <IconComponent size={14} className="text-app-gold flex-shrink-0" />
-                    <span className="text-gray-300 flex-grow">{indicator.label}:</span>
-                    {indicator.value && <span className="text-white font-medium">{indicator.value}</span>}
-                  </div>
-                );
-              })}
-            </div>
+          <div className="bg-header-info-bg text-white p-3 rounded-lg text-xs shadow-md min-w-[250px] max-w-xs">
+            <h4 className="font-semibold block mb-2 text-gray-200 text-sm flex items-center gap-1.5">
+                <BookOpen size={16} className="text-app-gold flex-shrink-0" />
+                آية اليوم من سورة الفاتحة:
+            </h4>
+            <p className="text-gray-300 text-sm leading-relaxed text-center" data-ai-hint="quran verse">
+                {dailyVerse || "جاري تحميل الآية..."}
+            </p>
           </div>
           
           <div className="flex gap-2 items-center">

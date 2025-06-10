@@ -22,7 +22,7 @@ const addUserSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
   confirmPassword: z.string().min(6, { message: "تأكيد كلمة المرور مطلوب." }),
-  role: z.enum(['ADMIN', 'ENGINEER', 'OWNER', 'GENERAL_USER'], { required_error: "يرجى اختيار الدور." }),
+  role: z.enum(['ADMIN', 'ENGINEER', 'OWNER'], { required_error: "يرجى اختيار الدور." }),
 }).refine(data => data.password === data.confirmPassword, {
   message: "كلمتا المرور غير متطابقتين.",
   path: ["confirmPassword"],
@@ -40,7 +40,6 @@ const roleOptions: { value: UserRole; label: string }[] = [
   { value: 'ADMIN', label: 'مشرف' },
   { value: 'ENGINEER', label: 'مهندس' },
   { value: 'OWNER', label: 'مالك' },
-  { value: 'GENERAL_USER', label: 'مستخدم عام' },
 ];
 
 export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserDialogProps) {
@@ -104,9 +103,9 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
       <DialogContent
         className={cn(
             "sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay text-right",
-            "add-user-dialog-no-x"
+            "add-user-dialog-no-x" 
         )}
-        onInteractOutside={(e) => e.preventDefault()}
+        // Removed onInteractOutside={(e) => e.preventDefault()} to allow closing on outside click
       >
         <DialogHeader className="mb-6 flex flex-col items-center">
             <div className="flex justify-center mb-4">

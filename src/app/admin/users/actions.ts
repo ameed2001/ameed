@@ -11,7 +11,7 @@ const adminCreateUserSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
   // confirmPassword is validated on client, not strictly needed here if password is provided directly
-  role: z.enum(['ADMIN', 'ENGINEER', 'OWNER', 'GENERAL_USER'], { required_error: "الدور مطلوب." }),
+  role: z.enum(['ADMIN', 'ENGINEER', 'OWNER'], { required_error: "الدور مطلوب." }),
 });
 
 type AdminCreateUserFormValues = z.infer<typeof adminCreateUserSchema>;

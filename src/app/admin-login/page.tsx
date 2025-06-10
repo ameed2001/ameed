@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ShieldCheck, ArrowLeft } from 'lucide-react'; // Using ShieldCheck for admin
-import { adminLoginAction } from './actions'; // Import the new admin login action
+import { Loader2, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { adminLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
 
@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
     setError
   } = useForm<AdminLoginFormValues>({
     resolver: zodResolver(adminLoginSchema),
-    defaultValues: { // Default values for easier testing, can be removed
+    defaultValues: {
       email: "ameed2001@admin.com",
       password_input: "ameed2001",
     }
@@ -57,7 +57,6 @@ export default function AdminLoginPage() {
         });
         reset();
         
-        // Store admin user info in localStorage if needed by other parts of the app
         if (result.user && typeof window !== 'undefined') {
             localStorage.setItem('userName', result.user.name);
             localStorage.setItem('userRole', result.user.role); 
@@ -68,7 +67,7 @@ export default function AdminLoginPage() {
         if (result.redirectTo) {
           router.push(result.redirectTo);
         } else {
-          router.push('/admin'); // Default redirect for admin
+          router.push('/admin'); 
         }
       } else {
         toast({
@@ -79,7 +78,6 @@ export default function AdminLoginPage() {
         if (result.fieldErrors) {
           for (const [fieldName, fieldErrorMessages] of Object.entries(result.fieldErrors)) {
             if (fieldErrorMessages && fieldErrorMessages.length > 0) {
-               // Ensure the fieldName matches form field names ('password_input')
               setError(fieldName as keyof AdminLoginFormValues, {
                 type: "server",
                 message: fieldErrorMessages.join(", "),
@@ -148,8 +146,11 @@ export default function AdminLoginPage() {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-center mt-4">
-            <Link href="/" className="font-semibold text-app-gold hover:underline flex items-center gap-2">
+          <CardFooter className="flex flex-col items-center mt-4 pt-2 pb-6 space-y-3">
+            <Link href="/login" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline">
+              تسجيل الدخول كمهندس أو مالك
+            </Link>
+            <Link href="/" className="text-sm font-semibold text-green-800 hover:text-green-700 hover:underline flex items-center gap-1">
               <ArrowLeft className="h-4 w-4" />
               العودة إلى الصفحة الرئيسية
             </Link>

@@ -1,16 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { LogIn, UserPlus, HardHat, Home as HomeIcon, ShieldCheck, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import InfoCard from '@/components/ui/InfoCard'; // Import InfoCard
 
 export default function AuthCardsSection() {
   const authCardActions = [
     {
+      id: "login",
       title: "تسجيل الدخول",
       description: "لديك حساب بالفعل؟ قم بتسجيل الدخول للوصول إلى لوحة التحكم الخاصة بك.",
       icon: <LogIn className="h-10 w-10 text-app-gold mb-4" />,
       dataAiHint: "login section",
+      backTitle: "خيارات تسجيل الدخول",
+      backDescription: "اختر نوع الحساب الذي ترغب بتسجيل الدخول إليه.",
       actions: [
         { label: "دخول كمهندس", href: "/login", icon: <HardHat className="ms-2 h-5 w-5" />, variant: "default" as const, className: "bg-green-600 hover:bg-green-700 text-white"},
         { label: "دخول كمالك", href: "/owner-login", icon: <HomeIcon className="ms-2 h-5 w-5" />, variant: "default" as const, className: "bg-purple-600 hover:bg-purple-700 text-white"},
@@ -18,10 +22,13 @@ export default function AuthCardsSection() {
       ]
     },
     {
+      id: "signup",
       title: "إنشاء حساب جديد",
       description: "ليس لديك حساب؟ انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
       icon: <UserPlus className="h-10 w-10 text-app-gold mb-4" />,
       dataAiHint: "signup section",
+      backTitle: "خيارات إنشاء حساب",
+      backDescription: "اختر نوع الحساب الذي ترغب بإنشائه.",
       actions: [
         { label: "إنشاء حساب مهندس", href: "/signup", icon: <HardHat className="ms-2 h-5 w-5" />, variant: "outline" as const, className: "border-green-500 text-green-700 hover:bg-green-500 hover:text-white" },
         { label: "إنشاء حساب مالك", href: "/owner-signup", icon: <HomeIcon className="ms-2 h-5 w-5" />, variant: "outline" as const, className: "border-purple-500 text-purple-700 hover:bg-purple-500 hover:text-white" },
@@ -37,30 +44,34 @@ export default function AuthCardsSection() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {authCardActions.map((card) => (
-            <Card 
-              key={card.title} 
-              className="bg-white dark:bg-card shadow-xl rounded-xl overflow-hidden flex flex-col text-right"
-              data-ai-hint={card.dataAiHint}
-            >
-              <CardHeader className="items-center text-center pt-8 pb-4">
-                {card.icon}
-                <CardTitle className="text-2xl font-bold text-gray-800 dark:text-gray-100">{card.title}</CardTitle>
-                <CardDescription className="text-gray-600 dark:text-gray-400 mt-2 px-4">
-                  {card.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex-grow flex flex-col justify-center p-6 space-y-3">
-                {card.actions.map(action => (
-                  <Button asChild key={action.href} variant={action.variant} className={cn("w-full py-3 text-base font-semibold", action.className)}>
-                    <Link href={action.href}>
-                      {action.icon}
-                      {action.label}
-                      <ArrowLeft className="mr-auto h-5 w-5 opacity-70" />
-                    </Link>
-                  </Button>
-                ))}
-              </CardContent>
-            </Card>
+            <InfoCard
+              key={card.id}
+              title={card.title}
+              description={card.description}
+              icon={card.icon}
+              dataAiHint={card.dataAiHint}
+              applyFlipEffect={true}
+              cardHeightClass="min-h-[320px] h-auto" // Adjust height as needed
+              iconWrapperClass="bg-transparent" // Icon is already styled
+              iconColorClass="" // Icon is already styled
+              backTitle={card.backTitle}
+              backDescription={card.backDescription}
+              backCustomContent={
+                <div className="flex flex-col space-y-3 w-full p-4">
+                  {card.actions.map(action => (
+                    <Button asChild key={action.href} variant={action.variant} className={cn("w-full py-3 text-base font-semibold justify-between", action.className)}>
+                      <Link href={action.href}>
+                        <div className="flex items-center">
+                          {action.icon}
+                          <span>{action.label}</span>
+                        </div>
+                        <ArrowLeft className="h-5 w-5 opacity-70" />
+                      </Link>
+                    </Button>
+                  ))}
+                </div>
+              }
+            />
           ))}
         </div>
       </div>

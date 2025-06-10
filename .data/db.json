@@ -11,16 +11,6 @@
       "profileImage": "/profiles/admin.jpg"
     },
     {
-      "id": "user-002",
-      "name": "مستخدم تجريبي",
-      "email": "test@example.com",
-      "password_hash": "test123",
-      "role": "Owner",
-      "status": "Active",
-      "createdAt": "2025-06-09T11:35:32.224Z",
-      "profileImage": "/profiles/test.jpg"
-    },
-    {
       "id": "user-1749486065534-3",
       "name": "عميد سماره",
       "email": "ameed2001@gmail.com",
@@ -377,6 +367,22 @@
       "message": "Project ID 1 deleted.",
       "timestamp": "2025-06-10T07:22:12.126Z",
       "user": "System"
+    },
+    {
+      "id": "log-1749541038187-j905c",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: ameed2001@admin.com",
+      "timestamp": "2025-06-10T07:37:18.187Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749541044813-x5eu3",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-10T07:37:24.813Z",
+      "user": "user-1749486065534-3"
     }
   ],
   "roles": [

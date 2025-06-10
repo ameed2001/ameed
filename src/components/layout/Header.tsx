@@ -14,26 +14,36 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 const Header = () => {
-  const [currentTime, setCurrentTime] = useState('');
+  const [formattedDisplayTime, setFormattedDisplayTime] = useState('');
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
+      // Get time in "HH:MM:SS AM/PM" format using en-US locale
+      const timeString = now.toLocaleTimeString('en-US', {
         timeZone: "Asia/Jerusalem",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
         hour12: true,
-      };
-      setCurrentTime(new Intl.DateTimeFormat("ar-EG", options).format(now)); // Use ar-EG for Arabic numerals if desired
+      }); // Example output: "08:14:30 PM"
+
+      // Split to reorder as "PM HH:MM:SS"
+      const parts = timeString.split(' '); // Should be ["HH:MM:SS", "AM/PM"]
+      if (parts.length === 2) {
+        const timePart = parts[0];
+        const periodPart = parts[1];
+        setFormattedDisplayTime(`${periodPart} ${timePart}`); // Example: "PM 08:14:30"
+      } else {
+        setFormattedDisplayTime(timeString); // Fallback in case split fails
+      }
     };
 
-    updateTime();
-    const timerId = setInterval(updateTime, 1000);
+    updateTime(); // Initial call to set time immediately
+    const timerId = setInterval(updateTime, 1000); // Update every second
 
     return () => {
-      clearInterval(timerId);
+      clearInterval(timerId); // Cleanup interval on component unmount
     }
   }, []);
 
@@ -69,9 +79,13 @@ const Header = () => {
         
         {/* Left Section: Info (Time, Construction Indicators, Social) (RTL) */}
         <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3 text-right">
-          <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center gap-2">
+          {/* Time Display - styled to match screenshot */}
+          <div 
+            className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center justify-start gap-2"
+            dir="ltr" // Force LTR for this element to match screenshot layout
+          >
+            <span className="tabular-nums font-medium">{formattedDisplayTime || 'Loading...'}</span>
             <Clock size={16} className="flex-shrink-0" />
-            <span className="tabular-nums min-w-[12ch] text-center sm:text-right">{currentTime || 'Loading...'}</span>
           </div>
 
           <div className="bg-header-info-bg text-white p-3 rounded-lg text-xs shadow-md min-w-[250px]">

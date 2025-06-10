@@ -46,33 +46,37 @@ const Header = () => {
     const fetchCurrencyRates = async () => {
       try {
         const apiKey = "cur_live_x4C1YHa6BzDF7zhm3cQhhHumrYKTksHzM9JCx5w7"; 
-        // Using currencyapi.com endpoint format. Note: This API usually needs base_currency in params
         const response = await fetch(`https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=ILS&currencies=USD,EUR,JOD`);
         
         if (!response.ok) {
             if (response.status === 429) {
-                console.warn(`Currency API rate limit exceeded (429) for key ${apiKey}. Showing N/A. Consider checking your API key plan at currencyapi.com.`);
-            } else {
-                console.error(`API request failed with status ${response.status} for currency rates. URL: ${response.url}`);
+                console.warn(`CURRENCY API ERROR: Rate limit exceeded (429) for API key "${apiKey}". This means the free tier quota might be exhausted. Please check your account at currencyapi.com or consider using a different key. Displaying N/A.`);
+            } else if (response.status === 401 || response.status === 403) {
+                console.error(`CURRENCY API ERROR: Unauthorized (status ${response.status}) for API key "${apiKey}". The API key might be invalid or disabled. Please verify your API key. Displaying N/A.`);
+            }
+             else {
+                console.error(`CURRENCY API ERROR: Request failed with status ${response.status}. URL: ${response.url}. Please check network and API status. Displaying N/A.`);
             }
             setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
             return; 
         }
 
         const data = await response.json();
-        // currencyapi.com structure: data: { USD: { value: X }, EUR: { value: Y }, JOD: { value: Z } }
-        if (data && data.data && data.data.USD && data.data.EUR && data.data.JOD) {
+        if (data && data.data && data.data.USD && data.data.EUR && data.data.JOD &&
+            typeof data.data.USD.value === 'number' && 
+            typeof data.data.EUR.value === 'number' &&
+            typeof data.data.JOD.value === 'number') {
           setCurrencyRates({
-            USD: (1 / data.data.USD.value).toFixed(2), // Assuming we still want to show ILS per foreign currency
+            USD: (1 / data.data.USD.value).toFixed(2),
             EUR: (1 / data.data.EUR.value).toFixed(2),
             JOD: (1 / data.data.JOD.value).toFixed(2),
           });
         } else {
-          console.error("Error in currency data structure or API error:", data);
+          console.error("Error in currency data structure, missing currency values, or API error:", data);
           setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
         }
       } catch (error) {
-        console.error("Error fetching currency rates:", error);
+        console.error("Error fetching currency rates (network issue or CORS):", error);
         setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
       }
     };

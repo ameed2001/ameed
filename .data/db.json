@@ -10,6 +10,17 @@
       "profileImage": "https://placehold.co/100x100.png?text=عم",
       "password_hash": "$2a$10$M8XhwePcbG/GsRKF5X3twuN5VWhcp8Mc2BqPwCHjIJlLrkv0i49gG",
       "createdAt": "2025-06-10T16:37:30.057Z"
+    },
+    {
+      "id": "user-1749573914693-u1xrs",
+      "name": "Ameed Samara",
+      "email": "ameed@malik.com",
+      "password_hash": "$2a$10$xtao5XR8nJPxTrQ87nWyj.0mh8yCBLhOi7GEDjjiU5qma1eSgaYUW",
+      "role": "OWNER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-10T16:45:14.693Z",
+      "updatedAt": "2025-06-10T16:45:14.693Z",
+      "profileImage": "https://placehold.co/100x100.png?text=AM"
     }
   ],
   "projects": [],
@@ -197,6 +208,22 @@
       "message": "User logged in successfully: ameed2001@gamil.com",
       "timestamp": "2025-06-10T16:38:45.813Z",
       "user": "user-1749573450056-evwdt"
+    },
+    {
+      "id": "log-1749573914695-7t8hi",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed@malik.com registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-06-10T16:45:14.695Z",
+      "user": "user-1749573914693-u1xrs"
+    },
+    {
+      "id": "log-1749573918899-0pqzm",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@malik.com",
+      "timestamp": "2025-06-10T16:45:18.899Z",
+      "user": "user-1749573914693-u1xrs"
     }
   ],
   "roles": [

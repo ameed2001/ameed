@@ -346,8 +346,13 @@ export interface GetProjectsResult {
 
 export async function getProjects(userEmailOrId: string): Promise<GetProjectsResult> {
   console.log(`[db.ts] getProjects (JSON): Fetching projects for user/email: ${userEmailOrId}`);
+  const startTime = process.hrtime();
   try {
+    const readDbStart = process.hrtime();
     const db = await readDb();
+    const readDbEnd = process.hrtime(readDbStart);
+    console.log(`[db.ts] getProjects (JSON): readDb took ${readDbEnd[0]}s ${readDbEnd[1] / 1000000}ms`);
+
     const user = db.users.find(u => u.email === userEmailOrId || u.id === userEmailOrId);
     let filteredProjects: Project[];
 
@@ -366,7 +371,10 @@ export async function getProjects(userEmailOrId: string): Promise<GetProjectsRes
       console.warn(`[db.ts] getProjects: User not found or not authorized: ${userEmailOrId}`);
       filteredProjects = [];
     }
-    
+
+    const totalEndTime = process.hrtime(startTime);
+    console.log(`[db.ts] getProjects (JSON): Total execution time ${totalEndTime[0]}s ${totalEndTime[1] / 1000000}ms`);
+
     console.log(`[db.ts] getProjects (JSON): Found ${filteredProjects.length} projects.`);
     return { success: true, projects: filteredProjects };
   } catch (error: any) {

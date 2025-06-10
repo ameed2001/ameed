@@ -256,6 +256,62 @@
       "message": "System settings updated.",
       "timestamp": "2025-06-10T18:28:31.801Z",
       "user": "System"
+    },
+    {
+      "id": "log-1749580845648-ogppb",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@malik.com",
+      "timestamp": "2025-06-10T18:40:45.648Z",
+      "user": "user-1749573914693-u1xrs"
+    },
+    {
+      "id": "log-1749581459582-g91ft",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gamil.com",
+      "timestamp": "2025-06-10T18:50:59.582Z",
+      "user": "user-1749573450056-evwdt"
+    },
+    {
+      "id": "log-1749581477700-h8ll9",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@malik.com",
+      "timestamp": "2025-06-10T18:51:17.700Z",
+      "user": "user-1749573914693-u1xrs"
+    },
+    {
+      "id": "log-1749582881636-v3l9w",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gamil.com",
+      "timestamp": "2025-06-10T19:14:41.636Z",
+      "user": "user-1749573450056-evwdt"
+    },
+    {
+      "id": "log-1749582895664-hz9yx",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gamil.com",
+      "timestamp": "2025-06-10T19:14:55.664Z",
+      "user": "user-1749573450056-evwdt"
+    },
+    {
+      "id": "log-1749582907229-coudg",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@malik.com",
+      "timestamp": "2025-06-10T19:15:07.229Z",
+      "user": "user-1749573914693-u1xrs"
+    },
+    {
+      "id": "log-1749583011094-fvmcy",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gamil.com",
+      "timestamp": "2025-06-10T19:16:51.094Z",
+      "user": "user-1749573450056-evwdt"
     }
   ],
   "roles": [

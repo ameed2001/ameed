@@ -16,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 
+// Action cards data is kept for potential restoration, but not rendered for now.
 const actionCardsData = [
     {
       title: "عرض مشاريعي",
@@ -110,12 +111,16 @@ export default function OwnerDashboardPage() {
           </div>
       </div>
 
-      {/* Quick Action Tools Section */}
+      {/* Quick Action Tools Section - Temporarily Removed */}
       <h2 className="text-2xl font-bold text-app-red mb-6 flex items-center">
           <ZapIcon className="ml-2 text-amber-500 w-6 h-6" />
-          أدوات المتابعة السريعة
+          أدوات المتابعة السريعة (مُعطل مؤقتاً للتشخيص)
       </h2>
+       <p className="text-gray-500 mb-10">
+        تم تعطيل هذا القسم مؤقتاً للمساعدة في تشخيص مشكلة أداء.
+      </p>
 
+      {/* 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {actionCardsData.map((card) => {
           const IconComponent = card.icon;
@@ -148,7 +153,7 @@ export default function OwnerDashboardPage() {
           );
         })}
       </div>
-      {/* Cost Estimator Section Removed from here */}
+      */}
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, LogIn } from 'lucide-react';
+import { Loader2, LogIn, ShieldCheck } from 'lucide-react'; // Added ShieldCheck
 import { loginUserAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
@@ -178,13 +178,17 @@ export default function LoginPage() {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-center mt-4">
+          <CardFooter className="flex flex-col items-center mt-4 space-y-3">
             <p className="text-sm text-gray-600">
               ليس لديك حساب؟{' '}
               <Link href="/signup" className="font-semibold text-blue-700 underline hover:text-blue-800">
                 إنشاء حساب جديد
               </Link>
             </p>
+            <Link href="/admin-login" className="text-sm font-medium text-red-700 hover:text-red-800 hover:underline flex items-center gap-1">
+                <ShieldCheck className="h-4 w-4" />
+                تسجيل الدخول كمسؤول
+            </Link>
           </CardFooter>
         </Card>
       </div>

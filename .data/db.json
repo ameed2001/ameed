@@ -25,7 +25,7 @@
   ],
   "projects": [],
   "settings": {
-    "siteName": "المحترف لحساب الكميات",
+    "siteName": "المحترف لحساب الكميات ",
     "defaultLanguage": "ar",
     "maintenanceMode": false,
     "maxUploadSizeMB": 25,
@@ -224,6 +224,38 @@
       "message": "User logged in successfully: ameed@malik.com",
       "timestamp": "2025-06-10T16:45:18.899Z",
       "user": "user-1749573914693-u1xrs"
+    },
+    {
+      "id": "log-1749580021383-gqm4c",
+      "action": "SYSTEM_SETTINGS_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "System settings updated.",
+      "timestamp": "2025-06-10T18:27:01.383Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749580046595-o9m72",
+      "action": "SYSTEM_SETTINGS_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "System settings updated.",
+      "timestamp": "2025-06-10T18:27:26.595Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749580108617-x3iic",
+      "action": "SYSTEM_SETTINGS_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "System settings updated.",
+      "timestamp": "2025-06-10T18:28:28.617Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749580111801-bf3wa",
+      "action": "SYSTEM_SETTINGS_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "System settings updated.",
+      "timestamp": "2025-06-10T18:28:31.801Z",
+      "user": "System"
     }
   ],
   "roles": [

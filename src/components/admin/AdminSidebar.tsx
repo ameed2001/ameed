@@ -154,7 +154,7 @@ export default function AdminSidebar() {
         </div>
         
         {isSidebarOpen && (
-            <div className="mb-6 p-3 border border-border rounded-lg bg-background/50 overflow-y-auto max-h-[calc(100vh-450px)]">
+            <div className="mb-6 p-3 border border-border rounded-lg bg-background/50 overflow-y-auto">
                 <h3 className="text-sm font-semibold text-foreground mb-3 text-right">لوحة المعلومات</h3>
                 <div className="space-y-3">
                 {adminStats.map(stat => {

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'; // Removed DialogClose
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -101,21 +101,21 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
-      <DialogContent 
+      <DialogContent
         className={cn(
             "sm:max-w-lg bg-card text-card-foreground p-6 rounded-lg shadow-xl custom-dialog-overlay text-right",
-            "add-user-dialog-no-x" // Added class to target default close button
+            "add-user-dialog-no-x"
         )}
-        onInteractOutside={(e) => e.preventDefault()} // Optional: prevent closing on outside click if no X
+        onInteractOutside={(e) => e.preventDefault()}
       >
-        <DialogHeader className="mb-6 text-center"> 
+        <DialogHeader className="mb-6 flex flex-col items-center">
             <div className="flex justify-center mb-4">
                 <UsersIcon className="h-10 w-10 text-app-gold" />
             </div>
-            <DialogTitle className="text-gray-800 text-2xl font-bold"> 
+            <DialogTitle className="text-gray-800 text-2xl font-bold text-center">
                 إضافة مستخدم جديد
             </DialogTitle>
-            <DialogDescription className="text-gray-500 mt-2 text-sm text-right"> 
+            <DialogDescription className="text-gray-500 mt-2 text-sm text-right w-full">
                 أدخل بيانات المستخدم الجديد للتمكن من الوصول إلى النظام
             </DialogDescription>
         </DialogHeader>

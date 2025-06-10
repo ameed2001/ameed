@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
     Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut, Home, 
-    UserCheck, Shield, AlertTriangle
+    UserCheck, Shield, AlertTriangle, HardHat // Added HardHat
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -36,11 +36,12 @@ export default function AdminSidebar() {
   const { toast } = useToast();
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [adminStats, setAdminStats] = useState<AdminStat[]>([
-    { label: "عدد المستخدمين الكلي", value: "...", icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
-    { label: "عدد المشاريع المدرجة", value: "...", icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
+    { label: "عدد المستخدمين الكلي للموقع", value: "...", icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
+    { label: "عدد المشاريع المدرجة من قِبل المهندسين", value: "...", icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
     { label: "عدد حسابات المالكين", value: "...", icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
-    { label: "عدد حسابات المشرفين", value: "...", icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
-    { label: "تحذيرات وأخطاء السجل", value: "...", icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "عدد رسائل التحذير أو الخطأ في سجل النظام." },
+    { label: "عدد حسابات المهندسين", value: "...", icon: HardHat, color: "text-cyan-500", dataAiHint: "engineer accounts", description: "يوضح عدد المستخدمين المسجلين كمهندسين في النظام." },
+    { label: "عدد حسابات المشرفين (الإداريين)", value: "...", icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
+    { label: "عدد التحذيرات والأخطاء في سجلات النظام", value: "...", icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "إحصائية توضح عدد الرسائل المُسجلة في سجل النظام من نوع تحذير أو خطأ، لمتابعة الأداء والصيانة." },
   ]);
 
   useEffect(() => {
@@ -55,11 +56,13 @@ export default function AdminSidebar() {
 
         let totalUsers = 0;
         let ownerAccounts = 0;
+        let engineerAccounts = 0;
         let adminAccounts = 0;
 
         if (usersResponse.success && usersResponse.users) {
           totalUsers = usersResponse.users.length;
           ownerAccounts = usersResponse.users.filter(u => u.role === 'OWNER').length;
+          engineerAccounts = usersResponse.users.filter(u => u.role === 'ENGINEER').length;
           adminAccounts = usersResponse.users.filter(u => u.role === 'ADMIN').length;
         }
 
@@ -67,16 +70,18 @@ export default function AdminSidebar() {
         const warningsAndErrors = logsResponse.filter(log => log.level === 'WARNING' || log.level === 'ERROR').length;
         
         setAdminStats([
-          { label: "عدد المستخدمين الكلي", value: totalUsers, icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
-          { label: "عدد المشاريع المدرجة", value: totalProjects, icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
+          { label: "عدد المستخدمين الكلي للموقع", value: totalUsers, icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
+          { label: "عدد المشاريع المدرجة من قِبل المهندسين", value: totalProjects, icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
           { label: "عدد حسابات المالكين", value: ownerAccounts, icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
-          { label: "عدد حسابات المشرفين", value: adminAccounts, icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
-          { label: "تحذيرات وأخطاء السجل", value: warningsAndErrors, icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "عدد رسائل التحذير أو الخطأ في سجل النظام." },
+          { label: "عدد حسابات المهندسين", value: engineerAccounts, icon: HardHat, color: "text-cyan-500", dataAiHint: "engineer accounts", description: "يوضح عدد المستخدمين المسجلين كمهندسين في النظام." },
+          { label: "عدد حسابات المشرفين (الإداريين)", value: adminAccounts, icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
+          { label: "عدد التحذيرات والأخطاء في سجلات النظام", value: warningsAndErrors, icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "إحصائية توضح عدد الرسائل المُسجلة في سجل النظام من نوع تحذير أو خطأ، لمتابعة الأداء والصيانة." },
         ]);
 
       } catch (error) {
         console.error("Failed to fetch admin stats:", error);
         toast({ title: "خطأ", description: "فشل تحميل إحصائيات لوحة المعلومات.", variant: "destructive" });
+        // Reset stats to 0 or error message on failure
         setAdminStats(prev => prev.map(s => ({ ...s, value: 0 })));
       }
       setIsLoadingStats(false);
@@ -108,9 +113,9 @@ export default function AdminSidebar() {
             </h2>
         </div>
         
-        <div className="mb-6 p-3 border border-border rounded-lg bg-background/50 overflow-y-auto max-h-[calc(100vh-400px)]"> {/* Added max-height and scroll */}
+        <div className="mb-6 p-3 border border-border rounded-lg bg-background/50 overflow-y-auto max-h-[calc(100vh-400px)]">
             <h3 className="text-sm font-semibold text-foreground mb-3 text-right">لوحة المعلومات</h3>
-            <div className="space-y-3"> {/* Changed to space-y for vertical stacking */}
+            <div className="space-y-3">
             {adminStats.map(stat => {
                 const IconComponent = stat.icon;
                 return (

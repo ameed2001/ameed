@@ -2,11 +2,11 @@
 "use client";
 
 import Link from 'next/link';
-import { Home, Info, Phone, HelpCircle, UserCircle } from 'lucide-react'; // Added UserCircle
-import { usePathname } from 'next/navigation';
+import { Home, Info, Phone, HelpCircle, UserCircle, Briefcase, ShieldCheck } from 'lucide-react'; // Added ShieldCheck
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 // import { useToast } from '@/hooks/use-toast'; // Kept for potential future use
-import { useEffect, useState } from 'react'; // Added useEffect and useState
+import { useEffect, useState } from 'react'; 
 
 const baseNavItems = [
   { href: '/', label: 'الرئيسية', icon: Home },
@@ -18,20 +18,28 @@ const baseNavItems = [
 const Navbar = () => {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
   // const router = useRouter(); // Kept for potential future use
   // const { toast } = useToast(); // Kept for potential future use
 
   useEffect(() => {
+    setIsClient(true); // Component has mounted
     if (typeof window !== 'undefined') {
       const storedRole = localStorage.getItem('userRole');
       setUserRole(storedRole);
     }
   }, [pathname]); // Re-check on pathname change, e.g., after login/logout
 
-  let allNavItems = [...baseNavItems];
+  let navItemsToDisplay = [...baseNavItems];
 
-  if (userRole === 'OWNER') {
-    allNavItems.push({ href: '/owner/dashboard', label: 'حسابي', icon: UserCircle }); // Add "حسابي" to the end
+  if (isClient) { // Only modify nav items on the client after localStorage has been checked
+    if (userRole === 'OWNER') {
+      navItemsToDisplay.push({ href: '/owner/dashboard', label: 'حسابي (مالك)', icon: UserCircle });
+    } else if (userRole === 'ENGINEER') {
+      navItemsToDisplay.push({ href: '/my-projects', label: 'مشاريعي (مهندس)', icon: Briefcase });
+    } else if (userRole === 'ADMIN') {
+      navItemsToDisplay.push({ href: '/admin', label: 'حساب المسؤول', icon: ShieldCheck });
+    }
   }
   
   // const handleLogout = () => {
@@ -52,7 +60,7 @@ const Navbar = () => {
   return (
     <nav className="bg-header-bg py-2.5 shadow-nav">
       <ul className="container mx-auto flex justify-center flex-wrap gap-x-2 md:gap-x-4 gap-y-2 items-center">
-        {allNavItems.map((item) => {
+        {navItemsToDisplay.map((item) => {
           const isActive = pathname === item.href;
           return (
             <li key={item.href}>

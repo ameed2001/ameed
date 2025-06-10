@@ -33,7 +33,7 @@ const helpCenterFaqs = [
     answer: (
       <>
         لا تستطيع استخدام الموقع أو أي ميزة فيه دون تسجيل الدخول. يمكنك{" "}
-        <Link href="/login" className="text-app-gold hover:underline">
+        <Link href="/login" className="text-app-red hover:underline">
           تسجيل الدخول من هنا
         </Link>
         .
@@ -103,3 +103,4 @@ export default function HelpPage() {
     </AppLayout>
   );
 }
+

@@ -1,7 +1,6 @@
-
 import Link from 'next/link';
 import Image from 'next/image';
-import { Instagram, Facebook, Phone, Mail, MapPin } from 'lucide-react';
+import { Instagram, Facebook, Phone, Mail, MapPin, ExternalLink, Heart } from 'lucide-react';
 
 // SVG for WhatsApp icon (consistent with Header.tsx)
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -12,70 +11,174 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  
   return (
-    <footer className="bg-header-bg text-header-fg py-8 px-4 md:px-6 shadow-header-footer mt-auto">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-right">
-        
-        <div>
-          <div className="flex items-center justify-end mb-4">
-            <Image 
-              src="https://i.imgur.com/79bO3U2.jpg" 
-              alt="شعار الموقع" 
-              width={50} 
-              height={50} 
-              className="rounded-full border-2 border-app-gold"
-              data-ai-hint="logo construction"
-            />
-            <h3 className="text-app-red text-xl font-bold mr-3">المحترف لحساب الكميات</h3>
+    <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white mt-auto relative overflow-hidden" dir="rtl">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.02%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50"></div>
+      
+      {/* Top wave decoration */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-app-gold via-app-red to-app-gold"></div>
+      
+      <div className="container mx-auto px-6 py-12 relative z-10">
+        {/* Main content grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12">
+          
+          {/* Company Info Section */}
+          <div className="lg:col-span-2 text-center lg:text-right">
+            <div className="flex items-center justify-center lg:justify-end mb-6">
+              <div className="relative">
+                <Image 
+                  src="https://i.imgur.com/79bO3U2.jpg" 
+                  alt="شعار الموقع" 
+                  width={60} 
+                  height={60} 
+                  className="rounded-full border-3 border-app-gold shadow-lg shadow-app-gold/30"
+                  data-ai-hint="logo construction"
+                />
+                <div className="absolute -inset-1 bg-gradient-to-r from-app-gold to-app-red rounded-full opacity-75 blur animate-pulse"></div>
+              </div>
+              <div className="mr-4">
+                <h3 className="text-app-red text-2xl font-bold leading-tight">المحترف لحساب الكميات</h3>
+                <p className="text-app-gold text-sm font-medium">دقة في الحساب • ثقة في النتائج</p>
+              </div>
+            </div>
+            
+            <p className="text-gray-300 leading-relaxed max-w-lg mx-auto lg:mx-0 lg:mr-0">
+              نقدم أدوات دقيقة وسهلة الاستخدام لحساب كميات مواد البناء لمشاريعكم الإنشائية. 
+              خبرة متخصصة وحلول عملية لجميع احتياجاتكم الهندسية.
+            </p>
+            
+            {/* Social Media Icons */}
+            <div className="flex justify-center lg:justify-end gap-4 mt-6">
+              <Link 
+                href="https://wa.me/972594371424" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group bg-slate-800 hover:bg-green-600 p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+              >
+                <WhatsAppIcon className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+              </Link>
+              <Link 
+                href="https://www.instagram.com/a.w.samarah3/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group bg-slate-800 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+              >
+                <Instagram className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+              </Link>
+              <Link 
+                href="https://www.facebook.com/a.w.samarah4" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group bg-slate-800 hover:bg-blue-600 p-3 rounded-full transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+              >
+                <Facebook className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+              </Link>
+            </div>
           </div>
-          <p className="text-sm text-gray-300">
-            نقدم أدوات دقيقة وسهلة الاستخدام لحساب كميات مواد البناء لمشاريعكم الإنشائية.
-          </p>
+
+          {/* Quick Links */}
+          <div className="text-center lg:text-right">
+            <h4 className="text-xl font-bold text-app-gold mb-6 relative">
+              روابط سريعة
+              <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-app-gold"></span>
+            </h4>
+            <nav>
+              <ul className="space-y-3">
+                {[
+                  { href: '/', label: 'الرئيسية' },
+                  { href: '/about', label: 'عن الموقع' },
+                  { href: '/contact', label: 'تواصل معنا' },
+                  { href: '/help', label: 'مركز المساعدة' },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link 
+                      href={link.href} 
+                      className="group flex items-center justify-center lg:justify-end gap-2 text-gray-300 hover:text-app-gold transition-all duration-300 py-1"
+                    >
+                      <span>{link.label}</span>
+                      <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          {/* Contact Info */}
+          <div className="text-center lg:text-right">
+            <h4 className="text-xl font-bold text-app-gold mb-6 relative">
+              تواصل معنا
+              <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-app-gold"></span>
+            </h4>
+            <div className="space-y-4">
+              <div className="group flex items-center justify-center lg:justify-end gap-3 text-gray-300 hover:text-white transition-colors duration-300">
+                <div className="flex-1 lg:text-right">
+                  <a 
+                    href="mailto:mediaplus64@gmail.com" 
+                    className="hover:text-app-gold transition-colors"
+                  >
+                    mediaplus64@gmail.com
+                  </a>
+                </div>
+                <div className="bg-slate-800 group-hover:bg-app-gold p-2 rounded-lg transition-colors duration-300">
+                  <Mail className="h-4 w-4 text-app-gold group-hover:text-slate-900" />
+                </div>
+              </div>
+              
+              <div className="group flex items-center justify-center lg:justify-end gap-3 text-gray-300 hover:text-white transition-colors duration-300">
+                <div className="flex-1 lg:text-right">
+                  <a 
+                    href="tel:+972594371424" 
+                    className="hover:text-app-gold transition-colors"
+                  >
+                    +972594371424
+                  </a>
+                </div>
+                <div className="bg-slate-800 group-hover:bg-app-gold p-2 rounded-lg transition-colors duration-300">
+                  <Phone className="h-4 w-4 text-app-gold group-hover:text-slate-900" />
+                </div>
+              </div>
+              
+              <div className="group flex items-center justify-center lg:justify-end gap-3 text-gray-300 hover:text-white transition-colors duration-300">
+                <div className="flex-1 lg:text-right">سلفيت، فلسطين</div>
+                <div className="bg-slate-800 group-hover:bg-app-gold p-2 rounded-lg transition-colors duration-300">
+                  <MapPin className="h-4 w-4 text-app-gold group-hover:text-slate-900" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <h4 className="text-lg font-semibold text-app-gold mb-3">روابط سريعة</h4>
-          <ul className="space-y-2 text-sm">
-            <li><Link href="/" className="text-gray-300 hover:text-app-gold">الرئيسية</Link></li>
-            <li><Link href="/about" className="text-gray-300 hover:text-app-gold">عن الموقع</Link></li>
-            <li><Link href="/contact" className="text-gray-300 hover:text-app-gold">تواصل معنا</Link></li>
-            <li><Link href="/help" className="text-gray-300 hover:text-app-gold">مركز المساعدة</Link></li>
-          </ul>
+        {/* Divider */}
+        <div className="my-8">
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
         </div>
 
-        <div>
-          <h4 className="text-lg font-semibold text-app-gold mb-3">تواصل معنا</h4>
-          <ul className="space-y-3 text-sm">
-            <li className="flex items-center justify-end gap-2">
-              <span className="text-gray-300"><a href="mailto:mediaplus64@gmail.com">mediaplus64@gmail.com</a></span>
-              <Mail size={18} className="text-app-gold shrink-0" />
-            </li>
-            <li className="flex items-center justify-end gap-2">
-              <span className="text-gray-300">+972594371424</span>
-              <Phone size={18} className="text-app-gold shrink-0" />
-            </li>
-            <li className="flex items-center justify-end gap-2">
-              <span className="text-gray-300">سلفيت فلسطين</span>
-              <MapPin size={18} className="text-app-gold shrink-0" />
-            </li>
-          </ul>
-          <div className="flex justify-end gap-3 mt-4">
-            <Link href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-social-whatsapp">
-              <WhatsAppIcon className="h-6 w-6" />
-            </Link>
-            <Link href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-social-instagram">
-              <Instagram size={24} />
-            </Link>
-            <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-social-facebook">
-              <Facebook size={24} />
+        {/* Copyright Section */}
+        <div className="text-center space-y-2">
+          <div className="flex items-center justify-center gap-2 text-gray-400">
+            <span>&copy; {currentYear} المحترف لحساب الكميات. جميع الحقوق محفوظة.</span>
+          </div>
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+            <span>صُنع بـ</span>
+            <Heart className="h-4 w-4 text-red-500 animate-pulse" />
+            <span>في فلسطين | تصميم وتطوير:</span>
+            <Link 
+              href="https://www.facebook.com/a.w.samarah4" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-app-gold hover:text-app-red transition-colors font-medium"
+            >
+              عميد سماره
             </Link>
           </div>
         </div>
       </div>
-      <div className="text-center text-xs text-gray-400 pt-8 mt-8 border-t border-gray-700">
-        <p>&copy; {currentYear} المحترف لحساب الكميات. جميع الحقوق محفوظة.</p>
-        <p>تصميم وتطوير: <Link href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="text-app-gold hover:underline">عميد سماره</Link></p>
-      </div>
+
+      {/* Bottom gradient line */}
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-app-gold via-app-red to-app-gold"></div>
     </footer>
   );
 };

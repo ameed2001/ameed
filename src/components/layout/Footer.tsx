@@ -60,6 +60,9 @@ const Footer = () => {
                   { href: '/about', label: 'عن الموقع' },
                   { href: '/contact', label: 'تواصل معنا' },
                   { href: '/help', label: 'مركز المساعدة' },
+                  { href: '/signup', label: 'إنشاء حساب' },
+                  { href: '/login', label: 'تسجيل الدخول العادي' },
+                  { href: '/admin-login', label: 'تسجيل دخول المدير' },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link 

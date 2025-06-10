@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -16,7 +17,7 @@ import {
   getProjects,
   deleteProject,
   updateProject
-} from '@/lib/mock-db';
+} from '@/lib/db'; // Changed from @/lib/mock-db to @/lib/db
 
 export default function AdminProjectsPage() {
   const { toast } = useToast();
@@ -52,7 +53,7 @@ export default function AdminProjectsPage() {
   }
 
   async function handleDeleteProject(projectId: number) {
-    const result = await deleteProject(projectId);
+    const result = await deleteProject(projectId.toString()); // Ensure projectId is passed as string
     if (result.success) {
       toast({ title: "نجاح", description: result.message });
       loadProjects();

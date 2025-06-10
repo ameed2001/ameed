@@ -454,6 +454,14 @@
       "message": "Invalid password attempt for user: ameed@admin.com",
       "timestamp": "2025-06-10T07:03:36.823Z",
       "user": "user-001"
+    },
+    {
+      "id": "log-1749539501231-82mvu",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-10T07:11:41.231Z",
+      "user": "user-1749486065534-3"
     }
   ],
   "roles": [

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Instagram, Facebook, Clock, BookOpen } from 'lucide-react';
-import { getSystemSettings, type SystemSettingsDocument } from '@/lib/db';
+// import { getSystemSettings, type SystemSettingsDocument } from '@/lib/db'; // Temporarily removed
 
 // SVG for WhatsApp icon
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -27,7 +27,7 @@ const surahAlFatiha = [
 const Header = () => {
   const [formattedDisplayTime, setFormattedDisplayTime] = useState('');
   const [dailyVerse, setDailyVerse] = useState('');
-  const [siteName, setSiteName] = useState('Loading...'); // State for site name
+  const siteName = "المحترف لحساب الكميات"; // Static site name for now
 
   useEffect(() => {
     const updateTime = () => {
@@ -52,14 +52,14 @@ const Header = () => {
     updateTime();
     const timerId = setInterval(updateTime, 1000);
 
-    // Fetch site name from settings
-    async function fetchSiteName() {
-      const settings = await getSystemSettings();
-      if (settings) {
-        setSiteName(settings.siteName);
-      }
-    }
-    fetchSiteName();
+    // // Fetch site name from settings - Temporarily disabled
+    // async function fetchSiteName() {
+    //   const settings = await getSystemSettings();
+    //   if (settings) {
+    //     setSiteName(settings.siteName);
+    //   }
+    // }
+    // fetchSiteName();
 
     // Select daily verse
     const today = new Date();

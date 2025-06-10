@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Instagram, Facebook, Phone, Mail, MapPin, ExternalLink, Heart } from 'lucide-react';
 import type { ReactNode } from 'react'; // Import ReactNode
 import { useState, useEffect } from 'react';
-import { getSystemSettings } from '@/lib/db';
+// import { getSystemSettings } from '@/lib/db'; // Temporarily removed
 
 
 // SVG for WhatsApp icon (consistent with Header.tsx)
@@ -23,8 +23,8 @@ interface QuickLinkItem {
 }
 
 const Footer = () => {
-  const [siteName, setSiteName] = useState<string | null>(null);
-  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+  const siteName = "المحترف لحساب الكميات"; // Static site name for now
+  const isLoadingSettings = false; // Assume not loading for now
 
   const currentYear = new Date().getFullYear();
 
@@ -53,20 +53,20 @@ const Footer = () => {
     { key: 'admin-login', href: '/admin-login', label: 'تسجيل دخول المدير' },
   ];
 
-  useEffect(() => {
-    async function fetchSettings() {
-      try {
-        const settings = await getSystemSettings();
-        setSiteName(settings?.siteName || 'المحترف لحساب الكميات');
-      } catch (error) {
-        console.error('Error fetching system settings for footer:', error);
-        setSiteName('المحترف لحساب الكميات'); // Fallback
-      } finally {
-        setIsLoadingSettings(false);
-      }
-    }
-    fetchSettings();
-  }, []);
+  // useEffect(() => { // Temporarily disabled
+  //   async function fetchSettings() {
+  //     try {
+  //       const settings = await getSystemSettings();
+  //       setSiteName(settings?.siteName || 'المحترف لحساب الكميات');
+  //     } catch (error) {
+  //       console.error('Error fetching system settings for footer:', error);
+  //       setSiteName('المحترف لحساب الكميات'); // Fallback
+  //     } finally {
+  //       setIsLoadingSettings(false);
+  //     }
+  //   }
+  //   fetchSettings();
+  // }, []);
 
 
   return (
@@ -166,7 +166,7 @@ const Footer = () => {
             </h4>
             <div className="flex justify-center lg:justify-start gap-3">
               <Link
-                href="https://wa.me/972594371424"
+                href="https://wa.me/972595528080"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group bg-slate-800/70 hover:bg-green-600 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"

@@ -59,7 +59,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
 
   useEffect(() => {
     if (!isLoading) return;
-    let currentPercentageValue = 0; // Use a local variable for accumulating percentage
+    let currentPercentageValue = 0; 
     let localCurrentMessageIndex = 0;
     
     const loadingMessages = [
@@ -80,22 +80,15 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
 
     const progressInterval = setInterval(() => {
       if (currentPercentageValue < 100) {
-        let increment = Math.random() * 2 + 0.5;
-        if (currentPercentageValue > 90) increment = Math.random() * 0.5 + 0.1;
-        else if (currentPercentageValue > 70) increment = Math.random() * 1 + 0.3;
+        // Speed up increments
+        let increment = Math.random() * 8 + 4; // Avg 6 (Previously Math.random() * 2 + 0.5)
+        if (currentPercentageValue > 90) increment = Math.random() * 2 + 1; // Avg 1.5 (Previously Math.random() * 0.5 + 0.1)
+        else if (currentPercentageValue > 70) increment = Math.random() * 4 + 2; // Avg 3 (Previously Math.random() * 1 + 0.3)
         
         currentPercentageValue += increment;
         if (currentPercentageValue > 100) currentPercentageValue = 100;
 
         setPercentage(Math.floor(currentPercentageValue));
-
-        // Removed direct DOM manipulation for scaling animation:
-        // if (percentageElementRef.current) {
-        //   percentageElementRef.current.style.transform = 'scale(1.05)';
-        //   setTimeout(() => {
-        //     if (percentageElementRef.current) percentageElementRef.current.style.transform = 'scale(1)';
-        //   }, 100);
-        // }
 
         const messageIndex = Math.floor((currentPercentageValue / 100) * (loadingMessages.length - 1));
         if (messageIndex !== localCurrentMessageIndex && messageIndex < loadingMessages.length) {
@@ -112,10 +105,10 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           updateLoadingTextInternal(loadingMessages.length - 1);
           setTimeout(() => {
             setIsLoading(false);
-          }, 1500); 
+          }, 500); // Reduced delay from 1500ms to 500ms
         }
       }
-    }, 80);
+    }, 40); // Reduced interval time from 80ms to 40ms
 
     return () => clearInterval(progressInterval);
   }, [isLoading]); 

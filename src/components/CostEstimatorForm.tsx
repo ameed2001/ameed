@@ -46,7 +46,7 @@ const baseUnits: Record<string, string> = {
   iron: "كغم",
   concrete: "م³",
   mesh: "لفة",
-  nails: "كغم",
+  nails: "حبة", // Changed from "كغم"
   cuttingDiscs: "قرص",
   cement: "كيس",
   sand: "م³"
@@ -70,10 +70,10 @@ const materialSubTypes: Record<string, string[]> = {
   brick: ["طوب أسمنتي", "طوب أحمر", "طوب زجاجي", "طوب بخاري"],
   iron: ["8 ملم", "10 ملم", "12 ملم", "14 ملم", "16 ملم", "18 ملم", "20 ملم"],
   concrete: ["خرسانة عادية", "خرسانة مسلحة"],
-  mesh: ["سلك خرسانة"], // Assuming only one type for mesh as per previous structure
-  nails: ["مسامير خشب", "مسامير حديد"],
+  mesh: ["سلك خرسانة"],
+  nails: ["مسمار 6", "مسمار 10", "مسمار فولاذ", "مسمار 20", "مسمار خشب"], // Updated subtypes
   cuttingDiscs: ["أقراص قطع حديد", "أقراص قطع خرسانة"],
-  cement: ["إسمنت بورتلاندي"], // Assuming one main type
+  cement: ["إسمنت بورتلاندي"],
   sand: ["رمل ناعم", "رمل خشن"]
 };
 
@@ -356,7 +356,7 @@ export default function CostEstimatorForm() {
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder="أدخل الكمية المطلوبة"
-                className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-20" // Increased pr for unit
+                className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-20 text-right"
                 min="0.01"
                 step="0.01"
               />

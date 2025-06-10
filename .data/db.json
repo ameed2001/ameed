@@ -344,6 +344,22 @@
       "message": "User logged in successfully: ameed2001@gamil.com",
       "timestamp": "2025-06-10T19:54:02.546Z",
       "user": "user-1749573450056-evwdt"
+    },
+    {
+      "id": "log-1749585414136-4oupi",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gamil.com",
+      "timestamp": "2025-06-10T19:56:54.136Z",
+      "user": "user-1749573450056-evwdt"
+    },
+    {
+      "id": "log-1749585456387-makny",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@malik.com",
+      "timestamp": "2025-06-10T19:57:36.387Z",
+      "user": "user-1749573914693-u1xrs"
     }
   ],
   "roles": [

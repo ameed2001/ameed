@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
     Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut, Home, 
-    UserCheck, User, Shield, AlertTriangle, HardHat
+    UserCheck, Shield, AlertTriangle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
-import { getUsers as dbGetUsers, getProjects as dbGetProjects, getLogs as dbGetLogs, type UserDocument, type Project, type LogEntry } from '@/lib/db'; // Ensure correct imports
+import { getUsers as dbGetUsers, getProjects as dbGetProjects, getLogs as dbGetLogs } from '@/lib/db';
 
 const adminNavItems = [
   { href: '/', label: 'الرئيسية للموقع', icon: Home },
@@ -27,6 +27,7 @@ interface AdminStat {
     icon: React.ElementType;
     color: string;
     dataAiHint: string;
+    description?: string; 
 }
 
 export default function AdminSidebar() {
@@ -35,12 +36,11 @@ export default function AdminSidebar() {
   const { toast } = useToast();
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [adminStats, setAdminStats] = useState<AdminStat[]>([
-    { label: "إجمالي المستخدمين", value: "...", icon: Users, color: "text-blue-500", dataAiHint: "total users" },
-    { label: "إجمالي المشاريع", value: "...", icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects" },
-    { label: "حسابات المالكين", value: "...", icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts" },
-    { label: "حسابات المهندسين", value: "...", icon: HardHat, color: "text-purple-500", dataAiHint: "engineer accounts" },
-    { label: "حسابات المسؤولين", value: "...", icon: Shield, color: "text-red-500", dataAiHint: "admin accounts" },
-    { label: "تحذيرات وأخطاء", value: "...", icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors" },
+    { label: "عدد المستخدمين الكلي", value: "...", icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
+    { label: "عدد المشاريع المدرجة", value: "...", icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
+    { label: "عدد حسابات المالكين", value: "...", icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
+    { label: "عدد حسابات المشرفين", value: "...", icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
+    { label: "تحذيرات وأخطاء السجل", value: "...", icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "عدد رسائل التحذير أو الخطأ في سجل النظام." },
   ]);
 
   useEffect(() => {
@@ -48,42 +48,36 @@ export default function AdminSidebar() {
       setIsLoadingStats(true);
       try {
         const [usersResponse, projectsResponse, logsResponse] = await Promise.all([
-          dbGetUsers("admin-id"), // Assuming admin-id fetches all users or this function is admin-aware
-          dbGetProjects("admin-id"), // Assuming admin-id fetches all projects
+          dbGetUsers("admin-id"), 
+          dbGetProjects("admin-id"), 
           dbGetLogs()
         ]);
 
         let totalUsers = 0;
         let ownerAccounts = 0;
-        let engineerAccounts = 0;
         let adminAccounts = 0;
-        let generalUserAccounts = 0; // For future if needed
 
         if (usersResponse.success && usersResponse.users) {
           totalUsers = usersResponse.users.length;
           ownerAccounts = usersResponse.users.filter(u => u.role === 'OWNER').length;
-          engineerAccounts = usersResponse.users.filter(u => u.role === 'ENGINEER').length;
           adminAccounts = usersResponse.users.filter(u => u.role === 'ADMIN').length;
-          generalUserAccounts = usersResponse.users.filter(u => u.role === 'GENERAL_USER').length;
         }
 
         const totalProjects = (projectsResponse.success && projectsResponse.projects) ? projectsResponse.projects.length : 0;
         const warningsAndErrors = logsResponse.filter(log => log.level === 'WARNING' || log.level === 'ERROR').length;
         
         setAdminStats([
-          { label: "إجمالي المستخدمين", value: totalUsers, icon: Users, color: "text-blue-500", dataAiHint: "total users" },
-          { label: "إجمالي المشاريع", value: totalProjects, icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects" },
-          { label: "حسابات المالكين", value: ownerAccounts, icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts" },
-          { label: "حسابات المستخدمين", value: generalUserAccounts, icon: User, color: "text-indigo-500", dataAiHint: "general users" },
-          { label: "حسابات المسؤولين", value: adminAccounts, icon: Shield, color: "text-red-500", dataAiHint: "admin accounts" },
-          { label: "تحذيرات وأخطاء", value: warningsAndErrors, icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors" },
+          { label: "عدد المستخدمين الكلي", value: totalUsers, icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
+          { label: "عدد المشاريع المدرجة", value: totalProjects, icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
+          { label: "عدد حسابات المالكين", value: ownerAccounts, icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
+          { label: "عدد حسابات المشرفين", value: adminAccounts, icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
+          { label: "تحذيرات وأخطاء السجل", value: warningsAndErrors, icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "عدد رسائل التحذير أو الخطأ في سجل النظام." },
         ]);
 
       } catch (error) {
         console.error("Failed to fetch admin stats:", error);
-        toast({ title: "خطأ", description: "فشل تحميل إحصائيات المشرف.", variant: "destructive" });
-        // Keep "..." or set to 0 on error
-         setAdminStats(prev => prev.map(s => ({ ...s, value: 0 })));
+        toast({ title: "خطأ", description: "فشل تحميل إحصائيات لوحة المعلومات.", variant: "destructive" });
+        setAdminStats(prev => prev.map(s => ({ ...s, value: 0 })));
       }
       setIsLoadingStats(false);
     }
@@ -95,7 +89,7 @@ export default function AdminSidebar() {
   const handleLogout = () => {
     toast({
       title: "تم تسجيل الخروج",
-      description: "تم تسجيل خروجك من لوحة تحكم المشرف بنجاح.",
+      description: "تم تسجيل خروجك من لوحة تحكم المسؤول بنجاح.",
       variant: "default",
     });
     localStorage.removeItem('adminToken'); 
@@ -107,24 +101,26 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-64 bg-card text-foreground p-4 shadow-lg flex-shrink-0 flex flex-col border-r">
+    <aside className="w-72 bg-card text-foreground p-4 shadow-lg flex-shrink-0 flex flex-col border-r">
         <div className="text-center mb-6 pb-2 border-b border-app-gold/70">
             <h2 className="text-2xl font-bold text-app-red">
               لوحة التحكم
             </h2>
         </div>
         
-        <div className="mb-6 p-3 border border-border rounded-lg bg-background/50">
-            <h3 className="text-sm font-semibold text-foreground mb-3 text-right">نظرة عامة سريعة</h3>
-            <div className="grid grid-cols-2 gap-3">
+        <div className="mb-6 p-3 border border-border rounded-lg bg-background/50 overflow-y-auto max-h-[calc(100vh-400px)]"> {/* Added max-height and scroll */}
+            <h3 className="text-sm font-semibold text-foreground mb-3 text-right">لوحة المعلومات</h3>
+            <div className="space-y-3"> {/* Changed to space-y for vertical stacking */}
             {adminStats.map(stat => {
                 const IconComponent = stat.icon;
                 return (
-                <div key={stat.label} className="bg-muted/40 p-2.5 rounded-md text-center shadow-sm" data-ai-hint={stat.dataAiHint}>
-                    <IconComponent className={cn("h-6 w-6 mx-auto mb-1.5", stat.color)} />
-                    <div className="text-xs text-muted-foreground font-medium truncate">{stat.label}</div>
-                    <div className="text-xl font-bold text-foreground">
-                        {isLoadingStats ? "..." : stat.value}
+                <div key={stat.label} className="bg-muted/40 p-3 rounded-md shadow-sm flex items-start gap-3" data-ai-hint={stat.dataAiHint}>
+                    <IconComponent className={cn("h-8 w-8 mt-1 flex-shrink-0", stat.color)} />
+                    <div className="flex-grow text-right">
+                        <div className="text-base font-bold text-foreground">
+                            {isLoadingStats ? "..." : stat.value} <span className="text-sm font-medium text-muted-foreground">{stat.label}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground/80 leading-tight mt-0.5">{stat.description}</p>
                     </div>
                 </div>
                 );

@@ -2,10 +2,10 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation'; // Added useRouter
-import { Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut } from 'lucide-react'; // Added LogOut
+import { usePathname, useRouter } from 'next/navigation';
+import { Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast'; // Added useToast
+import { useToast } from '@/hooks/use-toast';
 
 const adminNavItems = [
   { href: '/admin', label: 'نظرة عامة', icon: LayoutDashboard },
@@ -26,15 +26,19 @@ export default function AdminSidebar() {
       description: "تم تسجيل خروجك من لوحة تحكم المشرف بنجاح.",
       variant: "default",
     });
-    router.push('/login');
+    // Clear admin-specific session/local storage if any
+    localStorage.removeItem('adminToken'); // Example, adjust if you use a different key
+    router.push('/admin-login'); // Redirect to admin login page
   };
 
   return (
-    <aside className="w-64 bg-gray-800 text-white p-4 h-full shadow-lg flex-shrink-0 flex flex-col">
-      <div className="flex-grow"> {/* Wrapper for main nav items */}
-        <h2 className="text-xl font-semibold text-app-gold mb-6 pb-2 border-b border-app-gold/50">لوحة تحكم المشرف</h2>
+    <aside className="w-64 bg-card text-foreground p-4 h-full shadow-lg flex-shrink-0 flex flex-col border-r">
+      <div className="flex-grow">
+        <h2 className="text-2xl font-bold text-app-red mb-6 pb-2 border-b border-app-gold/70 text-center">
+          لوحة التحكم
+        </h2>
         <nav>
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {adminNavItems.map((item) => {
               const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== '/admin');
               return (
@@ -42,9 +46,11 @@ export default function AdminSidebar() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
-                      "hover:bg-app-gold hover:text-gray-900",
-                      isActive ? "bg-app-gold text-gray-900 shadow-md" : "text-gray-300 hover:text-gray-900"
+                      "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out",
+                      "hover:bg-primary/10 hover:text-primary",
+                      isActive 
+                        ? "bg-primary text-primary-foreground shadow-md" 
+                        : "text-foreground/80 hover:text-primary"
                     )}
                   >
                     <item.icon size={20} />
@@ -56,12 +62,12 @@ export default function AdminSidebar() {
           </ul>
         </nav>
       </div>
-      <div className="mt-auto pt-4 border-t border-gray-700"> {/* Logout button section */}
+      <div className="mt-auto pt-4 border-t border-border/80">
         <button
           onClick={handleLogout}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors w-full text-left",
-            "bg-red-600/30 text-red-200 hover:bg-red-500/50 hover:text-white"
+            "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out w-full text-left",
+            "bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive-foreground"
           )}
         >
           <LogOut size={20} />

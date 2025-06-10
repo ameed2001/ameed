@@ -3,17 +3,17 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut, Home } from 'lucide-react'; // Added Home icon
+import { Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 const adminNavItems = [
+  { href: '/', label: 'الرئيسية للموقع', icon: Home },
   { href: '/admin', label: 'نظرة عامة', icon: LayoutDashboard },
   { href: '/admin/users', label: 'إدارة المستخدمين', icon: Users },
   { href: '/admin/projects', label: 'إدارة المشاريع', icon: Briefcase },
   { href: '/admin/settings', label: 'إعدادات النظام', icon: Settings },
   { href: '/admin/logs', label: 'سجلات النظام', icon: ScrollText },
-  { href: '/', label: 'الرئيسية للموقع', icon: Home }, // Added new item
 ];
 
 export default function AdminSidebar() {

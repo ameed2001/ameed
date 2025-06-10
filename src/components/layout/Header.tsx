@@ -82,9 +82,11 @@ const Header = () => {
           {/* Time Display - styled to match screenshot */}
           <div 
             className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center justify-start gap-2"
-            dir="ltr" // Force LTR for this element to match screenshot layout
+            dir="ltr" // Force LTR for this element to ensure icon stays on the right of the time
           >
-            <span className="tabular-nums font-medium">{formattedDisplayTime || 'Loading...'}</span>
+            <span className="tabular-nums font-medium min-w-[10ch] text-left"> 
+              {formattedDisplayTime || 'Loading...'}
+            </span>
             <Clock size={16} className="flex-shrink-0" />
           </div>
 

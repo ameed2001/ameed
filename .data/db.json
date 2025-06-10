@@ -536,6 +536,14 @@
       "message": "User logged in successfully: www@gmail.com",
       "timestamp": "2025-06-10T21:04:30.712Z",
       "user": "user-1749588881407-acagf"
+    },
+    {
+      "id": "log-1749589979560-nrons",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: www@gmail.com",
+      "timestamp": "2025-06-10T21:12:59.560Z",
+      "user": "user-1749588881407-acagf"
     }
   ],
   "roles": [

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
@@ -12,12 +12,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserPlus } from 'lucide-react';
-import { ownerSignupUserAction, type SignupActionResponse } from './actions'; // Updated action import
+import { Loader2, UserPlus, HardHat, Info } from 'lucide-react'; // Changed icon to HardHat
+import { engineerSignupUserAction, type SignupActionResponse } from '../signup/actions'; // Use action from ../signup
 import { useRouter } from 'next/navigation';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-// Schema for owner signup
-const ownerSignupSchema = z.object({
+// Schema for engineer signup
+const engineerSignupSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
@@ -27,34 +28,45 @@ const ownerSignupSchema = z.object({
   path: ["confirmPassword"],
 });
 
-type OwnerSignupFormValues = z.infer<typeof ownerSignupSchema>;
+type EngineerSignupFormValues = z.infer<typeof engineerSignupSchema>;
 
-export default function SignupPage() {
+export default function EngineerSignupPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPendingApprovalMessage, setShowPendingApprovalMessage] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<OwnerSignupFormValues>({
-    resolver: zodResolver(ownerSignupSchema),
+  const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<EngineerSignupFormValues>({
+    resolver: zodResolver(engineerSignupSchema),
   });
 
-  const onSubmit: SubmitHandler<OwnerSignupFormValues> = async (data) => {
+  const onSubmit: SubmitHandler<EngineerSignupFormValues> = async (data) => {
     setIsLoading(true);
-    // Role is implicitly "owner" for this form
-    const result: SignupActionResponse = await ownerSignupUserAction(data);
+    setShowPendingApprovalMessage(false);
+    // Role is implicitly "engineer" for this form
+    const result: SignupActionResponse = await engineerSignupUserAction(data);
     setIsLoading(false);
 
     if (result.success) {
       reset();
-      toast({
-        title: "تم إنشاء الحساب",
-        description: result.message || "تم إنشاء حساب المالك بنجاح!",
-        variant: "default",
-      });
-      if (result.redirectTo) {
-        router.push(result.redirectTo);
+      if (result.isPendingApproval) {
+        toast({
+          title: "تم التسجيل بنجاح",
+          description: "حسابك كمهندس قيد المراجعة. يرجى مراجعة الملاحظة أدناه.",
+          variant: "default",
+        });
+        setShowPendingApprovalMessage(true);
       } else {
-        router.push('/login');
+        toast({
+          title: "تم إنشاء الحساب",
+          description: result.message || "تم إنشاء حساب المهندس بنجاح!",
+          variant: "default",
+        });
+        if (result.redirectTo) {
+          router.push(result.redirectTo);
+        } else {
+          router.push('/login');
+        }
       }
     } else {
       toast({
@@ -65,7 +77,7 @@ export default function SignupPage() {
       if (result.fieldErrors) {
         for (const [fieldName, fieldErrorMessages] of Object.entries(result.fieldErrors)) {
           if (fieldErrorMessages && fieldErrorMessages.length > 0) {
-            setError(fieldName as keyof OwnerSignupFormValues, {
+            setError(fieldName as keyof EngineerSignupFormValues, {
               type: "server",
               message: fieldErrorMessages.join(", "),
             });
@@ -80,23 +92,32 @@ export default function SignupPage() {
       <div className="container mx-auto py-8 px-4">
         <Card className="max-w-lg mx-auto bg-white/95 shadow-xl">
           <CardHeader className="text-center">
-            <UserPlus className="mx-auto h-12 w-12 text-app-gold mb-3" />
-            <CardTitle className="text-3xl font-bold text-app-red">إنشاء حساب مالك جديد</CardTitle>
+            <HardHat className="mx-auto h-12 w-12 text-app-gold mb-3" />
+            <CardTitle className="text-3xl font-bold text-app-red">إنشاء حساب مهندس جديد</CardTitle>
             <CardDescription className="text-gray-600 mt-1">
-              انضم إلينا للاستفادة من ميزات تتبع مشاريعك.
+              انضم إلينا كمهندس للاستفادة من أدوات إدارة المشاريع وحساب الكميات.
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {showPendingApprovalMessage && (
+              <Alert variant="default" className="mb-6 bg-blue-50 border-blue-300 text-blue-700">
+                <Info className="h-5 w-5 text-blue-700" />
+                <AlertTitle className="font-semibold">حسابك قيد المراجعة</AlertTitle>
+                <AlertDescription>
+                  شكرا على انشائك حساب مهندس وفي هذه اللحظات تم ارسال حسابك الى مدير المنصة حتى يوافق على تفعيله.
+                </AlertDescription>
+              </Alert>
+            )}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-right">
               <div>
                 <Label htmlFor="name" className="block mb-1.5 font-semibold text-gray-700">الاسم الكامل</Label>
-                <Input id="name" type="text" {...register("name")} className="bg-white focus:border-app-gold" placeholder="مثال: أحمد عبدالله" />
+                <Input id="name" type="text" {...register("name")} className="bg-white focus:border-app-gold" placeholder="مثال: م. خالد أحمد" />
                 {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
               </div>
 
               <div>
                 <Label htmlFor="email" className="block mb-1.5 font-semibold text-gray-700">البريد الإلكتروني</Label>
-                <Input id="email" type="email" {...register("email")} className="bg-white focus:border-app-gold" placeholder="example@domain.com" />
+                <Input id="email" type="email" {...register("email")} className="bg-white focus:border-app-gold" placeholder="engineer@example.com" />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
               </div>
 
@@ -119,7 +140,7 @@ export default function SignupPage() {
                     جاري الإنشاء...
                   </>
                 ) : (
-                  "إنشاء حساب المالك"
+                  "إنشاء حساب مهندس"
                 )}
               </Button>
             </form>
@@ -132,9 +153,9 @@ export default function SignupPage() {
               </Link>
             </p>
             <p className="text-sm text-gray-600">
-              هل أنت مهندس؟{' '}
-              <Link href="/engineer-signup" className="font-semibold text-blue-600 hover:underline">
-                إنشاء حساب مهندس
+              هل أنت مالك مشروع؟{' '}
+              <Link href="/signup" className="font-semibold text-blue-600 hover:underline">
+                إنشاء حساب مالك
               </Link>
             </p>
           </CardFooter>

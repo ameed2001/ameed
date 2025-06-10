@@ -57,11 +57,11 @@ export default function AdminDashboardPage() {
     <div className="space-y-8 text-right">
       <Card className="bg-white/95 dark:bg-card shadow-xl border border-gray-200/80 dark:border-gray-700/60">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl md:text-4xl font-bold text-app-red">لوحة تحكم المشرف الرئيسية</CardTitle>
+          <CardTitle className="text-3xl md:text-4xl font-bold text-app-red">لوحة تحكم المسؤول الرئيسية</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-lg text-gray-700 dark:text-gray-300 text-center mb-10">
-            مرحباً بك في لوحة تحكم المشرف. من هنا يمكنك إدارة المستخدمين، المشاريع، إعدادات النظام، ومراجعة السجلات.
+            مرحباً بك في لوحة تحكم المسؤول. من هنا يمكنك إدارة المستخدمين، المشاريع، إعدادات النظام، ومراجعة السجلات.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {overviewCards.map((card) => {

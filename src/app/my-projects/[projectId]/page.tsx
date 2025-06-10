@@ -109,7 +109,7 @@ export default function ProjectDetailPage() {
     
     const updatedProjectResult = await dbUpdateProject(project.id.toString(), { 
         overallProgress: newProgress,
-        quantitySummary: (project.quantitySummary || '') + \` (ملاحظة تقدم: \${progressUpdate.notes || 'لا يوجد'})\`
+        quantitySummary: (project.quantitySummary || '') + ` (ملاحظة تقدم: ${progressUpdate.notes || 'لا يوجد'})`
     });
 
     if (updatedProjectResult.success) {

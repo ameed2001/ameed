@@ -630,6 +630,14 @@
       "message": "User logged in successfully: ahmad@gmail.com",
       "timestamp": "2025-06-10T22:14:05.801Z",
       "user": "user-1749593366082-4dte5"
+    },
+    {
+      "id": "log-1749595574228-76j19",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ahmad@gmail.com",
+      "timestamp": "2025-06-10T22:46:14.228Z",
+      "user": "user-1749593366082-4dte5"
     }
   ],
   "roles": [

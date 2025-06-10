@@ -312,6 +312,30 @@
       "message": "User logged in successfully: ameed2001@gamil.com",
       "timestamp": "2025-06-10T19:16:51.094Z",
       "user": "user-1749573450056-evwdt"
+    },
+    {
+      "id": "log-1749584058331-s1z6k",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: ameed2001@admin.com",
+      "timestamp": "2025-06-10T19:34:18.331Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749584062882-v361c",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gamil.com",
+      "timestamp": "2025-06-10T19:34:22.882Z",
+      "user": "user-1749573450056-evwdt"
+    },
+    {
+      "id": "log-1749584072070-vfbg4",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@malik.com",
+      "timestamp": "2025-06-10T19:34:32.070Z",
+      "user": "user-1749573914693-u1xrs"
     }
   ],
   "roles": [

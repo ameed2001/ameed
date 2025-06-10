@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Edit, Trash2, KeyRound, UserCheck, Loader2, UserPlus } from 'lucide-react'; // Added UserPlus
+import { Search, Edit, Trash2, KeyRound, UserCheck, Loader2, UserPlus } from 'lucide-react'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   type UserDocument as User, 
@@ -20,7 +20,7 @@ import {
   suspendUser,
   approveEngineer
 } from '@/lib/db'; 
-import AddUserDialog from '@/components/admin/users/AddUserDialog'; // Import the new dialog
+import AddUserDialog from '@/components/admin/users/AddUserDialog'; 
 
 export default function AdminUsersPage() {
   const { toast } = useToast();
@@ -30,7 +30,7 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isFetching, setIsFetching] = useState(true);
   const [totalUsersCount, setTotalUsersCount] = useState(0);
-  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false); // State for Add User Dialog
+  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false); 
 
   const currentUser = { id: 'admin-001', role: 'Admin' }; 
 
@@ -126,8 +126,6 @@ export default function AdminUsersPage() {
   
   const handleEditUserClick = (user: User) => {
     console.log("Attempting to edit user:", user);
-    // Here you would typically open a dialog or navigate to an edit page
-    // For now, we'll just log and toast, as the AddUserDialog is the focus
     toast({ title: "تعديل المستخدم", description: `سيتم فتح نموذج لتعديل المستخدم ${user.name} (محاكاة).` });
   };
 
@@ -138,7 +136,7 @@ export default function AdminUsersPage() {
 
   const handleUserAdded = () => {
     refreshUsersFromDb();
-    setIsAddUserDialogOpen(false); // Close dialog after successful addition
+    setIsAddUserDialogOpen(false); 
   };
 
   return (
@@ -184,9 +182,10 @@ export default function AdminUsersPage() {
             </Select>
             <Button 
               onClick={() => setIsAddUserDialogOpen(true)} 
-              className="w-full sm:w-auto bg-app-gold hover:bg-yellow-600 text-primary-foreground"
+              variant="default" // Uses primary color from theme (app-gold)
+              className="w-full sm:w-auto" // Removed specific bg/hover colors
             >
-              <UserPlus className="ms-2 h-5 w-5" />
+              <UserPlus className="h-5 w-5" /> {/* Icon first for RTL, gap handles spacing */}
               إضافة مستخدم جديد
             </Button>
           </div>
@@ -219,8 +218,8 @@ export default function AdminUsersPage() {
                           <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                             user.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
                             user.status === 'PENDING_APPROVAL' ? 'bg-yellow-100 text-yellow-700' :
-                            user.status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : // For Suspended
-                            'bg-red-100 text-red-700' // Default for Deleted or other states
+                            user.status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : 
+                            'bg-red-100 text-red-700' 
                           }`}>
                             {user.status === 'ACTIVE' ? 'نشط' : user.status === 'PENDING_APPROVAL' ? 'بانتظار الموافقة' : user.status === 'SUSPENDED' ? 'معلق' : 'محذوف'}
                           </span>
@@ -261,10 +260,16 @@ export default function AdminUsersPage() {
                                   </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                  <AlertDialogCancel className="bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground">إلغاء</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="bg-destructive hover:bg-destructive/90">
+                                    <Button
+                                      variant="secondary"
+                                      onClick={() => (document.querySelector('[data-radix- AlertDialog-cancel-button]') as HTMLElement)?.click()}
+                                      className="bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground"
+                                    >
+                                      إلغاء
+                                    </Button>
+                                    <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="bg-destructive hover:bg-destructive/90">
                                       حذف
-                                  </AlertDialogAction>
+                                    </AlertDialogAction>
                                   </AlertDialogFooter>
                               </AlertDialogContent>
                               </AlertDialog>

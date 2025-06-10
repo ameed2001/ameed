@@ -8,7 +8,7 @@ import HeroSection from '@/components/main-dashboard/HeroSection';
 import MainDashboardClient from '@/components/main-dashboard/MainDashboardClient';
 import FeaturesSection from '@/components/main-dashboard/FeaturesSection';
 import InfoCard from '@/components/ui/InfoCard';
-import { LogIn, UserPlus, ShieldCheck, HardHat, ArrowLeft, Home as HomeIcon } from 'lucide-react'; // Added HomeIcon
+import { LogIn, UserPlus, ShieldCheck, HardHat, ArrowLeft, Home as HomeIcon } from 'lucide-react'; 
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -40,16 +40,30 @@ export default function Home() {
   const authCards = [
     {
       title: "تسجيل الدخول",
-      description: "للوصول إلى ميزات إضافية وإدارة مشاريعك.",
+      description: "اختر نوع الحساب للوصول إلى ميزاتك المخصصة وإدارة مشاريعك.", // Updated description
       icon: <LogIn />,
       iconWrapperClass: "bg-green-100 dark:bg-green-900",
       iconColorClass: "text-green-500 dark:text-green-400",
-      href: "/login",
       applyFlipEffect: true,
-      backTitle: "مرحباً بعودتك!",
-      backDescription: "أدخل بياناتك للوصول إلى حسابك وإدارة مشاريعك بكفاءة.",
-      backCtaText: "تسجيل الدخول الآن",
-      dataAiHint: "user login",
+      backTitle: "اختر طريقة الدخول", // Updated back title
+      backDescription: "حدد ما إذا كنت تريد تسجيل الدخول كمهندس أو كمالك.", // Updated back description
+      backCustomContent: ( // Using custom content for two login buttons
+        <div className="space-y-3 w-full px-4">
+          <Button asChild size="lg" className="w-full bg-white/20 hover:bg-white/30 text-white">
+            <Link href="/login"> {/* login is now engineer login */}
+              <HardHat className="ml-2 h-5 w-5" />
+              تسجيل دخول مهندس
+            </Link>
+          </Button>
+          <Button asChild size="lg" className="w-full bg-white/20 hover:bg-white/30 text-white">
+            <Link href="/owner-login"> {/* New owner login page */}
+              <HomeIcon className="ml-2 h-5 w-5" />
+              تسجيل دخول مالك
+            </Link>
+          </Button>
+        </div>
+      ),
+      dataAiHint: "user login options",
       cardHeightClass: "h-72 sm:h-80",
       onClick: isAdminLoggedIn ? () => handleAuthCardClickForAdmin("تسجيل الدخول") : undefined,
     },
@@ -65,13 +79,13 @@ export default function Home() {
       backCustomContent: (
         <div className="space-y-3 w-full px-4">
           <Button asChild size="lg" className="w-full bg-white/20 hover:bg-white/30 text-white">
-            <Link href="/owner-signup"> {/* Updated link for Owner */}
-              <HomeIcon className="ml-2 h-5 w-5" /> {/* Changed icon for Owner */}
+            <Link href="/owner-signup"> 
+              <HomeIcon className="ml-2 h-5 w-5" /> 
               إنشاء حساب مالك
             </Link>
           </Button>
           <Button asChild size="lg" className="w-full bg-white/20 hover:bg-white/30 text-white">
-            <Link href="/signup"> {/* Updated link for Engineer */}
+            <Link href="/signup"> 
               <HardHat className="ml-2 h-5 w-5" />
               إنشاء حساب مهندس
             </Link>
@@ -116,7 +130,7 @@ export default function Home() {
               icon={cardProps.icon}
               iconWrapperClass={cardProps.iconWrapperClass}
               iconColorClass={cardProps.iconColorClass}
-              href={!isAdminLoggedIn && !cardProps.backCustomContent ? cardProps.href : undefined}
+              href={!isAdminLoggedIn && !cardProps.backCustomContent && cardProps.title === "تسجيل دخول المدير" ? cardProps.href : undefined}
               onClick={cardProps.onClick}
               applyFlipEffect={cardProps.applyFlipEffect}
               backTitle={cardProps.backTitle}

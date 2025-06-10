@@ -10,6 +10,17 @@
       "profileImage": "https://placehold.co/100x100.png?text=عم",
       "password_hash": "$2a$10$M8XhwePcbG/GsRKF5X3twuN5VWhcp8Mc2BqPwCHjIJlLrkv0i49gG",
       "createdAt": "2025-06-10T16:37:30.057Z"
+    },
+    {
+      "id": "user-1749588483400-xho1s",
+      "name": "سالم سالم",
+      "email": "malik@gmail.com",
+      "password_hash": "$2a$10$J8YD0sys.BNX5XhuRywi0eavmaFh/.dOM2L/adjQFUn1jokdBsrb6",
+      "role": "OWNER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-10T20:48:03.400Z",
+      "updatedAt": "2025-06-10T20:48:03.400Z",
+      "profileImage": "https://placehold.co/100x100.png?text=سا"
     }
   ],
   "projects": [],
@@ -365,6 +376,78 @@
       "message": "User ID user-1749573914693-u1xrs deleted by admin.",
       "timestamp": "2025-06-10T20:38:43.979Z",
       "user": "Admin"
+    },
+    {
+      "id": "log-1749588210742-ygsve",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: malik@gmail.com",
+      "timestamp": "2025-06-10T20:43:30.742Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749588264904-jptyh",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: malik@gmail.com",
+      "timestamp": "2025-06-10T20:44:24.904Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749588266046-fj1cs",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: malik@gmail.com",
+      "timestamp": "2025-06-10T20:44:26.046Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749588267242-z63ca",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: malik@gmail.com",
+      "timestamp": "2025-06-10T20:44:27.242Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749588269615-5qq7h",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: malik@gmail.com",
+      "timestamp": "2025-06-10T20:44:29.615Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749588270676-9c9b5",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: malik@gmail.com",
+      "timestamp": "2025-06-10T20:44:30.676Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749588483411-4zo83",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User malik@gmail.com registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-06-10T20:48:03.411Z",
+      "user": "user-1749588483400-xho1s"
+    },
+    {
+      "id": "log-1749588487808-qo296",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-10T20:48:07.808Z",
+      "user": "user-1749588483400-xho1s"
+    },
+    {
+      "id": "log-1749588590324-jtpxa",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gamil.com",
+      "timestamp": "2025-06-10T20:49:50.324Z",
+      "user": "user-1749573450056-evwdt"
     }
   ],
   "roles": [

@@ -13,6 +13,8 @@ export default function AuthCardsSection() {
       description: "لديك حساب مهندس أو مالك؟ قم بتسجيل الدخول للوصول إلى لوحة التحكم الخاصة بك.",
       icon: <LogIn className="h-10 w-10 text-app-gold mb-4" />,
       dataAiHint: "user login section",
+      applyFlipEffect: true,
+      cardHeightClass: "min-h-[320px] h-auto",
       backTitle: "خيارات تسجيل الدخول",
       backDescription: "اختر نوع الحساب الذي ترغب بتسجيل الدخول إليه.",
       actions: [
@@ -26,10 +28,12 @@ export default function AuthCardsSection() {
       description: "هل أنت مسؤول النظام؟ قم بتسجيل الدخول للوصول إلى لوحة تحكم المسؤول.",
       icon: <ShieldCheck className="h-10 w-10 text-app-red mb-4" />,
       dataAiHint: "admin login section",
+      applyFlipEffect: true,
+      cardHeightClass: "min-h-[320px] h-auto",
       backTitle: "دخول المسؤول",
       backDescription: "تسجيل الدخول إلى لوحة تحكم إدارة النظام.",
       actions: [
-        { label: "دخول كمسؤول", href: "/admin-login", icon: <ShieldCheck className="ms-2 h-5 w-5" />, variant: "destructive" as const },
+        { label: "دخول كمسؤول", href: "/admin-login", icon: <ShieldCheck className="ms-2 h-5 w-5" />, variant: "destructive" as const, className: "bg-app-red hover:bg-red-700" },
       ]
     },
     {
@@ -38,6 +42,8 @@ export default function AuthCardsSection() {
       description: "ليس لديك حساب؟ انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
       icon: <UserPlus className="h-10 w-10 text-app-gold mb-4" />,
       dataAiHint: "signup section",
+      applyFlipEffect: true,
+      cardHeightClass: "min-h-[320px] h-auto",
       backTitle: "خيارات إنشاء حساب",
       backDescription: "اختر نوع الحساب الذي ترغب بإنشائه.",
       actions: [
@@ -53,7 +59,7 @@ export default function AuthCardsSection() {
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-app-red">
           ابدأ رحلتك معنا
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> {/* Updated grid to lg:grid-cols-3 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {authCardActions.map((card) => (
             <InfoCard
               key={card.id}
@@ -61,8 +67,8 @@ export default function AuthCardsSection() {
               description={card.description}
               icon={card.icon}
               dataAiHint={card.dataAiHint}
-              applyFlipEffect={true}
-              cardHeightClass="min-h-[320px] h-auto" 
+              applyFlipEffect={card.applyFlipEffect}
+              cardHeightClass={card.cardHeightClass}
               iconWrapperClass="bg-transparent" 
               iconColorClass="" 
               backTitle={card.backTitle}

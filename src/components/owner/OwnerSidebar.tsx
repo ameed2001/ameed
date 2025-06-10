@@ -52,17 +52,20 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
-  const [ownerName, setOwnerName] = useState("المالك");
+  const [ownerName, setOwnerName] = useState("المالك"); // Default name
 
   useEffect(() => {
-    setIsClient(true);
-    if (typeof window !== 'undefined') {
+    setIsClient(true); // Set isClient to true once the component mounts
+  }, []);
+
+  useEffect(() => {
+    if (isClient) { // Only access localStorage if isClient is true
       const storedUserName = localStorage.getItem('userName');
       if (storedUserName) {
         setOwnerName(storedUserName);
       }
     }
-  }, []);
+  }, [isClient]); // Re-run this effect if isClient changes
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
@@ -156,7 +159,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         </ul>
       </nav>
 
-      {isClient && (
+      {isClient && ( // Only render logout button on client to avoid hydration mismatch if localStorage is checked for visibility
         <div className="mt-auto p-3 border-t border-border flex-shrink-0">
           <button
             onClick={handleLogout}
@@ -175,4 +178,3 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
     </aside>
   );
 }
-

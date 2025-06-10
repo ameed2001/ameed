@@ -528,6 +528,14 @@
       "message": "User logged in successfully: www@gmail.com",
       "timestamp": "2025-06-10T20:59:30.153Z",
       "user": "user-1749588881407-acagf"
+    },
+    {
+      "id": "log-1749589470712-ik3vr",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: www@gmail.com",
+      "timestamp": "2025-06-10T21:04:30.712Z",
+      "user": "user-1749588881407-acagf"
     }
   ],
   "roles": [

@@ -74,7 +74,7 @@ export async function ownerSignupUserAction(
     success: true,
     message: registrationResult.message || "تم إنشاء حساب المالك بنجاح!",
     isPendingApproval: false, // Owners are typically active immediately
-    redirectTo: "/login"
+    redirectTo: "/owner-login" // Redirect to owner login page
   };
 }
 
@@ -138,7 +138,8 @@ export async function engineerSignupUserAction(
   return {
     success: true,
     message: registrationResult.message || "تم إنشاء حساب المهندس بنجاح!",
-    isPendingApproval: registrationResult.isPendingApproval, // This will come from db.ts
-    redirectTo: registrationResult.isPendingApproval ? undefined : "/login" // Don't redirect if pending
+    isPendingApproval: registrationResult.isPendingApproval, 
+    redirectTo: registrationResult.isPendingApproval ? undefined : "/login" // Redirect to engineer login if not pending
   };
 }
+

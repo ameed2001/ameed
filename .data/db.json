@@ -430,6 +430,22 @@
       "message": "User logged in successfully: ameed2001@gmail.com",
       "timestamp": "2025-06-09T22:07:13.196Z",
       "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749537791691-oie8w",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-10T06:43:11.691Z",
+      "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749538752263-0iulk",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed@admin.com",
+      "timestamp": "2025-06-10T06:59:12.263Z",
+      "user": "user-001"
     }
   ],
   "roles": [

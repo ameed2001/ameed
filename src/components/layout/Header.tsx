@@ -48,7 +48,10 @@ const Header = () => {
         const apiKey = "e256bd321903a099d3e8e81e"; 
         const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/ILS`);
         if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}`);
+            // This includes handling for 429 errors
+            console.error(`API request failed with status ${response.status} for currency rates.`);
+            setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
+            return; // Exit early
         }
         const data = await response.json();
         if (data.result === "success" && data.conversion_rates) {
@@ -58,17 +61,17 @@ const Header = () => {
             JOD: (1 / data.conversion_rates.JOD).toFixed(2),
           });
         } else {
-          console.error("Error in currency data:", data.result, data['error-type']);
-          setCurrencyRates({ USD: "خطأ", EUR: "خطأ", JOD: "خطأ" });
+          console.error("Error in currency data structure or API error:", data.result, data['error-type']);
+          setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
         }
       } catch (error) {
         console.error("Error fetching currency rates:", error);
-        setCurrencyRates({ USD: "خطأ", EUR: "خطأ", JOD: "خطأ" });
+        setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
       }
     };
 
     fetchCurrencyRates();
-    const currencyTimerId = setInterval(fetchCurrencyRates, 3600000); 
+    const currencyTimerId = setInterval(fetchCurrencyRates, 3600000); // Fetch every hour
 
     return () => {
       clearInterval(timerId);

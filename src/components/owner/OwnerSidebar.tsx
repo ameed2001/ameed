@@ -82,21 +82,21 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
 
   return (
     <aside className={cn(
-      "bg-header-bg text-header-fg shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0", 
+      "bg-card text-foreground shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0 border-r", 
       isOpen ? "w-72" : "w-20"
     )}>
-      <div className="p-4 flex justify-between items-center border-b border-gray-700 h-[70px] flex-shrink-0">
+      <div className="p-4 flex justify-between items-center border-b border-border h-[70px] flex-shrink-0">
         {isOpen ? (
           <div className="flex items-center gap-2 overflow-hidden">
             <DashboardIcon className="h-8 w-8 text-app-gold flex-shrink-0" />
-            <h2 className="text-lg font-bold text-white truncate">لوحة التحكم</h2>
+            <h2 className="text-lg font-bold text-app-red truncate">لوحة التحكم</h2>
           </div>
         ) : (
           <DashboardIcon className="h-8 w-8 text-app-gold mx-auto" />
         )}
         <button 
           onClick={onToggle}
-          className="text-gray-300 hover:text-white p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-app-gold"
+          className="text-muted-foreground hover:text-foreground p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-app-gold"
           aria-label={isOpen ? "طي الشريط الجانبي" : "فتح الشريط الجانبي"}
         >
           {isOpen ? <ChevronLeft size={24} /> : <MenuIcon size={24} />}
@@ -105,24 +105,24 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
 
       {isOpen && (
         <div className={cn(
-          "text-center mb-2 p-3 border-b border-gray-700 flex-shrink-0"
+          "text-center mb-2 p-3 border-b border-border flex-shrink-0"
         )}>
-          <h2 className="text-lg font-bold text-white truncate">مرحباً، {isClient ? ownerName : "المالك"}</h2>
-          <p className="text-xs text-gray-400">لوحة تحكم المالك</p>
+          <h2 className="text-lg font-bold text-foreground truncate">مرحباً، {isClient ? ownerName : "المالك"}</h2>
+          <p className="text-xs text-muted-foreground">لوحة تحكم المالك</p>
         </div>
       )}
 
       {isOpen && (
-        <div className="p-3 border-b border-gray-700 flex-shrink-0">
-          <h3 className="text-sm font-semibold text-white mb-2 px-1 text-right">نظرة عامة سريعة</h3>
+        <div className="p-3 border-b border-border flex-shrink-0">
+          <h3 className="text-sm font-semibold text-foreground mb-2 px-1 text-right">نظرة عامة سريعة</h3>
           <div className="grid grid-cols-2 gap-2">
             {sidebarStats.map(stat => {
               const IconComponent = stat.icon;
               return (
-                <div key={stat.label} className="bg-zinc-800 p-2 rounded-md text-center">
+                <div key={stat.label} className="bg-muted/40 p-2 rounded-md text-center">
                   <IconComponent className={cn("h-5 w-5 mx-auto mb-1", stat.color)} />
-                  <div className="text-xs text-gray-300 truncate">{stat.label}</div>
-                  <div className="text-lg font-bold text-white">{stat.value}</div>
+                  <div className="text-xs text-muted-foreground truncate">{stat.label}</div>
+                  <div className="text-lg font-bold text-foreground">{stat.value}</div>
                 </div>
               );
             })}
@@ -142,8 +142,8 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
                     !isOpen && "justify-center py-3",
                     isActive
-                      ? "bg-app-gold text-gray-900 shadow-md" 
-                      : "text-gray-300 hover:bg-app-gold hover:text-gray-900" 
+                      ? "bg-app-gold text-gray-900 shadow-md" // Active state: gold background, dark text (as per original image and admin style)
+                      : "text-foreground/80 hover:bg-app-gold hover:text-gray-900" // Inactive: dark text on light bg, hover: gold bg, dark text
                   )}
                   title={!isOpen ? item.label : undefined}
                 >
@@ -157,12 +157,12 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
       </nav>
 
       {isClient && (
-        <div className="mt-auto p-3 border-t border-gray-700 flex-shrink-0">
+        <div className="mt-auto p-3 border-t border-border flex-shrink-0">
           <button
             onClick={handleLogout}
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out w-full",
-              "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white",
+              "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white", // Kept original logout button style
               !isOpen && "justify-center py-3"
             )}
             title={!isOpen ? "تسجيل الخروج" : undefined}
@@ -175,3 +175,4 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
     </aside>
   );
 }
+

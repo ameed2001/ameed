@@ -180,9 +180,13 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex flex-col items-center mt-4 space-y-3">
             <p className="text-sm text-gray-600">
-              ليس لديك حساب؟{' '}
+              ليس لديك حساب؟ إنشاء حساب جديد كـ{' '}
+              <Link href="/engineer-signup" className="font-semibold text-blue-700 underline hover:text-blue-800">
+                مهندس
+              </Link>
+              {' '}أو كـ{' '}
               <Link href="/signup" className="font-semibold text-blue-700 underline hover:text-blue-800">
-                إنشاء حساب جديد
+                مالك
               </Link>
             </p>
             <Link href="/admin-login" className="text-sm font-medium text-red-700 hover:text-red-800 hover:underline flex items-center gap-1">

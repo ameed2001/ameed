@@ -1,26 +1,15 @@
 {
   "users": [
     {
-      "id": "user-1749486065534-3",
+      "id": "user-1749573450056-evwdt",
       "name": "عميد سماره",
-      "email": "ameed2001@gmail.com",
-      "password_hash": "$2a$10$QS5UuWCuVRaimrD/s1RoQOatJ5nHCugEjfGpGKYRzv2cQ4BaP1pni",
-      "role": "OWNER",
-      "status": "ACTIVE",
-      "createdAt": "2025-06-09T16:21:05.534Z",
-      "updatedAt": "2025-06-10T11:06:53.301Z",
-      "profileImage": "https://placehold.co/100x100.png?text=عم"
-    },
-    {
-      "id": "user-1749568642905-z7c3l",
-      "name": "عميد سماره",
-      "email": "ameed201@gmail.com",
+      "email": "ameed2001@gamil.com",
       "role": "ENGINEER",
       "status": "ACTIVE",
-      "updatedAt": "2025-06-10T15:18:14.100Z",
+      "updatedAt": "2025-06-10T16:38:23.752Z",
       "profileImage": "https://placehold.co/100x100.png?text=عم",
-      "password_hash": "$2a$10$x4/lKj1cOOp5Fhl7wiH5c.A7w2gM1cZS6VpReQj3JPH4x4zza3WDK",
-      "createdAt": "2025-06-10T15:17:22.905Z"
+      "password_hash": "$2a$10$M8XhwePcbG/GsRKF5X3twuN5VWhcp8Mc2BqPwCHjIJlLrkv0i49gG",
+      "createdAt": "2025-06-10T16:37:30.057Z"
     }
   ],
   "projects": [],
@@ -160,6 +149,54 @@
       "message": "User logged in successfully: ameed201@gmail.com",
       "timestamp": "2025-06-10T15:34:20.200Z",
       "user": "user-1749568642905-z7c3l"
+    },
+    {
+      "id": "log-1749573450065-fb7bk",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed2001@gamil.com registered. Role: ENGINEER, Status: PENDING_APPROVAL.",
+      "timestamp": "2025-06-10T16:37:30.065Z",
+      "user": "user-1749573450056-evwdt"
+    },
+    {
+      "id": "log-1749573499002-c8l9u",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749568642905-z7c3l deleted by admin.",
+      "timestamp": "2025-06-10T16:38:19.002Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749573501955-rp0wq",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749486065534-3 deleted by admin.",
+      "timestamp": "2025-06-10T16:38:21.955Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749573503755-r2weg",
+      "action": "USER_UPDATE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "Admin updated user ID user-1749573450056-evwdt. Fields: status, updatedAt",
+      "timestamp": "2025-06-10T16:38:23.756Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749573503760-oqrh7",
+      "action": "ENGINEER_APPROVAL_SUCCESS",
+      "level": "INFO",
+      "message": "Admin admin-001 approved engineer user-1749573450056-evwdt.",
+      "timestamp": "2025-06-10T16:38:23.760Z",
+      "user": "admin-001"
+    },
+    {
+      "id": "log-1749573525813-jr02k",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gamil.com",
+      "timestamp": "2025-06-10T16:38:45.813Z",
+      "user": "user-1749573450056-evwdt"
     }
   ],
   "roles": [
@@ -444,5 +481,3 @@
     }
   ]
 }
-
-    

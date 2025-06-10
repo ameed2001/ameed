@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Instagram, Facebook, Clock } from 'lucide-react'; 
+import { Instagram, Facebook, Clock, Home as HomeIcon, HardHat, TrendingUp, FileText } from 'lucide-react';
 
 // SVG for WhatsApp icon
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -13,19 +13,8 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-interface CurrencyRates {
-  USD: number | string;
-  EUR: number | string;
-  JOD: number | string;
-}
-
 const Header = () => {
   const [currentTime, setCurrentTime] = useState('');
-  const [currencyRates, setCurrencyRates] = useState<CurrencyRates>({
-    USD: 'جارٍ...',
-    EUR: 'جارٍ...',
-    JOD: 'جارٍ...',
-  });
 
   useEffect(() => {
     const updateTime = () => {
@@ -43,53 +32,17 @@ const Header = () => {
     updateTime();
     const timerId = setInterval(updateTime, 1000);
 
-    const fetchCurrencyRates = async () => {
-      try {
-        const apiKey = "rJazBtzJrIw_PUmHUCjC8OpnWM3pluKV"; 
-        const response = await fetch(`https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=ILS&currencies=USD,EUR,JOD`);
-        
-        if (!response.ok) {
-            if (response.status === 429) {
-                console.warn(`CURRENCY API ERROR: Rate limit exceeded (429) for API key "${apiKey}". This means the free tier quota might be exhausted. Please check your account at currencyapi.com or consider using a different key. Displaying N/A.`);
-            } else if (response.status === 401 || response.status === 403) {
-                console.error(`CURRENCY API ERROR: Unauthorized (status ${response.status}) for API key "${apiKey}". The API key might be invalid or disabled. Please verify your API key. Displaying N/A.`);
-            }
-             else {
-                console.error(`CURRENCY API ERROR: Request failed with status ${response.status}. URL: ${response.url}. Please check network and API status. Displaying N/A.`);
-            }
-            setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
-            return; 
-        }
-
-        const data = await response.json();
-        if (data && data.data && data.data.USD && data.data.EUR && data.data.JOD &&
-            typeof data.data.USD.value === 'number' && 
-            typeof data.data.EUR.value === 'number' &&
-            typeof data.data.JOD.value === 'number') {
-          setCurrencyRates({
-            USD: (1 / data.data.USD.value).toFixed(2),
-            EUR: (1 / data.data.EUR.value).toFixed(2),
-            JOD: (1 / data.data.JOD.value).toFixed(2),
-          });
-        } else {
-          console.error("Error in currency data structure, missing currency values, or API error:", data);
-          setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
-        }
-      } catch (error) {
-        console.error("Error fetching currency rates (network issue or CORS):", error);
-        setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
-      }
-    };
-
-    fetchCurrencyRates();
-    const TEN_DAYS_IN_MS = 10 * 24 * 60 * 60 * 1000;
-    const currencyTimerId = setInterval(fetchCurrencyRates, TEN_DAYS_IN_MS); 
-
     return () => {
       clearInterval(timerId);
-      clearInterval(currencyTimerId);
     }
   }, []);
+
+  const constructionIndicators = [
+    { label: "متوسط تكلفة البناء (م²)", value: "150 ألف شيكل", icon: HomeIcon, dataAiHint: "construction cost" },
+    { label: "أسعار الأيدي العاملة (يومية)", value: "150 شيكل", icon: HardHat, dataAiHint: "labor cost" },
+    { label: "مؤشر أسعار المعدات الإنشائية", value: null, icon: TrendingUp, dataAiHint: "equipment prices" }, // Value is null for labels
+    { label: "تكلفة التراخيص الإنشائية", value: "2000 شيكل", icon: FileText, dataAiHint: "license cost" },
+  ];
 
   return (
     <header className="bg-header-bg text-header-fg py-3 px-4 md:px-6 shadow-header-footer">
@@ -114,19 +67,26 @@ const Header = () => {
           </div>
         </div>
         
-        {/* Left Section: Info (Time, Currency, Social) (RTL) */}
+        {/* Left Section: Info (Time, Construction Indicators, Social) (RTL) */}
         <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3">
           <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center gap-2">
             <Clock size={16} className="flex-shrink-0" />
             <span className="tabular-nums min-w-[12ch] text-left">{currentTime || 'Loading...'}</span>
           </div>
 
-          <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md">
-            <span className="text-xs block mb-0.5 text-gray-300">أسعار العملات:</span>
-            <div className="flex items-center gap-2">
-              <span className="bg-currency-jod px-2 py-0.5 rounded-full text-xs text-gray-900 font-semibold">JOD: {currencyRates.JOD}</span>
-              <span className="bg-currency-eur px-2 py-0.5 rounded-full text-xs text-gray-900 font-semibold">EUR: {currencyRates.EUR}</span>
-              <span className="bg-currency-usd px-2 py-0.5 rounded-full text-xs text-gray-900 font-semibold">USD: {currencyRates.USD}</span>
+          <div className="bg-header-info-bg text-white px-3 py-2 rounded-lg text-xs shadow-md">
+            <span className="font-semibold block mb-1 text-gray-200 text-center">مؤشرات إنشائية:</span>
+            <div className="space-y-1">
+              {constructionIndicators.map((indicator, index) => {
+                const IconComponent = indicator.icon;
+                return (
+                  <div key={index} className="flex items-center gap-1.5" data-ai-hint={indicator.dataAiHint}>
+                    <IconComponent size={14} className="text-app-gold flex-shrink-0" />
+                    <span className="text-gray-300">{indicator.label}:</span>
+                    {indicator.value && <span className="text-white font-medium">{indicator.value}</span>}
+                  </div>
+                );
+              })}
             </div>
           </div>
           

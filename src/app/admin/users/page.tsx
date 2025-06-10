@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Edit, Trash2, KeyRound, UserPlus, UserCheck, Loader2 } from 'lucide-react';
+import { Search, Edit, Trash2, KeyRound, UserCheck, Loader2 } from 'lucide-react'; // Removed UserPlus
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
-  type UserDocument as User, // Renamed to avoid conflict with React's User type
+  type UserDocument as User, 
   type UserRole, 
   type UserStatus, 
   deleteUser as dbDeleteUser, 
@@ -19,7 +19,7 @@ import {
   getUsers,
   suspendUser,
   approveEngineer
-} from '@/lib/db'; // Updated import
+} from '@/lib/db'; 
 
 export default function AdminUsersPage() {
   const { toast } = useToast();
@@ -31,7 +31,7 @@ export default function AdminUsersPage() {
   const [totalUsersCount, setTotalUsersCount] = useState(0);
 
 
-  const currentUser = { id: 'admin-001', role: 'Admin' }; // Mock admin user for now
+  const currentUser = { id: 'admin-001', role: 'Admin' }; 
 
   const refreshUsersFromDb = async () => {
      setIsFetching(true);
@@ -131,11 +131,6 @@ export default function AdminUsersPage() {
     toast({ title: "تعديل المستخدم", description: `سيتم فتح نموذج لتعديل المستخدم ${user.name} (محاكاة).` });
   };
 
-
-  const handleAddUser = () => {
-    toast({ title: "إضافة مستخدم جديد", description: "سيتم فتح نموذج لإضافة مستخدم جديد (محاكاة)." });
-  };
-
   useEffect(() => {
     refreshUsersFromDb();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -182,9 +177,7 @@ export default function AdminUsersPage() {
               <SelectItem value="SUSPENDED">معلق</SelectItem>
             </SelectContent>
           </Select>
-          <Button onClick={handleAddUser} className="w-full sm:w-auto bg-app-red hover:bg-red-700 text-white">
-            <UserPlus className="ms-2 h-4 w-4" /> إضافة مستخدم
-          </Button>
+          {/* "Add User" button is removed */}
         </div>
         
         {isFetching ? (
@@ -291,5 +284,4 @@ export default function AdminUsersPage() {
     </Card>
   );
 }
-
     

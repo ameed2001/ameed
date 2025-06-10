@@ -10,12 +10,11 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Settings as SettingsIcon, Loader2 } from 'lucide-react';
-import { getSystemSettings, updateSystemSettings, type SystemSettingsDocument } from '@/lib/db'; // Changed import
+import { getSystemSettings, updateSystemSettings, type SystemSettingsDocument } from '@/lib/db'; 
 
 
 export default function AdminSettingsPage() {
   const { toast } = useToast();
-  // Initialize component state with data from mock DB
   const [settings, setSettings] = useState<SystemSettingsDocument | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -31,7 +30,7 @@ export default function AdminSettingsPage() {
            toast({ title: "خطأ", description: "فشل تحميل إعدادات النظام.", variant: "destructive" });
         }
       } catch (error) {
-         toast({ title: "خطأ", description: "حدث خطأ أثناء تحميل الإعدادات.", variant: "destructive" });
+         toast({ title: "خطأ فادح", description: "حدث خطأ أثناء تحميل الإعدادات.", variant: "destructive" });
          console.error("Error fetching settings:", error);
       }
       setIsFetching(false);
@@ -51,27 +50,24 @@ export default function AdminSettingsPage() {
       return;
     }
     setIsLoading(true);
-    console.log("Saving settings (simulation):", settings);
     
-    // Here you would call an async function from lib/db.ts to save the settings
-    // For example: const result = await updateSystemSettings(settings);
-    // For now, we'll simulate the save and assume db.json is updated by some other means
-    // or that the updateSystemSettings function handles writing to db.json
+    const result = await updateSystemSettings(settings);
     
-    // Simulate update in the local db.json file (this is conceptual)
-    // In a real scenario, you'd have an `updateSystemSettings` function in `lib/db.ts`
-    // For now, we'll just show a success toast as if it worked.
-    // dbSettings.siteName = settings.siteName;
-    // dbSettings.defaultLanguage = settings.defaultLanguage;
-    // dbSettings.maintenanceMode = settings.maintenanceMode;
-    // dbSettings.maxUploadSizeMB = settings.maxUploadSizeMB;
-    // dbSettings.emailNotificationsEnabled = settings.emailNotificationsEnabled;
-    
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-    toast({
-      title: "تم حفظ الإعدادات",
-      description: "تم تحديث إعدادات النظام بنجاح (محاكاة).",
-    });
+    if (result.success) {
+        toast({
+            title: "تم حفظ الإعدادات",
+            description: result.message || "تم تحديث إعدادات النظام بنجاح.",
+            variant: "default",
+        });
+        // Optionally re-fetch settings if there's a chance they were modified server-side
+        // For now, we assume the local state is the source of truth until next fetch.
+    } else {
+        toast({
+            title: "خطأ في الحفظ",
+            description: result.message || "فشل تحديث إعدادات النظام.",
+            variant: "destructive",
+        });
+    }
     setIsLoading(false);
   };
 
@@ -185,5 +181,4 @@ export default function AdminSettingsPage() {
     </Card>
   );
 }
-
     

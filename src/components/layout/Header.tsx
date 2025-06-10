@@ -47,12 +47,17 @@ const Header = () => {
       try {
         const apiKey = "424268c285e3df502f41a8a3"; 
         const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/ILS`);
+        
         if (!response.ok) {
-            // This includes handling for 429 errors
-            console.error(`API request failed with status ${response.status} for currency rates.`);
+            if (response.status === 429) {
+                console.warn(`Currency API rate limit exceeded (429) for key ${apiKey}. Showing N/A. Consider checking your API key plan at exchangerate-api.com.`);
+            } else {
+                console.error(`API request failed with status ${response.status} for currency rates.`);
+            }
             setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
-            return; // Exit early
+            return; 
         }
+
         const data = await response.json();
         if (data.result === "success" && data.conversion_rates) {
           setCurrencyRates({
@@ -140,4 +145,4 @@ const Header = () => {
 };
 
 export default Header;
-
+    

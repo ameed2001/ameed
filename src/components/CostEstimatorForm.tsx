@@ -443,7 +443,7 @@ export default function CostEstimatorForm() {
             <Button
               onClick={handleAddAnotherMaterial}
               variant="outline"
-              className="flex-1 border-blue-500 text-blue-500 hover:bg-blue-50"
+              className="flex-1 border-blue-500 text-blue-500 hover:bg-blue-50 hover:text-blue-700"
             >
               <PlusCircle className="ml-2 h-5 w-5" />
               إضافة مادة أخرى

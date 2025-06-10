@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const adminNavItems = [
   { href: '/', label: 'الرئيسية للموقع', icon: Home },
-  { href: '/admin', label: 'نظرة عامة', icon: LayoutDashboard },
+  { href: '/admin', label: 'لوحة المسؤول', icon: LayoutDashboard },
   { href: '/admin/users', label: 'إدارة المستخدمين', icon: Users },
   { href: '/admin/projects', label: 'إدارة المشاريع', icon: Briefcase },
   { href: '/admin/settings', label: 'إعدادات النظام', icon: Settings },

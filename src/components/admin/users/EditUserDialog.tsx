@@ -21,9 +21,6 @@ const editUserSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }).optional(),
 });
 
-// Removed role from this schema for now to focus on name/email for Engineer edit
-// If role editing is needed, it can be added back with proper validation.
-
 interface EditUserDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -44,10 +41,10 @@ export default function EditUserDialog({ isOpen, onClose, onUserUpdated, user, a
     if (user && isOpen) {
       setValue("userId", user.id);
       setValue("name", user.name);
-      if (user.role === 'ENGINEER') {
+      if (user.role === 'ENGINEER' || user.role === 'OWNER') {
         setValue("email", user.email);
       } else {
-        setValue("email", undefined); // Clear email if not engineer for this dialog's purpose
+        setValue("email", undefined); 
       }
     } else if (!isOpen) {
       reset({ userId: "", name: "", email: "" });
@@ -59,12 +56,11 @@ export default function EditUserDialog({ isOpen, onClose, onUserUpdated, user, a
 
     setIsLoading(true);
     
-    // Construct payload for the action. Only include email if the user is an engineer.
     const payload: AdminUpdateUserFormValues = {
       userId: user.id,
       name: data.name,
     };
-    if (user.role === 'ENGINEER' && data.email) {
+    if ((user.role === 'ENGINEER' || user.role === 'OWNER') && data.email) {
       payload.email = data.email;
     }
     
@@ -78,7 +74,7 @@ export default function EditUserDialog({ isOpen, onClose, onUserUpdated, user, a
         variant: "default",
       });
       onUserUpdated();
-      onClose(); // Close dialog on success
+      onClose(); 
     } else {
       toast({
         title: "خطأ في تحديث المستخدم",
@@ -104,7 +100,7 @@ export default function EditUserDialog({ isOpen, onClose, onUserUpdated, user, a
 
   if (!user) return null;
 
-  const canEditEmail = user.role === 'ENGINEER';
+  const canEditEmail = user.role === 'ENGINEER' || user.role === 'OWNER';
 
   return (
     <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
@@ -121,7 +117,7 @@ export default function EditUserDialog({ isOpen, onClose, onUserUpdated, user, a
                 تعديل بيانات المستخدم: {user.name}
             </DialogTitle>
             <DialogDescription className="text-gray-500 mt-2 text-sm text-right w-full">
-                تحديث اسم المستخدم أو بريده الإلكتروني (للمهندسين فقط).
+                تحديث اسم المستخدم أو بريده الإلكتروني (للمهندسين والملاك فقط).
             </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -137,9 +133,9 @@ export default function EditUserDialog({ isOpen, onClose, onUserUpdated, user, a
           
           {canEditEmail && (
             <div className="space-y-1.5">
-              <Label htmlFor="edit-email" className="text-sm font-medium text-gray-700">البريد الإلكتروني (للمهندس)</Label>
+              <Label htmlFor="edit-email" className="text-sm font-medium text-gray-700">البريد الإلكتروني ({user.role === 'ENGINEER' ? 'للمهندس' : 'للمالك'})</Label>
               <div className="relative">
-                  <Input id="edit-email" type="email" {...register("email")} placeholder="engineer@example.com" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
+                  <Input id="edit-email" type="email" {...register("email")} placeholder={user.role === 'ENGINEER' ? "engineer@example.com" : "owner@example.com"} className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
                   <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               </div>
               {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
@@ -152,13 +148,6 @@ export default function EditUserDialog({ isOpen, onClose, onUserUpdated, user, a
                 <p className="text-sm text-gray-600 p-2 bg-gray-100 rounded-md border border-gray-200">{user.email} (لا يمكن تغييره لهذا الدور)</p>
             </div>
           )}
-
-          {/* Role editing can be added here if needed in the future */}
-          {/* <div className="space-y-1.5">
-            <Label htmlFor="edit-role">الدور</Label>
-            <Select ... > ... </Select>
-            {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role.message}</p>}
-          </div> */}
 
           <DialogFooter className="pt-5 flex flex-col sm:flex-row gap-3 sm:gap-2">
             <Button
@@ -184,5 +173,3 @@ export default function EditUserDialog({ isOpen, onClose, onUserUpdated, user, a
     </Dialog>
   );
 }
-
-    

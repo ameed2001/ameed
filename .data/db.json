@@ -4,11 +4,11 @@
       "id": "user-1749486065534-3",
       "name": "عميد سماره",
       "email": "ameed2001@gmail.com",
-      "password_hash": "$2a$10$Hv8OUsCCe0FecNSHrO7ya.YZZH0QKVhrYNA2iH/m03dK0k1DFoupW",
+      "password_hash": "$2a$10$QS5UuWCuVRaimrD/s1RoQOatJ5nHCugEjfGpGKYRzv2cQ4BaP1pni",
       "role": "OWNER",
       "status": "ACTIVE",
       "createdAt": "2025-06-09T16:21:05.534Z",
-      "updatedAt": "2025-06-10T11:01:43.219Z",
+      "updatedAt": "2025-06-10T11:06:53.301Z",
       "profileImage": "https://placehold.co/100x100.png?text=عم"
     }
   ],
@@ -461,6 +461,54 @@
       "message": "User logged in successfully: salem@s.com",
       "timestamp": "2025-06-10T10:34:54.680Z",
       "user": "user-1749551691002-2"
+    },
+    {
+      "id": "log-1749553613316-hwchk",
+      "action": "USER_PASSWORD_RESET_BY_ADMIN",
+      "level": "INFO",
+      "message": "Admin admin-001 reset password for user user-1749486065534-3.",
+      "timestamp": "2025-06-10T11:06:53.317Z",
+      "user": "admin-001"
+    },
+    {
+      "id": "log-1749553633170-i4np9",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Invalid password attempt for user: ameed2001@gmail.com",
+      "timestamp": "2025-06-10T11:07:13.170Z",
+      "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749553644056-7elan",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-10T11:07:24.056Z",
+      "user": "user-1749486065534-3"
+    },
+    {
+      "id": "log-1749554040751-vg9rx",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: ameed2001@admin.com",
+      "timestamp": "2025-06-10T11:14:00.751Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749554666128-f8sd8",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: ameed2001@admin.com",
+      "timestamp": "2025-06-10T11:24:26.128Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1749554669443-f53wx",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gmail.com",
+      "timestamp": "2025-06-10T11:24:29.443Z",
+      "user": "user-1749486065534-3"
     }
   ],
   "roles": [

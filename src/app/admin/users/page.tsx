@@ -15,13 +15,14 @@ import {
   type UserRole, 
   type UserStatus, 
   deleteUser as dbDeleteUser, 
-  updateUser as dbUpdateUser,
+  // updateUser as dbUpdateUser, // Direct dbUpdateUser call removed, will use action
   getUsers,
   suspendUser,
   approveEngineer
 } from '@/lib/db'; 
 import AddUserDialog from '@/components/admin/users/AddUserDialog'; 
 import ResetPasswordDialog from '@/components/admin/users/ResetPasswordDialog';
+import EditUserDialog from '@/components/admin/users/EditUserDialog'; // Added EditUserDialog import
 
 export default function AdminUsersPage() {
   const { toast } = useToast();
@@ -34,6 +35,9 @@ export default function AdminUsersPage() {
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false); 
   const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] = useState(false);
   const [selectedUserForPasswordReset, setSelectedUserForPasswordReset] = useState<{id: string, name: string} | null>(null);
+  const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false); // State for EditUserDialog
+  const [selectedUserForEdit, setSelectedUserForEdit] = useState<User | null>(null); // State for user to edit
+
 
   const currentUser = { id: 'admin-001', role: 'Admin' }; // Mock admin user ID
 
@@ -88,24 +92,15 @@ export default function AdminUsersPage() {
       });
     }
   }
-
-  async function handleUpdateUser(userId: string, updates: Partial<User>) {
-    const result = await dbUpdateUser(userId, updates); 
-    if (result.success) {
-      toast({
-        title: "نجاح",
-        description: "تم تحديث بيانات المستخدم بنجاح",
-        variant: "default",
-      });
-        refreshUsersFromDb();
-    } else {
-      toast({ title: "خطأ", description: result.message, variant: "destructive" });
-    }
-  };
   
   const handleOpenResetPasswordDialog = (userId: string, userName: string) => {
     setSelectedUserForPasswordReset({ id: userId, name: userName });
     setIsResetPasswordDialogOpen(true);
+  };
+  
+  const handleOpenEditUserDialog = (user: User) => {
+    setSelectedUserForEdit(user);
+    setIsEditUserDialogOpen(true);
   };
 
   const handleApproveEngineer = async (userId: string, userName: string) => {
@@ -128,19 +123,15 @@ export default function AdminUsersPage() {
     }
   };
   
-  const handleEditUserClick = (user: User) => {
-    console.log("Attempting to edit user:", user);
-    toast({ title: "تعديل المستخدم", description: `سيتم فتح نموذج لتعديل المستخدم ${user.name} (محاكاة).` });
-  };
-
   useEffect(() => {
     refreshUsersFromDb();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleUserAdded = () => {
+  const handleUserAddedOrUpdated = () => { // Renamed to handle both add and update
     refreshUsersFromDb();
     setIsAddUserDialogOpen(false); 
+    setIsEditUserDialogOpen(false); // Close edit dialog as well
   };
 
   return (
@@ -246,7 +237,7 @@ export default function AdminUsersPage() {
                                 <span className="sr-only">{user.status === 'SUSPENDED' ? "إلغاء تعليق" : "تعليق"}</span>
                               </Button>
                           )}
-                          <Button variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100" title="تعديل" onClick={() => handleEditUserClick(user)}>
+                          <Button variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100" title="تعديل" onClick={() => handleOpenEditUserDialog(user)}>
                             <Edit className="h-5 w-5" /><span className="sr-only">تعديل</span>
                           </Button>
                           {user.role !== 'ADMIN' && (
@@ -264,13 +255,11 @@ export default function AdminUsersPage() {
                                   </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <Button
-                                      variant="secondary"
-                                      onClick={() => (document.querySelector('[data-radix- AlertDialog-cancel-button]') as HTMLElement)?.click()}
+                                    <AlertDialogCancel
                                       className="bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground"
                                     >
                                       إلغاء
-                                    </Button>
+                                    </AlertDialogCancel>
                                     <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="bg-destructive hover:bg-destructive/90">
                                       حذف
                                     </AlertDialogAction>
@@ -284,7 +273,7 @@ export default function AdminUsersPage() {
                             className="text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100" 
                             title="إعادة تعيين كلمة المرور" 
                             onClick={() => handleOpenResetPasswordDialog(user.id, user.name)}
-                            disabled={user.role === 'ADMIN'} // Optionally disable for admins
+                            disabled={user.role === 'ADMIN'} 
                           >
                             <KeyRound className="h-5 w-5" /><span className="sr-only">إعادة تعيين كلمة المرور</span>
                           </Button>
@@ -313,7 +302,7 @@ export default function AdminUsersPage() {
       <AddUserDialog 
         isOpen={isAddUserDialogOpen} 
         onClose={() => setIsAddUserDialogOpen(false)}
-        onUserAdded={handleUserAdded}
+        onUserAdded={handleUserAddedOrUpdated} 
       />
       {selectedUserForPasswordReset && (
         <ResetPasswordDialog
@@ -324,10 +313,23 @@ export default function AdminUsersPage() {
           }}
           userId={selectedUserForPasswordReset.id}
           userName={selectedUserForPasswordReset.name}
-          adminUserId={currentUser.id} // Pass the admin's ID
+          adminUserId={currentUser.id} 
+        />
+      )}
+      {selectedUserForEdit && (
+        <EditUserDialog
+          isOpen={isEditUserDialogOpen}
+          onClose={() => {
+            setIsEditUserDialogOpen(false);
+            setSelectedUserForEdit(null);
+          }}
+          onUserUpdated={handleUserAddedOrUpdated}
+          user={selectedUserForEdit}
+          adminUserId={currentUser.id}
         />
       )}
     </>
   );
 }
+    
     

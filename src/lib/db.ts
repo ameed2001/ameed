@@ -484,6 +484,7 @@ export interface AdminUserUpdateResult {
     success: boolean;
     user?: UserDocument; // Return updated user without password hash
     message?: string;
+    fieldErrors?: Record<string, string[] | undefined>;
 }
 
 export async function getUsers(adminUserId: string): Promise<{success: boolean, users?: UserDocument[], message?: string}> {
@@ -500,8 +501,8 @@ export async function getUsers(adminUserId: string): Promise<{success: boolean, 
     }
 }
 
-export async function updateUser(userId: string, updates: Partial<UserDocument>): Promise<AdminUserUpdateResult> {
-    console.log(`[db.ts] updateUser (JSON): Updating user ID ${userId}`);
+export async function updateUser(userId: string, updates: Partial<Omit<UserDocument, 'id' | 'password_hash' | 'createdAt'>> & { email?: string } ): Promise<AdminUserUpdateResult> {
+    console.log(`[db.ts] updateUser (JSON): Updating user ID ${userId} with changes:`, Object.keys(updates));
     try {
         const db = await readDb();
         const userIndex = db.users.findIndex(u => u.id === userId);
@@ -512,17 +513,33 @@ export async function updateUser(userId: string, updates: Partial<UserDocument>)
         
         const originalUser = db.users[userIndex];
 
-        // If password_hash is part of updates, ensure it's already hashed
-        // This function is generic, so hashing logic should be in the calling action if new password is plain text
-        if (updates.password_hash && !updates.password_hash.startsWith('$2a$')) {
-             console.warn(`[db.ts] updateUser: Attempt to update password_hash with a non-hashed value for user ${userId}. Hashing now.`);
-             updates.password_hash = await bcrypt.hash(updates.password_hash, 10);
+        // Check for email uniqueness if email is being updated
+        if (updates.email && updates.email !== originalUser.email) {
+            const emailExists = db.users.some(u => u.email === updates.email && u.id !== userId);
+            if (emailExists) {
+                await logAction('USER_UPDATE_FAILURE_EMAIL_EXISTS', 'WARNING', `Admin attempt to update user ${userId} email to ${updates.email}, but email already exists.`, 'Admin');
+                return { 
+                    success: false, 
+                    message: "هذا البريد الإلكتروني مستخدم بالفعل من قبل حساب آخر.",
+                    fieldErrors: { email: ["هذا البريد الإلكتروني مستخدم بالفعل."] }
+                };
+            }
         }
         
-        db.users[userIndex] = { ...originalUser, ...updates, id: originalUser.id, updatedAt: new Date().toISOString() };
+        // Ensure password_hash and createdAt are not accidentally overwritten by partial updates
+        const { password_hash, createdAt, ...restOfOriginalUser } = originalUser;
+        
+        db.users[userIndex] = { 
+            ...restOfOriginalUser, 
+            ...updates, 
+            id: originalUser.id, // ensure id is preserved
+            password_hash: originalUser.password_hash, // ensure password_hash is preserved
+            createdAt: originalUser.createdAt, // ensure createdAt is preserved
+            updatedAt: new Date().toISOString() 
+        };
         
         await writeDb(db);
-        const { password_hash, ...updatedUserSafe } = db.users[userIndex];
+        const { password_hash: _, ...updatedUserSafe } = db.users[userIndex];
         await logAction('USER_UPDATE_SUCCESS_BY_ADMIN', 'INFO', `Admin updated user ID ${userId}. Fields: ${Object.keys(updates).join(', ')}`, 'Admin');
         return { success: true, user: updatedUserSafe as UserDocument, message: "تم تحديث بيانات المستخدم بنجاح." };
     } catch (error: any) {
@@ -542,12 +559,6 @@ export async function adminResetUserPassword(adminUserId: string, targetUserId: 
             return { success: false, message: "المستخدم المستهدف غير موجود." };
         }
         
-        // Add check to prevent admin from resetting other admin's password if needed, or self.
-        // const adminUser = db.users.find(u => u.id === adminUserId);
-        // if (db.users[userIndex].role === 'ADMIN' && adminUserId !== targetUserId) {
-        //    return { success: false, message: "لا يمكن للمسؤول إعادة تعيين كلمة مرور مسؤول آخر." };
-        // }
-
         const newPasswordHash = await bcrypt.hash(newPassword_input, 10);
         db.users[userIndex].password_hash = newPasswordHash;
         db.users[userIndex].updatedAt = new Date().toISOString();
@@ -584,7 +595,6 @@ export async function deleteUser(userId: string): Promise<DeleteResult> {
 }
 
 export async function approveEngineer(adminUserId: string, engineerUserId: string): Promise<{success: boolean, message?: string}> {
-    // Admin check would go here in a real app
     console.log(`[db.ts] approveEngineer (JSON): Admin ${adminUserId} attempting to approve engineer ${engineerUserId}`);
     const result = await updateUser(engineerUserId, { status: 'ACTIVE', updatedAt: new Date().toISOString() });
     if (result.success) {
@@ -596,7 +606,6 @@ export async function approveEngineer(adminUserId: string, engineerUserId: strin
 }
 
 export async function suspendUser(adminUserId: string, targetUserId: string): Promise<{success: boolean, message?: string}> {
-    // Admin check + ensure not suspending self or other admins through this simple flow
     console.log(`[db.ts] suspendUser (JSON): Admin ${adminUserId} attempting to suspend/unsuspend user ${targetUserId}`);
     
     const db = await readDb();
@@ -620,7 +629,6 @@ export async function getLogs(): Promise<LogEntry[]> {
   console.log('[db.ts] getLogs: Attempting to retrieve logs.');
   try {
     const db = await readDb();
-    // Convert LogEntryDocument[] to LogEntry[] (string timestamp to Date object)
     const logsWithDateObjects: LogEntry[] = db.logs.map(logDoc => ({
       ...logDoc,
       timestamp: new Date(logDoc.timestamp) 
@@ -630,9 +638,7 @@ export async function getLogs(): Promise<LogEntry[]> {
   } catch (error) {
     console.error('[db.ts] getLogs: Error fetching logs:', error);
     await logAction('LOGS_FETCH_FAILURE', 'ERROR', `Error fetching logs: ${error instanceof Error ? error.message : String(error)}`);
-    return []; // Return empty array on error
+    return []; 
   }
 }
-// Removed direct export of dbSettings, dbLogs, dbUsers
-// Functions like getSystemSettings, getLogs, getUsers should be used instead.
     

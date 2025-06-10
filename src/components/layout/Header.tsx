@@ -45,28 +45,30 @@ const Header = () => {
 
     const fetchCurrencyRates = async () => {
       try {
-        const apiKey = "424268c285e3df502f41a8a3"; 
-        const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/latest/ILS`);
+        const apiKey = "cur_live_x4C1YHa6BzDF7zhm3cQhhHumrYKTksHzM9JCx5w7"; 
+        // Using currencyapi.com endpoint format. Note: This API usually needs base_currency in params
+        const response = await fetch(`https://api.currencyapi.com/v3/latest?apikey=${apiKey}&base_currency=ILS&currencies=USD,EUR,JOD`);
         
         if (!response.ok) {
             if (response.status === 429) {
-                console.warn(`Currency API rate limit exceeded (429) for key ${apiKey}. Showing N/A. Consider checking your API key plan at exchangerate-api.com.`);
+                console.warn(`Currency API rate limit exceeded (429) for key ${apiKey}. Showing N/A. Consider checking your API key plan at currencyapi.com.`);
             } else {
-                console.error(`API request failed with status ${response.status} for currency rates.`);
+                console.error(`API request failed with status ${response.status} for currency rates. URL: ${response.url}`);
             }
             setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
             return; 
         }
 
         const data = await response.json();
-        if (data.result === "success" && data.conversion_rates) {
+        // currencyapi.com structure: data: { USD: { value: X }, EUR: { value: Y }, JOD: { value: Z } }
+        if (data && data.data && data.data.USD && data.data.EUR && data.data.JOD) {
           setCurrencyRates({
-            USD: (1 / data.conversion_rates.USD).toFixed(2),
-            EUR: (1 / data.conversion_rates.EUR).toFixed(2),
-            JOD: (1 / data.conversion_rates.JOD).toFixed(2),
+            USD: (1 / data.data.USD.value).toFixed(2), // Assuming we still want to show ILS per foreign currency
+            EUR: (1 / data.data.EUR.value).toFixed(2),
+            JOD: (1 / data.data.JOD.value).toFixed(2),
           });
         } else {
-          console.error("Error in currency data structure or API error:", data.result, data['error-type']);
+          console.error("Error in currency data structure or API error:", data);
           setCurrencyRates({ USD: "N/A", EUR: "N/A", JOD: "N/A" });
         }
       } catch (error) {
@@ -76,7 +78,8 @@ const Header = () => {
     };
 
     fetchCurrencyRates();
-    const currencyTimerId = setInterval(fetchCurrencyRates, 3600000); // Fetch every hour
+    const TEN_DAYS_IN_MS = 10 * 24 * 60 * 60 * 1000;
+    const currencyTimerId = setInterval(fetchCurrencyRates, TEN_DAYS_IN_MS); 
 
     return () => {
       clearInterval(timerId);

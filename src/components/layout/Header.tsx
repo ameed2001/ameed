@@ -26,7 +26,7 @@ const Header = () => {
         second: "2-digit",
         hour12: true,
       };
-      setCurrentTime(new Intl.DateTimeFormat("en-US", options).format(now));
+      setCurrentTime(new Intl.DateTimeFormat("ar-EG", options).format(now)); // Use ar-EG for Arabic numerals if desired
     };
 
     updateTime();
@@ -40,7 +40,7 @@ const Header = () => {
   const constructionIndicators = [
     { label: "متوسط تكلفة البناء (م²)", value: "150 ألف شيكل", icon: HomeIcon, dataAiHint: "construction cost" },
     { label: "أسعار الأيدي العاملة (يومية)", value: "150 شيكل", icon: HardHat, dataAiHint: "labor cost" },
-    { label: "مؤشر أسعار المعدات الإنشائية", value: null, icon: TrendingUp, dataAiHint: "equipment prices" }, // Value is null for labels
+    { label: "مؤشر أسعار المعدات الإنشائية", value: null, icon: TrendingUp, dataAiHint: "equipment prices" },
     { label: "تكلفة التراخيص الإنشائية", value: "2000 شيكل", icon: FileText, dataAiHint: "license cost" },
   ];
 
@@ -68,21 +68,21 @@ const Header = () => {
         </div>
         
         {/* Left Section: Info (Time, Construction Indicators, Social) (RTL) */}
-        <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3">
+        <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3 text-right">
           <div className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center gap-2">
             <Clock size={16} className="flex-shrink-0" />
-            <span className="tabular-nums min-w-[12ch] text-left">{currentTime || 'Loading...'}</span>
+            <span className="tabular-nums min-w-[12ch] text-center sm:text-right">{currentTime || 'Loading...'}</span>
           </div>
 
-          <div className="bg-header-info-bg text-white px-3 py-2 rounded-lg text-xs shadow-md">
-            <span className="font-semibold block mb-1 text-gray-200 text-center">مؤشرات إنشائية:</span>
-            <div className="space-y-1">
+          <div className="bg-header-info-bg text-white p-3 rounded-lg text-xs shadow-md min-w-[250px]">
+            <h4 className="font-semibold block mb-2 text-gray-200 text-sm">مؤشرات إنشائية:</h4>
+            <div className="space-y-1.5">
               {constructionIndicators.map((indicator, index) => {
                 const IconComponent = indicator.icon;
                 return (
-                  <div key={index} className="flex items-center gap-1.5" data-ai-hint={indicator.dataAiHint}>
+                  <div key={index} className="flex items-center gap-2" data-ai-hint={indicator.dataAiHint}>
                     <IconComponent size={14} className="text-app-gold flex-shrink-0" />
-                    <span className="text-gray-300">{indicator.label}:</span>
+                    <span className="text-gray-300 flex-grow">{indicator.label}:</span>
                     {indicator.value && <span className="text-white font-medium">{indicator.value}</span>}
                   </div>
                 );
@@ -91,7 +91,7 @@ const Header = () => {
           </div>
           
           <div className="flex gap-2 items-center">
-            <Link href="https://wa.me/970595528080" target="_blank" rel="noopener noreferrer" 
+            <Link href="https://wa.me/972595528080" target="_blank" rel="noopener noreferrer" 
                   className="p-2 rounded-full bg-social-whatsapp text-white hover:opacity-80 transition-opacity">
               <WhatsAppIcon className="h-5 w-5" />
             </Link>

@@ -68,7 +68,7 @@ export default function HelpPage() {
           </CardHeader>
           <CardContent className="text-lg text-gray-700 space-y-6 text-right">
             <p className="mb-8 text-center">
-              تجد هنا إجابات على الأسئلة المتكررة. إذا لم تجد ما تبحث عنه، لا تتردد في التواصل معنا من خلال <Link href="/contact" className="text-app-gold hover:underline">نموذج الاتصال</Link> أو مركز المساعدة.
+              تجد هنا إجابات على الأسئلة المتكررة. إذا لم تجد ما تبحث عنه، لا تتردد في التواصل معنا من خلال <Link href="/contact" className="text-app-red hover:underline">نموذج الاتصال</Link> أو مركز المساعدة.
             </p>
             <Accordion type="single" collapsible className="w-full">
               {faqs.map((faq, index) => (
@@ -103,4 +103,3 @@ export default function HelpPage() {
     </AppLayout>
   );
 }
-

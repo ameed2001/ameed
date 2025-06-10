@@ -36,9 +36,6 @@ export default function AdminSidebar() {
   };
 
   return (
-    // Removed h-full, relying on parent flexbox behavior (align-items: stretch by default for flex row items)
-    // Adjusted padding: p-4 to px-4 pt-4 pb-2 to reduce bottom padding slightly if needed, or keep p-4 if logout button container handles its spacing well.
-    // The image shows the logout button as the final block.
     <aside className="w-64 bg-card text-foreground p-4 shadow-lg flex-shrink-0 flex flex-col border-r">
       <div className="flex-grow">
         <h2 className="text-2xl font-bold text-app-red mb-6 pb-2 border-b border-app-gold/70 text-center">
@@ -54,10 +51,9 @@ export default function AdminSidebar() {
                     href={item.href}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out",
-                      "hover:bg-primary/10 hover:text-primary",
                       isActive 
-                        ? "bg-primary text-primary-foreground shadow-md" 
-                        : "text-foreground/80 hover:text-primary"
+                        ? "bg-primary text-primary-foreground shadow-md" // primary is app-gold, primary-foreground is dark
+                        : "text-foreground/80 hover:bg-primary hover:text-primary-foreground" // hover:bg-app-gold hover:text-dark
                     )}
                   >
                     <item.icon size={20} />
@@ -69,14 +65,12 @@ export default function AdminSidebar() {
           </ul>
         </nav>
       </div>
-      {/* This container is pushed to the bottom by flex-grow on the div above */}
-      {/* pt-4 and border-t create the separation as seen in the image */}
       <div className="mt-auto pt-4 border-t border-border/60"> 
         <button
           onClick={handleLogout}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out w-full text-left",
-            "bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-red-100" 
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out w-full text-left",
+            "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white" // Matched owner's logout style
           )}
         >
           <LogOut size={20} />

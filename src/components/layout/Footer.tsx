@@ -1,6 +1,8 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Instagram, Facebook, Phone, Mail, MapPin, ExternalLink, Heart } from 'lucide-react';
+import type { ReactNode } from 'react'; // Import ReactNode
 
 // SVG for WhatsApp icon (consistent with Header.tsx)
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -9,22 +11,50 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+interface QuickLinkItem {
+  key: string;
+  label: ReactNode; // Allow ReactNode for custom labels
+  href?: string;
+  isCustom?: boolean; // Flag for custom rendering
+}
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+
+  const quickLinks: QuickLinkItem[] = [
+    { key: 'home', href: '/', label: 'الرئيسية' },
+    { key: 'about', href: '/about', label: 'عن الموقع' },
+    { key: 'contact', href: '/contact', label: 'تواصل معنا' },
+    { key: 'help', href: '/help', label: 'مركز المساعدة' },
+    {
+      key: 'create-account',
+      isCustom: true,
+      label: (
+        <>
+          إنشاء حساب كـ{' '}
+          <Link href="/engineer-signup" className="text-app-gold hover:text-app-red transition-colors duration-200 hover:underline mx-1">
+            مهندس
+          </Link>{' '}
+          أو{' '}
+          <Link href="/signup" className="text-app-gold hover:text-app-red transition-colors duration-200 hover:underline mx-1">
+            مالك
+          </Link>
+        </>
+      )
+    },
+    { key: 'login', href: '/login', label: 'تسجيل الدخول العادي' },
+    { key: 'admin-login', href: '/admin-login', label: 'تسجيل دخول المدير' },
+  ];
   
   return (
     <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white mt-auto relative overflow-hidden" dir="rtl">
-      {/* Background decorative elements */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.02%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50"></div>
       
-      {/* Top wave decoration */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-app-gold via-app-red to-app-gold"></div>
       
       <div className="container mx-auto px-6 py-12 relative z-10">
-        {/* Main content grid - Four columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
           
-          {/* Column 1: Company Info */}
           <div className="text-center lg:text-right">
             <div className="flex items-center justify-center lg:justify-start mb-4">
               <div className="relative">
@@ -47,7 +77,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Column 2: Quick Links */}
           <div className="text-center lg:text-right">
             <h4 className="text-lg font-semibold text-app-gold mb-4 relative pb-1">
               روابط سريعة
@@ -55,30 +84,27 @@ const Footer = () => {
             </h4>
             <nav>
               <ul className="space-y-1.5 text-sm">
-                {[
-                  { href: '/', label: 'الرئيسية' },
-                  { href: '/about', label: 'عن الموقع' },
-                  { href: '/contact', label: 'تواصل معنا' },
-                  { href: '/help', label: 'مركز المساعدة' },
-                  { href: '/signup', label: 'إنشاء حساب' },
-                  { href: '/login', label: 'تسجيل الدخول العادي' },
-                  { href: '/admin-login', label: 'تسجيل دخول المدير' },
-                ].map((link) => (
-                  <li key={link.href}>
-                    <Link 
-                      href={link.href} 
-                      className="group flex items-center justify-center lg:justify-start gap-1.5 text-gray-300 hover:text-app-gold transition-colors duration-200 py-0.5"
-                    >
-                      <span>{link.label}</span>
-                      <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
+                {quickLinks.map((link) => (
+                  <li key={link.key}>
+                    {link.isCustom ? (
+                      <div className="group flex items-center justify-center lg:justify-start gap-1.5 text-gray-300 py-0.5">
+                        <span>{link.label}</span>
+                      </div>
+                    ) : (
+                      <Link 
+                        href={link.href!} 
+                        className="group flex items-center justify-center lg:justify-start gap-1.5 text-gray-300 hover:text-app-gold transition-colors duration-200 py-0.5"
+                      >
+                        <span>{typeof link.label === 'string' ? link.label : ''}</span>
+                        <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
             </nav>
           </div>
 
-          {/* Column 3: Contact Info */}
           <div className="text-center lg:text-right">
             <h4 className="text-lg font-semibold text-app-gold mb-4 relative pb-1">
               اتصل بنا
@@ -110,7 +136,6 @@ const Footer = () => {
             </div>
           </div>
           
-          {/* Column 4: Social Media */}
           <div className="text-center lg:text-right">
              <h4 className="text-lg font-semibold text-app-gold mb-4 relative pb-1">
               تابعنا
@@ -148,12 +173,10 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Divider */}
         <div className="my-10">
           <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
         </div>
 
-        {/* Copyright Section */}
         <div className="text-center space-y-1">
           <div className="flex items-center justify-center gap-1 text-sm text-gray-400">
             <span>&copy; {currentYear} المحترف لحساب الكميات. جميع الحقوق محفوظة.</span>
@@ -174,7 +197,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom gradient line */}
       <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-app-gold via-app-red to-app-gold"></div>
     </footer>
   );

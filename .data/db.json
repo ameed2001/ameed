@@ -592,6 +592,14 @@
       "message": "User logged in successfully: ameed201@gmail.com",
       "timestamp": "2025-06-10T15:20:00.833Z",
       "user": "user-1749568642905-z7c3l"
+    },
+    {
+      "id": "log-1749569660200-ms6s0",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed201@gmail.com",
+      "timestamp": "2025-06-10T15:34:20.200Z",
+      "user": "user-1749568642905-z7c3l"
     }
   ],
   "roles": [

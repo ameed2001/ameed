@@ -34,7 +34,6 @@ export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
@@ -54,61 +53,9 @@ export default function AdminSidebar() {
     }
   };
 
-
-  const [adminStats, setAdminStats] = useState<AdminStat[]>([
-    { label: "عدد المستخدمين الكلي للموقع", value: "...", icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
-    { label: "عدد المشاريع المدرجة من قِبل المهندسين", value: "...", icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
-    { label: "عدد حسابات المالكين", value: "...", icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
-    { label: "عدد حسابات المهندسين", value: "...", icon: HardHat, color: "text-cyan-500", dataAiHint: "engineer accounts", description: "يوضح عدد المستخدمين المسجلين كمهندسين في النظام." },
-    { label: "عدد حسابات المشرفين (الإداريين)", value: "...", icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
-    { label: "عدد التحذيرات والأخطاء في سجلات النظام", value: "...", icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "إحصائية توضح عدد الرسائل المُسجلة في سجل النظام من نوع تحذير أو خطأ، لمتابعة الأداء والصيانة." },
-  ]);
-
-  useEffect(() => {
-    async function fetchAdminStats() {
-      setIsLoadingStats(true);
-      try {
-        const [usersResponse, projectsResponse, logsResponse] = await Promise.all([
-          dbGetUsers("admin-id"), 
-          dbGetProjects("admin-id"), 
-          dbGetLogs()
-        ]);
-
-        let totalUsers = 0;
-        let ownerAccounts = 0;
-        let engineerAccounts = 0;
-        let adminAccounts = 0;
-
-        if (usersResponse.success && usersResponse.users) {
-          totalUsers = usersResponse.users.length;
-          ownerAccounts = usersResponse.users.filter(u => u.role === 'OWNER').length;
-          engineerAccounts = usersResponse.users.filter(u => u.role === 'ENGINEER').length;
-          adminAccounts = usersResponse.users.filter(u => u.role === 'ADMIN').length;
-        }
-
-        const totalProjects = (projectsResponse.success && projectsResponse.projects) ? projectsResponse.projects.length : 0;
-        const warningsAndErrors = logsResponse.filter(log => log.level === 'WARNING' || log.level === 'ERROR').length;
-        
-        setAdminStats([
-          { label: "عدد المستخدمين الكلي للموقع", value: totalUsers, icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
-          { label: "عدد المشاريع المدرجة من قِبل المهندسين", value: totalProjects, icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
-          { label: "عدد حسابات المالكين", value: ownerAccounts, icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
-          { label: "عدد حسابات المهندسين", value: engineerAccounts, icon: HardHat, color: "text-cyan-500", dataAiHint: "engineer accounts", description: "يوضح عدد المستخدمين المسجلين كمهندسين في النظام." },
-          { label: "عدد حسابات المشرفين (الإداريين)", value: adminAccounts, icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
-          { label: "عدد التحذيرات والأخطاء في سجلات النظام", value: warningsAndErrors, icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "إحصائية توضح عدد الرسائل المُسجلة في سجل النظام من نوع تحذير أو خطأ، لمتابعة الأداء والصيانة." },
-        ]);
-
-      } catch (error) {
-        console.error("Failed to fetch admin stats:", error);
-        toast({ title: "خطأ", description: "فشل تحميل إحصائيات لوحة المعلومات.", variant: "destructive" });
-        setAdminStats(prev => prev.map(s => ({ ...s, value: 0 })));
-      }
-      setIsLoadingStats(false);
-    }
-    fetchAdminStats();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+ // Removed the useEffect hook that fetches data
+ // Removed the state that stores the fetched data
+ // The adminStats will now need to be fetched and passed down from a parent component or fetched within the specific dashboard page.
 
   const handleLogout = () => {
     toast({
@@ -217,6 +164,24 @@ export default function AdminSidebar() {
     </aside>
   );
 }
-    
 
-    
+
+// Define a default structure for adminStats if needed for initial render,
+// though it's better to pass actual data as props from a parent component
+// that fetches it. For now, commenting out the old state and useEffect.
+
+// Restored the initial state structure but without the fetching logic
+const initialAdminStats: AdminStat[] = [
+    { label: "عدد المستخدمين الكلي للموقع", value: "...", icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
+    { label: "عدد المشاريع المدرجة من قِبل المهندسين", value: "...", icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
+    { label: "عدد حسابات المالكين", value: "...", icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
+    { label: "عدد حسابات المهندسين", value: "...", icon: HardHat, color: "text-cyan-500", dataAiHint: "engineer accounts", description: "يوضح عدد المستخدمين المسجلين كمهندسين في النظام." },
+    { label: "عدد حسابات المشرفين (الإداريين)", value: "...", icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
+    { label: "عدد التحذيرات والأخطاء في سجلات النظام", value: "...", icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "إحصائية توضح عدد الرسائل المُسجلة في سجل النظام من نوع تحذير أو خطأ، لمتابعة الأداء والصيانة." },
+];
+
+
+
+// The component should now accept adminStats as props:
+// export default function AdminSidebar({ adminStats, isLoadingStats }: { adminStats: AdminStat[], isLoadingStats: boolean }) {
+

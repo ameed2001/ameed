@@ -39,17 +39,32 @@ const Footer = () => {
       label: (
         <>
           إنشاء حساب كـ{' '}
-          <Link href="/engineer-signup" className="text-app-gold hover:text-app-red transition-colors duration-200 hover:underline mx-1">
+          <Link href="/signup" className="text-app-gold hover:text-app-red transition-colors duration-200 hover:underline mx-1">
             مهندس
           </Link>{' '}
           أو{' '}
-          <Link href="/signup" className="text-app-gold hover:text-app-red transition-colors duration-200 hover:underline mx-1">
+          <Link href="/owner-signup" className="text-app-gold hover:text-app-red transition-colors duration-200 hover:underline mx-1">
             مالك
           </Link>
         </>
       )
     },
-    { key: 'login', href: '/login', label: 'تسجيل الدخول العادي' },
+    {
+      key: 'user-login',
+      isCustom: true,
+      label: (
+        <>
+          تسجيل الدخول كـ{' '}
+          <Link href="/login" className="text-app-gold hover:text-app-red transition-colors duration-200 hover:underline mx-1">
+            مهندس
+          </Link>{' '}
+          أو{' '}
+          <Link href="/owner-login" className="text-app-gold hover:text-app-red transition-colors duration-200 hover:underline mx-1">
+            مالك
+          </Link>
+        </>
+      )
+    },
     { key: 'admin-login', href: '/admin-login', label: 'تسجيل دخول المدير' },
   ];
 
@@ -226,3 +241,5 @@ const Footer = () => {
 };
 
 export default Footer;
+
+    

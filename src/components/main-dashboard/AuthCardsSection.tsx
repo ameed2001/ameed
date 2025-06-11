@@ -11,7 +11,7 @@ export default function AuthCardsSection() {
       id: "user-login",
       title: "تسجيل الدخول",
       description: "لديك حساب مهندس أو مالك؟ قم بتسجيل الدخول للوصول إلى لوحة التحكم الخاصة بك.",
-      icon: <LogIn className="h-10 w-10 text-app-gold mb-4" />,
+      icon: <LogIn className="h-10 w-10 text-app-gold mb-4" />, // Updated color
       dataAiHint: "user login section",
       applyFlipEffect: true,
       cardHeightClass: "min-h-[320px] h-auto",
@@ -26,7 +26,7 @@ export default function AuthCardsSection() {
       id: "admin-login",
       title: "تسجيل دخول المسؤول",
       description: "هل أنت مسؤول النظام؟ قم بتسجيل الدخول للوصول إلى لوحة تحكم المسؤول.",
-      icon: <ShieldCheck className="h-10 w-10 text-app-red mb-4" />,
+      icon: <ShieldCheck className="h-10 w-10 text-app-red mb-4" />, // Updated color
       dataAiHint: "admin login section",
       applyFlipEffect: true,
       cardHeightClass: "min-h-[320px] h-auto",
@@ -40,7 +40,7 @@ export default function AuthCardsSection() {
       id: "signup",
       title: "إنشاء حساب جديد",
       description: "ليس لديك حساب؟ انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
-      icon: <UserPlus className="h-10 w-10 text-app-gold mb-4" />,
+      icon: <UserPlus className="h-10 w-10 text-app-gold mb-4" />, // Updated color
       dataAiHint: "signup section",
       applyFlipEffect: true,
       cardHeightClass: "min-h-[320px] h-auto",

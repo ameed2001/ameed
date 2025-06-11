@@ -638,6 +638,14 @@
       "message": "User logged in successfully: ahmad@gmail.com",
       "timestamp": "2025-06-10T22:46:14.228Z",
       "user": "user-1749593366082-4dte5"
+    },
+    {
+      "id": "log-1749635962241-d0ktk",
+      "action": "ADMIN_DELETE_ALL_LOGS",
+      "level": "WARNING",
+      "message": "Admin deleted all system logs.",
+      "timestamp": "2025-06-11T09:59:22.241Z",
+      "user": "admin-user-id"
     }
   ],
   "roles": [

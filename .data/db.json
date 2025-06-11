@@ -646,6 +646,22 @@
       "message": "Admin deleted all system logs.",
       "timestamp": "2025-06-11T09:59:22.241Z",
       "user": "admin-user-id"
+    },
+    {
+      "id": "log-1749636338906-ula1z",
+      "action": "ADMIN_DELETE_ALL_LOGS",
+      "level": "WARNING",
+      "message": "Admin deleted all system logs.",
+      "timestamp": "2025-06-11T10:05:38.906Z",
+      "user": "admin-user-id"
+    },
+    {
+      "id": "log-1749636832921-s8psu",
+      "action": "ADMIN_DELETE_ALL_LOGS",
+      "level": "WARNING",
+      "message": "Admin deleted all system logs.",
+      "timestamp": "2025-06-11T10:13:52.921Z",
+      "user": "admin-user-id"
     }
   ],
   "roles": [

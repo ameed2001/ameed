@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Home as HomeIcon, ArrowLeft, HardHat } from 'lucide-react';
+import { Loader2, Home as HomeIcon, ArrowLeft, HardHat, ShieldCheck } from 'lucide-react';
 import { ownerLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
@@ -171,6 +171,10 @@ export default function OwnerLoginPage() {
              <Link href="/login" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1">
                 <HardHat className="h-4 w-4" />
                 تسجيل الدخول كمهندس
+            </Link>
+            <Link href="/admin-login" className="text-sm font-medium text-red-700 hover:text-red-800 hover:underline flex items-center gap-1">
+                <ShieldCheck className="h-4 w-4" />
+                تسجيل الدخول كمسؤول
             </Link>
             <Link href="/" className="text-sm font-semibold text-green-800 hover:text-green-700 hover:underline flex items-center gap-1">
               <ArrowLeft className="h-4 w-4" />

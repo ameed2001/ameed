@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { Loader2, ShieldCheck, ArrowLeft, HardHat, Home as HomeIcon } from 'lucide-react';
 import { adminLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
@@ -147,8 +147,13 @@ export default function AdminLoginPage() {
             </form>
           </CardContent>
           <CardFooter className="flex flex-col items-center mt-4 pt-2 pb-6 space-y-3">
-            <Link href="/login" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline">
-              تسجيل الدخول كمهندس أو مالك
+            <Link href="/login" className="text-sm font-medium text-green-700 hover:text-green-800 hover:underline flex items-center gap-1">
+              <HardHat className="h-4 w-4" />
+              تسجيل الدخول كمهندس
+            </Link>
+            <Link href="/owner-login" className="text-sm font-medium text-purple-700 hover:text-purple-800 hover:underline flex items-center gap-1">
+              <HomeIcon className="h-4 w-4" />
+              تسجيل الدخول كمالك
             </Link>
             <Link href="/" className="text-sm font-semibold text-green-800 hover:text-green-700 hover:underline flex items-center gap-1">
               <ArrowLeft className="h-4 w-4" />

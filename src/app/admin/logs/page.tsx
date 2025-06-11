@@ -8,51 +8,62 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from '@/components/ui/button';
-import { ScrollText, Search, Download, Loader2 } from 'lucide-react'; 
+import { ScrollText, Search, Download, Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { arSA } from 'date-fns/locale'; 
+import { arSA } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
-import { getLogs, type LogEntry, type LogLevel } from '@/lib/db'; // Updated import
-
+import { getLogs, type LogEntry, type LogLevel, logAction } from '@/lib/db'; // Updated import
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function AdminLogsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [logLevelFilter, setLogLevelFilter] = useState<string>('all');
-  const [logs, setLogsState] = useState<LogEntry[]>([]); 
+  const [logs, setLogsState] = useState<LogEntry[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const [totalLogsCount, setTotalLogsCount] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
+  const fetchLogsFromDb = async () => {
+    setIsFetching(true);
+    try {
+      const fetchedLogs = await getLogs();
+      setLogsState(fetchedLogs);
+      setTotalLogsCount(fetchedLogs.length);
+    } catch (error) {
+      toast({ title: "خطأ", description: "فشل تحميل سجلات النظام.", variant: "destructive" });
+      console.error("Error fetching logs:", error);
+      setLogsState([]);
+      setTotalLogsCount(0);
+    }
+    setIsFetching(false);
+  };
 
   useEffect(() => {
-    async function fetchLogs() {
-      setIsFetching(true);
-      try {
-        const fetchedLogs = await getLogs();
-        setLogsState(fetchedLogs);
-        setTotalLogsCount(fetchedLogs.length);
-      } catch (error) {
-        toast({ title: "خطأ", description: "فشل تحميل سجلات النظام.", variant: "destructive" });
-        console.error("Error fetching logs:", error);
-        setLogsState([]);
-        setTotalLogsCount(0);
-      }
-      setIsFetching(false);
-    }
-    fetchLogs();
+    fetchLogsFromDb();
   }, [toast]);
 
 
   const filteredLogs = useMemo(() => {
     return logs
       .filter(log => {
-        const matchesSearch = searchTerm === '' || 
+        const matchesSearch = searchTerm === '' ||
                               log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
                               (log.user && log.user.toLowerCase().includes(searchTerm.toLowerCase()));
         const matchesLevel = logLevelFilter === 'all' || log.level === logLevelFilter;
         return matchesSearch && matchesLevel;
       })
-      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
   }, [logs, searchTerm, logLevelFilter]);
 
   const getLogLevelStyles = (level: LogLevel) => {
@@ -64,7 +75,7 @@ export default function AdminLogsPage() {
       default: return 'bg-blue-100 text-blue-700 border-blue-500';
     }
   };
-  
+
   const handleExportLogs = () => {
     if (filteredLogs.length === 0) {
       toast({ title: "لا توجد سجلات للتصدير", description: "يرجى تعديل الفلاتر إذا كنت تتوقع وجود سجلات.", variant: "default" });
@@ -80,6 +91,29 @@ export default function AdminLogsPage() {
     toast({ title: "تم تصدير السجلات", description: "تم بدء تنزيل ملف السجلات المصفاة." });
   };
 
+  const handleDeleteAllLogs = async () => {
+    setIsDeleting(true);
+    // Simulate deletion for now, replace with actual API call to backend if needed
+    // const result = await dbDeleteLogs(); // This would be the actual call
+    // For now, just clear client-side state
+    console.log("Simulating deletion of all logs by admin.");
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate async operation
+
+    setLogsState([]);
+    setTotalLogsCount(0);
+    // Log this admin action
+    await logAction('ADMIN_DELETE_ALL_LOGS', 'WARNING', 'Admin deleted all system logs.', 'admin-user-id'); // Replace 'admin-user-id' with actual admin ID
+
+    toast({
+      title: "تم حذف السجلات",
+      description: "تم حذف جميع سجلات النظام بنجاح (محاكاة).",
+      variant: "default",
+    });
+    setIsDeleting(false);
+    // Optionally, re-fetch logs if the backend handles deletion, but for simulation, this is enough.
+    // fetchLogsFromDb(); 
+  };
+
 
   return (
     <Card className="bg-white/95 shadow-xl w-full">
@@ -90,12 +124,40 @@ export default function AdminLogsPage() {
             </CardTitle>
             <CardDescription className="text-gray-600 mt-1">مراجعة وتصفية أنشطة وأحداث النظام الهامة.</CardDescription>
         </div>
-        <Button 
-          onClick={handleExportLogs} 
-          className="mt-4 sm:mt-0 bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white dark:bg-blue-700/30 dark:text-blue-300 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white font-medium"
-        >
-          <Download className="ms-2 h-4 w-4" /> تصدير السجلات
-        </Button>
+        <div className="flex gap-2 mt-4 sm:mt-0">
+            <Button
+              onClick={handleExportLogs}
+              className="bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white dark:bg-blue-700/30 dark:text-blue-300 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white font-medium"
+            >
+              <Download className="ms-2 h-4 w-4" /> تصدير السجلات
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="destructive"
+                  className="bg-red-50 text-red-700 border-2 border-red-500 hover:bg-red-600 hover:text-white dark:bg-red-700/30 dark:text-red-300 dark:border-red-600 dark:hover:bg-red-600 dark:hover:text-white font-medium"
+                  disabled={logs.length === 0 || isDeleting}
+                >
+                  {isDeleting ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : <Trash2 className="ms-2 h-4 w-4" />}
+                  {isDeleting ? "جاري الحذف..." : "حذف جميع السجلات"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent dir="rtl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>تأكيد حذف جميع السجلات</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    هل أنت متأكد أنك تريد حذف جميع سجلات النظام بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDeleteAllLogs} className="bg-destructive hover:bg-destructive/90">
+                    {isDeleting ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : "تأكيد الحذف"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6 text-right">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border rounded-lg bg-gray-50">
@@ -122,7 +184,7 @@ export default function AdminLogsPage() {
             </SelectContent>
           </Select>
         </div>
-        
+
         {isFetching ? (
           <div className="flex justify-center items-center h-64">
             <Loader2 className="h-12 w-12 animate-spin text-app-gold" />
@@ -157,7 +219,7 @@ export default function AdminLogsPage() {
                   )) : (
                     <TableRow>
                       <TableCell colSpan={4} className="text-center text-gray-500 py-10">
-                        لا توجد سجلات تطابق معايير البحث أو التصفية.
+                        {logs.length === 0 ? "لا توجد سجلات في النظام حالياً." : "لا توجد سجلات تطابق معايير البحث أو التصفية."}
                       </TableCell>
                     </TableRow>
                   )}
@@ -176,5 +238,3 @@ export default function AdminLogsPage() {
     </Card>
   );
 }
-
-    

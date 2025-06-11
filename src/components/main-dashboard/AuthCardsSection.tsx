@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LogIn, UserPlus, HardHat, Home as HomeIcon, ShieldCheck, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import InfoCard from '@/components/ui/InfoCard';
+import React from 'react'; // Added React import
 
 export default function AuthCardsSection() {
   const authCardActions = [

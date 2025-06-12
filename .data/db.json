@@ -1,61 +1,5 @@
 {
-  "users": [
-    {
-      "id": "user-1749573450056-evwdt",
-      "name": "عميد سماره",
-      "email": "ameed2001@gamil.com",
-      "role": "ENGINEER",
-      "status": "ACTIVE",
-      "updatedAt": "2025-06-10T16:38:23.752Z",
-      "profileImage": "https://placehold.co/100x100.png?text=عم",
-      "password_hash": "$2a$10$M8XhwePcbG/GsRKF5X3twuN5VWhcp8Mc2BqPwCHjIJlLrkv0i49gG",
-      "createdAt": "2025-06-10T16:37:30.057Z"
-    },
-    {
-      "id": "user-1749588881407-acagf",
-      "name": "سالم سالم",
-      "email": "www@gmail.com",
-      "password_hash": "$2a$10$qbHy/lljYziK9fTSSYazZODUT7rzyNeRgPYkS3KTrvReDLWVLkYJy",
-      "role": "OWNER",
-      "status": "ACTIVE",
-      "createdAt": "2025-06-10T20:54:41.407Z",
-      "updatedAt": "2025-06-10T20:54:41.407Z",
-      "profileImage": "https://placehold.co/100x100.png?text=سا"
-    },
-    {
-      "id": "user-1749591955995-m1u08",
-      "name": "Hadel Asad",
-      "email": "hivitijihur@gotgel.org",
-      "password_hash": "$2a$10$D83HTRyvTcOeuBoEfJGxcOoqdNRt7xG4PhXzeIdSTpOfdpNubHPAG",
-      "role": "OWNER",
-      "status": "ACTIVE",
-      "createdAt": "2025-06-10T21:45:55.995Z",
-      "updatedAt": "2025-06-10T21:45:55.995Z",
-      "profileImage": "https://placehold.co/100x100.png?text=HA"
-    },
-    {
-      "id": "user-1749593366082-4dte5",
-      "name": "علي محمود",
-      "email": "ahmad@gmail.com",
-      "password_hash": "$2a$10$uV9qXjawd8cUs/7e7w3ENeZWhoifjmQEsChOFKA2fhr81iKlcu2QW",
-      "role": "OWNER",
-      "status": "ACTIVE",
-      "createdAt": "2025-06-10T22:09:26.082Z",
-      "updatedAt": "2025-06-10T22:09:26.082Z",
-      "profileImage": "https://placehold.co/100x100.png?text=عل"
-    },
-    {
-      "id": "user-1749674064465-vil7x",
-      "name": "Hadel Asad",
-      "email": "ameed@mmm.com",
-      "password_hash": "$2a$10$qitkDbChb7ZzVVQpwo9M5uu/XeSzJuDemyPqZoM7rLnQCCVR8zQK2",
-      "role": "OWNER",
-      "status": "ACTIVE",
-      "createdAt": "2025-06-11T20:34:24.466Z",
-      "updatedAt": "2025-06-11T20:34:24.466Z",
-      "profileImage": "https://placehold.co/100x100.png?text=HA"
-    }
-  ],
+  "users": [],
   "projects": [],
   "settings": {
     "siteName": "المحترف لحساب الكميات ",
@@ -89,6 +33,54 @@
       "message": "User logged in successfully: ameed@mmm.com",
       "timestamp": "2025-06-11T20:34:33.247Z",
       "user": "user-1749674064465-vil7x"
+    },
+    {
+      "id": "log-1749738874492-c70n8",
+      "action": "ADMIN_DELETE_ALL_LOGS",
+      "level": "WARNING",
+      "message": "Admin deleted all system logs.",
+      "timestamp": "2025-06-12T14:34:34.493Z",
+      "user": "admin-user-id"
+    },
+    {
+      "id": "log-1749738911625-3y3x2",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749674064465-vil7x deleted by admin.",
+      "timestamp": "2025-06-12T14:35:11.625Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749738914714-h6879",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749593366082-4dte5 deleted by admin.",
+      "timestamp": "2025-06-12T14:35:14.714Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749738919262-8fxwj",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749591955995-m1u08 deleted by admin.",
+      "timestamp": "2025-06-12T14:35:19.262Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749738922551-ssvzu",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749588881407-acagf deleted by admin.",
+      "timestamp": "2025-06-12T14:35:22.551Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749738925078-pt7gu",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749573450056-evwdt deleted by admin.",
+      "timestamp": "2025-06-12T14:35:25.078Z",
+      "user": "Admin"
     }
   ],
   "roles": [

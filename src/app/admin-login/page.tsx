@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -28,6 +28,22 @@ export default function AdminLoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userRole = localStorage.getItem('userRole');
+      const userName = localStorage.getItem('userName'); 
+      
+      if (userRole === 'ADMIN') {
+        toast({
+          title: "تم تسجيل الدخول بالفعل",
+          description: `مرحباً ${userName || 'أيها المسؤول'}! أنت مسجل الدخول حالياً وجاري توجيهك للوحة التحكم...`,
+          variant: "default",
+        });
+        router.push('/admin');
+      }
+    }
+  }, [router, toast]);
 
   const {
     register,

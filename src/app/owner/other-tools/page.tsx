@@ -1,13 +1,11 @@
 
 "use client";
 
-import OwnerAppLayout from '@/components/owner/OwnerAppLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Wrench } from "lucide-react";
 
 export default function OtherToolsPage() {
   return (
-    <OwnerAppLayout>
       <div className="container mx-auto py-10 px-4 text-right">
         <Card className="max-w-2xl mx-auto bg-white/95 shadow-xl border border-gray-200/80 dark:border-gray-700/60">
           <CardHeader className="text-center">
@@ -39,6 +37,5 @@ export default function OtherToolsPage() {
           </CardContent>
         </Card>
       </div>
-    </OwnerAppLayout>
   );
 }

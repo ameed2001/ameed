@@ -16,10 +16,10 @@ import {
     Mail,
     AlertTriangle,
     CheckCircle2,
-    Wrench, // Added Wrench icon
-    PieChart, // Replaced Chart with PieChart
- Clock, // Added Clock icon
-  ListTree, // Added ListTree icon for stages
+    Wrench, 
+    PieChart, 
+    Clock, 
+    ListTree, 
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -29,14 +29,14 @@ import { useEffect, useState } from 'react';
 const ownerNavItems = [
   { href: '/', label: 'الرئيسية للموقع', icon: Home },
   { href: '/owner/dashboard', label: 'لوحة التحكم', icon: DashboardIcon },
-  { href: '/my-projects', label: 'مشاريعي', icon: Briefcase },
- { href: '/owner-account/quantity-reports', label: 'تقارير الكميات', icon: Briefcase }, // Added Quantity Reports link
- { href: '/owner-account/comments-inquiries', label: 'التعليقات والاستفسارات', icon: Mail }, // Added Comments and Inquiries link
-  { href: '/owner-account/project-progress', label: 'تقدم المشروع', icon: PieChart }, // Added Project Progress link, using PieChart icon
-  { href: '/owner-account/project-timeline', label: 'الجدول الزمني للمشروع', icon: Clock }, // Added Project Timeline link
-  { href: '/owner-account/project-stages', label: 'مراحل المشروع', icon: ListTree }, // Added Project Stages link
+  { href: '/owner/projects', label: 'مشاريعي', icon: Briefcase }, // Updated href
+  { href: '/owner-account/quantity-reports', label: 'تقارير الكميات', icon: PieChart }, 
+  { href: '/owner-account/comments-inquiries', label: 'التعليقات والاستفسارات', icon: Mail }, 
+  { href: '/owner-account/project-progress', label: 'تقدم المشروع', icon: Briefcase }, // Changed icon to Briefcase from PieChart
+  { href: '/owner-account/project-timeline', label: 'الجدول الزمني للمشروع', icon: Clock }, 
+  { href: '/owner-account/project-stages', label: 'مراحل المشروع', icon: ListTree }, 
   { href: '/profile', label: 'الملف الشخصي', icon: Settings },
-  { href: '/owner/other-tools', label: 'أدوات أخرى', icon: Wrench }, // Added new item
+  { href: '/owner/other-tools', label: 'أدوات أخرى', icon: Wrench }, 
   { href: '/about', label: 'عن الموقع', icon: Info },
   { href: '/help', label: 'المساعدة', icon: HelpCircle },
   { href: '/contact', label: 'تواصل معنا', icon: Phone },
@@ -60,20 +60,20 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
   const router = useRouter();
   const { toast } = useToast();
   const [isClient, setIsClient] = useState(false);
-  const [ownerName, setOwnerName] = useState("المالك"); // Default name
+  const [ownerName, setOwnerName] = useState("المالك"); 
 
   useEffect(() => {
-    setIsClient(true); // Set isClient to true once the component mounts
+    setIsClient(true); 
   }, []);
 
   useEffect(() => {
-    if (isClient) { // Only access localStorage if isClient is true
+    if (isClient) { 
       const storedUserName = localStorage.getItem('userName');
       if (storedUserName) {
         setOwnerName(storedUserName);
       }
     }
-  }, [isClient]); // Re-run this effect if isClient changes
+  }, [isClient]); 
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
@@ -153,8 +153,8 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
                     !isOpen && "justify-center py-3",
                     isActive
-                      ? "bg-app-gold text-gray-900 shadow-md" // Active state: gold background, dark text (as per original image and admin style)
-                      : "text-foreground/80 hover:bg-app-gold hover:text-gray-900" // Inactive: dark text on light bg, hover: gold bg, dark text
+                      ? "bg-app-gold text-gray-900 shadow-md" 
+                      : "text-foreground/80 hover:bg-app-gold hover:text-gray-900" 
                   )}
                   title={!isOpen ? item.label : undefined}
                 >
@@ -167,13 +167,13 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         </ul>
       </nav>
 
-      {isClient && ( // Only render logout button on client to avoid hydration mismatch if localStorage is checked for visibility
+      {isClient && ( 
         <div className="mt-auto p-3 border-t border-border flex-shrink-0">
           <button
             onClick={handleLogout}
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out w-full",
-              "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white", // Kept original logout button style
+              "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white", 
               !isOpen && "justify-center py-3"
             )}
             title={!isOpen ? "تسجيل الخروج" : undefined}

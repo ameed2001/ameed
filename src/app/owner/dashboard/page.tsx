@@ -28,9 +28,7 @@ export default function OwnerDashboardPage() {
   useEffect(() => {
     async function fetchProjects() {
       if (!userEmail) {
-        // If userEmail is not yet set, don't attempt to fetch.
-        // This can happen on initial render before localStorage is read.
-        // We could show a different loading state or wait.
+        
         return;
       }
       setIsLoading(true);
@@ -59,7 +57,7 @@ export default function OwnerDashboardPage() {
     ? Math.round(projects.reduce((sum, p) => sum + (p.overallProgress || 0), 0) / projects.length) 
     : 0;
 
-  const recentProjects = projects.slice(0, 3); // Show latest 3 projects
+  const recentProjects = projects.slice(0, 3); 
 
   return (
     <div className="space-y-8 text-right">
@@ -149,7 +147,7 @@ export default function OwnerDashboardPage() {
                     {projects.length > recentProjects.length && (
                         <div className="text-center mt-6">
                             <Button asChild variant="outline" className="text-app-red border-app-red hover:bg-app-red hover:text-white">
-                                <Link href="/my-projects">عرض جميع المشاريع</Link>
+                                <Link href="/owner/projects">عرض جميع المشاريع</Link>
                             </Button>
                         </div>
                     )}
@@ -182,7 +180,7 @@ export default function OwnerDashboardPage() {
             <CardContent className="text-right">
             <p className="text-gray-600 mb-3">راجع التعليقات والملاحظات على مشاريعك أو تواصل مع المهندس.</p>
             <Button asChild variant="outline" className="w-full border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white">
-                <Link href="/my-projects">الذهاب إلى المشاريع</Link>
+                <Link href="/owner/projects">الذهاب إلى المشاريع</Link>
             </Button>
             </CardContent>
         </Card>
@@ -196,7 +194,7 @@ export default function OwnerDashboardPage() {
             <CardContent className="text-right">
             <p className="text-gray-600 mb-3">اطلع على تقارير كميات المواد والأعمال المنجزة لمشاريعك.</p>
             <Button asChild variant="outline" className="w-full border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white">
-                <Link href="/my-projects">مراجعة التقارير</Link>
+                <Link href="/owner/projects">مراجعة التقارير</Link>
             </Button>
             </CardContent>
         </Card>
@@ -210,7 +208,7 @@ export default function OwnerDashboardPage() {
             <CardContent className="text-right">
             <p className="text-gray-600 mb-3">شاهد أحدث الصور والفيديوهات لتقدم العمل في مشاريعك الإنشائية.</p>
             <Button asChild variant="outline" className="w-full border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white">
-                <Link href="/my-projects">عرض الوسائط</Link>
+                <Link href="/owner/projects">عرض الوسائط</Link>
             </Button>
             </CardContent>
         </Card>
@@ -224,7 +222,7 @@ export default function OwnerDashboardPage() {
             <CardContent className="text-right">
             <p className="text-gray-600 mb-3">تابع الجدول الزمني، المراحل الهامة، والمواعيد النهائية لمشاريعك.</p>
             <Button asChild variant="outline" className="w-full border-teal-500 text-teal-600 hover:bg-teal-500 hover:text-white">
-                <Link href="/my-projects">عرض الجداول الزمنية</Link>
+                <Link href="/owner/projects">عرض الجداول الزمنية</Link>
             </Button>
             </CardContent>
         </Card>
@@ -233,4 +231,3 @@ export default function OwnerDashboardPage() {
     </div>
   );
 }
-

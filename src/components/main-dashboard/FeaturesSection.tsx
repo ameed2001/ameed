@@ -4,7 +4,7 @@
 import FeatureCard from './FeatureCard';
 import { Button } from '@/components/ui/button';
 import { Zap, ShieldCheck, Smartphone, Quote } from 'lucide-react';
-import Link from 'next/link';
+// import Link from 'next/link'; // Link is no longer needed for this button
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const features = [
@@ -55,6 +55,13 @@ const testimonials = [
 ];
 
 const FeaturesSection = () => {
+  const handleDiscoverFeaturesClick = () => {
+    const authSection = document.getElementById('auth-cards-section');
+    if (authSection) {
+      authSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <section className="py-16 md:py-20 bg-gray-100">
       <div className="container mx-auto px-4">
@@ -75,10 +82,10 @@ const FeaturesSection = () => {
         </div>
         <div className="text-center mb-16 md:mb-20">
           <Button
-            asChild
+            onClick={handleDiscoverFeaturesClick}
             className="bg-app-red hover:bg-red-700 text-white font-bold py-3 px-8 text-lg rounded-lg shadow-lg transition-transform hover:scale-105"
           >
-            <Link href="/login">اكتشف المزيد من المميزات</Link>
+            اكتشف المزيد من المميزات
           </Button>
         </div>
 

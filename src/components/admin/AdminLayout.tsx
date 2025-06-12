@@ -8,7 +8,7 @@ import { Users, Briefcase, ScrollText, UserCheck, Shield, AlertTriangle, HardHat
 
 interface AdminStat {
     label: string;
-    value: number | string;
+    value: number | string; // This can be a number or placeholder like "..."
     icon: React.ElementType;
     color: string;
     dataAiHint: string;
@@ -35,12 +35,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
     // Construct the adminStats array with fetched data
     adminStats = [
-        { label: "عدد المستخدمين الكلي للموقع", value: users.length, icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
-        { label: "عدد المشاريع المدرجة من قِبل المهندسين", value: projects.length, icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
-        { label: "عدد حسابات المالكين", value: users.filter(u => u.role === 'OWNER').length, icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
-        { label: "عدد حسابات المهندسين", value: users.filter(u => u.role === 'ENGINEER').length, icon: HardHat, color: "text-cyan-500", dataAiHint: "engineer accounts", description: "يوضح عدد المستخدمين المسجلين كمهندسين في النظام." },
-        { label: "عدد حسابات المشرفين (الإداريين)", value: users.filter(u => u.role === 'ADMIN').length, icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
-        { label: "عدد التحذيرات والأخطاء في سجلات النظام", value: logs.filter(log => log.level === 'WARNING' || log.level === 'ERROR').length, icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "إحصائية توضح عدد الرسائل المُسجلة في سجل النظام من نوع تحذير أو خطأ، لمتابعة الأداء والصيانة." },
+        { label: "عدد المستخدمين الكلي للموقع", value: users.length, icon: "Users", color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
+        { label: "عدد المشاريع المدرجة من قِبل المهندسين", value: projects.length, icon: "Briefcase", color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
+        { label: "عدد حسابات المالكين", value: users.filter(u => u.role === 'OWNER').length, icon: "UserCheck", color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
+        { label: "عدد حسابات المهندسين", value: users.filter(u => u.role === 'ENGINEER').length, icon: "HardHat", color: "text-cyan-500", dataAiHint: "engineer accounts", description: "يوضح عدد المستخدمين المسجلين كمهندسين في النظام." },
+        { label: "عدد حسابات المشرفين (الإداريين)", value: users.filter(u => u.role === 'ADMIN').length, icon: "Shield", color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
+        { label: "عدد التحذيرات والأخطاء في سجلات النظام", value: logs.filter(log => log.level === 'WARNING' || log.level === 'ERROR').length, icon: "AlertTriangle", color: "text-orange-500", dataAiHint: "system warnings errors", description: "إحصائية توضح عدد الرسائل المُسجلة في سجل النظام من نوع تحذير أو خطأ، لمتابعة الأداء والصيانة." },
     ];
 
     isLoadingStats = false; // Data fetching complete

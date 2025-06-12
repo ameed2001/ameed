@@ -53,7 +53,7 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
       <DialogContent className="bg-card text-card-foreground sm:max-w-md custom-dialog-overlay animate-modal-fade-in p-6 rounded-lg shadow-xl">
         <DialogHeader className="relative text-right mb-4">
           <DialogTitle className="text-app-red text-2xl font-bold text-center pt-8 sm:pt-2">
-            تم تسجيل الدخول
+            {isLoggedIn ? "تم تسجيل الدخول" : "يجب عليك تسجيل الدخول"}
           </DialogTitle>
         </DialogHeader>
         <DialogDescription className="text-gray-700 text-right text-base leading-relaxed mb-6">

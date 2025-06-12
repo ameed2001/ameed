@@ -3,8 +3,8 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { 
-    Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut, Home, 
+import {
+    Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut, Home,
     UserCheck, Shield, AlertTriangle, HardHat, ChevronLeft, Menu as MenuIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -21,10 +21,23 @@ const adminNavItems = [
   { href: '/admin/logs', label: 'سجلات النظام', icon: ScrollText },
 ];
 
+const iconMap: { [key: string]: React.ElementType } = {
+    Users: Users,
+    Briefcase: Briefcase,
+    Settings: Settings,
+    ScrollText: ScrollText,
+    LayoutDashboard: LayoutDashboard,
+    LogOut: LogOut,
+    Home: Home,
+    UserCheck: UserCheck,
+    Shield: Shield,
+    AlertTriangle: AlertTriangle,
+    HardHat: HardHat,
+};
+
 interface AdminStat {
     label: string;
     value: number | string;
-    icon: React.ElementType;
     color: string;
     dataAiHint: string;
     description?: string; 
@@ -34,7 +47,7 @@ export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -53,9 +66,9 @@ export default function AdminSidebar() {
     }
   };
 
- // Removed the useEffect hook that fetches data
- // Removed the state that stores the fetched data
- // The adminStats will now need to be fetched and passed down from a parent component or fetched within the specific dashboard page.
+ // Default state for adminStats and loading, expecting props to override
+ const [adminStats, setAdminStats] = useState<AdminStat[]>([]);
+ const [isLoadingStats, setIsLoadingStats] = useState<boolean>(true);
 
   const handleLogout = () => {
     toast({
@@ -105,7 +118,7 @@ export default function AdminSidebar() {
                 <h3 className="text-sm font-semibold text-foreground mb-3 text-right">لوحة المعلومات</h3>
                 <div className="space-y-3">
                 {adminStats.map(stat => {
-                    const IconComponent = stat.icon;
+                    const IconComponent = iconMap[stat.icon as string]; // Get the icon component from the map
                     return (
                     <div key={stat.label} className="bg-muted/40 p-3 rounded-md shadow-sm flex items-start gap-3" data-ai-hint={stat.dataAiHint}>
                         <IconComponent className={cn("h-8 w-8 mt-1 flex-shrink-0", stat.color)} />

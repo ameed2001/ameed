@@ -19,6 +19,7 @@ export default function OwnerSidebar({}: OwnerSidebarProps) {
     { href: '/owner/visual-progress', label: 'تقدم المشروع بصريًا', icon: CameraIcon }, // Assuming a visual progress page
     { href: '/owner/timeline', label: 'الجدول الزمني للمشاريع', icon: ClockIcon }, // Assuming a timeline page
     { href: '/owner/comments', label: 'التعليقات والاستفسارات', icon: MessageSquareIcon }, // Assuming a comments page
+    // { href: '/owner/more-tools', label: 'أدوات أخرى', icon: CogIcon }, // هذا الرابط مخصص لأدوات إضافية سيتم تنفيذها في المستقبل
   ];
 
   return (

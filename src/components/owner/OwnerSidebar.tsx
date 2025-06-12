@@ -29,10 +29,10 @@ import { useEffect, useState } from 'react';
 const ownerNavItems = [
   { href: '/', label: 'الرئيسية للموقع', icon: Home },
   { href: '/owner/dashboard', label: 'لوحة التحكم', icon: DashboardIcon },
-  { href: '/owner/projects', label: 'مشاريعي', icon: Briefcase }, // Updated href
+  { href: '/owner/projects', label: 'مشاريعي', icon: Briefcase }, 
   { href: '/owner-account/quantity-reports', label: 'تقارير الكميات', icon: PieChart }, 
   { href: '/owner-account/comments-inquiries', label: 'التعليقات والاستفسارات', icon: Mail }, 
-  { href: '/owner-account/project-progress', label: 'تقدم المشروع', icon: Briefcase }, // Changed icon to Briefcase from PieChart
+  { href: '/owner-account/project-progress', label: 'تقدم المشروع', icon: Briefcase }, 
   { href: '/owner-account/project-timeline', label: 'الجدول الزمني للمشروع', icon: Clock }, 
   { href: '/owner-account/project-stages', label: 'مراحل المشروع', icon: ListTree }, 
   { href: '/profile', label: 'الملف الشخصي', icon: Settings },
@@ -42,7 +42,6 @@ const ownerNavItems = [
   { href: '/contact', label: 'تواصل معنا', icon: Phone },
 ];
 
-// Data for stats section in the sidebar
 const sidebarStats = [
   { label: "المشاريع النشطة", value: 0, icon: Briefcase, color: "text-amber-400" },
   { label: "الرسائل الجديدة", value: 0, icon: Mail, color: "text-blue-400" },
@@ -88,7 +87,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
       description: "تم تسجيل خروجك بنجاح.",
       variant: "default",
     });
-    router.push('/login');
+    router.push('/owner-login'); // Redirect to owner login page
   };
 
   return (

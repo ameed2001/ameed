@@ -109,6 +109,30 @@
       "message": "User logged in successfully: malik@gmail.com",
       "timestamp": "2025-06-12T16:13:12.459Z",
       "user": "user-1749744784096-2pa39"
+    },
+    {
+      "id": "log-1749746411753-ax0ke",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-12T16:40:11.753Z",
+      "user": "user-1749744784096-2pa39"
+    },
+    {
+      "id": "log-1749746936329-xedqv",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-12T16:48:56.329Z",
+      "user": "user-1749744784096-2pa39"
+    },
+    {
+      "id": "log-1749747145701-mcnf8",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-12T16:52:25.701Z",
+      "user": "user-1749744784096-2pa39"
     }
   ],
   "roles": [

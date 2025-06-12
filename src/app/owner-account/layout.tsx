@@ -1,4 +1,4 @@
-typescriptreact
+
 import React from 'react';
 import OwnerSidebar from '@/components/OwnerSidebar';
 

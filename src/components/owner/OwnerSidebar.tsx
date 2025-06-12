@@ -16,7 +16,10 @@ import {
     Mail,
     AlertTriangle,
     CheckCircle2,
-    Wrench // Added Wrench icon
+    Wrench, // Added Wrench icon
+    PieChart, // Replaced Chart with PieChart
+ Clock, // Added Clock icon
+  ListTree, // Added ListTree icon for stages
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -27,6 +30,11 @@ const ownerNavItems = [
   { href: '/', label: 'الرئيسية للموقع', icon: Home },
   { href: '/owner/dashboard', label: 'لوحة التحكم', icon: DashboardIcon },
   { href: '/my-projects', label: 'مشاريعي', icon: Briefcase },
+ { href: '/owner-account/quantity-reports', label: 'تقارير الكميات', icon: Briefcase }, // Added Quantity Reports link
+ { href: '/owner-account/comments-inquiries', label: 'التعليقات والاستفسارات', icon: Mail }, // Added Comments and Inquiries link
+  { href: '/owner-account/project-progress', label: 'تقدم المشروع', icon: PieChart }, // Added Project Progress link, using PieChart icon
+  { href: '/owner-account/project-timeline', label: 'الجدول الزمني للمشروع', icon: Clock }, // Added Project Timeline link
+  { href: '/owner-account/project-stages', label: 'مراحل المشروع', icon: ListTree }, // Added Project Stages link
   { href: '/profile', label: 'الملف الشخصي', icon: Settings },
   { href: '/owner/other-tools', label: 'أدوات أخرى', icon: Wrench }, // Added new item
   { href: '/about', label: 'عن الموقع', icon: Info },

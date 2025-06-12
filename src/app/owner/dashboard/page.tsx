@@ -159,7 +159,7 @@ export default function OwnerDashboardPage() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="bg-white/95 shadow-md card-hover-effect">
+        <Card className="bg-white/95 shadow-md card-hover-effect" data-ai-hint="cost estimation tool">
             <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
                 <DollarSign className="text-green-500" /> حساب التكلفة التقديرية
@@ -173,7 +173,7 @@ export default function OwnerDashboardPage() {
             </CardContent>
         </Card>
 
-        <Card className="bg-white/95 shadow-md card-hover-effect">
+        <Card className="bg-white/95 shadow-md card-hover-effect" data-ai-hint="comments inquiries">
             <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
                 <MessageSquare className="text-purple-500" /> التعليقات والاستفسارات
@@ -187,7 +187,7 @@ export default function OwnerDashboardPage() {
             </CardContent>
         </Card>
         
-        <Card className="bg-white/95 shadow-md card-hover-effect">
+        <Card className="bg-white/95 shadow-md card-hover-effect" data-ai-hint="quantity reports">
             <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
                 <FileText className="text-blue-500" /> تقارير الكميات
@@ -200,6 +200,35 @@ export default function OwnerDashboardPage() {
             </Button>
             </CardContent>
         </Card>
+
+        <Card className="bg-white/95 shadow-md card-hover-effect" data-ai-hint="visual progress photos videos">
+            <CardHeader>
+            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
+                <Camera className="text-orange-500" /> تقدم المشروع بصريًا
+            </CardTitle>
+            </CardHeader>
+            <CardContent className="text-right">
+            <p className="text-gray-600 mb-3">شاهد أحدث الصور والفيديوهات لتقدم العمل في مشاريعك الإنشائية.</p>
+            <Button asChild variant="outline" className="w-full border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white">
+                <Link href="/my-projects">عرض الوسائط</Link>
+            </Button>
+            </CardContent>
+        </Card>
+        
+        <Card className="bg-white/95 shadow-md card-hover-effect" data-ai-hint="project timeline">
+            <CardHeader>
+            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
+                <Clock className="text-teal-500" /> الجدول الزمني للمشاريع
+            </CardTitle>
+            </CardHeader>
+            <CardContent className="text-right">
+            <p className="text-gray-600 mb-3">تابع الجدول الزمني، المراحل الهامة، والمواعيد النهائية لمشاريعك.</p>
+            <Button asChild variant="outline" className="w-full border-teal-500 text-teal-600 hover:bg-teal-500 hover:text-white">
+                <Link href="/my-projects">عرض الجداول الزمنية</Link>
+            </Button>
+            </CardContent>
+        </Card>
+
       </div>
     </div>
   );

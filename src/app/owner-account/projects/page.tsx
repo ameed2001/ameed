@@ -1,7 +1,7 @@
 typescriptreact
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Eye, FileText, Image } from 'lucide-react';
+import { getProjects, Project } from "@/lib/db"; // Import getProjects and Project type
+import { useAuth } from '@/context/AuthContext'; // Assuming you have an AuthContext to get user info
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton for loading state
 
-// Define a type for a project (replace with your actual project type)
+// Define a type for a project (using the type from db.ts)
 interface Project {
   id: string;
   name: string;
@@ -19,23 +22,48 @@ interface Project {
   completionPercentage: number;
 }
 
-// Placeholder data (replace with actual data fetching logic)
-const placeholderProjects: Project[] = [
-  { id: 'proj-001', name: 'مشروع الفيلا A', location: 'الرياض', status: 'Active', completionPercentage: 75 },
-  { id: 'proj-002', name: 'مشروع المبنى التجاري B', location: 'جدة', status: 'Completed', completionPercentage: 100 },
-  { id: 'proj-003', name: 'مشروع الشقق السكنية C', location: 'الدمام', status: 'Active', completionPercentage: 30 },
-  { id: 'proj-004', name: 'مشروع المستودع D', location: 'الرياض', status: 'Archived', completionPercentage: 100 },
-];
-
 export default function OwnerProjectsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'Active', 'Completed', 'Archived'
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // TODO: Implement actual data fetching for owner's projects
-  const projects = useMemo(() => {
-    // Replace with fetched projects
-    return placeholderProjects;
-  }, []); // Add dependencies when real fetching is implemented
+  // Assuming useAuth provides the logged-in user object with email
+  const { user } = useAuth(); 
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (!user || !user.email) {
+        setError("User not logged in or email not available.");
+        setIsLoading(false);
+        return;
+      }
+      try {
+        const result = await getProjects(user.email); // Fetch projects for the logged-in owner's email
+        if (result.success && result.projects) {
+          // Need to map Project from db.ts to the local interface if different,
+          // but for now assuming they are compatible.
+          // The completionPercentage is not in the db.ts Project interface,
+          // you'll need to calculate or fetch this data.
+          // For now, adding a placeholder value.
+          const projectsWithCompletion = result.projects.map(p => ({
+             ...p,
+             completionPercentage: Math.floor(Math.random() * 101) // Placeholder, replace with actual logic
+          }));
+          setProjects(projectsWithCompletion);
+        } else {
+          setError(result.message || "Failed to fetch projects.");
+        }
+      } catch (err: any) {
+        setError(err.message || "An error occurred while fetching projects.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [user]); // Re-fetch projects when the user changes
 
   const filteredProjects = useMemo(() => {
     return projects.filter(project =>

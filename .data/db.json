@@ -1,5 +1,17 @@
 {
-  "users": [],
+  "users": [
+    {
+      "id": "user-1749744784096-2pa39",
+      "name": "عميد سماره",
+      "email": "malik@gmail.com",
+      "password_hash": "$2a$10$mxk7DiKZ1eXUWXQhLoPZS.fbMJLmiiGBlGVvT2G4VxVTYPhgJvWbq",
+      "role": "OWNER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-12T16:13:04.096Z",
+      "updatedAt": "2025-06-12T16:13:04.096Z",
+      "profileImage": "https://placehold.co/100x100.png?text=عم"
+    }
+  ],
   "projects": [],
   "settings": {
     "siteName": "المحترف لحساب الكميات ",
@@ -81,6 +93,22 @@
       "message": "User ID user-1749573450056-evwdt deleted by admin.",
       "timestamp": "2025-06-12T14:35:25.078Z",
       "user": "Admin"
+    },
+    {
+      "id": "log-1749744784099-ftdct",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User malik@gmail.com registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-06-12T16:13:04.099Z",
+      "user": "user-1749744784096-2pa39"
+    },
+    {
+      "id": "log-1749744792459-wgjun",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-12T16:13:12.459Z",
+      "user": "user-1749744784096-2pa39"
     }
   ],
   "roles": [

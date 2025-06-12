@@ -29,12 +29,13 @@ type OwnerSignupFormDataType = z.infer<typeof ownerSignupFormSchema>;
 export async function ownerSignupUserAction(
   formData: OwnerSignupFormDataType
 ): Promise<SignupActionResponse> {
-  console.log("[SignupAction JSON_DB] Server Action called for OWNER signup:", {
-    name: formData.name,
-    email: formData.email,
-  });
+  console.log("[SignupAction JSON_DB] Start: ownerSignupUserAction called");
+  console.log("[SignupAction JSON_DB] Received formData:", { name: formData.name, email: formData.email });
 
+  console.log("[SignupAction JSON_DB] Starting data validation...");
   const validationResult = ownerSignupFormSchema.safeParse(formData);
+  console.log("[SignupAction JSON_DB] Data validation completed. Success:", validationResult.success);
+
 
   if (!validationResult.success) {
     console.error("[SignupAction JSON_DB] Owner data validation failed:", validationResult.error.flatten().fieldErrors);
@@ -49,6 +50,8 @@ export async function ownerSignupUserAction(
     };
   }
   
+  console.log("[SignupAction JSON_DB] Validation successful. Calling registerUser...");
+
   const data = validationResult.data;
 
   const registrationResult: RegistrationResult = await registerUser({
@@ -57,7 +60,9 @@ export async function ownerSignupUserAction(
       password_input: data.password, 
       role: 'OWNER', // Hardcoded role for this action
   });
+  console.log("[SignupAction JSON_DB] registerUser call completed. Result success:", registrationResult.success);
 
+  
   if (!registrationResult.success) {
     const fieldErrors: Record<string, string[]> = {};
     if (registrationResult.errorType === 'email_exists' && registrationResult.message) {
@@ -69,6 +74,8 @@ export async function ownerSignupUserAction(
         fieldErrors: Object.keys(fieldErrors).length > 0 ? fieldErrors : undefined,
     };
   }
+
+  console.log("[SignupAction JSON_DB] Owner signup successful.");
 
   return {
     success: true,

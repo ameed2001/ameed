@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -12,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Home as HomeIcon, ArrowLeft, HardHat, ShieldCheck } from 'lucide-react';
+import { Loader2, Home as HomeIcon, ArrowLeft, HardHat, ShieldCheck, UserPlus } from 'lucide-react';
 import { ownerLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
@@ -167,16 +166,39 @@ export default function OwnerLoginPage() {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col items-center mt-4 space-y-3">
-             <Link href="/login" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1">
+
+          <CardFooter className="flex flex-col items-center mt-4 space-y-3 w-full text-sm text-center">
+            <Link
+              href="/owner-signup"
+              className="text-blue-700 hover:text-blue-800 hover:underline flex items-center justify-center gap-1 font-semibold"
+            >
+              <UserPlus className="h-5 w-5" />
+              إنشاء حساب مالك جديد
+            </Link>
+
+            <div className="text-gray-700">
+              تسجيل الدخول كـ:
+              <Link
+                href="/login"
+                className="text-green-700 hover:text-green-800 hover:underline mx-2 inline-flex items-center gap-1 font-semibold"
+              >
                 <HardHat className="h-4 w-4" />
-                تسجيل الدخول كمهندس
-            </Link>
-            <Link href="/admin-login" className="text-sm font-medium text-red-700 hover:text-red-800 hover:underline flex items-center gap-1">
+                مهندس
+              </Link>
+              أو
+              <Link
+                href="/admin-login"
+                className="text-red-700 hover:text-red-800 hover:underline mx-2 inline-flex items-center gap-1 font-semibold"
+              >
                 <ShieldCheck className="h-4 w-4" />
-                تسجيل الدخول كمسؤول
-            </Link>
-            <Link href="/" className="text-sm font-semibold text-green-800 hover:text-green-700 hover:underline flex items-center gap-1">
+                مسؤول
+              </Link>
+            </div>
+
+            <Link
+              href="/"
+              className="text-green-800 hover:text-green-700 hover:underline flex items-center justify-center gap-1 font-semibold mt-2"
+            >
               <ArrowLeft className="h-4 w-4" />
               العودة إلى الصفحة الرئيسية
             </Link>

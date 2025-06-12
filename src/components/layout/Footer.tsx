@@ -31,7 +31,7 @@ const Footer = () => {
   const quickLinks: QuickLinkItem[] = [
     { key: 'home', href: '/', label: 'الرئيسية' },
     { key: 'about', href: '/about', label: 'عن الموقع' },
-    { key: 'contact', href: '/contact', label: 'تواصل معنا' },
+    { key: 'contact', href: 'https://forms.gle/WaXPkD8BZMQ7pVev6', label: 'تواصل معنا' },
     { key: 'help', href: '/help', label: 'مركز المساعدة' },
     {
       key: 'create-account',
@@ -131,6 +131,8 @@ const Footer = () => {
                     ) : (
                       <Link
                         href={link.href!}
+                        target={link.href!.startsWith('/') ? '_self' : '_blank'}
+                        rel={link.href!.startsWith('/') ? '' : 'noopener noreferrer'}
                         className="group flex items-center justify-center lg:justify-start gap-1.5 text-gray-300 hover:text-app-gold transition-colors duration-200 py-0.5"
                       >
                         <span>{typeof link.label === 'string' ? link.label : ''}</span>

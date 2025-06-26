@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
   Briefcase, FileText, Camera, Clock, MessageSquare, 
-  BarChart2, CheckCircle, PlayCircle, Loader2, Eye, Calculator, ArrowLeft
+  BarChart2, CheckCircle, PlayCircle, Loader2, Eye, Calculator, ArrowLeft, BarChartHorizontal
 } from 'lucide-react';
 import { getProjects, type Project } from '@/lib/db';
 import { useToast } from '@/hooks/use-toast';
@@ -69,6 +69,7 @@ export default function OwnerDashboardPage() {
   const totalProjects = projects.length;
   const activeProjects = projects.filter(p => p.status === 'قيد التنفيذ').length;
   const completedProjects = projects.filter(p => p.status === 'مكتمل').length;
+  const averageProgress = totalProjects > 0 ? Math.round(projects.reduce((acc, p) => acc + (p.overallProgress || 0), 0) / totalProjects) : 0;
   
   const recentProjects = projects.sort((a, b) => 
     new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
@@ -95,6 +96,13 @@ export default function OwnerDashboardPage() {
       icon: CheckCircle, 
       color: 'text-green-600',
       bgColor: 'bg-green-100'
+    },
+     { 
+      label: 'متوسط الإنجاز الكلي', 
+      value: `${averageProgress}%`, 
+      icon: BarChartHorizontal, 
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-100'
     },
   ];
 
@@ -166,9 +174,9 @@ export default function OwnerDashboardPage() {
       </div>
       
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {isLoading ? (
-          Array.from({ length: 3 }).map((_, i) => (
+          Array.from({ length: 4 }).map((_, i) => (
             <Card key={i} className="shadow-sm">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">

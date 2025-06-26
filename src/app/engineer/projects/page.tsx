@@ -132,6 +132,7 @@ export default function EngineerProjectsPage() {
         <tr>
           <td style="padding: 10px; border: 1px solid #ccc;">${project.name}</td>
           <td style="padding: 10px; border: 1px solid #ccc;">${project.clientName || 'غير محدد'}</td>
+          <td style="padding: 10px; border: 1px solid #ccc;">${project.engineer || 'غير محدد'}</td>
           <td style="padding: 10px; border: 1px solid #ccc;">${project.status}</td>
           <td style="padding: 10px; border: 1px solid #ccc;">${project.location}</td>
         </tr>
@@ -179,6 +180,7 @@ export default function EngineerProjectsPage() {
                 <tr>
                   <th>اسم المشروع</th>
                   <th>المالك</th>
+                  <th>اسم المهندس</th>
                   <th>الحالة</th>
                   <th>الموقع</th>
                 </tr>
@@ -267,8 +269,8 @@ export default function EngineerProjectsPage() {
               <TableHeader>
                 <TableRow className="bg-gray-100">
                   <TableHead className="text-right font-semibold text-gray-700">اسم المشروع</TableHead>
-                  <TableHead className="text-right font-semibold text-gray-700">الموقع</TableHead>
                   <TableHead className="text-right font-semibold text-gray-700">المالك</TableHead>
+                  <TableHead className="text-right font-semibold text-gray-700">الموقع</TableHead>
                   <TableHead className="text-right font-semibold text-gray-700">الحالة</TableHead>
                   <TableHead className="text-right font-semibold text-gray-700">تاريخ الإضافة</TableHead>
                   <TableHead className="text-center font-semibold text-gray-700">الإجراءات</TableHead>
@@ -280,13 +282,13 @@ export default function EngineerProjectsPage() {
                     <TableCell className="font-medium text-app-red align-middle">
                        {project.name}
                     </TableCell>
+                    <TableCell className="text-muted-foreground align-middle">{project.clientName || 'غير محدد'}</TableCell>
                     <TableCell className="text-muted-foreground align-middle">
                       <div className="flex items-center gap-1">
                         <MapPin size={14} />
                         <span>{project.location || 'غير محدد'}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground align-middle">{project.clientName || 'غير محدد'}</TableCell>
                     <TableCell className="align-middle">
                       <Badge variant={project.status === 'قيد التنفيذ' ? "default" : project.status === 'مكتمل' ? "secondary" : "outline"}
                        className={
@@ -327,7 +329,7 @@ export default function EngineerProjectsPage() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleArchiveAction(project.id, project.name)} className="bg-amber-500 hover:bg-amber-600">
+                              <AlertDialogAction onClick={() => handleArchiveAction(project.id, projectName)} className="bg-amber-500 hover:bg-amber-600">
                                 تأكيد الأرشفة
                               </AlertDialogAction>
                             </AlertDialogFooter>

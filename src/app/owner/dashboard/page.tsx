@@ -1,3 +1,4 @@
+
 // src/app/owner/dashboard/page.tsx
 "use client";
 
@@ -55,33 +56,35 @@ export default function OwnerDashboardPage() {
   const recentProjects = projects.slice(0, 3); 
 
   return (
-    <div className="space-y-8 text-right">
-      <h1 className="text-3xl md:text-4xl font-bold text-app-red">لوحة تحكم المالك</h1>
+    <div className="space-y-8">
+      <h1 className="text-3xl md:text-4xl font-bold text-app-red text-center">لوحة تحكم المالك</h1>
 
       <Card className="bg-white/95 shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end gap-2">
             <Gauge className="text-app-gold" /> نظرة عامة سريعة
           </CardTitle>
-          <CardDescription className="text-gray-600">ملخص سريع لمشاريعك الحالية.</CardDescription>
+          <CardDescription className="text-gray-600 text-right">ملخص سريع لمشاريعك الحالية.</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <p className="text-center text-gray-500">جاري تحميل الإحصائيات...</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
+              <div className="text-right">
                 <p className="text-gray-700 font-medium">إجمالي المشاريع:</p>
                 <p className="text-2xl font-bold text-app-red">{projects.length}</p>
               </div>
-              <div>
+              <div className="text-right">
                 <p className="text-gray-700 font-medium">المشاريع النشطة:</p>
                 <p className="text-2xl font-bold text-green-600">{activeProjects}</p>
               </div>
-              <div>
+              <div className="text-right">
                 <p className="text-gray-700 font-medium">متوسط نسبة الإنجاز:</p>
-                <Progress value={overallProgress} className="w-full h-3 mt-2" />
-                <p className="text-xl font-bold text-blue-600 mt-1">{overallProgress}%</p>
+                <div className="flex items-center justify-end gap-2 mt-2">
+                  <span className="text-xl font-bold text-blue-600">{overallProgress}%</span>
+                  <Progress value={overallProgress} className="w-[80%] h-3" />
+                </div>
               </div>
             </div>
           )}
@@ -93,14 +96,16 @@ export default function OwnerDashboardPage() {
           <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end gap-2">
             <Briefcase className="text-app-gold" /> أحدث المشاريع
           </CardTitle>
-          <CardDescription className="text-gray-600">نظرة سريعة على أحدث مشاريعك المسجلة.</CardDescription>
+          <CardDescription className="text-gray-600 text-right">نظرة سريعة على أحدث مشاريعك المسجلة.</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <p className="text-center text-gray-500 py-8">جاري تحميل المشاريع...</p>
           ): projects.length === 0 ? (
-            <div className="text-center text-gray-500 py-10" data-ai-hint="no projects available">
-              <Briefcase size={48} className="mx-auto mb-3 text-gray-400" />
+            <div className="text-right text-gray-500 py-10" data-ai-hint="no projects available">
+              <div className="flex justify-end mb-3">
+                <Briefcase size={48} className="text-gray-400" />
+              </div>
               <p>لا توجد مشاريع مرتبطة بحسابك حاليًا.</p>
               <p className="text-sm">عندما يقوم المهندس بربط مشروع بحسابك، سيظهر هنا.</p>
             </div>
@@ -123,9 +128,9 @@ export default function OwnerDashboardPage() {
                       </TableCell>
                       <TableCell>{project.status}</TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress value={project.overallProgress || 0} className="w-[60%] h-2" />
+                        <div className="flex items-center justify-end gap-2">
                           <span>{project.overallProgress || 0}%</span>
+                          <Progress value={project.overallProgress || 0} className="w-[60%] h-2" />
                         </div>
                       </TableCell>
                       <TableCell className="text-center">

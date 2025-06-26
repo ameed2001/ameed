@@ -4,80 +4,106 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LogOut,
-  ChevronLeft,
-  Menu as MenuIcon,
-  UserCircle,
-  LayoutDashboard,
-  FolderKanban,
-  Settings2,
-  Home,
-  Calculator,
-  Briefcase,
-  CheckCircle2,
-  AlertTriangle,
-  Mail,
-  HelpCircle,
-  Phone,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import {
+    LayoutDashboard,
+    FolderKanban,
+    PlusCircle,
+    Cubes,
+    ClipboardCheck,
+    Calculator,
+    BarChart3,
+    Settings2,
+    Download,
+    FileText,
+    TrendingUp,
+    PenSquare,
+    Camera,
+    GanttChartSquare,
+    Users,
+    LogOut,
+    Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
-import type { Project } from "@/lib/db";
-import { getProjects } from "@/lib/db";
 
-interface StatCardProps {
-  label: string;
-  value: number;
-  icon: React.ElementType;
-  color: string;
-}
-
-const StatCard = ({ label, value, icon: Icon, color }: StatCardProps) => (
-  <div className="bg-muted/40 p-3 rounded-md text-center shadow-sm flex-1">
-    <Icon className={cn("h-6 w-6 mx-auto mb-1.5", color)} />
-    <div className="text-xl font-bold text-foreground">{value}</div>
-    <div className="text-xs text-muted-foreground truncate">{label}</div>
-  </div>
-);
-
-const navItems = [
-  { href: "/", label: "الرئيسية للموقع", icon: Home },
-  { href: "/engineer/dashboard", label: "لوحة التحكم", icon: LayoutDashboard },
-  { href: "/engineer/projects", label: "إدارة المشاريع", icon: FolderKanban },
-  { href: "/", label: "حساب الكميات", icon: Calculator },
-  { href: "/profile", label: "الملف الشخصي", icon: Settings2 },
-  { href: "/help", label: "المساعدة", icon: HelpCircle },
-  { href: "/contact", label: "تواصل معنا", icon: Phone },
+const mainLinks = [
+    { href: '/', label: 'الرئيسية للموقع', icon: Home },
+    { href: '/engineer/dashboard', label: 'لوحة التحكم', icon: LayoutDashboard },
 ];
 
-interface EngineerSidebarProps {
-  isOpen: boolean;
-  onToggle: () => void;
-}
+const accordionItems = [
+  {
+    value: "projects",
+    title: "المشاريع",
+    icon: FolderKanban,
+    color: "text-blue-500",
+    links: [
+      { href: "/engineer/create-project", label: "إنشاء مشروع جديد", icon: PlusCircle },
+      { href: "/engineer/projects", label: "إدارة المشاريع", icon: FolderKanban },
+    ],
+  },
+  {
+    value: "structural-elements",
+    title: "العناصر الإنشائية",
+    icon: Cubes,
+    color: "text-purple-500",
+    links: [
+      { href: "#", label: "إدخال تفاصيل العناصر", icon: PenSquare },
+      { href: "#", label: "التحقق من صحة البيانات", icon: ClipboardCheck },
+    ],
+  },
+  {
+    value: "quantity-survey",
+    title: "حساب الكميات",
+    icon: Calculator,
+    color: "text-green-500",
+    links: [
+      { href: "#", label: "حساب كميات المواد", icon: Calculator },
+      { href: "#", label: "عرض تقارير الكميات", icon: BarChart3 },
+      { href: "#", label: "تخصيص عرض التقارير", icon: Settings2 },
+      { href: "#", label: "تصدير التقارير", icon: Download },
+      { href: "#", label: "توليد بيانات التقرير", icon: FileText },
+    ],
+  },
+  {
+    value: "construction-progress",
+    title: "تقدم البناء",
+    icon: TrendingUp,
+    color: "text-orange-500",
+    links: [
+      { href: "/engineer/update-progress", label: "تحديث التقدم", icon: TrendingUp },
+      { href: "#", label: "ملاحظات التقدم", icon: PenSquare },
+      { href: "#", label: "رفع صور/فيديوهات", icon: Camera },
+      { href: "#", label: "تحديد مراحل المشروع", icon: GanttChartSquare },
+    ],
+  },
+  {
+    value: "owner-linking",
+    title: "ربط المالكين",
+    icon: Users,
+    color: "text-red-500",
+    links: [
+      { href: "#", label: "ربط مالك بمشروع", icon: Users },
+    ],
+  },
+];
 
-export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarProps) {
+export default function EngineerSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
   const [engineerName, setEngineerName] = useState("المهندس");
-  const [stats, setStats] = useState({ active: 0, completed: 0 });
 
   useEffect(() => {
     const name = localStorage.getItem("userName");
-    const email = localStorage.getItem("userEmail");
     if (name) setEngineerName(name);
-
-    async function fetchStats() {
-      if (!email) return;
-      const result = await getProjects(email);
-      if (result.success && result.projects) {
-        const active = result.projects.filter(p => p.status === "قيد التنفيذ" || p.status === "مخطط له").length;
-        const completed = result.projects.filter(p => p.status === "مكتمل").length;
-        setStats({ active, completed });
-      }
-    }
-    fetchStats();
   }, []);
 
   const handleLogout = () => {
@@ -85,94 +111,77 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
     localStorage.removeItem("userRole");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userId");
-    localStorage.removeItem("engineerSidebarState");
-    toast({ title: "تم تسجيل الخروج", description: "تم تسجيل خروجك بنجاح." });
+    toast({
+      title: "تم تسجيل الخروج",
+      description: "تم تسجيل خروجك بنجاح.",
+    });
     router.push("/login");
   };
 
-  const statCards: StatCardProps[] = [
-    { label: "المشاريع النشطة", value: stats.active, icon: Briefcase, color: "text-amber-500" },
-    { label: "الرسائل الجديدة", value: 0, icon: Mail, color: "text-blue-500" },
-    { label: "المشاريع المكتملة", value: stats.completed, icon: CheckCircle2, color: "text-green-500" },
-    { label: "المهام المتأخرة", value: 0, icon: AlertTriangle, color: "text-red-500" },
-  ];
-
   return (
-    <aside
-      className={cn(
-        "bg-card text-foreground shadow-xl flex flex-col sticky top-0 transition-all duration-300 border-l z-50 h-screen",
-        isOpen ? "w-72" : "w-20"
-      )}
-    >
-      <div className="p-4 flex justify-between items-center border-b border-border h-[70px] flex-shrink-0">
-        {isOpen && (
-          <Link href="/engineer/dashboard" className="flex items-center gap-2 overflow-hidden">
-            <UserCircle className="h-8 w-8 text-app-gold flex-shrink-0" />
-            <h2 className="text-lg font-bold text-app-red truncate">مرحباً، {engineerName}</h2>
-          </Link>
-        )}
-        <button
-          onClick={onToggle}
-          className="text-muted-foreground hover:text-foreground p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-app-gold"
-          aria-label={isOpen ? "طي الشريط الجانبي" : "فتح الشريط الجانبي"}
-        >
-          {isOpen ? <ChevronLeft size={24} /> : <MenuIcon size={24} />}
-        </button>
+    <aside className="w-72 bg-card text-card-foreground flex flex-col h-screen sticky top-0 shadow-lg border-l">
+      <div className="p-4 border-b text-center">
+        <h2 className="text-xl font-bold text-app-red">لوحة تحكم المهندس</h2>
+        <p className="text-sm text-muted-foreground">مرحباً، {engineerName}</p>
       </div>
 
-      {isOpen && (
-        <div className="p-3 border-b border-border flex-shrink-0">
-          <div className="grid grid-cols-2 gap-2">
-            {statCards.map(stat => <StatCard key={stat.label} {...stat} />)}
-          </div>
-        </div>
-      )}
+      <nav className="flex-grow overflow-y-auto px-2 py-4">
+        {mainLinks.map((link) => (
+            <Link key={link.href} href={link.href}
+                className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors mb-2",
+                    pathname === link.href
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}>
+                <link.icon className="h-5 w-5" />
+                {link.label}
+            </Link>
+        ))}
 
-      <nav className="flex-grow overflow-y-auto">
-        <ul className="space-y-1 p-2">
-          {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            const isContact = item.href === '/contact';
-            const LinkComponent = isContact ? 'a' : Link;
-            const linkProps = isContact 
-              ? { href: 'https://forms.gle/WaXPkD8BZMQ7pVev6', target: '_blank', rel: 'noopener noreferrer' } 
-              : { href: item.href };
-
-            return (
-              <li key={item.label}>
-                <LinkComponent
-                  {...linkProps}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
-                    !isOpen && "justify-center py-3",
-                    isActive
-                      ? "bg-app-gold text-primary-foreground shadow-md"
-                      : "text-foreground/80 hover:bg-muted"
-                  )}
-                  title={!isOpen ? item.label : undefined}
-                >
-                  <item.icon size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0" />
-                  {isOpen && <span className="truncate">{item.label}</span>}
-                </LinkComponent>
-              </li>
-            );
-          })}
-        </ul>
+        <Accordion type="multiple" className="w-full">
+          {accordionItems.map((item) => (
+            <AccordionItem value={item.value} key={item.value}>
+              <AccordionTrigger className="hover:no-underline text-base font-semibold text-foreground px-3 py-2.5 rounded-md hover:bg-muted">
+                <div className="flex items-center gap-3">
+                  <item.icon className={cn("h-5 w-5", item.color)} />
+                  {item.title}
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pl-6 pr-2 pb-1 pt-1">
+                <ul className="space-y-1">
+                  {item.links.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                          pathname === link.href
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        <link.icon className="h-4 w-4" />
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </nav>
 
-      <div className="mt-auto p-3 border-t border-border flex-shrink-0">
-        <button
+      <div className="p-4 mt-auto border-t">
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-red-500 hover:bg-red-500/10 hover:text-red-500"
           onClick={handleLogout}
-          className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full text-left",
-            "bg-red-700/10 text-red-600 hover:bg-red-700/20",
-            !isOpen && "justify-center py-3"
-          )}
-          title={!isOpen ? "تسجيل الخروج" : undefined}
         >
-          <LogOut size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0" />
-          {isOpen && <span className="truncate">تسجيل الخروج</span>}
-        </button>
+          <LogOut className="mr-2 h-5 w-5" />
+          تسجيل الخروج
+        </Button>
       </div>
     </aside>
   );

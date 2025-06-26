@@ -14,7 +14,7 @@ import {
     LayoutDashboard,
     FolderKanban,
     PlusCircle,
-    Cubes,
+    Blocks,
     ClipboardCheck,
     Calculator,
     BarChart3,
@@ -52,7 +52,7 @@ const accordionItems = [
   {
     value: "structural-elements",
     title: "العناصر الإنشائية",
-    icon: Cubes,
+    icon: Blocks,
     color: "text-purple-500",
     links: [
       { href: "#", label: "إدخال تفاصيل العناصر", icon: PenSquare },

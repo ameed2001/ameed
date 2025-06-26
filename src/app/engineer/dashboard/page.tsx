@@ -149,39 +149,6 @@ export default function EngineerDashboardPage() {
         </div>
       )}
 
-      {/* Dashboard Action Cards */}
-      <Card className="bg-white/95 shadow-lg">
-        <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-                أدوات ومهام رئيسية
-            </CardTitle>
-            <CardDescription className="text-gray-600">وصول سريع إلى الأقسام والوظائف الأساسية.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dashboardActions.map((action) => {
-                const Icon = action.icon;
-                return (
-                    <Card key={action.title} className="card-hover-effect flex flex-col h-full">
-                         <CardHeader>
-                            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-                               <Icon className={cn("h-6 w-6", action.colorClass)} /> {action.title}
-                            </CardTitle>
-                        </CardHeader>
-                         <CardContent className="text-right flex flex-col flex-grow">
-                             <p className="text-gray-600 mb-4 flex-grow text-sm">{action.description}</p>
-                             <Button asChild variant="outline" className={cn("w-full mt-auto", action.buttonClass)}>
-                                <Link href={action.href}>
-                                     الانتقال إلى القسم <ArrowLeft className="mr-2 h-4 w-4" />
-                                 </Link>
-                             </Button>
-                         </CardContent>
-                    </Card>
-                );
-            })}
-        </CardContent>
-      </Card>
-
-
       <div className="grid grid-cols-1 gap-8">
         {/* Active Projects */}
         <Card className="bg-white/95 shadow-lg">
@@ -236,6 +203,38 @@ export default function EngineerDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Dashboard Action Cards */}
+      <Card className="bg-white/95 shadow-lg">
+        <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end gap-2">
+                أدوات ومهام رئيسية
+            </CardTitle>
+            <CardDescription className="text-gray-600">وصول سريع إلى الأقسام والوظائف الأساسية.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {dashboardActions.map((action) => {
+                const Icon = action.icon;
+                return (
+                    <Card key={action.title} className="card-hover-effect flex flex-col h-full">
+                         <CardHeader>
+                            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
+                               <Icon className={cn("h-6 w-6", action.colorClass)} /> {action.title}
+                            </CardTitle>
+                        </CardHeader>
+                         <CardContent className="text-right flex flex-col flex-grow">
+                             <p className="text-gray-600 mb-4 flex-grow text-sm">{action.description}</p>
+                             <Button asChild variant="outline" className={cn("w-full mt-auto", action.buttonClass)}>
+                                <Link href={action.href}>
+                                     الانتقال إلى القسم <ArrowLeft className="mr-2 h-4 w-4" />
+                                 </Link>
+                             </Button>
+                         </CardContent>
+                    </Card>
+                );
+            })}
+        </CardContent>
+      </Card>
     </div>
   );
 }

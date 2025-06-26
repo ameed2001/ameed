@@ -259,17 +259,17 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
         <div className="p-4 mt-auto border-t">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                className={cn(
-                    "w-full justify-start text-red-500 hover:bg-red-500/10 hover:text-red-500",
-                    !isOpen && "justify-center"
-                )}
+              <button
                 onClick={handleLogout}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full",
+                  "bg-red-700/10 text-red-600 hover:bg-red-700/20",
+                  isOpen ? "justify-start text-left" : "justify-center"
+                )}
               >
-                <LogOut className="h-5 w-5 flex-shrink-0" />
-                {isOpen && <span className="mr-2">تسجيل الخروج</span>}
-              </Button>
+                <LogOut size={isOpen ? 20 : 24} className="flex-shrink-0"/>
+                {isOpen && <span className="truncate">تسجيل الخروج</span>}
+              </button>
             </TooltipTrigger>
             {!isOpen && (
                 <TooltipContent side="left" align="center">

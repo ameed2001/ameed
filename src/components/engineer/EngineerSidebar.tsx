@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -156,7 +157,7 @@ export default function EngineerSidebar() {
                         className={cn(
                           "flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                           pathname === link.href
-                            ? "bg-primary/10 text-primary"
+                            ? "bg-app-red text-white"
                             : "text-muted-foreground hover:text-foreground"
                         )}
                       >

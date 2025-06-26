@@ -40,9 +40,9 @@ const engineerActions = [
 export default function EngineerDashboardPage() {
   return (
     <>
-      <Card className="bg-white/95 shadow-xl border border-gray-200/80 mb-10 text-right">
+      <Card className="bg-white/95 shadow-xl border border-gray-200/80 mb-10 text-center">
         <CardHeader>
-          <div className="flex justify-end items-center mb-3 gap-3">
+          <div className="flex justify-center items-center mb-3 gap-3">
              <CardTitle className="text-3xl md:text-4xl font-bold text-app-red">
                 مرحباً بالمهندس 👷‍♂️
              </CardTitle>
@@ -86,5 +86,3 @@ export default function EngineerDashboardPage() {
     </>
   );
 }
-
-    

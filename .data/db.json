@@ -480,6 +480,14 @@
       "message": "User logged in successfully: ameed2001@mohandis.com",
       "timestamp": "2025-06-26T14:08:34.101Z",
       "user": "user-1750945851175-hajdn"
+    },
+    {
+      "id": "log-1750947234295-fv1bq",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T14:13:54.295Z",
+      "user": "System"
     }
   ],
   "roles": [

@@ -177,6 +177,7 @@ export default function EngineerProjectsPage() {
                   <TableHead className="text-right font-semibold text-gray-700">الموقع</TableHead>
                   <TableHead className="text-right font-semibold text-gray-700">المالك</TableHead>
                   <TableHead className="text-right font-semibold text-gray-700">الحالة</TableHead>
+                  <TableHead className="text-right font-semibold text-gray-700">تاريخ الإضافة</TableHead>
                   <TableHead className="text-center font-semibold text-gray-700">الإجراءات</TableHead>
                 </TableRow>
               </TableHeader>
@@ -201,6 +202,9 @@ export default function EngineerProjectsPage() {
                        }>
                         {project.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                        {project.createdAt ? new Date(project.createdAt).toLocaleDateString('ar-EG') : 'غير محدد'}
                     </TableCell>
                     <TableCell className="text-center space-x-1 rtl:space-x-reverse">
                       <Button asChild variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-transparent" title="عرض">

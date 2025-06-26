@@ -75,7 +75,7 @@ export default function CreateProjectPage() {
   const onSubmit: SubmitHandler<CreateProjectFormValues> = async (data) => {
     setIsLoading(true);
     
-    const projectDataForDb: Omit<Project, 'id' | 'overallProgress' | 'photos' | 'timelineTasks' | 'comments'> = {
+    const projectDataForDb: Omit<Project, 'id' | 'overallProgress' | 'photos' | 'timelineTasks' | 'comments' | 'createdAt'> = {
         name: data.projectName,
         location: data.location,
         description: data.description,

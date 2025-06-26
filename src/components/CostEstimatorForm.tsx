@@ -243,10 +243,11 @@ export default function CostEstimatorForm() {
         </tr>
       `).join('');
       const overallTotal = calculateOverallTotal_ILS().toFixed(2);
+      const fullReportTitle = `تقرير تكلفة البناء: ${reportTitle}`;
       printWindow.document.write(`
         <html>
           <head>
-            <title>${reportTitle}</title>
+            <title>${fullReportTitle}</title>
             <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
             <style>
               body { font-family: 'Tajawal', sans-serif; direction: rtl; padding: 25px; font-size: 14px; }
@@ -262,7 +263,7 @@ export default function CostEstimatorForm() {
           </head>
           <body>
             <div class="header">
-              <h1>${reportTitle}</h1>
+              <h1>${fullReportTitle}</h1>
               <p>المهندس المسؤول: ${engName}</p>
               <p>المالك/العميل: ${ownerName}</p>
               <p>تاريخ التقرير: ${new Date().toLocaleString('ar-EG')}</p>

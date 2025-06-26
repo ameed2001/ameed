@@ -1151,6 +1151,14 @@
       "message": "Cost report \"بيت\" (ID: cost-report-1750963656878-56mht) added by engineer Ameed Samara.",
       "timestamp": "2025-06-26T18:47:36.886Z",
       "user": "System"
+    },
+    {
+      "id": "log-1750964071832-m41xq",
+      "action": "COST_REPORT_ADD_SUCCESS",
+      "level": "INFO",
+      "message": "Cost report \"بيت\" (ID: cost-report-1750964071822-dgudb) added by engineer Ameed Samara.",
+      "timestamp": "2025-06-26T18:54:31.832Z",
+      "user": "System"
     }
   ],
   "roles": [
@@ -1454,6 +1462,26 @@
       "totalCost_ILS": 1800,
       "id": "cost-report-1750963656878-56mht",
       "createdAt": "2025-06-26T18:47:36.878Z"
+    },
+    {
+      "reportName": "بيت",
+      "engineerId": "user-1750945851175-hajdn",
+      "engineerName": "Ameed Samara",
+      "ownerId": "user-1750959424627-e7rbf",
+      "ownerName": "عميد سماره",
+      "items": [
+        {
+          "id": "1750964051620",
+          "name": "رمل (رمل)",
+          "quantity": 1,
+          "unit": "م³",
+          "pricePerUnit_ILS": 1,
+          "totalCost_ILS": 1
+        }
+      ],
+      "totalCost_ILS": 1,
+      "id": "cost-report-1750964071822-dgudb",
+      "createdAt": "2025-06-26T18:54:31.822Z"
     }
   ]
 }

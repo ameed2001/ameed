@@ -362,11 +362,11 @@ export default function CostEstimatorForm() {
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder="أدخل الكمية المطلوبة"
-                className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pr-20 text-right"
+                className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500 pl-20 text-right"
                 min="0.01"
                 step="0.01"
               />
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 bg-gray-200 px-3 py-1 rounded text-sm text-gray-700 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 bg-gray-200 px-3 py-1 rounded text-sm text-gray-700 pointer-events-none">
                 {currentUnitDisplay}
               </div>
             </div>

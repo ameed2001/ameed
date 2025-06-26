@@ -1,4 +1,3 @@
-
 {
   "users": [
     {
@@ -22,6 +21,17 @@
       "createdAt": "2025-06-26T14:00:22.821Z",
       "updatedAt": "2025-06-26T14:00:22.821Z",
       "profileImage": "https://placehold.co/100x100.png?text=AM"
+    },
+    {
+      "id": "user-1750959424627-e7rbf",
+      "name": "عميد سماره",
+      "email": "malik@gmail.com",
+      "password_hash": "$2a$10$BWWgul4f2B.UqdbSFDsrSOwqVrKGxyX8JyKGFIqr5WfUpoKR8Q8iu",
+      "role": "OWNER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-26T17:37:04.628Z",
+      "updatedAt": "2025-06-26T17:37:04.628Z",
+      "profileImage": "https://placehold.co/100x100.png?text=عم"
     }
   ],
   "projects": [
@@ -1069,6 +1079,22 @@
       "message": "Project ID 2 deleted.",
       "timestamp": "2025-06-26T15:58:58.034Z",
       "user": "System"
+    },
+    {
+      "id": "log-1750959424641-zckbr",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User malik@gmail.com registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-06-26T17:37:04.641Z",
+      "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1750959433289-as7jr",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-26T17:37:13.289Z",
+      "user": "user-1750959424627-e7rbf"
     }
   ],
   "roles": [

@@ -162,7 +162,7 @@ export default function OwnerDashboardPage() {
           <CardContent className="text-right flex flex-col flex-grow">
             <p className="text-gray-600 mb-3 flex-grow">أداة لحساب التكاليف التقديرية لمواد البناء المختلفة لمشروعك.</p>
             <Button asChild variant="outline" className="w-full border-green-500 text-green-600 hover:bg-green-500 hover:text-white">
-              <Link href="/cost-estimator">بدء حساب التكلفة</Link>
+              <Link href="/owner/cost-estimator">بدء حساب التكلفة</Link>
             </Button>
           </CardContent>
         </Card>

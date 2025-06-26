@@ -37,7 +37,7 @@ const passwordSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
-function ProfilePageContent() {
+export function ProfilePageContent() {
   const { toast } = useToast();
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
@@ -275,4 +275,3 @@ export default function ProfilePage() {
     </OwnerAppLayout>
   );
 }
-

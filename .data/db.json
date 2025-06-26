@@ -720,6 +720,14 @@
       "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
       "timestamp": "2025-06-26T14:57:09.440Z",
       "user": "System"
+    },
+    {
+      "id": "log-1750949901740-lgxpi",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T14:58:21.740Z",
+      "user": "System"
     }
   ],
   "roles": [

@@ -220,8 +220,8 @@ export default function EngineerDashboardPage() {
                 return (
                     <Card key={action.title} className="card-hover-effect flex flex-col h-full text-right">
                          <CardHeader className="pb-4">
-                            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-                               {action.title} <Icon className={cn("h-6 w-6", action.colorClass)} />
+                            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-start gap-2">
+                                <Icon className={cn("h-6 w-6", action.colorClass)} /> {action.title}
                             </CardTitle>
                         </CardHeader>
                          <CardContent className="flex-grow pt-0 pb-4">
@@ -242,3 +242,4 @@ export default function EngineerDashboardPage() {
     </div>
   );
 }
+

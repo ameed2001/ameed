@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -23,6 +22,10 @@ import {
     ChevronLeft,
     HelpCircle,
     Phone,
+    Briefcase,
+    PlayCircle,
+    CheckCircle,
+    BarChartHorizontal
 } from "lucide-react";
 import {
   Tooltip,
@@ -41,6 +44,9 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
+import { getProjects, type Project } from '@/lib/db';
+import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 
 const mainLinks = [
     { href: '/', label: 'الرئيسية للموقع', icon: Home },
@@ -91,10 +97,50 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
   const { toast } = useToast();
   const [ownerName, setOwnerName] = useState("المالك");
 
+  const [stats, setStats] = useState<any[]>([]);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+
   useEffect(() => {
     const name = localStorage.getItem("userName");
     if (name) setOwnerName(name);
-  }, []);
+
+    async function fetchStats() {
+      setIsLoadingStats(true);
+      const userEmail = localStorage.getItem('userEmail');
+      if (!userEmail) {
+          setIsLoadingStats(false);
+          return;
+      }
+
+      try {
+          const result = await getProjects(userEmail);
+          if (result.success && result.projects) {
+              const projects = result.projects;
+              const totalProjects = projects.length;
+              const activeProjects = projects.filter(p => p.status === 'قيد التنفيذ').length;
+              const completedProjects = projects.filter(p => p.status === 'مكتمل').length;
+              const averageProgress = totalProjects > 0 ? Math.round(projects.reduce((acc, p) => acc + (p.overallProgress || 0), 0) / totalProjects) : 0;
+              
+              const overviewStats = [
+                  { label: 'إجمالي المشاريع', value: totalProjects, icon: Briefcase, color: 'text-blue-600' },
+                  { label: 'قيد التنفيذ', value: activeProjects, icon: PlayCircle, color: 'text-yellow-600' },
+                  { label: 'مكتملة', value: completedProjects, icon: CheckCircle, color: 'text-green-600' },
+                  { label: 'متوسط الإنجاز', value: `${averageProgress}%`, icon: BarChartHorizontal, color: 'text-purple-600' },
+              ];
+              setStats(overviewStats);
+          } else {
+              setStats([]);
+          }
+      } catch (error) {
+          console.error("Error fetching stats for sidebar:", error);
+          setStats([]);
+      } finally {
+          setIsLoadingStats(false);
+      }
+    }
+
+    fetchStats();
+  }, [pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("userName");
@@ -133,28 +179,59 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         </div>
 
         <nav className="flex-grow overflow-y-auto px-2 py-4">
-          {mainLinks.map((link) => (
-            <Tooltip key={link.href}>
-              <TooltipTrigger asChild>
-                <Link href={link.href}
-                    className={cn(
-                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors mb-2",
-                        !isOpen && "justify-center",
-                        pathname === link.href
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    )}>
-                    <link.icon className="h-5 w-5 flex-shrink-0" />
-                    {isOpen && <span>{link.label}</span>}
-                </Link>
-              </TooltipTrigger>
-              {!isOpen && (
-                <TooltipContent side="left" align="center">
-                  <p>{link.label}</p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          ))}
+          
+          {isOpen && (
+            <div className="mb-4 px-2">
+                <h3 className="px-1 py-2 text-xs font-semibold text-muted-foreground">نظرة عامة</h3>
+                <div className="space-y-1.5 rounded-lg bg-muted/30 p-2 border">
+                    {isLoadingStats ? (
+                        Array.from({ length: 4 }).map((_, i) => (
+                            <div key={i} className="flex items-center gap-3 p-2 rounded-md">
+                                <Skeleton className="h-5 w-5 rounded-md" />
+                                <Skeleton className="h-4 w-20" />
+                                <Skeleton className="h-5 w-8 ml-auto" />
+                            </div>
+                        ))
+                    ) : (
+                        stats.map(stat => {
+                            const Icon = stat.icon;
+                            return (
+                                <div key={stat.label} className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/70 transition-colors">
+                                    <Icon className={cn("h-5 w-5 flex-shrink-0", stat.color)} />
+                                    <span className="text-sm font-medium text-muted-foreground flex-grow">{stat.label}</span>
+                                    <span className="text-sm font-bold text-foreground">{stat.value}</span>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            </div>
+          )}
+          
+          <div className="border-t pt-2 mt-2">
+            {mainLinks.map((link) => (
+                <Tooltip key={link.href}>
+                <TooltipTrigger asChild>
+                    <Link href={link.href}
+                        className={cn(
+                            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors mb-2",
+                            !isOpen && "justify-center",
+                            pathname === link.href
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        )}>
+                        <link.icon className="h-5 w-5 flex-shrink-0" />
+                        {isOpen && <span>{link.label}</span>}
+                    </Link>
+                </TooltipTrigger>
+                {!isOpen && (
+                    <TooltipContent side="left" align="center">
+                    <p>{link.label}</p>
+                    </TooltipContent>
+                )}
+                </Tooltip>
+            ))}
+          </div>
 
           {isOpen ? (
             <Accordion type="multiple" className="w-full">
@@ -278,4 +355,3 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
     </TooltipProvider>
   );
 }
-

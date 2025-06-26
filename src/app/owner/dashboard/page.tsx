@@ -1,18 +1,43 @@
-// src/app/owner/dashboard/page.tsx
+
 "use client";
 
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
-    Gauge, Briefcase, FileText, Camera, Clock, MessageSquare,
-    Loader2
+    Briefcase, FileText, Camera, Clock,
+    Loader2, CheckCircle, Hourglass, BarChart3, FolderKanban, Calculator
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { getProjects as dbGetProjects, type Project } from '@/lib/db';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from '@/lib/utils';
+
+// Stat Card Component
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: ReactNode;
+  colorClass: string;
+}
+
+function StatCard({ title, value, icon, colorClass }: StatCardProps) {
+  return (
+    <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+        <div className={cn("h-8 w-8 rounded-full flex items-center justify-center", colorClass.replace('text-', 'bg-') + '/10')}>
+          {icon}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+      </CardContent>
+    </Card>
+  );
+}
 
 
 export default function OwnerDashboardPage() {
@@ -57,12 +82,37 @@ export default function OwnerDashboardPage() {
   const stats = {
     total: projects.length,
     inProgress: projects.filter(p => p.status === "قيد التنفيذ").length,
-    overallProgress: projects.length > 0
-        ? Math.round(projects.reduce((acc, p) => acc + (p.overallProgress || 0), 0) / projects.length)
-        : 0,
+    completed: projects.filter(p => p.status === "مكتمل").length,
   };
 
   const recentProjects = projects.slice(0, 3);
+  
+  const quickAccessCards = [
+    {
+        title: "تقارير الكميات",
+        description: "عرض ملخصات وتقارير الكميات من المهندس المسؤول.",
+        href: "/owner/projects",
+        icon: <FileText className="h-6 w-6 text-green-600" />,
+    },
+    {
+        title: "التقدم البصري",
+        description: "تصفح أحدث الصور ومقاطع الفيديو لمتابعة العمل في الموقع.",
+        href: "/owner/projects",
+        icon: <Camera className="h-6 w-6 text-purple-600" />,
+    },
+    {
+        title: "الجداول الزمنية",
+        description: "اطلع على الخطط الزمنية والمواعيد الهامة لكل مشروع.",
+        href: "/owner/project-timeline",
+        icon: <Clock className="h-6 w-6 text-cyan-600" />,
+    },
+    {
+        title: "حاسبة التكاليف",
+        description: "أداة تقديرية سريعة لحساب تكاليف المواد لمساعدتك في التخطيط.",
+        href: "/owner/cost-estimator",
+        icon: <Calculator className="h-6 w-6 text-red-600" />,
+    },
+  ];
 
   if (isLoading) {
     return (
@@ -74,139 +124,91 @@ export default function OwnerDashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-right">
         <h1 className="text-3xl font-bold text-app-red mb-6 text-center">لوحة تحكم المالك</h1>
 
-        {/* نظرة عامة سريعة */}
-        <Card className="mb-6 bg-white/95 shadow-lg">
-            <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end">
-                نظرة عامة سريعة <Gauge className="ml-3 h-6 w-6 text-app-gold" />
-            </CardTitle>
-            <CardDescription className="text-gray-600 text-right">ملخص سريع لمشاريعك.</CardDescription>
-            </CardHeader>
-            <CardContent className="text-right">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                <p className="text-gray-700 font-medium">إجمالي المشاريع:</p>
-                <p className="text-2xl font-bold text-app-red">{stats.total}</p>
-                </div>
-                <div>
-                <p className="text-gray-700 font-medium">المشاريع قيد التنفيذ:</p>
-                <p className="text-2xl font-bold text-green-600">{stats.inProgress}</p>
-                </div>
-                <div>
-                <p className="text-gray-700 font-medium">نسبة الإنجاز الإجمالية (متوسط):</p>
-                <Progress value={stats.overallProgress} className="w-full h-3 mt-2" />
-                <p className="text-xl font-bold text-blue-600 mt-1">{stats.overallProgress}%</p>
-                </div>
-            </div>
-            </CardContent>
-        </Card>
+        {/* Stats Cards */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <StatCard title="إجمالي المشاريع" value={stats.total} icon={<Briefcase className="h-5 w-5 text-blue-500" />} colorClass="text-blue-500" />
+            <StatCard title="قيد التنفيذ" value={stats.inProgress} icon={<Hourglass className="h-5 w-5 text-amber-500" />} colorClass="text-amber-500" />
+            <StatCard title="المشاريع المكتملة" value={stats.completed} icon={<CheckCircle className="h-5 w-5 text-green-500" />} colorClass="text-green-500" />
+        </div>
 
-        {/* مشاريعي */}
-        <Card className="mb-6 bg-white/95 shadow-lg">
-            <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end">
-                مشاريعي <Briefcase className="ml-3 h-6 w-6 text-app-gold" />
-            </CardTitle>
-            <CardDescription className="text-gray-600 text-right">قائمة بأحدث مشاريعك.</CardDescription>
+        {/* My Projects */}
+        <Card className="bg-white/95 shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                    <FolderKanban className="h-6 w-6 text-blue-700" />
+                    أحدث المشاريع
+                </CardTitle>
+                <Button asChild variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white">
+                    <Link href="/owner/projects">
+                        عرض جميع المشاريع
+                    </Link>
+                </Button>
             </CardHeader>
             <CardContent>
-                <Table dir="rtl">
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="text-right">اسم المشروع</TableHead>
-                            <TableHead className="text-right">الحالة</TableHead>
-                            <TableHead className="text-right">نسبة الإنجاز</TableHead>
-                            <TableHead className="text-center">الإجراءات</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {recentProjects.map(project => (
-                            <TableRow key={project.id}>
-                                <TableCell className="font-medium">{project.name}</TableCell>
-                                <TableCell>{project.status}</TableCell>
-                                <TableCell>
-                                    <div className="flex items-center justify-end gap-2">
-                                        <span>{project.overallProgress || 0}%</span>
-                                        <Progress value={project.overallProgress || 0} className="w-[60%] h-2" />
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-center">
-                                    <Link href={`/owner/projects/${project.id}`} passHref>
-                                        <Button variant="link" className="text-blue-600 hover:underline">عرض التفاصيل</Button>
-                                    </Link>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {recentProjects.length === 0 && (
+                {recentProjects.length > 0 ? (
+                    <Table>
+                        <TableHeader>
                             <TableRow>
-                                <TableCell colSpan={4} className="text-center text-gray-500">لا توجد مشاريع لعرضها حالياً.</TableCell>
+                                <TableHead className="text-right">اسم المشروع</TableHead>
+                                <TableHead className="text-right">الحالة</TableHead>
+                                <TableHead className="text-right w-[150px]">نسبة الإنجاز</TableHead>
+                                <TableHead className="text-center w-[120px]">الإجراءات</TableHead>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-                <div className="text-center mt-4">
-                    <Link href="/owner/projects" passHref>
-                        <Button variant="outline" className="text-app-red border-app-red hover:bg-app-red hover:text-white">عرض جميع المشاريع</Button>
+                        </TableHeader>
+                        <TableBody>
+                            {recentProjects.map(project => (
+                                <TableRow key={project.id}>
+                                    <TableCell className="font-medium">{project.name}</TableCell>
+                                    <TableCell>{project.status}</TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <span>{project.overallProgress || 0}%</span>
+                                            <Progress value={project.overallProgress || 0} className="w-[70%] h-2" />
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        <Button asChild variant="link" size="sm">
+                                            <Link href={`/owner/projects/${project.id}`} passHref>
+                                                عرض التفاصيل
+                                            </Link>
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                ) : (
+                    <p className="text-center text-muted-foreground py-10">لا توجد مشاريع لعرضها حالياً.</p>
+                )}
+            </CardContent>
+        </Card>
+
+        {/* Quick Access Tools */}
+        <Card className="bg-white/95 shadow-lg">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-6 w-6 text-green-700" />
+                    أدوات ومتابعة سريعة
+                </CardTitle>
+                <CardDescription>وصول سريع للأدوات والتقارير الخاصة بمشاريعك.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {quickAccessCards.map((card) => (
+                    <Link href={card.href} key={card.title} className="block card-hover-effect">
+                        <div className="p-4 rounded-lg border bg-gray-50/50 hover:border-primary flex items-center gap-4 h-full">
+                            <div className="p-3 bg-muted rounded-full">
+                                {card.icon}
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-foreground">{card.title}</h3>
+                                <p className="text-sm text-muted-foreground">{card.description}</p>
+                            </div>
+                        </div>
                     </Link>
-                </div>
-            </CardContent>
-        </Card>
-
-        {/* تقارير الكميات */}
-        <Card className="mb-6 bg-white/95 shadow-lg">
-            <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end">
-                تقارير الكميات <FileText className="ml-3 h-6 w-6 text-app-gold" />
-            </CardTitle>
-            <CardDescription className="text-gray-600 text-right">الوصول السريع لتقارير كميات المواد والأعمال.</CardDescription>
-            </CardHeader>
-            <CardContent className="text-right">
-            <p className="text-gray-700 mb-3">يمكنك عرض التقارير التفصيلية للكميات من داخل صفحة كل مشروع.</p>
-            <Link href="/owner/projects" passHref>
-                <Button variant="outline" className="text-app-red border-app-red hover:bg-app-red hover:text-white">الانتقال إلى المشاريع</Button>
-            </Link>
-            </CardContent>
-        </Card>
-
-        {/* تقدم المشروع بصريًا */}
-        <Card className="mb-6 bg-white/95 shadow-lg">
-            <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end">
-                تقدم المشروع بصريًا <Camera className="ml-3 h-6 w-6 text-app-gold" />
-            </CardTitle>
-            <CardDescription className="text-gray-600 text-right">معاينة أحدث الصور والفيديوهات من مشاريعك.</CardDescription>
-            </CardHeader>
-            <CardContent className="text-right">
-            <p className="text-gray-700 mb-3">شاهد آخر الصور ومقاطع الفيديو التي يرفعها المهندس من صفحة كل مشروع.</p>
-            </CardContent>
-        </Card>
-
-        {/* الجدول الزمني */}
-        <Card className="mb-6 bg-white/95 shadow-lg">
-            <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end">
-                الجدول الزمني <Clock className="ml-3 h-6 w-6 text-app-gold" />
-            </CardTitle>
-            <CardDescription className="text-gray-600 text-right">متابعة المواعيد والمعالم الهامة لمشاريعك.</CardDescription>
-            </CardHeader>
-            <CardContent className="text-right">
-            <p className="text-gray-700 mb-3">تتوفر الجداول الزمنية المفصلة داخل صفحة كل مشروع على حدة.</p>
-            </CardContent>
-        </Card>
-
-        {/* التعليقات والاستفسارات */}
-        <Card className="mb-6 bg-white/95 shadow-lg">
-            <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end">
-                التعليقات والاستفسارات <MessageSquare className="ml-3 h-6 w-6 text-app-gold" />
-            </CardTitle>
-            <CardDescription className="text-gray-600 text-right">إرسال ملاحظاتك أو استفساراتك.</CardDescription>
-            </CardHeader>
-            <CardContent className="text-right">
-            <p className="text-gray-700 mb-3">تواصل مباشرة مع المهندس المسؤول من خلال قسم التعليقات في صفحة المشروع.</p>
+                ))}
             </CardContent>
         </Card>
     </div>

@@ -1,3 +1,4 @@
+
 'use server';
 
 import { createReadStream, createWriteStream, promises as fsPromises, existsSync } from 'fs';
@@ -30,7 +31,7 @@ export interface SystemSettingsDocument {
   maintenanceMode: boolean;
   maxUploadSizeMB: number;
   emailNotificationsEnabled: boolean;
-  engineerApprovalRequired: boolean;
+  engineerApprovalRequired: boolean; // default: false
 }
 
 export type LogLevel = 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
@@ -140,7 +141,7 @@ async function readDb(): Promise<DatabaseStructure> {
           maintenanceMode: false,
           maxUploadSizeMB: 25,
           emailNotificationsEnabled: true,
-          engineerApprovalRequired: true,
+ engineerApprovalRequired: false, // Default to false
         },
         logs: [],
         roles: ["Admin", "Engineer", "Owner", "GeneralUser"],
@@ -179,6 +180,7 @@ async function readDb(): Promise<DatabaseStructure> {
      // For now, simplified: return default on any error as per original logic, but log the specific error.
      return {
        users: [],
+      projects: [],
       logs: [],
       roles: ["Admin", "Engineer", "Owner", "GeneralUser"],
       useCases: []
@@ -294,26 +296,28 @@ export async function registerUser(userData: {
   password_input: string;
   role: UserRole;
   phone?: string;
+  status?: UserStatus; // Allow overriding status for admin creation
 }): Promise<RegistrationResult> {
-  const { name, email, password_input, role, phone } = userData;
- console.log('[db.ts] registerUser: Starting registration for email:', email, 'with role:', role);
+  const { name, email, password_input, role, phone, status } = userData;
+  console.log('[db.ts] registerUser: Starting registration for email:', email, 'with role:', role);
   try {
- console.log('[db.ts] registerUser: Reading database...');
+    console.log('[db.ts] registerUser: Reading database...');
     const db = await readDb();
- console.log('[db.ts] registerUser: Database read successfully.');
+    console.log('[db.ts] registerUser: Database read successfully.');
     const existingUser = db.users.find(u => u.email === email);
+    if (existingUser) {
       await logAction('USER_REGISTRATION_FAILURE', 'WARNING', `Registration attempt failed for existing email: ${email}`);
-
- if (existingUser) { // Corrected conditional placement
- return { success: false, message: "البريد الإلكتروني مسجل بالفعل.", errorType: 'email_exists' };
+      return { success: false, message: "البريد الإلكتروني مسجل بالفعل.", errorType: 'email_exists' };
     }
 
     const settings = await getSystemSettings();
-    let initialStatus: UserStatus = (role === 'ENGINEER' && settings.engineerApprovalRequired) ? 'PENDING_APPROVAL' : 'ACTIVE';
+    // Use provided status or determine based on role and settings
+    let initialStatus: UserStatus = status || (role === 'ENGINEER' && settings.engineerApprovalRequired ? 'PENDING_APPROVAL' : 'ACTIVE');
+
     const hashedPassword = await bcrypt.hash(password_input, 10);
- console.log('[db.ts] registerUser: Password hashed successfully.');
+    console.log('[db.ts] registerUser: Password hashed successfully.');
     const newUserId = `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
- console.log('[db.ts] registerUser: Generated new user ID:', newUserId);
+    console.log('[db.ts] registerUser: Generated new user ID:', newUserId);
     const newUserDocument: UserDocument = {
       id: newUserId,
       name,
@@ -324,13 +328,14 @@ export async function registerUser(userData: {
       phone: phone || undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      profileImage: `https://placehold.co/100x100.png?text=${name.substring(0,2).toUpperCase()}`
+      profileImage: `https://placehold.co/100x100.png?text=${name.substring(0, 2).toUpperCase()}`
     };
- console.log('[db.ts] registerUser: Pushing new user to database object.');
+    console.log('[db.ts] registerUser: Pushing new user to database object.');
     db.users.push(newUserDocument);
- console.log('[db.ts] registerUser: Writing database...');
+    console.log('[db.ts] registerUser: Writing database...');
     await writeDb(db);
     await logAction('USER_REGISTRATION_SUCCESS', 'INFO', `User ${email} registered. Role: ${role}, Status: ${initialStatus}.`, newUserId);
+    console.log('[db.ts] registerUser: Registration successful for user:', newUserId);
     return {
       success: true,
       userId: newUserId,
@@ -339,11 +344,10 @@ export async function registerUser(userData: {
         ? "تم إنشاء حسابك كمهندس بنجاح. حسابك حاليًا قيد المراجعة والموافقة من قبل الإدارة."
         : "تم إنشاء حسابك بنجاح.",
     };
- console.log('[db.ts] registerUser: Registration successful for user:', newUserId);
   } catch (error: any) {
+    console.error('[db.ts] registerUser: Caught error during registration:', error);
     await logAction('USER_REGISTRATION_FAILURE', 'ERROR', `File DB error during registration attempt for ${email}: ${error.message || String(error)}`);
     return { success: false, message: "حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة مرة أخرى.", errorType: 'db_error' };
- console.error('[db.ts] registerUser: Caught error during registration:', error);
   }
 }
 
@@ -398,31 +402,30 @@ export interface GetProjectsResult {
 export async function getProjects(userEmailOrId: string): Promise<GetProjectsResult> {
   try {
     const db = await readDb();
-    
-    // Find the user by email or ID
     const user = db.users.find(u => u.email === userEmailOrId || u.id === userEmailOrId);
-    let filteredProjects: Project[];
+
+    // Admin can see all projects
+    if (userEmailOrId === 'admin-id' || user?.role === 'ADMIN') {
+      return { success: true, projects: db.projects };
+    }
 
     if (!user) {
-      // If user not found, and it's not the special 'admin-id', return empty array
-      if (userEmailOrId !== 'admin-id') {
         await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch attempted with unknown user ID/Email: ${userEmailOrId}`);
-        return { success: true, projects: [] };
-      }
-      // Allow 'admin-id' to fall through to return all projects
+        return { success: true, projects: [] }; // Return empty array if user not found
     }
 
-    if (user?.role === 'OWNER') {
+    let filteredProjects: Project[] = [];
+    if (user.role === 'OWNER') {
       filteredProjects = db.projects.filter(p => p.linkedOwnerEmail === user.email);
-    } else if (user?.role === 'ENGINEER' || user?.role === 'ADMIN' || userEmailOrId === 'admin-id') { // Includes case for 'admin-id' without a user doc
-    } else if (!user && userEmailOrId === 'admin-id') {
-      filteredProjects = db.projects;
-    } else {
-      filteredProjects = [];
+    } else if (user.role === 'ENGINEER') {
+      // The engineer's name is stored in the project's 'engineer' field.
+      // This is a weak link; using an ID would be better in a real-world scenario.
+      filteredProjects = db.projects.filter(p => p.engineer === user.name);
     }
+
     return { success: true, projects: filteredProjects };
   } catch (error: any) {
-    await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Error fetching projects: ${error.message || String(error)}`);
+    await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Error fetching projects for ${userEmailOrId}: ${error.message || String(error)}`);
     return { success: false, message: "فشل تحميل المشاريع.", projects: [] };
   }
 }

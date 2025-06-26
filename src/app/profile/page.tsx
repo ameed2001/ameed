@@ -75,35 +75,70 @@ function ProfilePageContent() {
 
   const onProfileSubmit: SubmitHandler<ProfileFormValues> = async (data) => {
     setIsProfileLoading(true);
-    console.log("Update profile data (simulation):", data);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    toast({ title: "تم تحديث الملف الشخصي بنجاح (محاكاة)" });
-    // Update mock data if needed for UI reflect (not persistent)
-    if (data.name && typeof window !== 'undefined') localStorage.setItem('userName', data.name);
-    if (data.email && typeof window !== 'undefined') localStorage.setItem('userEmail', data.email);
-    
-    setCurrentUser(prev => ({
-        ...prev,
-        name: data.name || prev.name,
-        email: data.email || prev.email,
-    }));
-    setIsProfileLoading(false);
+    try {
+      // Replace with your actual backend API endpoint for updating profile
+      const response = await fetch('/api/update-profile', {
+        method: 'PUT', // Or 'POST' depending on your backend
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any necessary authentication headers here (e.g., Authorization: Bearer token)
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        toast({ title: "تم تحديث الملف الشخصي بنجاح" }); // Removed simulation text
+        // Optionally update the displayed user state if the backend confirms the change
+        setCurrentUser(prev => ({
+            ...prev,
+            name: data.name || prev.name,
+            email: data.email || prev.email,
+        }));
+      } else {
+        const errorData = await response.json(); // Assuming backend returns JSON with error details
+        toast({
+          title: "فشل تحديث الملف الشخصي",
+          description: errorData.message || "حدث خطأ أثناء تحديث الملف الشخصي.", // Display backend error message
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({ title: "خطأ", description: "حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.", variant: "destructive" });
+    } finally {
+      setIsProfileLoading(false);
+    }
   };
 
   const onPasswordSubmit: SubmitHandler<PasswordFormValues> = async (data) => {
     setIsPasswordLoading(true);
-    console.log("Change password data (simulation):", data);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    // Simulate password check
-    if (data.currentPassword === "oldpassword") { // Replace with actual check
-        toast({ title: "تم تغيير كلمة المرور بنجاح (محاكاة)" });
+    try {
+      // Replace with your actual backend API endpoint for changing password
+      const response = await fetch('/api/change-password', { // استبدل هذا بالعنوان الفعلي
+        method: 'PUT', // Or 'POST'
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any necessary authentication headers here
+        },
+        body: JSON.stringify({
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword,
+        }),
+      });
+
+      if (response.ok) { // إذا كانت الاستجابة تشير إلى النجاح (مثل 200 OK)
+        toast({ title: "تم تغيير كلمة المرور بنجاح" }); // Removed simulation text
         resetPassword();
-    } else {
-        toast({ title: "كلمة المرور الحالية غير صحيحة (محاكاة)", variant: "destructive" });
+      } else { // إذا كانت الاستجابة تشير إلى خطأ (مثل 400 Bad Request)
+        const errorData = await response.json(); // Assuming backend returns JSON with error details
+        toast({ title: "فشل تغيير كلمة المرور", description: errorData.message || "كلمة المرور الحالية غير صحيحة.", variant: "destructive" });
+      }
+    } catch (error) { // للتعامل مع أخطاء الشبكة أو الأخطاء الأخرى أثناء الطلب
+      console.error("Error changing password:", error);
+      toast({ title: "خطأ", description: "حدث خطأ غير متوقع أثناء تغيير كلمة المرور. يرجى المحاولة لاحقًا.", variant: "destructive" });
+    } finally {
+      setIsPasswordLoading(false);
     }
-    setIsPasswordLoading(false);
   };
 
   const handleDeleteAccount = () => {

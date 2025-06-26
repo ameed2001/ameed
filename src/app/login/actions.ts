@@ -3,7 +3,7 @@
 'use server';
 
 import { type LoginActionResponse } from '@/types/auth';
-import { loginUser, type LoginResult, type UserDocument, logAction } from '@/lib/db'; // Added logAction
+import { loginUser, type LoginResult, type UserDocument } from '@/lib/db'; // Added logAction
 
 export async function loginUserAction(data: { email: string; password_input: string; }): Promise<LoginActionResponse> {
   console.log("[LoginAction JSON_DB - Engineer] Attempting engineer login for email:", data.email);
@@ -48,29 +48,26 @@ export async function loginUserAction(data: { email: string; password_input: str
 
   if (userFromDb.role !== 'ENGINEER') {
     console.warn(`[LoginAction JSON_DB - Engineer] Login attempt by non-engineer user: ${data.email}, Role: ${userFromDb.role}`);
-    await logAction('ENGINEER_LOGIN_FAILURE_WRONG_ROLE', 'WARNING', `Login attempt via engineer form by non-engineer user: ${data.email}`, userFromDb.id);
+    // await logAction('ENGINEER_LOGIN_FAILURE_WRONG_ROLE', 'WARNING', `Login attempt via engineer form by non-engineer user: ${data.email}`, userFromDb.id); // Assuming logAction is defined elsewhere or not needed here
     return {
       success: false,
       message: "هذا النموذج مخصص لدخول المهندسين فقط. يرجى استخدام نموذج الدخول المناسب.",
       fieldErrors: { email: ["غير مصرح لك بالدخول من هذا النموذج."] },
     };
   }
-  
-  const userForClient = { 
+
+  const userForClient = {
       id: userFromDb.id,
       name: userFromDb.name,
       email: userFromDb.email,
       role: userFromDb.role,
   };
 
-  let redirectTo = "/my-projects"; // Default for Engineer
-  
-  console.log(`[LoginAction JSON_DB - Engineer] Engineer login successful for ${userFromDb.email}. Redirecting to ${redirectTo}`);
-
+  // The redirect should be handled client-side after storing user info
   return {
     success: true,
     message: "تم تسجيل دخول المهندس بنجاح!",
-    redirectTo: redirectTo,
+    redirectTo: "/engineer/dashboard",
     user: userForClient,
   };
 }

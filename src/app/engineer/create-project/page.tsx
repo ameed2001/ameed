@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,86 +83,85 @@ export default function CreateProjectPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="container mx-auto py-10 px-4">
-        <Card className="max-w-2xl mx-auto bg-white/95 shadow-xl">
-          <CardHeader className="text-center">
-            <PlusCircle className="mx-auto h-16 w-16 text-app-gold mb-3" />
-            <CardTitle className="text-3xl font-bold text-app-red">إنشاء مشروع جديد</CardTitle>
-            <CardDescription className="text-gray-600 mt-1">
-              أدخل تفاصيل المشروع الإنشائي الجديد للبدء في إدارته وحساب كمياته.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 text-right">
-              <div>
-                <Label htmlFor="projectName" className="block mb-1.5 font-semibold text-gray-700">اسم المشروع</Label>
-                <Input id="projectName" type="text" {...register("projectName")} className="bg-white focus:border-app-gold" placeholder="مثال: بناء فيلا سكنية في حي الياسمين" />
-                {errors.projectName && <p className="text-red-500 text-sm mt-1">{errors.projectName.message}</p>}
-              </div>
+    <div className="container mx-auto py-10 px-4">
+      <Card className="max-w-2xl mx-auto bg-white/95 shadow-xl">
+        <CardHeader className="text-center">
+          <PlusCircle className="mx-auto h-16 w-16 text-app-gold mb-3" />
+          <CardTitle className="text-3xl font-bold text-app-red">إنشاء مشروع إنشاء جديد</CardTitle>
+          <CardDescription className="text-gray-600 mt-1">
+            أدخل تفاصيل المشروع الإنشائي الجديد للبدء في إدارته وحساب كمياته.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 text-right">
+            <div>
+              <Label htmlFor="projectName" className="block mb-1.5 font-semibold text-gray-700">اسم المشروع</Label>
+              <Input id="projectName" type="text" {...register("projectName")} className="bg-white focus:border-app-gold" placeholder="مثال: بناء فيلا سكنية في حي الياسمين" />
+              {errors.projectName && <p className="text-red-500 text-sm mt-1">{errors.projectName.message}</p>}
+            </div>
 
+            <div>
+              <Label htmlFor="location" className="block mb-1.5 font-semibold text-gray-700">موقع المشروع</Label>
+              <div className="relative">
+                <Input id="location" type="text" {...register("location")} className="bg-white focus:border-app-gold pr-10" placeholder="مثال: مدينة الرياض، حي النرجس، قطعة رقم 123" />
+                <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              </div>
+              {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
+            </div>
+            <div>
+              <Label htmlFor="engineer" className="block mb-1.5 font-semibold text-gray-700">المهندس المسؤول</Label>
+              <Input id="engineer" type="text" {...register("engineer")} className="bg-white focus:border-app-gold" placeholder="اسم المهندس القائم على المشروع" />
+              {errors.engineer && <p className="text-red-500 text-sm mt-1">{errors.engineer.message}</p>}
+            </div>
+
+            <div>
+              <Label htmlFor="description" className="block mb-1.5 font-semibold text-gray-700">وصف المشروع</Label>
+              <Textarea
+                id="description"
+                {...register("description")}
+                rows={4}
+                className="bg-white focus:border-app-gold"
+                placeholder="صف بإيجاز طبيعة المشروع، أهدافه، وأهم مكوناته..."
+              />
+              {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <Label htmlFor="location" className="block mb-1.5 font-semibold text-gray-700">موقع المشروع</Label>
+                <Label htmlFor="startDate" className="block mb-1.5 font-semibold text-gray-700">تاريخ البدء المتوقع</Label>
                 <div className="relative">
-                    <Input id="location" type="text" {...register("location")} className="bg-white focus:border-app-gold pr-10" placeholder="مثال: مدينة الرياض، حي النرجس، قطعة رقم 123" />
-                    <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input id="startDate" type="date" {...register("startDate")} className="bg-white focus:border-app-gold pr-10"/>
+                  <CalendarRange className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 </div>
-                {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
+                {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>}
               </div>
-               <div>
-                <Label htmlFor="engineer" className="block mb-1.5 font-semibold text-gray-700">المهندس المسؤول</Label>
-                <Input id="engineer" type="text" {...register("engineer")} className="bg-white focus:border-app-gold" placeholder="اسم المهندس القائم على المشروع" />
-                {errors.engineer && <p className="text-red-500 text-sm mt-1">{errors.engineer.message}</p>}
-              </div>
-
               <div>
-                <Label htmlFor="description" className="block mb-1.5 font-semibold text-gray-700">وصف المشروع</Label>
-                <Textarea
-                  id="description"
-                  {...register("description")}
-                  rows={4}
-                  className="bg-white focus:border-app-gold"
-                  placeholder="صف بإيجاز طبيعة المشروع، أهدافه، وأهم مكوناته..."
-                />
-                {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="startDate" className="block mb-1.5 font-semibold text-gray-700">تاريخ البدء المتوقع</Label>
-                  <div className="relative">
-                    <Input id="startDate" type="date" {...register("startDate")} className="bg-white focus:border-app-gold pr-10"/>
-                    <CalendarRange className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  </div>
-                  {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>}
-                </div>
-                <div>
+                <div className="relative">
                   <Label htmlFor="endDate" className="block mb-1.5 font-semibold text-gray-700">تاريخ الانتهاء المتوقع</Label>
-                   <div className="relative">
-                    <Input id="endDate" type="date" {...register("endDate")} className="bg-white focus:border-app-gold pr-10"/>
-                    <CalendarRange className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  </div>
-                  {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>}
+                  <Input id="endDate" type="date" {...register("endDate")} className="bg-white focus:border-app-gold pr-10"/>
+                  <CalendarRange className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 </div>
+                {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>}
               </div>
-               <div>
+            </div>
+            <div>
                 <Label htmlFor="clientName" className="block mb-1.5 font-semibold text-gray-700">اسم العميل/المالك (اختياري)</Label>
                 <Input id="clientName" type="text" {...register("clientName")} className="bg-white focus:border-app-gold" placeholder="اسم صاحب المشروع" />
                 {errors.clientName && <p className="text-red-500 text-sm mt-1">{errors.clientName.message}</p>}
-              </div>
-              <div>
+            </div>
+            <div>
                 <Label htmlFor="budget" className="block mb-1.5 font-semibold text-gray-700">الميزانية التقديرية (شيكل - اختياري)</Label>
                 <Input id="budget" type="number" {...register("budget", { valueAsNumber: true })} className="bg-white focus:border-app-gold" placeholder="مثال: 1500000" />
                 {errors.budget && <p className="text-red-500 text-sm mt-1">{errors.budget.message}</p>}
-              </div>
-               <div>
+            </div>
+            <div>
                 <Label htmlFor="linkedOwnerEmail" className="block mb-1.5 font-semibold text-gray-700">ربط ببريد المالك الإلكتروني (اختياري)</Label>
                 <Input id="linkedOwnerEmail" type="email" {...register("linkedOwnerEmail")} className="bg-white focus:border-app-gold" placeholder="owner@example.com" />
                 {errors.linkedOwnerEmail && <p className="text-red-500 text-sm mt-1">{errors.linkedOwnerEmail.message}</p>}
-              </div>
+            </div>
 
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <Button type="submit" className="w-full sm:w-auto flex-grow bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg" disabled={isLoading}>
                   {isLoading ? (
                     <>
@@ -178,19 +176,18 @@ export default function CreateProjectPage() {
                   )}
                 </Button>
                 <Button 
-                    type="button" 
-                    variant="secondary" 
-                    className="w-full sm:w-auto bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground" 
-                    asChild
+                  type="button" 
+                  variant="secondary" 
+                  className="w-full sm:w-auto bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground" 
+                  asChild
                 >
                   <Link href="/my-projects">إلغاء</Link>
                 </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </AppLayout>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 

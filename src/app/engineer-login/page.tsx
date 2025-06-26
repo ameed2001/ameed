@@ -1,70 +1,74 @@
 
 "use client";
 
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, HardHat, ShieldCheck, Home as HomeIcon } from 'lucide-react'; // Changed LogIn to HardHat
-import { loginUserAction } from './actions';
-import { type LoginActionResponse } from '@/types/auth';
-import { useRouter } from 'next/navigation';
 
-const engineerLoginSchema = z.object({ // Renamed schema
+import { Loader2, HardHat, ShieldCheck, Home as HomeIcon } from 'lucide-react';
+import { loginUserAction } from '../login/actions';
+import { type LoginActionResponse } from '@/types/auth';
+
+// ✅ مخطط التحقق باستخدام Zod
+const loginSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
   password_input: z.string().min(1, { message: "كلمة المرور مطلوبة." }),
 });
 
-type EngineerLoginFormValues = z.infer<typeof engineerLoginSchema>; // Renamed type
+// ✅ النوع المشتق من Zod
+type EngineerLoginFormValues = z.infer<typeof loginSchema>;
 
-export default function EngineerLoginPage() { // Renamed component
+export default function EngineerLoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
+  // ✅ تحقق من تسجيل الدخول سابقًا
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const userRole = localStorage.getItem('userRole');
-      const userName = localStorage.getItem('userName'); 
+    if (typeof window === 'undefined') return;
 
-      if (userRole === 'ENGINEER') { // Check for ENGINEER role specifically
-        toast({
-          title: "تم تسجيل الدخول بالفعل",
-          description: `مرحباً ${userName || 'بعودتك'} أيها المهندس! أنت مسجل الدخول حالياً وجاري توجيهك...`,
-          variant: "default",
-        });
-        router.push('/my-projects'); // Redirect to engineer dashboard
-      }
+    const userRole = localStorage.getItem('userRole');
+    const userName = localStorage.getItem('userName');
+
+    if (userRole === 'ENGINEER') {
+      toast({
+        title: "تم تسجيل الدخول بالفعل",
+        description: `مرحباً ${userName || 'بعودتك'} أيها المهندس! جاري توجيهك...`,
+        variant: "default",
+      });
+      router.push('/engineer/dashboard');
     }
   }, [router, toast]);
 
-
+  // ✅ استخدام نموذج التسجيل
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setError
-  } = useForm<EngineerLoginFormValues>({ // Use renamed type
-    resolver: zodResolver(engineerLoginSchema), // Use renamed schema
-    defaultValues: { 
-      email: "", 
+    setError,
+  } = useForm<EngineerLoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
       password_input: "",
     }
   });
 
-  const onSubmit: SubmitHandler<EngineerLoginFormValues> = async (data) => { // Use renamed type
+  // ✅ المعالجة عند الإرسال
+  const onSubmit: SubmitHandler<EngineerLoginFormValues> = async (data) => {
     setIsLoading(true);
     try {
-      // loginUserAction should ideally check if the user is an engineer or redirect appropriately.
-      // For now, we assume loginUserAction can handle it or we refine it later if needed.
       const result: LoginActionResponse = await loginUserAction(data);
       setIsLoading(false);
 
@@ -75,46 +79,48 @@ export default function EngineerLoginPage() { // Renamed component
           variant: "default",
         });
         reset();
-        
-        if (result.user) {
-            localStorage.setItem('userName', result.user.name);
-            localStorage.setItem('userRole', result.user.role); 
-            localStorage.setItem('userEmail', result.user.email); 
-            localStorage.setItem('userId', result.user.id); 
-        }
 
-        if (result.redirectTo) {
-          router.push(result.redirectTo);
-        } else {
-          router.push('/my-projects'); // Default redirect for engineer
+        // Store user data in localStorage if login was successful and user data is provided
+        // This will be read by the sidebar on the client side.
+        if (result.user) {
+          localStorage.setItem('userName', result.user.name);
+          // Assuming user.role, user.email, user.id are also available in result.user if needed
+          localStorage.setItem('userRole', result.user.role);
+          localStorage.setItem('userEmail', result.user.email);
+          localStorage.setItem('userId', result.user.id);
+          console.log('Login Page: User Role set in localStorage:', result.user.role);
         }
+        
+        // Introduce a small delay to ensure localStorage is set before redirect
+        setTimeout(() => {
+          if (result.redirectTo) {
+            router.push(result.redirectTo);
+          } else {
+            router.push('/engineer/dashboard');
+          }
+        }, 50);
       } else {
         toast({
           title: "خطأ في تسجيل الدخول",
           description: result.message || "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
           variant: "destructive",
         });
+
         if (result.fieldErrors) {
-          for (const [fieldName, fieldErrorMessages] of Object.entries(result.fieldErrors)) {
-            if (fieldErrorMessages && fieldErrorMessages.length > 0) {
-              if (fieldName === 'password') {
-                 setError('password_input' as keyof EngineerLoginFormValues, {
-                    type: "server",
-                    message: fieldErrorMessages.join(", "),
-                 });
-              } else {
-                 setError(fieldName as keyof EngineerLoginFormValues, {
-                    type: "server",
-                    message: fieldErrorMessages.join(", "),
-                 });
-              }
+          for (const [fieldName, messages] of Object.entries(result.fieldErrors)) {
+            if (messages && messages.length > 0) {
+              const errorKey = fieldName === 'password' ? 'password_input' : fieldName;
+              setError(errorKey as keyof EngineerLoginFormValues, {
+                type: "server",
+                message: messages.join(", "),
+              });
             }
           }
         }
       }
     } catch (error) {
       setIsLoading(false);
-      console.error("Engineer login submission error:", error);
+      console.error("Engineer login error:", error);
       toast({
         title: "خطأ غير متوقع",
         description: "حدث خطأ أثناء محاولة تسجيل الدخول. يرجى المحاولة مرة أخرى.",
@@ -125,15 +131,16 @@ export default function EngineerLoginPage() { // Renamed component
 
   return (
     <AppLayout>
-      <div className="container mx-auto py-12 px-4">
+      <div className="container mx-auto py-12 px-4" dir="rtl">
         <Card className="max-w-md mx-auto bg-white/95 shadow-xl">
           <CardHeader className="text-center">
-            <HardHat className="mx-auto h-12 w-12 text-app-gold mb-3" /> {/* Engineer Icon */}
-            <CardTitle className="text-3xl font-bold text-app-red">تسجيل دخول المهندس</CardTitle>
+            <HardHat className="mx-auto h-12 w-12 text-yellow-600 mb-3" />
+            <CardTitle className="text-3xl font-bold text-red-700">تسجيل دخول المهندس</CardTitle>
             <CardDescription className="text-gray-600 mt-1">
-              أدخل بيانات حساب المهندس الخاص بك للمتابعة.
+              أدخل بيانات حساب المهندس للمتابعة.
             </CardDescription>
           </CardHeader>
+
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 text-right">
               <div>
@@ -142,7 +149,7 @@ export default function EngineerLoginPage() { // Renamed component
                   id="email"
                   type="email"
                   {...register("email")}
-                  className="bg-white focus:border-app-gold"
+                  className="bg-white focus:border-yellow-500"
                   placeholder="engineer@example.com"
                 />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
@@ -154,7 +161,7 @@ export default function EngineerLoginPage() { // Renamed component
                   id="password_input"
                   type="password"
                   {...register("password_input")}
-                  className="bg-white focus:border-app-gold"
+                  className="bg-white focus:border-yellow-500"
                   placeholder="********"
                 />
                 {errors.password_input && <p className="text-red-500 text-sm mt-1">{errors.password_input.message}</p>}
@@ -166,7 +173,11 @@ export default function EngineerLoginPage() { // Renamed component
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 text-lg" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 text-lg"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="ms-2 h-5 w-5 animate-spin" />
@@ -178,20 +189,23 @@ export default function EngineerLoginPage() { // Renamed component
               </Button>
             </form>
           </CardContent>
+
           <CardFooter className="flex flex-col items-center mt-4 space-y-3">
             <p className="text-sm text-gray-600">
-              ليس لديك حساب مهندس؟{' '}
+              ليس لديك حساب مهندس؟{" "}
               <Link href="/signup" className="font-semibold text-blue-700 underline hover:text-blue-800">
-                إنشاء حساب مهندس
+                إنشاء حساب
               </Link>
             </p>
-             <Link href="/owner-login" className="text-sm font-medium text-purple-700 hover:text-purple-800 hover:underline flex items-center gap-1">
-                <HomeIcon className="h-4 w-4" />
-                تسجيل الدخول كمالك
+
+            <Link href="/owner-login" className="text-sm font-medium text-purple-700 hover:text-purple-800 hover:underline flex items-center gap-1">
+              <HomeIcon className="h-4 w-4" />
+              تسجيل الدخول كمالك
             </Link>
+
             <Link href="/admin-login" className="text-sm font-medium text-red-700 hover:text-red-800 hover:underline flex items-center gap-1">
-                <ShieldCheck className="h-4 w-4" />
-                تسجيل الدخول كمسؤول
+              <ShieldCheck className="h-4 w-4" />
+              تسجيل الدخول كمسؤول
             </Link>
           </CardFooter>
         </Card>

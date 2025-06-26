@@ -4,12 +4,45 @@
       "id": "user-1749744784096-2pa39",
       "name": "عميد سماره",
       "email": "malik@gmail.com",
-      "password_hash": "$2a$10$mxk7DiKZ1eXUWXQhLoPZS.fbMJLmiiGBlGVvT2G4VxVTYPhgJvWbq",
       "role": "OWNER",
       "status": "ACTIVE",
-      "createdAt": "2025-06-12T16:13:04.096Z",
-      "updatedAt": "2025-06-12T16:13:04.096Z",
-      "profileImage": "https://placehold.co/100x100.png?text=عم"
+      "updatedAt": "2025-06-12T21:35:06.063Z",
+      "profileImage": "https://placehold.co/100x100.png?text=عم",
+      "password_hash": "$2a$10$mxk7DiKZ1eXUWXQhLoPZS.fbMJLmiiGBlGVvT2G4VxVTYPhgJvWbq",
+      "createdAt": "2025-06-12T16:13:04.096Z"
+    },
+    {
+      "id": "user-1749764630214-4ca57",
+      "name": "Ameed Samara",
+      "email": "ameed2001@gamil.com",
+      "role": "ENGINEER",
+      "status": "ACTIVE",
+      "updatedAt": "2025-06-12T21:45:25.835Z",
+      "profileImage": "https://placehold.co/100x100.png?text=AM",
+      "password_hash": "$2a$10$Ps1gJWp.sufRfgJlueI5ne7D7vpFZ9k15qALb4fvJIZ1Ot2KZIhM6",
+      "createdAt": "2025-06-12T21:43:50.214Z"
+    },
+    {
+      "id": "user-1750431146586-jhbio",
+      "name": "ameed",
+      "email": "ameed@mohandis.com",
+      "password_hash": "$2a$10$UjNPgRnT7HYtuNcCNwbV1.dZWnWbW9lxdeBV2N2uc4EZ1HMNqlZAa",
+      "role": "ENGINEER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-20T14:52:26.587Z",
+      "updatedAt": "2025-06-20T14:52:26.587Z",
+      "profileImage": "https://placehold.co/100x100.png?text=AM"
+    },
+    {
+      "id": "user-1750434436060-d0zte",
+      "name": "Ameed Samara",
+      "email": "mediaplus64@gmail.com",
+      "password_hash": "$2a$10$epPzEm6.QFoymsU03EIOTuyVF0AnLymonJAk5rExjJk3THbLwPLSi",
+      "role": "ENGINEER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-20T15:47:16.060Z",
+      "updatedAt": "2025-06-20T15:47:16.060Z",
+      "profileImage": "https://placehold.co/100x100.png?text=AM"
     }
   ],
   "projects": [],
@@ -133,6 +166,254 @@
       "message": "User logged in successfully: malik@gmail.com",
       "timestamp": "2025-06-12T16:52:25.701Z",
       "user": "user-1749744784096-2pa39"
+    },
+    {
+      "id": "log-1749751543404-jtmud",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-12T18:05:43.404Z",
+      "user": "user-1749744784096-2pa39"
+    },
+    {
+      "id": "log-1749751563179-t2764",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-12T18:06:03.179Z",
+      "user": "user-1749744784096-2pa39"
+    },
+    {
+      "id": "log-1749761761831-yyxvc",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-12T20:56:01.832Z",
+      "user": "user-1749744784096-2pa39"
+    },
+    {
+      "id": "log-1749764070121-ommx6",
+      "action": "USER_UPDATE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "Admin updated user ID user-1749744784096-2pa39. Fields: status, updatedAt",
+      "timestamp": "2025-06-12T21:34:30.121Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749764070123-mfv4r",
+      "action": "USER_SUSPEND_SUCCESS",
+      "level": "INFO",
+      "message": "Admin admin-001 suspended user user-1749744784096-2pa39.",
+      "timestamp": "2025-06-12T21:34:30.123Z",
+      "user": "admin-001"
+    },
+    {
+      "id": "log-1749764106065-khfjm",
+      "action": "USER_UPDATE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "Admin updated user ID user-1749744784096-2pa39. Fields: status, updatedAt",
+      "timestamp": "2025-06-12T21:35:06.065Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749764106067-mxvgm",
+      "action": "USER_UNSUSPEND_SUCCESS",
+      "level": "INFO",
+      "message": "Admin admin-001 unsuspended user user-1749744784096-2pa39.",
+      "timestamp": "2025-06-12T21:35:06.067Z",
+      "user": "admin-001"
+    },
+    {
+      "id": "log-1749764554007-ol0vg",
+      "action": "ADMIN_DELETE_ALL_LOGS",
+      "level": "WARNING",
+      "message": "Admin deleted all system logs.",
+      "timestamp": "2025-06-12T21:42:34.007Z",
+      "user": "admin-user-id"
+    },
+    {
+      "id": "log-1749764630227-de1wa",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed2001@gamil.com registered. Role: ENGINEER, Status: PENDING_APPROVAL.",
+      "timestamp": "2025-06-12T21:43:50.227Z",
+      "user": "user-1749764630214-4ca57"
+    },
+    {
+      "id": "log-1749764725838-ypd7f",
+      "action": "USER_UPDATE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "Admin updated user ID user-1749764630214-4ca57. Fields: status, updatedAt",
+      "timestamp": "2025-06-12T21:45:25.838Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1749764725841-w9k8x",
+      "action": "ENGINEER_APPROVAL_SUCCESS",
+      "level": "INFO",
+      "message": "Admin admin-001 approved engineer user-1749764630214-4ca57.",
+      "timestamp": "2025-06-12T21:45:25.841Z",
+      "user": "admin-001"
+    },
+    {
+      "id": "log-1749764771578-1p1we",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@gamil.com",
+      "timestamp": "2025-06-12T21:46:11.578Z",
+      "user": "user-1749764630214-4ca57"
+    },
+    {
+      "id": "log-1749905532583-g9nsk",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-14T12:52:12.583Z",
+      "user": "user-1749744784096-2pa39"
+    },
+    {
+      "id": "log-1750431146599-0cp6j",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed@mohandis.com registered. Role: ENGINEER, Status: ACTIVE.",
+      "timestamp": "2025-06-20T14:52:26.600Z",
+      "user": "user-1750431146586-jhbio"
+    },
+    {
+      "id": "log-1750431153462-t2n9x",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@mohandis.com",
+      "timestamp": "2025-06-20T14:52:33.462Z",
+      "user": "user-1750431146586-jhbio"
+    },
+    {
+      "id": "log-1750434436085-2dyhh",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User mediaplus64@gmail.com registered. Role: ENGINEER, Status: ACTIVE.",
+      "timestamp": "2025-06-20T15:47:16.085Z",
+      "user": "user-1750434436060-d0zte"
+    },
+    {
+      "id": "log-1750434440818-621v0",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: mediaplus64@gmail.com",
+      "timestamp": "2025-06-20T15:47:20.818Z",
+      "user": "user-1750434436060-d0zte"
+    },
+    {
+      "id": "log-1750435218451-mmnd7",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: undefined",
+      "timestamp": "2025-06-20T16:00:18.451Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750436113513-fvt35",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: undefined",
+      "timestamp": "2025-06-20T16:15:13.513Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750436180692-1p9mv",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: undefined",
+      "timestamp": "2025-06-20T16:16:20.692Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750436311005-peooe",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: undefined",
+      "timestamp": "2025-06-20T16:18:31.005Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750436312807-67l4t",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: undefined",
+      "timestamp": "2025-06-20T16:18:32.807Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750436362121-t14so",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: mediaplus64@gmail.com",
+      "timestamp": "2025-06-20T16:19:22.121Z",
+      "user": "user-1750434436060-d0zte"
+    },
+    {
+      "id": "log-1750439017546-q9ths",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: mediaplus64@gmail.com",
+      "timestamp": "2025-06-20T17:03:37.547Z",
+      "user": "user-1750434436060-d0zte"
+    },
+    {
+      "id": "log-1750439106654-pe4eh",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: mediaplus64@gmail.com",
+      "timestamp": "2025-06-20T17:05:06.654Z",
+      "user": "user-1750434436060-d0zte"
+    },
+    {
+      "id": "log-1750510792529-7qbpl",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: undefined",
+      "timestamp": "2025-06-21T12:59:52.530Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750510796729-7is2t",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: undefined",
+      "timestamp": "2025-06-21T12:59:56.729Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750510915495-hxrl5",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@mohandis.com",
+      "timestamp": "2025-06-21T13:01:55.495Z",
+      "user": "user-1750431146586-jhbio"
+    },
+    {
+      "id": "log-1750512348470-uqzeq",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@mohandis.com",
+      "timestamp": "2025-06-21T13:25:48.471Z",
+      "user": "user-1750431146586-jhbio"
+    },
+    {
+      "id": "log-1750512850201-pum0b",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@mohandis.com",
+      "timestamp": "2025-06-21T13:34:10.201Z",
+      "user": "user-1750431146586-jhbio"
+    },
+    {
+      "id": "log-1750513004726-7m27y",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed@mohandis.com",
+      "timestamp": "2025-06-21T13:36:44.726Z",
+      "user": "user-1750431146586-jhbio"
     }
   ],
   "roles": [

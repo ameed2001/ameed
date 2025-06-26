@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -171,11 +170,6 @@ export default function OwnerDashboardPage() {
             هذه هي لوحة التحكم الخاصة بك حيث يمكنك متابعة مشاريعك، عرض التقارير التفصيلية، 
             وإدارة جميع جوانب مشاريع البناء الخاصة بك.
           </p>
-          <div className="mt-4 flex gap-3">
-            <Button asChild variant="outline" className="text-white border-white hover:bg-white/10">
-              <Link href="/owner/projects">عرض جميع المشاريع</Link>
-            </Button>
-          </div>
         </div>
       </div>
       

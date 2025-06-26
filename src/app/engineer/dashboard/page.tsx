@@ -1,8 +1,8 @@
 
 "use client";
 
-import { HardHat, Briefcase, CheckCircle, Hourglass, BarChart3, Activity, FolderKanban, ExternalLink, Loader2 } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { HardHat, Briefcase, CheckCircle, Hourglass, BarChart3, FolderKanban, ExternalLink, Loader2, Blocks, Calculator, TrendingUp, Users, ArrowLeft } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -10,6 +10,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { getProjects, type Project } from "@/lib/db";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface StatCardProps {
   title: string;
@@ -23,7 +24,7 @@ function StatCard({ title, value, icon, colorClass }: StatCardProps) {
     <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <div className={`h-8 w-8 rounded-full flex items-center justify-center ${colorClass.replace('text-', 'bg-')}/10`}>
+        <div className={cn("h-8 w-8 rounded-full flex items-center justify-center", colorClass.replace('text-', 'bg-') + '/10')}>
           {icon}
         </div>
       </CardHeader>
@@ -33,6 +34,57 @@ function StatCard({ title, value, icon, colorClass }: StatCardProps) {
     </Card>
   );
 }
+
+const dashboardActions = [
+    {
+      title: "إدارة المشاريع",
+      description: "عرض، تعديل، وأرشفة جميع مشاريعك الإنشائية.",
+      icon: FolderKanban,
+      href: "/engineer/projects",
+      colorClass: "text-blue-500",
+      buttonClass: "border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white",
+    },
+    {
+      title: "العناصر الإنشائية",
+      description: "تحديد وتفصيل العناصر مثل الأعمدة والكمرات.",
+      icon: Blocks,
+      href: "#", 
+      colorClass: "text-purple-500",
+      buttonClass: "border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white",
+    },
+    {
+      title: "حساب الكميات",
+      description: "أدوات لحساب كميات الحديد والباطون للمشروع.",
+      icon: Calculator,
+      href: "#",
+      colorClass: "text-green-500",
+       buttonClass: "border-green-500 text-green-600 hover:bg-green-500 hover:text-white",
+    },
+    {
+      title: "تقدم البناء",
+      description: "تسجيل التقدم المحرز في مراحل المشروع المختلفة.",
+      icon: TrendingUp,
+      href: "/engineer/update-progress",
+      colorClass: "text-orange-500",
+      buttonClass: "border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white",
+    },
+    {
+      title: "ربط المالكين",
+      description: "ربط حسابات المالكين بمشاريعهم لمتابعة التقدم.",
+      icon: Users,
+      href: "#",
+      colorClass: "text-red-500",
+      buttonClass: "border-red-500 text-red-600 hover:bg-red-500 hover:text-white",
+    },
+    {
+      title: "التقارير",
+      description: "توليد وعرض التقارير المخصصة للمشاريع والكميات.",
+      icon: BarChart3,
+      href: "#",
+      colorClass: "text-cyan-500",
+      buttonClass: "border-cyan-500 text-cyan-600 hover:bg-cyan-500 hover:text-white",
+    }
+  ];
 
 export default function EngineerDashboardPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -97,6 +149,39 @@ export default function EngineerDashboardPage() {
         </div>
       )}
 
+      {/* Dashboard Action Cards */}
+      <Card className="bg-white/95 shadow-lg">
+        <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end gap-2">
+                أدوات ومهام رئيسية
+            </CardTitle>
+            <CardDescription className="text-gray-600">وصول سريع إلى الأقسام والوظائف الأساسية.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {dashboardActions.map((action) => {
+                const Icon = action.icon;
+                return (
+                    <Card key={action.title} className="card-hover-effect flex flex-col h-full">
+                         <CardHeader>
+                            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
+                               <Icon className={cn("h-6 w-6", action.colorClass)} /> {action.title}
+                            </CardTitle>
+                        </CardHeader>
+                         <CardContent className="text-right flex flex-col flex-grow">
+                             <p className="text-gray-600 mb-4 flex-grow text-sm">{action.description}</p>
+                             <Button asChild variant="outline" className={cn("w-full mt-auto", action.buttonClass)}>
+                                <Link href={action.href}>
+                                     الانتقال إلى القسم <ArrowLeft className="mr-2 h-4 w-4" />
+                                 </Link>
+                             </Button>
+                         </CardContent>
+                    </Card>
+                );
+            })}
+        </CardContent>
+      </Card>
+
+
       <div className="grid grid-cols-1 gap-8">
         {/* Active Projects */}
         <Card className="bg-white/95 shadow-lg">
@@ -137,7 +222,7 @@ export default function EngineerDashboardPage() {
                           </span>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Button asChild variant="ghost" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500/10 hover:text-white">
+                        <Button asChild variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white">
                           <Link href={`/my-projects/${project.id}`}>
                             عرض <ExternalLink className="mr-1 h-4 w-4" />
                           </Link>

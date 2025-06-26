@@ -311,8 +311,8 @@ export async function registerUser(userData: {
     }
 
     const settings = await getSystemSettings();
-    // Use provided status or determine based on role and settings
-    let initialStatus: UserStatus = status || (role === 'ENGINEER' && settings.engineerApprovalRequired ? 'PENDING_APPROVAL' : 'ACTIVE');
+    // Use provided status or set to ACTIVE. Approval flow is disabled.
+    let initialStatus: UserStatus = status || 'ACTIVE';
 
     const hashedPassword = await bcrypt.hash(password_input, 10);
     console.log('[db.ts] registerUser: Password hashed successfully.');

@@ -43,6 +43,17 @@
       "createdAt": "2025-06-20T15:47:16.060Z",
       "updatedAt": "2025-06-20T15:47:16.060Z",
       "profileImage": "https://placehold.co/100x100.png?text=AM"
+    },
+    {
+      "id": "user-1750945851175-hajdn",
+      "name": "Ameed Samara",
+      "email": "ameed2001@mohandis.com",
+      "password_hash": "$2a$10$azukkv/6VOfeCsdRsFhTA.X0EgDfBsqA4l0XnGQ.BbInnt.cppw8S",
+      "role": "ENGINEER",
+      "status": "PENDING_APPROVAL",
+      "createdAt": "2025-06-26T13:50:51.175Z",
+      "updatedAt": "2025-06-26T13:50:51.175Z",
+      "profileImage": "https://placehold.co/100x100.png?text=AM"
     }
   ],
   "projects": [],
@@ -414,6 +425,14 @@
       "message": "User logged in successfully: ameed@mohandis.com",
       "timestamp": "2025-06-21T13:36:44.726Z",
       "user": "user-1750431146586-jhbio"
+    },
+    {
+      "id": "log-1750945851188-xtj49",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed2001@mohandis.com registered. Role: ENGINEER, Status: PENDING_APPROVAL.",
+      "timestamp": "2025-06-26T13:50:51.188Z",
+      "user": "user-1750945851175-hajdn"
     }
   ],
   "roles": [

@@ -62,7 +62,7 @@ export default function OwnerDashboardPage() {
       <Card className="bg-white/95 shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-            <Gauge className="text-app-gold" /> نظرة عامة سريعة
+             نظرة عامة سريعة <Gauge className="text-app-gold" />
           </CardTitle>
           <CardDescription className="text-gray-600 text-right">ملخص سريع لمشاريعك الحالية.</CardDescription>
         </CardHeader>
@@ -94,7 +94,7 @@ export default function OwnerDashboardPage() {
       <Card className="bg-white/95 shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-            <Briefcase className="text-app-gold" /> أحدث المشاريع
+             أحدث المشاريع <Briefcase className="text-app-gold" />
           </CardTitle>
           <CardDescription className="text-gray-600 text-right">نظرة سريعة على أحدث مشاريعك المسجلة.</CardDescription>
         </CardHeader>
@@ -161,7 +161,7 @@ export default function OwnerDashboardPage() {
         <Card className="bg-white/95 shadow-md card-hover-effect flex flex-col h-full">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-              <DollarSign className="text-green-500" /> حساب التكلفة التقديرية
+              حساب التكلفة التقديرية <DollarSign className="text-green-500" />
             </CardTitle>
           </CardHeader>
           <CardContent className="text-right flex flex-col flex-grow">
@@ -176,7 +176,7 @@ export default function OwnerDashboardPage() {
         <Card className="bg-white/95 shadow-md card-hover-effect flex flex-col h-full">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-              <MessageSquare className="text-purple-500" /> التعليقات والاستفسارات
+              التعليقات والاستفسارات <MessageSquare className="text-purple-500" />
             </CardTitle>
           </CardHeader>
           <CardContent className="text-right flex flex-col flex-grow">
@@ -191,7 +191,7 @@ export default function OwnerDashboardPage() {
         <Card className="bg-white/95 shadow-md card-hover-effect flex flex-col h-full">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-              <FileText className="text-blue-500" /> تقارير الكميات
+              تقارير الكميات <FileText className="text-blue-500" />
             </CardTitle>
           </CardHeader>
           <CardContent className="text-right flex flex-col flex-grow">
@@ -206,7 +206,7 @@ export default function OwnerDashboardPage() {
         <Card className="bg-white/95 shadow-md card-hover-effect flex flex-col h-full">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-              <Camera className="text-orange-500" /> تقدم المشروع بصريًا
+              تقدم المشروع بصريًا <Camera className="text-orange-500" />
             </CardTitle>
           </CardHeader>
           <CardContent className="text-right flex flex-col flex-grow">
@@ -221,7 +221,7 @@ export default function OwnerDashboardPage() {
         <Card className="bg-white/95 shadow-md card-hover-effect flex flex-col h-full">
           <CardHeader>
             <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
-              <Clock className="text-teal-500" /> الجدول الزمني للمشاريع
+              الجدول الزمني للمشاريع <Clock className="text-teal-500" />
             </CardTitle>
           </CardHeader>
           <CardContent className="text-right flex flex-col flex-grow">

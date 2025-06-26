@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin, FolderKanban, Trash2 } from 'lucide-react';
+import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin, FolderKanban, Trash2, Printer } from 'lucide-react';
 import { getProjects as dbGetProjects, updateProject, deleteProject as dbDeleteProject, type Project, type ProjectStatusType } from "@/lib/db";
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -116,6 +116,93 @@ export default function EngineerProjectsPage() {
     }
   };
 
+  const handlePrintReport = () => {
+    if (filteredProjects.length === 0) {
+      toast({
+        title: "لا توجد مشاريع للطباعة",
+        description: "القائمة الحالية فارغة. قم بتغيير الفلاتر أو أضف مشاريع.",
+        variant: "default"
+      });
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      const tableRows = filteredProjects.map(project => `
+        <tr>
+          <td style="padding: 10px; border: 1px solid #ccc;">${project.name}</td>
+          <td style="padding: 10px; border: 1px solid #ccc;">${project.clientName || 'غير محدد'}</td>
+          <td style="padding: 10px; border: 1px solid #ccc;">${project.status}</td>
+          <td style="padding: 10px; border: 1px solid #ccc;">${project.location}</td>
+        </tr>
+      `).join('');
+
+      const reportHtml = `
+        <html>
+          <head>
+            <title>تقرير المشاريع</title>
+            <style>
+              body { 
+                font-family: 'Tajawal', sans-serif; 
+                direction: rtl; 
+                margin: 20px;
+              }
+              h1 {
+                text-align: center;
+                color: #B40404;
+              }
+              p {
+                text-align: center;
+                color: #555;
+              }
+              table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                margin-top: 20px;
+              }
+              th, td { 
+                border: 1px solid #ccc; 
+                padding: 10px; 
+                text-align: right; 
+              }
+              th { 
+                background-color: #f2f2f2; 
+                font-weight: bold;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>تقرير المشاريع الإنشائية</h1>
+            <p>تاريخ التقرير: ${new Date().toLocaleDateString('en-CA')}</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>اسم المشروع</th>
+                  <th>المالك</th>
+                  <th>الحالة</th>
+                  <th>الموقع</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `;
+
+      printWindow.document.write(reportHtml);
+      printWindow.document.close();
+      printWindow.print();
+    } else {
+      toast({
+        title: "خطأ",
+        description: "لم يتمكن المتصفح من فتح نافذة الطباعة. يرجى التحقق من إعدادات المتصفح.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <Card className="bg-white/95 shadow-xl w-full text-right">
       <CardHeader>
@@ -124,12 +211,18 @@ export default function EngineerProjectsPage() {
                 <FolderKanban className="h-8 w-8 text-app-gold" />
                 <CardTitle className="text-3xl font-bold text-app-red">إدارة المشاريع الإنشائية</CardTitle>
             </div>
-            <Button asChild variant="outline" className="border-app-red text-app-red hover:bg-app-red hover:text-white font-semibold">
-                <Link href="/engineer/create-project">
-                    <PlusCircle size={18} className="ms-2" />
-                    إنشاء مشروع جديد
-                </Link>
-            </Button>
+            <div className="flex items-center gap-2">
+                <Button onClick={handlePrintReport} variant="outline" className="border-green-600 text-green-700 hover:bg-green-100 hover:text-green-800 font-semibold">
+                    <Printer size={18} className="ms-2" />
+                    طباعة تقرير
+                </Button>
+                <Button asChild variant="outline" className="border-app-red text-app-red hover:bg-app-red hover:text-white font-semibold">
+                    <Link href="/engineer/create-project">
+                        <PlusCircle size={18} className="ms-2" />
+                        إنشاء مشروع جديد
+                    </Link>
+                </Button>
+            </div>
         </div>
         <CardDescription className="text-gray-600 mt-2">
           عرض، بحث، وإدارة جميع المشاريع الإنشائية المسندة إليك.
@@ -184,17 +277,17 @@ export default function EngineerProjectsPage() {
               <TableBody>
                 {filteredProjects.map((project) => (
                   <TableRow key={project.id} className="hover:bg-gray-50/50">
-                    <TableCell className="font-medium text-app-red">
+                    <TableCell className="font-medium text-app-red align-middle">
                        {project.name}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-muted-foreground align-middle">
                       <div className="flex items-center gap-1">
                         <MapPin size={14} />
                         <span>{project.location || 'غير محدد'}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{project.clientName || 'غير محدد'}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-muted-foreground align-middle">{project.clientName || 'غير محدد'}</TableCell>
+                    <TableCell className="align-middle">
                       <Badge variant={project.status === 'قيد التنفيذ' ? "default" : project.status === 'مكتمل' ? "secondary" : "outline"}
                        className={
                         project.status === 'قيد التنفيذ' ? 'bg-blue-100 text-blue-700' :
@@ -205,10 +298,10 @@ export default function EngineerProjectsPage() {
                         {project.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                        {project.createdAt ? new Date(project.createdAt).toLocaleDateString('ar-EG') : 'غير محدد'}
+                    <TableCell className="text-muted-foreground align-middle">
+                        {project.createdAt ? new Date(project.createdAt).toLocaleDateString('en-CA') : 'غير محدد'}
                     </TableCell>
-                    <TableCell className="text-center space-x-1 rtl:space-x-reverse">
+                    <TableCell className="text-center space-x-1 rtl:space-x-reverse align-middle">
                       <Button asChild variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-transparent" title="عرض">
                         <Link href={`/engineer/projects/${project.id}`}>
                           <Eye className="h-5 w-5" />

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, MapPin, CalendarRange, ListChecks } from 'lucide-react';
+import { Loader2, PlusCircle, MapPin, CalendarRange, HardHat } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { addProject as dbAddProject, type Project, type ProjectStatusType } from '@/lib/db';
@@ -50,13 +50,27 @@ export default function CreateProjectPage() {
   const router = useRouter(); 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset, control } = useForm<CreateProjectFormValues>({
+  const { register, handleSubmit, formState: { errors }, reset, control, setValue } = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
-        engineer: "المهندس الحالي (محاكاة)",
+        engineer: "", // Will be set from localStorage
         status: 'مخطط له',
     }
   });
+
+  useEffect(() => {
+    const engineerNameFromStorage = localStorage.getItem('userName');
+    if (engineerNameFromStorage) {
+      setValue('engineer', engineerNameFromStorage);
+    } else {
+      toast({
+        title: "خطأ",
+        description: "لم يتم العثور على معلومات المهندس. يرجى تسجيل الدخول مرة أخرى.",
+        variant: "destructive"
+      });
+      router.push('/login');
+    }
+  }, [setValue, router, toast]);
 
   const onSubmit: SubmitHandler<CreateProjectFormValues> = async (data) => {
     setIsLoading(true);
@@ -121,9 +135,20 @@ export default function CreateProjectPage() {
               </div>
               {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
             </div>
+            
             <div>
               <Label htmlFor="engineer" className="block mb-1.5 font-semibold text-gray-700">المهندس المسؤول</Label>
-              <Input id="engineer" type="text" {...register("engineer")} className="bg-white focus:border-app-gold" placeholder="اسم المهندس القائم على المشروع" />
+              <div className="relative">
+                <Input 
+                  id="engineer" 
+                  type="text" 
+                  {...register("engineer")} 
+                  className="bg-gray-100 focus:border-app-gold cursor-not-allowed pr-10" 
+                  readOnly 
+                  placeholder="جاري تحميل اسم المهندس..." 
+                />
+                <HardHat className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              </div>
               {errors.engineer && <p className="text-red-500 text-sm mt-1">{errors.engineer.message}</p>}
             </div>
 
@@ -218,7 +243,7 @@ export default function CreateProjectPage() {
                   className="w-full sm:w-auto bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground" 
                   asChild
                 >
-                  <Link href="/my-projects">إلغاء</Link>
+                  <Link href="/engineer/projects">إلغاء</Link>
                 </Button>
             </div>
           </form>

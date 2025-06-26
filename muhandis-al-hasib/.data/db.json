@@ -51,7 +51,44 @@
       "id": 3,
       "overallProgress": 0,
       "photos": [],
-      "timelineTasks": [],
+      "timelineTasks": [
+        {
+          "id": "task-1",
+          "name": "أعمال الحفر والأساسات",
+          "startDate": "2025-10-01",
+          "endDate": "2025-10-30",
+          "color": "bg-amber-500",
+          "status": "مخطط له",
+          "progress": 0
+        },
+        {
+          "id": "task-2",
+          "name": "إنشاء الهيكل الخرساني (أعمدة وطوابق)",
+          "startDate": "2025-11-01",
+          "endDate": "2026-01-15",
+          "color": "bg-red-500",
+          "status": "مخطط له",
+          "progress": 0
+        },
+        {
+          "id": "task-3",
+          "name": "أعمال التشطيبات الأولية (بناء، تمديدات)",
+          "startDate": "2026-01-16",
+          "endDate": "2026-04-30",
+          "color": "bg-blue-500",
+          "status": "مخطط له",
+          "progress": 0
+        },
+        {
+          "id": "task-4",
+          "name": "التشطيبات النهائية والتسليم",
+          "startDate": "2026-05-01",
+          "endDate": "2026-09-27",
+          "color": "bg-green-500",
+          "status": "مخطط له",
+          "progress": 0
+        }
+      ],
       "comments": [],
       "createdAt": "2025-06-26T15:50:50.759Z"
     }

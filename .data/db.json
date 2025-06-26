@@ -41,17 +41,111 @@
       "description": "يبيبيبيسبس",
       "startDate": "2025-09-27",
       "endDate": "2026-09-27",
-      "status": "مخطط له",
+      "status": "قيد التنفيذ",
       "engineer": "Ameed Samara",
       "clientName": "عميد سماره",
       "budget": 55555555,
       "linkedOwnerEmail": "malik@gmail.com",
-      "quantitySummary": "",
+      "quantitySummary": "تم إنجاز أعمال الحفر والأساسات بنسبة 50%. إجمالي الخرسانة المستخدمة حتى الآن: 120 متر مكعب. إجمالي الحديد المستخدم: 15 طن.",
       "id": 3,
-      "overallProgress": 0,
-      "photos": [],
-      "timelineTasks": [],
-      "comments": [],
+      "overallProgress": 35,
+      "photos": [
+        {
+          "id": "photo-1",
+          "src": "https://placehold.co/600x400.png",
+          "alt": "أعمال الحفر الأولية",
+          "caption": "بدء أعمال الحفر للمشروع",
+          "dataAiHint": "construction excavation"
+        },
+        {
+          "id": "photo-2",
+          "src": "https://placehold.co/600x400.png",
+          "alt": "صب القواعد الخرسانية",
+          "caption": "صب القواعد للمبنى",
+          "dataAiHint": "concrete foundation"
+        },
+        {
+          "id": "photo-3",
+          "src": "https://placehold.co/600x400.png",
+          "alt": "تركيب حديد التسليح للأعمدة",
+          "caption": "تركيب حديد الأعمدة للطابق الأرضي",
+          "dataAiHint": "rebar installation"
+        }
+      ],
+      "timelineTasks": [
+        {
+          "id": "task-1",
+          "name": "التخطيط والتصميم",
+          "startDate": "2025-09-27",
+          "endDate": "2025-10-26",
+          "color": "bg-sky-500",
+          "status": "مكتمل",
+          "progress": 100
+        },
+        {
+          "id": "task-2",
+          "name": "أعمال الحفر والأساسات",
+          "startDate": "2025-10-27",
+          "endDate": "2025-12-10",
+          "color": "bg-amber-500",
+          "status": "قيد التنفيذ",
+          "progress": 50
+        },
+        {
+          "id": "task-3",
+          "name": "بناء الهيكل الخرساني",
+          "startDate": "2025-12-11",
+          "endDate": "2026-03-15",
+          "color": "bg-red-500",
+          "status": "مخطط له",
+          "progress": 0
+        },
+        {
+          "id": "task-4",
+          "name": "أعمال التشطيبات الداخلية",
+          "startDate": "2026-03-16",
+          "endDate": "2026-06-30",
+          "color": "bg-green-500",
+          "status": "مخطط له",
+          "progress": 0
+        },
+        {
+          "id": "task-5",
+          "name": "التشطيبات الخارجية والموقع العام",
+          "startDate": "2026-07-01",
+          "endDate": "2026-8-31",
+          "color": "bg-indigo-500",
+          "status": "مخطط له",
+          "progress": 0
+        },
+        {
+          "id": "task-6",
+          "name": "التسليم النهائي",
+          "startDate": "2026-09-01",
+          "endDate": "2026-09-27",
+          "color": "bg-purple-500",
+          "status": "مخطط له",
+          "progress": 0
+        }
+      ],
+      "comments": [
+        {
+          "id": "comment-1",
+          "user": "المهندس (أنت)",
+          "text": "تم الانتهاء من صب قواعد الطابق الأرضي وبدء العمل على الأعمدة.",
+          "date": "2025-11-20T10:00:00Z",
+          "avatar": "https://placehold.co/40x40.png?text=ME",
+          "dataAiHintAvatar": "engineer avatar"
+        },
+        {
+          "id": "comment-2",
+          "user": "المالك",
+          "text": "عمل ممتاز! متى تتوقعون الانتهاء من أعمدة الطابق الأرضي؟",
+          "date": "2025-11-21T14:30:00Z",
+          "avatar": "https://placehold.co/40x40.png?text=OW",
+          "dataAiHintAvatar": "owner avatar"
+        }
+      ],
       "createdAt": "2025-06-26T15:50:50.759Z"
     }
   ],

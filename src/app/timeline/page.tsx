@@ -5,6 +5,7 @@ import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { GanttChartSquare, CalendarDays, Palette, CheckCircle2 } from "lucide-react"; // Added more icons
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface TimelineTask {
   id: string;
@@ -62,7 +63,7 @@ export default function TimelinePage() {
             
             <div className="mb-8 p-4 border border-dashed border-app-gold/50 rounded-lg bg-app-gold/5 text-right">
                 <h4 className="text-lg font-semibold text-app-red mb-2">ملاحظة:</h4>
-                <p className="text-sm">هذا عرض مبدئي للجدول الزمني. سيتم تطويره ليشمل ميزات تفاعلية كاملة مثل مخطط جانت الاحترافي، وإمكانية تعديل المهام، وتتبع الاعتماديات.</p>
+                <p className="text-sm">هذا عرض توضيحي للجدول الزمني. لعرض الجدول الزمني الخاص بمشاريعك، يرجى <Link href="/login" className="font-bold text-blue-600 hover:underline">تسجيل الدخول</Link> والانتقال إلى صفحة تفاصيل المشروع.</p>
             </div>
 
             {/* Timeline Legend */}

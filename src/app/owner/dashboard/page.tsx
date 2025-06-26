@@ -108,39 +108,44 @@ export default function OwnerDashboardPage() {
 
   const quickAccessLinks = [
     { 
-      title: "تقارير الكميات", 
+      title: "تقارير الكميات",
+      description: "عرض ملخصات وتقارير كميات المواد والأعمال المنجزة.",
       href: "/owner/projects", 
       icon: FileText, 
-      color: "bg-indigo-500",
-      hoverColor: "hover:bg-indigo-600"
+      iconColorClass: "text-indigo-500",
+      buttonClass: "border-indigo-500 text-indigo-600 hover:bg-indigo-500 hover:text-white",
     },
     { 
-      title: "التقدم البصري", 
+      title: "التقدم البصري",
+      description: "مشاهدة أحدث الصور والفيديوهات المرفوعة من موقع المشروع.",
       href: "/owner/projects", 
-      icon: Camera, 
-      color: "bg-purple-500",
-      hoverColor: "hover:bg-purple-600"
+      icon: Camera,
+      iconColorClass: "text-purple-500",
+      buttonClass: "border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white",
     },
     { 
-      title: "الجداول الزمنية", 
+      title: "الجداول الزمنية",
+      description: "متابعة الجدول الزمني للمشروع والمراحل الهامة.",
       href: "/owner/project-timeline", 
       icon: Clock, 
-      color: "bg-cyan-500",
-      hoverColor: "hover:bg-cyan-600"
+      iconColorClass: "text-cyan-500",
+      buttonClass: "border-cyan-500 text-cyan-600 hover:bg-cyan-500 hover:text-white",
     },
     { 
-      title: "التعليقات والاستفسارات", 
+      title: "التعليقات والاستفسارات",
+      description: "التواصل مع المهندس وترك ملاحظاتك واستفساراتك.",
       href: "/owner/projects", 
-      icon: MessageSquare, 
-      color: "bg-orange-500",
-      hoverColor: "hover:bg-orange-600"
+      icon: MessageSquare,
+      iconColorClass: "text-orange-500",
+      buttonClass: "border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white",
     },
     { 
-      title: "حاسبة التكاليف", 
+      title: "حاسبة التكاليف",
+      description: "استخدام حاسبة تقديرية بسيطة لتكاليف المواد.",
       href: "/owner/cost-estimator", 
-      icon: Calculator, 
-      color: "bg-red-500",
-      hoverColor: "hover:bg-red-600"
+      icon: Calculator,
+      iconColorClass: "text-red-500",
+      buttonClass: "border-red-500 text-red-600 hover:bg-red-500 hover:text-white",
     },
   ];
 
@@ -322,35 +327,26 @@ export default function OwnerDashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {quickAccessLinks.map((link) => {
-              const Icon = link.icon;
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {quickAccessLinks.map((category) => {
+              const Icon = category.icon;
               return (
-                <Link 
-                  key={link.title} 
-                  href={link.href} 
-                  className="block group transition-all"
+                <Card 
+                  key={category.title} 
+                  className="card-hover-effect flex flex-col h-full text-right p-6 shadow-lg rounded-lg border border-gray-200/80"
                 >
-                  <div className={`
-                    p-5 text-center rounded-lg shadow-sm border 
-                    bg-white hover:shadow-lg hover:-translate-y-1 
-                    transition-all duration-200 h-full flex flex-col 
-                    items-center justify-center
-                  `}>
-                    <div className={`
-                      p-3 rounded-full mb-3 text-white 
-                      ${link.color} ${link.hoverColor} transition-colors
-                    `}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <p className="font-semibold text-gray-700 group-hover:text-app-red">
-                      {link.title}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-500">
-                      عرض التفاصيل
-                    </p>
+                  <div className="flex items-center justify-start gap-3 mb-4">
+                    <h3 className="text-xl font-bold text-gray-800">{category.title}</h3>
+                    <Icon className={cn("h-8 w-8", category.iconColorClass)} />
                   </div>
-                </Link>
+                  <p className="text-gray-600 text-sm mb-5 flex-grow">{category.description}</p>
+                  <Button asChild variant="outline" className={cn("mt-auto w-full flex justify-between items-center font-semibold", category.buttonClass)}>
+                    <Link href={category.href}>
+                      <span>الانتقال إلى القسم</span>
+                      <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </Card>
               );
             })}
           </div>

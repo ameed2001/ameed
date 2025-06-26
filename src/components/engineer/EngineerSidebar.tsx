@@ -38,6 +38,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
@@ -216,18 +224,34 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
             </Accordion>
           ) : (
             <div className="space-y-2 mt-2 border-t pt-2">
-                {accordionItems.map(item => (
-                    <Tooltip key={item.value}>
-                        <TooltipTrigger asChild>
-                           <Button variant="ghost" className="w-full justify-center h-12">
-                                <item.icon className={cn("h-6 w-6", item.color)} />
-                           </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="left" align="center">
-                           <p>{item.title}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                ))}
+              {accordionItems.map((item) => (
+                <DropdownMenu key={item.value}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="w-full justify-center h-12">
+                          <item.icon className={cn("h-6 w-6", item.color)} />
+                        </Button>
+                      </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent side="left" align="center">
+                      <p>{item.title}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <DropdownMenuContent side="left" align="start" sideOffset={5}>
+                    <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {item.links.map((link) => (
+                      <DropdownMenuItem key={link.label} asChild>
+                        <Link href={link.href} className="flex items-center gap-2 cursor-pointer w-full">
+                          <link.icon className="h-4 w-4" />
+                          <span>{link.label}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ))}
             </div>
           )}
         </nav>

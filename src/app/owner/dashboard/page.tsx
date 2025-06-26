@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
   Gauge, Briefcase, FileText, Camera, Clock, MessageSquare, 
-  BarChart2, CheckCircle, PlayCircle, Loader2, Eye, Calculator
+  BarChart2, CheckCircle, PlayCircle, Loader2, Eye, Calculator, ArrowLeft
 } from 'lucide-react';
 import { getProjects, type Project } from '@/lib/db';
 import { useToast } from '@/hooks/use-toast';
@@ -219,14 +219,13 @@ export default function OwnerDashboardPage() {
               <Briefcase className="h-6 w-6 text-app-gold" />
               <CardTitle className="text-xl font-semibold text-gray-800">أحدث المشاريع</CardTitle>
             </div>
-            <Button 
-              asChild 
-              variant="default"
-              size="sm" 
-              className="font-semibold shadow-md hover:shadow-lg transition-shadow"
+            <Link
+              href="/owner/projects"
+              className="flex items-center gap-2 text-sm font-semibold text-app-red hover:text-red-700 hover:underline transition-colors"
             >
-              <Link href="/owner/projects">عرض جميع المشاريع</Link>
-            </Button>
+              <span>عرض جميع المشاريع</span>
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
           </div>
         </CardHeader>
         <CardContent>

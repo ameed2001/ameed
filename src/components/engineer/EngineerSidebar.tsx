@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -66,7 +65,7 @@ const accordionItems = [
     icon: Calculator,
     color: "text-green-500",
     links: [
-      { href: "/cost-estimator", label: "حاسبة أسعار المواد", icon: Coins },
+      { href: "/engineer/cost-estimator", label: "حاسبة أسعار المواد", icon: Coins },
       { href: "#", label: "حساب كميات المواد", icon: Calculator },
       { href: "#", label: "عرض تقارير الكميات", icon: BarChart3 },
       { href: "#", label: "تخصيص عرض التقارير", icon: Settings2 },

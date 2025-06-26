@@ -187,9 +187,11 @@ export default function EngineerProjectsPage() {
                     <TableCell className="font-medium text-app-red">
                        {project.name}
                     </TableCell>
-                    <TableCell className="text-muted-foreground flex items-center gap-1">
+                    <TableCell className="text-muted-foreground">
+                      <div className="flex items-center gap-1">
                         <MapPin size={14} />
-                        {project.location || 'غير محدد'}
+                        <span>{project.location || 'غير محدد'}</span>
+                      </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{project.clientName || 'غير محدد'}</TableCell>
                     <TableCell>

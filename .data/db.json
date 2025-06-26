@@ -1,3 +1,4 @@
+
 {
   "users": [
     {
@@ -40,7 +41,8 @@
       "overallProgress": 0,
       "photos": [],
       "timelineTasks": [],
-      "comments": []
+      "comments": [],
+      "createdAt": "2025-06-26T15:50:50.759Z"
     }
   ],
   "settings": {

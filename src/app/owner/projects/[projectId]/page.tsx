@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
@@ -148,7 +147,7 @@ export default function OwnerProjectDetailPage() {
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2">
                     {isOwnerView && project.engineer && (
-                        <Button variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500/10" onClick={() => setIsContactEngineerModalOpen(true)}>
+                        <Button variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-100 hover:text-black" onClick={() => setIsContactEngineerModalOpen(true)}>
                             <Mail size={18} className="ms-1.5" /> مراسلة المهندس
                         </Button>
                     )}

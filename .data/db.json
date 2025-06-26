@@ -26,42 +26,6 @@
   "projects": [
     {
       "name": "فيلا",
-      "location": "بروقين",
-      "description": "جدار استنادي ",
-      "startDate": "2025-07-12",
-      "endDate": "2025-09-27",
-      "status": "مخطط له",
-      "engineer": "Ameed Samara",
-      "clientName": "عميد",
-      "budget": 150000,
-      "linkedOwnerEmail": "mediaplus64@gmail.com",
-      "quantitySummary": "",
-      "id": 1,
-      "overallProgress": 0,
-      "photos": [],
-      "timelineTasks": [],
-      "comments": []
-    },
-    {
-      "name": "بيت",
-      "location": "على طريق كفر الديك",
-      "description": "بببببببب44444",
-      "startDate": "2025-09-27",
-      "endDate": "2026-09-27",
-      "status": "مخطط له",
-      "engineer": "Ameed Samara",
-      "clientName": "عميد",
-      "budget": 8855555,
-      "linkedOwnerEmail": "mediaplus64@gmail.com",
-      "quantitySummary": "",
-      "id": 2,
-      "overallProgress": 0,
-      "photos": [],
-      "timelineTasks": [],
-      "comments": []
-    },
-    {
-      "name": "فيلا",
       "location": "على طريق كفر الديك",
       "description": "يبيبيبيسبس",
       "startDate": "2025-09-27",
@@ -1086,6 +1050,22 @@
       "level": "WARNING",
       "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
       "timestamp": "2025-06-26T15:51:22.975Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750953534669-qjj6s",
+      "action": "PROJECT_DELETE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 1 deleted.",
+      "timestamp": "2025-06-26T15:58:54.669Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750953538034-0vfxw",
+      "action": "PROJECT_DELETE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 2 deleted.",
+      "timestamp": "2025-06-26T15:58:58.034Z",
       "user": "System"
     }
   ],

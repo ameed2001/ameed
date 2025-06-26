@@ -75,7 +75,8 @@ export default function EngineerProjectsPage() {
   const filteredProjects = useMemo(() => {
     return projects.filter(project =>
       (project.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-       project.location.toLowerCase().includes(searchTerm.toLowerCase())) &&
+       project.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       (project.clientName && project.clientName.toLowerCase().includes(searchTerm.toLowerCase()))) &&
       (statusFilter === 'all' || project.status === statusFilter)
     );
   }, [projects, searchTerm, statusFilter]);
@@ -139,7 +140,7 @@ export default function EngineerProjectsPage() {
           <div className="relative flex-grow w-full sm:w-auto">
             <Input
               type="search"
-              placeholder="ابحث بالاسم أو الموقع..."
+              placeholder="ابحث بالاسم، الموقع، أو المالك..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pr-10 bg-white focus:border-app-gold"
@@ -174,6 +175,7 @@ export default function EngineerProjectsPage() {
                 <TableRow className="bg-gray-100">
                   <TableHead className="text-right font-semibold text-gray-700">اسم المشروع</TableHead>
                   <TableHead className="text-right font-semibold text-gray-700">الموقع</TableHead>
+                  <TableHead className="text-right font-semibold text-gray-700">المالك</TableHead>
                   <TableHead className="text-right font-semibold text-gray-700">الحالة</TableHead>
                   <TableHead className="text-center font-semibold text-gray-700">الإجراءات</TableHead>
                 </TableRow>
@@ -188,6 +190,7 @@ export default function EngineerProjectsPage() {
                         <MapPin size={14} />
                         {project.location || 'غير محدد'}
                     </TableCell>
+                    <TableCell className="text-muted-foreground">{project.clientName || 'غير محدد'}</TableCell>
                     <TableCell>
                       <Badge variant={project.status === 'قيد التنفيذ' ? "default" : project.status === 'مكتمل' ? "secondary" : "outline"}
                        className={

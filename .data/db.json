@@ -1095,6 +1095,22 @@
       "message": "User logged in successfully: malik@gmail.com",
       "timestamp": "2025-06-26T17:37:13.289Z",
       "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1750961093369-2cpav",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@mohandis.com",
+      "timestamp": "2025-06-26T18:04:53.369Z",
+      "user": "user-1750945851175-hajdn"
+    },
+    {
+      "id": "log-1750961126954-k4ck7",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-26T18:05:26.954Z",
+      "user": "user-1750959424627-e7rbf"
     }
   ],
   "roles": [

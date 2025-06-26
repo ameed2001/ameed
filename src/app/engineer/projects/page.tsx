@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin, FolderKanban } from 'lucide-react';
-import { getProjects as dbGetProjects, updateProject, type Project, type ProjectStatusType } from "@/lib/db";
+import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin, FolderKanban, Trash2 } from 'lucide-react';
+import { getProjects as dbGetProjects, updateProject, deleteProject as dbDeleteProject, type Project, type ProjectStatusType } from "@/lib/db";
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -92,6 +92,24 @@ export default function EngineerProjectsPage() {
         toast({
             title: "خطأ في الأرشفة",
             description: result.message || "فشل أرشفة المشروع. يرجى المحاولة مرة أخرى.",
+            variant: "destructive",
+        });
+    }
+  };
+
+  const handleDeleteProject = async (projectId: number, projectName: string) => {
+    const result = await dbDeleteProject(projectId.toString());
+    if (result.success) {
+        toast({
+            title: "تم حذف المشروع",
+            description: `تم حذف مشروع "${projectName}" بنجاح.`,
+            variant: "default",
+        });
+        fetchEngineerProjects(); // Refresh the list
+    } else {
+        toast({
+            title: "خطأ في الحذف",
+            description: result.message || "فشل حذف المشروع. يرجى المحاولة مرة أخرى.",
             variant: "destructive",
         });
     }
@@ -209,6 +227,27 @@ export default function EngineerProjectsPage() {
                               <AlertDialogCancel>إلغاء</AlertDialogCancel>
                               <AlertDialogAction onClick={() => handleArchiveAction(project.id, project.name)} className="bg-amber-500 hover:bg-amber-600">
                                 تأكيد الأرشفة
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                             <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800" title="حذف">
+                               <Trash2 className="h-5 w-5" />
+                             </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent dir="rtl">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                هل أنت متأكد أنك تريد حذف المشروع "{project.name}" نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDeleteProject(project.id, project.name)} className="bg-destructive hover:bg-destructive/90">
+                                تأكيد الحذف
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>

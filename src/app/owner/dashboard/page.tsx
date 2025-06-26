@@ -286,14 +286,15 @@ export default function OwnerDashboardPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Button 
-                          asChild 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-app-red hover:bg-red-100/50"
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="font-semibold border-app-red text-app-red hover:bg-app-red hover:text-white transition-colors duration-200"
                         >
                           <Link href={`/owner/projects/${project.id}`}>
-                            <Eye className="h-4 w-4 ml-1" /> تفاصيل
+                            <Eye className="h-4 w-4 ml-1" />
+                            تفاصيل
                           </Link>
                         </Button>
                       </TableCell>

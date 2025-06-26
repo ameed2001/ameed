@@ -105,7 +105,7 @@ export default function EngineerProjectsPage() {
                 <FolderKanban className="h-8 w-8 text-app-gold" />
                 <CardTitle className="text-3xl font-bold text-app-red">إدارة المشاريع الإنشائية</CardTitle>
             </div>
-            <Button asChild className="bg-app-red hover:bg-red-700 text-white">
+            <Button asChild variant="outline" className="border-app-red text-app-red hover:bg-app-red hover:text-white font-semibold">
                 <Link href="/engineer/create-project">
                     <PlusCircle size={18} className="ms-2" />
                     إنشاء مشروع جديد
@@ -238,5 +238,3 @@ export default function EngineerProjectsPage() {
     </Card>
   );
 }
-
-    

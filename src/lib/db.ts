@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { createReadStream, createWriteStream, promises as fsPromises, existsSync } from 'fs';
@@ -655,5 +656,43 @@ export async function getLogs(): Promise<LogEntry[]> {
   } catch (error) {
     await logAction('LOGS_FETCH_FAILURE', 'ERROR', `Error fetching logs: ${error instanceof Error ? error.message : String(error)}`);
     return [];
+  }
+}
+
+export interface ChangePasswordResult {
+  success: boolean;
+  message?: string;
+  errorType?: 'user_not_found' | 'invalid_current_password' | 'db_error';
+}
+
+export async function changeUserPassword(
+  userId: string,
+  currentPassword_input: string,
+  newPassword_input: string
+): Promise<ChangePasswordResult> {
+  try {
+    const db = await readDb();
+    const userIndex = db.users.findIndex(u => u.id === userId);
+    if (userIndex === -1) {
+      return { success: false, message: "المستخدم غير موجود.", errorType: 'user_not_found' };
+    }
+
+    const user = db.users[userIndex];
+    const passwordMatch = await bcrypt.compare(currentPassword_input, user.password_hash);
+    if (!passwordMatch) {
+      await logAction('USER_PASSWORD_CHANGE_FAILURE', 'WARNING', `Invalid current password attempt for user ${userId}.`, userId);
+      return { success: false, message: "كلمة المرور الحالية غير صحيحة.", errorType: 'invalid_current_password' };
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword_input, 10);
+    db.users[userIndex].password_hash = newPasswordHash;
+    db.users[userIndex].updatedAt = new Date().toISOString();
+    await writeDb(db);
+    
+    await logAction('USER_PASSWORD_CHANGE_SUCCESS', 'INFO', `User ${userId} changed their password successfully.`, userId);
+    return { success: true, message: "تم تغيير كلمة المرور بنجاح." };
+  } catch (error: any) {
+    await logAction('USER_PASSWORD_CHANGE_FAILURE', 'ERROR', `Error changing password for user ${userId}: ${error.message || String(error)}`, userId);
+    return { success: false, message: "فشل تغيير كلمة المرور.", errorType: 'db_error' };
   }
 }

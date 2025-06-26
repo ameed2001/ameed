@@ -1,28 +1,35 @@
 
+
 "use client";
 
-import { useState, useEffect } from 'react'; // Added useEffect
+import { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import OwnerAppLayout from "@/components/owner/OwnerAppLayout"; 
+import OwnerAppLayout from "@/components/owner/OwnerAppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserCircle, Edit3, Trash2, Save } from 'lucide-react'; // Added Save icon
+import { Loader2, UserCircle, Edit3, Trash2, Save } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+import { updateProfileAction, changePasswordAction } from './actions';
+import type { AdminUserUpdateResult, ChangePasswordResult } from '@/lib/db';
+
 
 // Define a type for the user data we'll store and retrieve
 interface UserProfileData {
+  id: string;
   name: string;
   email: string;
   role: string;
 }
 
 const profileSchema = z.object({
-  name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }).optional(),
-  email: z.string().email({ message: "البريد الإلكتروني غير صالح." }).optional(),
+  name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
+  email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
 });
 
 const passwordSchema = z.object({
@@ -39,124 +46,133 @@ type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 export function ProfilePageContent() {
   const { toast } = useToast();
+  const router = useRouter();
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
-  const [currentUser, setCurrentUser] = useState<UserProfileData>({
-    name: "جاري التحميل...",
-    email: "جاري التحميل...",
-    role: "جاري التحميل...",
-  });
+  const [currentUser, setCurrentUser] = useState<UserProfileData | null>(null);
 
-  const { register: registerProfile, handleSubmit: handleSubmitProfile, formState: { errors: profileErrors }, reset: resetProfile, setValue: setProfileValue } = useForm<ProfileFormValues>({
+  const {
+    register: registerProfile,
+    handleSubmit: handleSubmitProfile,
+    formState: { errors: profileErrors },
+    reset: resetProfile,
+    setValue: setProfileValue,
+    setError: setProfileError
+  } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: currentUser.name,
-      email: currentUser.email,
-    }
   });
 
-  const { register: registerPassword, handleSubmit: handleSubmitPassword, formState: { errors: passwordErrors }, reset: resetPassword } = useForm<PasswordFormValues>({
+  const {
+    register: registerPassword,
+    handleSubmit: handleSubmitPassword,
+    formState: { errors: passwordErrors },
+    reset: resetPassword,
+    setError: setPasswordError
+  } = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
   });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const storedName = localStorage.getItem('userName') || "مستخدم";
-      const storedEmail = localStorage.getItem('userEmail') || "email@example.com";
-      const storedRole = localStorage.getItem('userRole') || "GeneralUser";
+      const storedId = localStorage.getItem('userId');
+      const storedName = localStorage.getItem('userName');
+      const storedEmail = localStorage.getItem('userEmail');
+      const storedRole = localStorage.getItem('userRole');
       
-      setCurrentUser({ name: storedName, email: storedEmail, role: storedRole });
-      // Set form default values after fetching from localStorage
-      setProfileValue("name", storedName);
-      setProfileValue("email", storedEmail);
-    }
-  }, [setProfileValue]);
-
-
-  const onProfileSubmit: SubmitHandler<ProfileFormValues> = async (data) => {
-    setIsProfileLoading(true);
-    try {
-      // Replace with your actual backend API endpoint for updating profile
-      const response = await fetch('/api/update-profile', {
-        method: 'PUT', // Or 'POST' depending on your backend
-        headers: {
-          'Content-Type': 'application/json',
-          // Add any necessary authentication headers here (e.g., Authorization: Bearer token)
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        toast({ title: "تم تحديث الملف الشخصي بنجاح" }); // Removed simulation text
-        // Optionally update the displayed user state if the backend confirms the change
-        setCurrentUser(prev => ({
-            ...prev,
-            name: data.name || prev.name,
-            email: data.email || prev.email,
-        }));
+      if (storedId && storedName && storedEmail && storedRole) {
+        const userData = { id: storedId, name: storedName, email: storedEmail, role: storedRole };
+        setCurrentUser(userData);
+        setProfileValue("name", storedName);
+        setProfileValue("email", storedEmail);
       } else {
-        const errorData = await response.json(); // Assuming backend returns JSON with error details
-        toast({
-          title: "فشل تحديث الملف الشخصي",
-          description: errorData.message || "حدث خطأ أثناء تحديث الملف الشخصي.", // Display backend error message
+         toast({
+          title: "غير مصرح به",
+          description: "يجب تسجيل الدخول لعرض هذه الصفحة.",
           variant: "destructive"
         });
+        router.push('/login');
       }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast({ title: "خطأ", description: "حدث خطأ غير متوقع. يرجى المحاولة لاحقًا.", variant: "destructive" });
-    } finally {
-      setIsProfileLoading(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onProfileSubmit: SubmitHandler<ProfileFormValues> = async (data) => {
+    if (!currentUser) return;
+    setIsProfileLoading(true);
+
+    const result: AdminUserUpdateResult = await updateProfileAction({
+      userId: currentUser.id,
+      name: data.name,
+      email: data.email,
+    });
+    
+    setIsProfileLoading(false);
+
+    if (result.success && result.user) {
+      toast({ title: "تم تحديث الملف الشخصي بنجاح" });
+      const updatedUserData = { ...currentUser, name: result.user.name, email: result.user.email };
+      setCurrentUser(updatedUserData);
+      localStorage.setItem('userName', result.user.name);
+      localStorage.setItem('userEmail', result.user.email);
+      resetProfile(updatedUserData); // Reset form with new values
+    } else {
+      toast({
+        title: "فشل تحديث الملف الشخصي",
+        description: result.message || "حدث خطأ أثناء تحديث الملف الشخصي.",
+        variant: "destructive"
+      });
+      if (result.fieldErrors) {
+        for (const [fieldName, messages] of Object.entries(result.fieldErrors)) {
+            if (messages) {
+                 setProfileError(fieldName as keyof ProfileFormValues, { type: 'server', message: messages.join(', ')});
+            }
+        }
+      }
     }
   };
 
   const onPasswordSubmit: SubmitHandler<PasswordFormValues> = async (data) => {
+    if (!currentUser) return;
     setIsPasswordLoading(true);
-    try {
-      // Replace with your actual backend API endpoint for changing password
-      const response = await fetch('/api/change-password', { // استبدل هذا بالعنوان الفعلي
-        method: 'PUT', // Or 'POST'
-        headers: {
-          'Content-Type': 'application/json',
-          // Add any necessary authentication headers here
-        },
-        body: JSON.stringify({
-          currentPassword: data.currentPassword,
-          newPassword: data.newPassword,
-        }),
-      });
 
-      if (response.ok) { // إذا كانت الاستجابة تشير إلى النجاح (مثل 200 OK)
-        toast({ title: "تم تغيير كلمة المرور بنجاح" }); // Removed simulation text
-        resetPassword();
-      } else { // إذا كانت الاستجابة تشير إلى خطأ (مثل 400 Bad Request)
-        const errorData = await response.json(); // Assuming backend returns JSON with error details
-        toast({ title: "فشل تغيير كلمة المرور", description: errorData.message || "كلمة المرور الحالية غير صحيحة.", variant: "destructive" });
+    const result: ChangePasswordResult = await changePasswordAction({
+        userId: currentUser.id,
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+    });
+    
+    setIsPasswordLoading(false);
+
+    if (result.success) {
+      toast({ title: "تم تغيير كلمة المرور بنجاح" });
+      resetPassword();
+    } else {
+      toast({
+          title: "فشل تغيير كلمة المرور",
+          description: result.message || "حدث خطأ ما.",
+          variant: "destructive"
+      });
+       if (result.errorType === 'invalid_current_password') {
+          setPasswordError('currentPassword', { type: 'server', message: result.message });
       }
-    } catch (error) { // للتعامل مع أخطاء الشبكة أو الأخطاء الأخرى أثناء الطلب
-      console.error("Error changing password:", error);
-      toast({ title: "خطأ", description: "حدث خطأ غير متوقع أثناء تغيير كلمة المرور. يرجى المحاولة لاحقًا.", variant: "destructive" });
-    } finally {
-      setIsPasswordLoading(false);
     }
   };
 
   const handleDeleteAccount = () => {
-    // In a real app, use a proper confirmation dialog (e.g., AlertDialog)
+    // This action is highly destructive, so it's safer to keep it as a simulation
+    // until the user specifically asks to implement the full deletion logic.
     if (confirm("هل أنت متأكد أنك تريد حذف حسابك بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.")) {
-      console.log("Delete account request (simulation) for:", currentUser.email);
+      console.log("Delete account request (simulation) for:", currentUser?.email);
       toast({
         title: "طلب حذف الحساب (محاكاة)",
         description: "تم استلام طلب حذف حسابك. في تطبيق حقيقي، سيتم معالجة هذا الطلب.",
         variant: "destructive"
       });
-      // Add logic here to call an API endpoint for account deletion
-      // and then redirect the user, e.g., to the homepage or login page.
     }
   };
   
   const displayRole = (role: string) => {
-    switch (role.toUpperCase()) { // Ensure comparison is case-insensitive for safety
+    switch (role.toUpperCase()) {
       case 'OWNER': return 'مالك';
       case 'ENGINEER': return 'مهندس';
       case 'ADMIN': return 'مشرف';
@@ -164,6 +180,14 @@ export function ProfilePageContent() {
       default: return role;
     }
   };
+
+  if (!currentUser) {
+    return (
+        <div className="flex justify-center items-center h-screen">
+            <Loader2 className="h-12 w-12 animate-spin text-app-gold" />
+        </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">

@@ -98,7 +98,7 @@ export default function CreateProjectPage() {
           variant: "default",
         });
         reset();
-        router.push(`/my-projects/${newProject.id}`);
+        router.push(`/engineer/projects/${newProject.id}`);
     } else {
         toast({
             title: "خطأ في إنشاء المشروع",

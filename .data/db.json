@@ -41,6 +41,24 @@
       "photos": [],
       "timelineTasks": [],
       "comments": []
+    },
+    {
+      "name": "بيت",
+      "location": "على طريق كفر الديك",
+      "description": "بببببببب44444",
+      "startDate": "2025-09-27",
+      "endDate": "2026-09-27",
+      "status": "مخطط له",
+      "engineer": "Ameed Samara",
+      "clientName": "عميد",
+      "budget": 8855555,
+      "linkedOwnerEmail": "mediaplus64@gmail.com",
+      "quantitySummary": "",
+      "id": 2,
+      "overallProgress": 0,
+      "photos": [],
+      "timelineTasks": [],
+      "comments": []
     }
   ],
   "settings": {
@@ -994,6 +1012,30 @@
       "level": "WARNING",
       "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
       "timestamp": "2025-06-26T15:42:59.946Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750952858343-f2ztw",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:47:38.343Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750952866103-jthg7",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:47:46.103Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750952918181-rs1xe",
+      "action": "PROJECT_ADD_SUCCESS",
+      "level": "INFO",
+      "message": "Project \"بيت\" (ID: 2) added.",
+      "timestamp": "2025-06-26T15:48:38.181Z",
       "user": "System"
     }
   ],

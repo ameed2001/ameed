@@ -1,2 +1,14 @@
-// This page has been moved to /engineer/cost-estimator to be part of the engineer's layout.
-// This file can be deleted.
+"use client";
+
+import SimpleCostEstimatorForm from '@/components/SimpleCostEstimatorForm';
+import AppLayout from "@/components/AppLayout";
+
+export default function CostEstimatorPage() {
+  return (
+    <AppLayout>
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 -m-4 sm:-m-6 lg:-m-8 p-4 sm:p-6 lg:p-8">
+        <SimpleCostEstimatorForm />
+      </div>
+    </AppLayout>
+  );
+}

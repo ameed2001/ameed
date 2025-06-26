@@ -155,7 +155,7 @@ export default function EngineerDashboardPage() {
           <CardTitle className="flex items-center justify-end gap-2">
             المشاريع النشطة <FolderKanban className="text-blue-700" />
           </CardTitle>
-           <CardDescription>
+           <CardDescription className="text-right">
             عرض سريع لآخر المشاريع التي تعمل عليها حالياً.
           </CardDescription>
         </CardHeader>

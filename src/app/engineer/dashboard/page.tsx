@@ -149,65 +149,63 @@ export default function EngineerDashboardPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-8">
-        {/* Active Projects */}
-        <Card className="bg-white/95 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FolderKanban className="text-app-gold" /> المشاريع النشطة
-            </CardTitle>
-             <CardDescription>
-              عرض سريع لآخر المشاريع التي تعمل عليها حالياً.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-               <div className="flex justify-center items-center h-48"><Loader2 className="h-8 w-8 animate-spin text-app-gold" /></div>
-            ) : recentProjects.length === 0 ? (
-              <p className="text-center text-muted-foreground py-10">لا توجد مشاريع نشطة حالياً.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>اسم المشروع</TableHead>
-                    <TableHead>نسبة الإنجاز</TableHead>
-                    <TableHead>الحالة</TableHead>
-                    <TableHead className="text-center">إجراء</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentProjects.map(project => (
-                    <TableRow key={project.id}>
-                      <TableCell className="font-medium">{project.name}</TableCell>
-                      <TableCell><Progress value={project.overallProgress} className="h-2" /></TableCell>
-                      <TableCell>
-                         <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                            project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-700' :
-                            'bg-blue-100 text-blue-700' 
-                          }`}>
-                            {project.status}
-                          </span>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Button asChild variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white">
-                          <Link href={`/my-projects/${project.id}`}>
-                            عرض <ExternalLink className="mr-1 h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Dashboard Action Cards */}
+      {/* Active Projects */}
       <Card className="bg-white/95 shadow-lg">
         <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-gray-800 flex items-center justify-end gap-2">
+          <CardTitle className="flex items-center gap-2">
+            <FolderKanban className="text-app-gold" /> المشاريع النشطة
+          </CardTitle>
+           <CardDescription>
+            عرض سريع لآخر المشاريع التي تعمل عليها حالياً.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+             <div className="flex justify-center items-center h-48"><Loader2 className="h-8 w-8 animate-spin text-app-gold" /></div>
+          ) : recentProjects.length === 0 ? (
+            <p className="text-center text-muted-foreground py-10">لا توجد مشاريع نشطة حالياً.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>اسم المشروع</TableHead>
+                  <TableHead>نسبة الإنجاز</TableHead>
+                  <TableHead>الحالة</TableHead>
+                  <TableHead className="text-center">إجراء</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentProjects.map(project => (
+                  <TableRow key={project.id}>
+                    <TableCell className="font-medium">{project.name}</TableCell>
+                    <TableCell><Progress value={project.overallProgress} className="h-2" /></TableCell>
+                    <TableCell>
+                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-blue-100 text-blue-700' 
+                        }`}>
+                          {project.status}
+                        </span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Button asChild variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white">
+                        <Link href={`/my-projects/${project.id}`}>
+                          عرض <ExternalLink className="mr-1 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+      
+      {/* Dashboard Action Cards */}
+      <Card className="bg-white/95 shadow-lg">
+        <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-2xl font-semibold text-gray-800">
                 أدوات ومهام رئيسية
             </CardTitle>
             <CardDescription className="text-gray-600">وصول سريع إلى الأقسام والوظائف الأساسية.</CardDescription>
@@ -216,20 +214,22 @@ export default function EngineerDashboardPage() {
             {dashboardActions.map((action) => {
                 const Icon = action.icon;
                 return (
-                    <Card key={action.title} className="card-hover-effect flex flex-col h-full">
-                         <CardHeader>
-                            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-end gap-2">
+                    <Card key={action.title} className="card-hover-effect flex flex-col h-full text-right">
+                         <CardHeader className="pb-4">
+                            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                                <Icon className={cn("h-6 w-6", action.colorClass)} /> {action.title}
                             </CardTitle>
                         </CardHeader>
-                         <CardContent className="text-right flex flex-col flex-grow">
-                             <p className="text-gray-600 mb-4 flex-grow text-sm">{action.description}</p>
-                             <Button asChild variant="outline" className={cn("w-full mt-auto", action.buttonClass)}>
+                         <CardContent className="flex-grow pt-0 pb-4">
+                             <p className="text-gray-600 text-sm">{action.description}</p>
+                         </CardContent>
+                         <CardFooter className="pt-0">
+                             <Button asChild variant="outline" className={cn("w-full", action.buttonClass)}>
                                 <Link href={action.href}>
                                      الانتقال إلى القسم <ArrowLeft className="mr-2 h-4 w-4" />
                                  </Link>
                              </Button>
-                         </CardContent>
+                         </CardFooter>
                     </Card>
                 );
             })}

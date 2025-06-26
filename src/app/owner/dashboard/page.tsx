@@ -221,9 +221,9 @@ export default function OwnerDashboardPage() {
             </div>
             <Button 
               asChild 
-              variant="outline" 
+              variant="default"
               size="sm" 
-              className="border-app-gold text-app-gold hover:bg-app-gold/10"
+              className="font-semibold shadow-md hover:shadow-lg transition-shadow"
             >
               <Link href="/owner/projects">عرض جميع المشاريع</Link>
             </Button>

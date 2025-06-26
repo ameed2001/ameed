@@ -28,7 +28,7 @@ const createProjectSchema = z.object({
     required_error: "حالة المشروع مطلوبة."
   }),
   engineer: z.string().min(3, { message: "اسم المهندس مطلوب." }), 
-  clientName: z.string().optional(),
+  clientName: z.string().min(3, { message: "اسم العميل/المالك مطلوب." }),
   budget: z.number().positive({ message: "الميزانية يجب أن تكون رقمًا موجبًا." }).optional(),
   linkedOwnerEmail: z.string().email({ message: "بريد المالك الإلكتروني غير صالح."}).optional(),
 }).refine(data => new Date(data.endDate) >= new Date(data.startDate), {
@@ -207,7 +207,7 @@ export default function CreateProjectPage() {
             </div>
 
             <div>
-                <Label htmlFor="clientName" className="block mb-1.5 font-semibold text-gray-700">اسم العميل/المالك (اختياري)</Label>
+                <Label htmlFor="clientName" className="block mb-1.5 font-semibold text-gray-700">اسم العميل/المالك</Label>
                 <Input id="clientName" type="text" {...register("clientName")} className="bg-white focus:border-app-gold" placeholder="اسم صاحب المشروع" />
                 {errors.clientName && <p className="text-red-500 text-sm mt-1">{errors.clientName.message}</p>}
             </div>

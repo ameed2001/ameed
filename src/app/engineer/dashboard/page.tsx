@@ -66,14 +66,7 @@ export default function EngineerDashboardPage() {
     active: projects.filter(p => p.status === "قيد التنفيذ" || p.status === "مخطط له").length,
     inProgress: projects.filter(p => p.status === "قيد التنفيذ").length,
     completed: projects.filter(p => p.status === "مكتمل").length,
-    totalMaterials: "5,200 م³" // Placeholder value
   };
-
-  const recentActivity = [
-    { description: "تم تحديث تقدم مشروع 'بناء فيلا سكنية'", time: "منذ 2 ساعة" },
-    { description: "تم توليد تقرير كميات لمشروع 'برج إداري جدة'", time: "منذ 5 ساعات" },
-    { description: "أضاف المالك تعليقًا على مشروع 'مجمع سكني الرياض'", time: "أمس" },
-  ];
 
   const recentProjects = projects.filter(p => p.status !== "مكتمل" && p.status !== "مؤرشف").slice(0, 5);
 
@@ -97,43 +90,23 @@ export default function EngineerDashboardPage() {
       {isLoading ? (
         <div className="flex justify-center items-center h-24"><Loader2 className="h-8 w-8 animate-spin text-app-gold" /></div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <StatCard title="المشاريع النشطة" value={stats.active} icon={<Briefcase className="h-5 w-5 text-blue-500" />} colorClass="text-blue-500" />
           <StatCard title="قيد التنفيذ" value={stats.inProgress} icon={<Hourglass className="h-5 w-5 text-amber-500" />} colorClass="text-amber-500" />
           <StatCard title="المشاريع المكتملة" value={stats.completed} icon={<CheckCircle className="h-5 w-5 text-green-500" />} colorClass="text-green-500" />
-          <StatCard title="إجمالي المواد (تقديري)" value={stats.totalMaterials} icon={<BarChart3 className="h-5 w-5 text-purple-500" />} colorClass="text-purple-500" />
         </div>
       )}
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {/* Recent Activity */}
-        <Card className="lg:col-span-1 bg-white/95 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="text-app-gold" /> النشاط الحديث
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-4">
-              {recentActivity.map((activity, index) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="h-2 w-2 mt-1.5 rounded-full bg-app-red/50"></div>
-                  <div className="flex-grow">
-                    <p className="text-sm font-medium">{activity.description}</p>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 gap-8">
         {/* Active Projects */}
-        <Card className="lg:col-span-2 bg-white/95 shadow-lg">
+        <Card className="bg-white/95 shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FolderKanban className="text-app-gold" /> المشاريع النشطة
             </CardTitle>
+             <CardDescription>
+              عرض سريع لآخر المشاريع التي تعمل عليها حالياً.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -164,7 +137,7 @@ export default function EngineerDashboardPage() {
                           </span>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Button asChild variant="ghost" size="sm">
+                        <Button asChild variant="ghost" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500/10 hover:text-white">
                           <Link href={`/my-projects/${project.id}`}>
                             عرض <ExternalLink className="mr-1 h-4 w-4" />
                           </Link>

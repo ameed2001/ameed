@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -16,13 +17,14 @@ import {
   AlertTriangle,
   Camera,
   Layers,
+  Calculator,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 const engineerNavItems = [
-  { href: '/', label: 'الرئيسية للموقع', icon: House },
   { href: '/engineer/dashboard', label: 'لوحة التحكم', icon: LayoutDashboard },
+  { href: '/', label: 'حساب الكميات', icon: Calculator },
   { href: '/engineer/create-project', label: 'إنشاء مشروع جديد', icon: Plus },
   { href: '/engineer/projects', label: 'إدارة المشاريع', icon: Wrench },
   { href: '/profile', label: 'الملف الشخصي', icon: Settings },

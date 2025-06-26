@@ -1,58 +1,25 @@
 {
   "users": [
     {
-      "id": "user-1749744784096-2pa39",
-      "name": "عميد سماره",
-      "email": "malik@gmail.com",
-      "role": "OWNER",
-      "status": "ACTIVE",
-      "updatedAt": "2025-06-12T21:35:06.063Z",
-      "profileImage": "https://placehold.co/100x100.png?text=عم",
-      "password_hash": "$2a$10$mxk7DiKZ1eXUWXQhLoPZS.fbMJLmiiGBlGVvT2G4VxVTYPhgJvWbq",
-      "createdAt": "2025-06-12T16:13:04.096Z"
-    },
-    {
-      "id": "user-1749764630214-4ca57",
-      "name": "Ameed Samara",
-      "email": "ameed2001@gamil.com",
-      "role": "ENGINEER",
-      "status": "ACTIVE",
-      "updatedAt": "2025-06-12T21:45:25.835Z",
-      "profileImage": "https://placehold.co/100x100.png?text=AM",
-      "password_hash": "$2a$10$Ps1gJWp.sufRfgJlueI5ne7D7vpFZ9k15qALb4fvJIZ1Ot2KZIhM6",
-      "createdAt": "2025-06-12T21:43:50.214Z"
-    },
-    {
-      "id": "user-1750431146586-jhbio",
-      "name": "ameed",
-      "email": "ameed@mohandis.com",
-      "password_hash": "$2a$10$UjNPgRnT7HYtuNcCNwbV1.dZWnWbW9lxdeBV2N2uc4EZ1HMNqlZAa",
-      "role": "ENGINEER",
-      "status": "ACTIVE",
-      "createdAt": "2025-06-20T14:52:26.587Z",
-      "updatedAt": "2025-06-20T14:52:26.587Z",
-      "profileImage": "https://placehold.co/100x100.png?text=AM"
-    },
-    {
-      "id": "user-1750434436060-d0zte",
-      "name": "Ameed Samara",
-      "email": "mediaplus64@gmail.com",
-      "password_hash": "$2a$10$epPzEm6.QFoymsU03EIOTuyVF0AnLymonJAk5rExjJk3THbLwPLSi",
-      "role": "ENGINEER",
-      "status": "ACTIVE",
-      "createdAt": "2025-06-20T15:47:16.060Z",
-      "updatedAt": "2025-06-20T15:47:16.060Z",
-      "profileImage": "https://placehold.co/100x100.png?text=AM"
-    },
-    {
       "id": "user-1750945851175-hajdn",
       "name": "Ameed Samara",
       "email": "ameed2001@mohandis.com",
-      "password_hash": "$2a$10$azukkv/6VOfeCsdRsFhTA.X0EgDfBsqA4l0XnGQ.BbInnt.cppw8S",
       "role": "ENGINEER",
-      "status": "PENDING_APPROVAL",
-      "createdAt": "2025-06-26T13:50:51.175Z",
-      "updatedAt": "2025-06-26T13:50:51.175Z",
+      "status": "ACTIVE",
+      "updatedAt": "2025-06-26T13:58:13.854Z",
+      "profileImage": "https://placehold.co/100x100.png?text=AM",
+      "password_hash": "$2a$10$azukkv/6VOfeCsdRsFhTA.X0EgDfBsqA4l0XnGQ.BbInnt.cppw8S",
+      "createdAt": "2025-06-26T13:50:51.175Z"
+    },
+    {
+      "id": "user-1750946422820-53jsi",
+      "name": "Ameed Waleed Samara",
+      "email": "ameed2001@mhandis.com",
+      "password_hash": "$2a$10$VSfosgbRYsdBHp8c0MXQOubTcom4g/n.jTHiG6W6C9yT5af48NqW.",
+      "role": "ENGINEER",
+      "status": "ACTIVE",
+      "createdAt": "2025-06-26T14:00:22.821Z",
+      "updatedAt": "2025-06-26T14:00:22.821Z",
       "profileImage": "https://placehold.co/100x100.png?text=AM"
     }
   ],
@@ -432,6 +399,78 @@
       "level": "INFO",
       "message": "User ameed2001@mohandis.com registered. Role: ENGINEER, Status: PENDING_APPROVAL.",
       "timestamp": "2025-06-26T13:50:51.188Z",
+      "user": "user-1750945851175-hajdn"
+    },
+    {
+      "id": "log-1750946293862-qu4b2",
+      "action": "USER_UPDATE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "Admin updated user ID user-1750945851175-hajdn. Fields: status, updatedAt",
+      "timestamp": "2025-06-26T13:58:13.862Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1750946293866-q2h31",
+      "action": "ENGINEER_APPROVAL_SUCCESS",
+      "level": "INFO",
+      "message": "Admin admin-001 approved engineer user-1750945851175-hajdn.",
+      "timestamp": "2025-06-26T13:58:13.866Z",
+      "user": "admin-001"
+    },
+    {
+      "id": "log-1750946305583-wmqfr",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749744784096-2pa39 deleted by admin.",
+      "timestamp": "2025-06-26T13:58:25.583Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1750946308836-a5rd1",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1749764630214-4ca57 deleted by admin.",
+      "timestamp": "2025-06-26T13:58:28.836Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1750946311661-o083v",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1750431146586-jhbio deleted by admin.",
+      "timestamp": "2025-06-26T13:58:31.661Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1750946314011-spzo6",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "User ID user-1750434436060-d0zte deleted by admin.",
+      "timestamp": "2025-06-26T13:58:34.011Z",
+      "user": "Admin"
+    },
+    {
+      "id": "log-1750946341556-fpgrm",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@mohandis.com",
+      "timestamp": "2025-06-26T13:59:01.556Z",
+      "user": "user-1750945851175-hajdn"
+    },
+    {
+      "id": "log-1750946422827-867r2",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed2001@mhandis.com registered. Role: ENGINEER, Status: ACTIVE.",
+      "timestamp": "2025-06-26T14:00:22.827Z",
+      "user": "user-1750946422820-53jsi"
+    },
+    {
+      "id": "log-1750946427704-c8e8j",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@mohandis.com",
+      "timestamp": "2025-06-26T14:00:27.704Z",
       "user": "user-1750945851175-hajdn"
     }
   ],

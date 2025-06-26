@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Eye, Briefcase as ProjectsIcon, Loader2, Info } from 'lucide-react';
+import { Search, Eye, Briefcase as ProjectsIcon, Loader2, Info, LayoutDashboard } from 'lucide-react';
 import { getProjects as dbGetProjects, type Project, type ProjectStatusType } from "@/lib/db";
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
@@ -88,8 +88,9 @@ export default function OwnerProjectsPage() {
                 <ProjectsIcon className="h-8 w-8 text-app-gold" />
                 <CardTitle className="text-3xl font-bold text-app-red">مشاريعي</CardTitle>
             </div>
-            <Button asChild variant="outline" className="border-app-gold text-app-gold hover:bg-app-gold hover:text-primary-foreground">
+            <Button asChild className="bg-app-gold hover:bg-yellow-500 text-primary-foreground font-semibold">
                 <Link href="/owner/dashboard">
+                    <LayoutDashboard className="ml-2 h-4 w-4" />
                     العودة إلى لوحة التحكم
                 </Link>
             </Button>
@@ -175,9 +176,10 @@ export default function OwnerProjectsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <Button asChild variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100/50">
+                      <Button asChild variant="outline" className="font-semibold border-app-red text-app-red hover:bg-app-red hover:text-white transition-colors duration-200">
                         <Link href={`/owner/projects/${project.id}`}>
-                          <Eye className="h-4 w-4 ms-1" /> عرض التفاصيل
+                          <Eye className="h-4 w-4 ml-1" />
+                          تفاصيل
                         </Link>
                       </Button>
                     </TableCell>

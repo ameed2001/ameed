@@ -1,7 +1,7 @@
 
 "use client";
 
-import { HardHat, Briefcase, CheckCircle, Hourglass, BarChart3, FolderKanban, ExternalLink, Loader2, Blocks, Calculator, TrendingUp, Users, ArrowLeft } from "lucide-react";
+import { HardHat, Briefcase, CheckCircle, Hourglass, BarChart3, FolderKanban, ExternalLink, Loader2, Blocks, Calculator, TrendingUp, Users, ArrowLeft, PlusCircle, PenSquare, ClipboardCheck, Settings2, Download, FileText, Camera, GanttChartSquare, ArrowRight } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
@@ -35,54 +35,83 @@ function StatCard({ title, value, icon, colorClass }: StatCardProps) {
   );
 }
 
-const dashboardActions = [
+const dashboardCategories = [
     {
+      key: "projects",
       title: "إدارة المشاريع",
       description: "عرض، تعديل، وأرشفة جميع مشاريعك الإنشائية.",
       icon: FolderKanban,
-      href: "/engineer/projects",
       colorClass: "text-blue-500",
       buttonClass: "border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white",
+      links: [
+        { href: "/engineer/create-project", label: "إنشاء مشروع جديد", icon: PlusCircle },
+        { href: "/engineer/projects", label: "إدارة المشاريع", icon: FolderKanban },
+      ]
     },
     {
+      key: "structural-elements",
       title: "العناصر الإنشائية",
       description: "تحديد وتفصيل العناصر مثل الأعمدة والكمرات.",
       icon: Blocks,
-      href: "#", 
       colorClass: "text-purple-500",
       buttonClass: "border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white",
+      links: [
+        { href: "#", label: "إدخال تفاصيل العناصر", icon: PenSquare },
+        { href: "#", label: "التحقق من صحة البيانات", icon: ClipboardCheck },
+      ]
     },
     {
+      key: "quantity-survey",
       title: "حساب الكميات",
       description: "أدوات لحساب كميات الحديد والباطون للمشروع.",
       icon: Calculator,
-      href: "#",
       colorClass: "text-green-500",
-       buttonClass: "border-green-500 text-green-600 hover:bg-green-500 hover:text-white",
+      buttonClass: "border-green-500 text-green-600 hover:bg-green-500 hover:text-white",
+      links: [
+        { href: "#", label: "حساب كميات المواد", icon: Calculator },
+        { href: "#", label: "عرض تقارير الكميات", icon: BarChart3 },
+        { href: "#", label: "تخصيص عرض التقارير", icon: Settings2 },
+        { href: "#", label: "تصدير التقارير", icon: Download },
+        { href: "#", label: "توليد بيانات التقرير", icon: FileText },
+      ]
     },
     {
+      key: "construction-progress",
       title: "تقدم البناء",
       description: "تسجيل التقدم المحرز في مراحل المشروع المختلفة.",
       icon: TrendingUp,
-      href: "/engineer/update-progress",
       colorClass: "text-orange-500",
       buttonClass: "border-orange-500 text-orange-600 hover:bg-orange-500 hover:text-white",
+      links: [
+        { href: "/engineer/update-progress", label: "تحديث التقدم", icon: TrendingUp },
+        { href: "#", label: "ملاحظات التقدم", icon: PenSquare },
+        { href: "#", label: "رفع صور/فيديوهات", icon: Camera },
+        { href: "#", label: "تحديد مراحل المشروع", icon: GanttChartSquare },
+      ]
     },
     {
+      key: "owner-linking",
       title: "ربط المالكين",
       description: "ربط حسابات المالكين بمشاريعهم لمتابعة التقدم.",
       icon: Users,
-      href: "#",
       colorClass: "text-red-500",
       buttonClass: "border-red-500 text-red-600 hover:bg-red-500 hover:text-white",
+      links: [
+        { href: "#", label: "ربط مالك بمشروع", icon: Users },
+      ]
     },
     {
+      key: "reports",
       title: "التقارير",
       description: "توليد وعرض التقارير المخصصة للمشاريع والكميات.",
       icon: BarChart3,
-      href: "#",
       colorClass: "text-cyan-500",
       buttonClass: "border-cyan-500 text-cyan-600 hover:bg-cyan-500 hover:text-white",
+      links: [
+        { href: "#", label: "عرض تقارير الكميات", icon: BarChart3 },
+        { href: "#", label: "تخصيص عرض التقارير", icon: Settings2 },
+        { href: "#", label: "تصدير التقارير", icon: Download },
+      ]
     }
   ];
 
@@ -90,6 +119,7 @@ export default function EngineerDashboardPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -121,6 +151,7 @@ export default function EngineerDashboardPage() {
   };
 
   const recentProjects = projects.filter(p => p.status !== "مكتمل" && p.status !== "مؤرشف").slice(0, 5);
+  const activeCategory = selectedCategory ? dashboardCategories.find(c => c.key === selectedCategory) : null;
 
   return (
     <div className="space-y-8 text-right">
@@ -153,7 +184,7 @@ export default function EngineerDashboardPage() {
       <Card className="bg-white/95 shadow-lg">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center justify-start gap-2">
               <FolderKanban className="text-blue-700" /> المشاريع النشطة
             </CardTitle>
             <CardDescription>
@@ -204,42 +235,70 @@ export default function EngineerDashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Dashboard Action Cards */}
+      {/* Main content: either main categories or sub-categories */}
       <Card className="bg-white/95 shadow-lg">
         <CardHeader>
             <div className="flex justify-between items-center">
                 <CardTitle className="text-2xl font-semibold text-gray-800">
-                    أدوات ومهام رئيسية
+                    {activeCategory ? activeCategory.title : 'أدوات ومهام رئيسية'}
                 </CardTitle>
-                <CardDescription className="text-gray-600">وصول سريع إلى الأقسام والوظائف الأساسية.</CardDescription>
+                {activeCategory ? (
+                    <Button variant="outline" onClick={() => setSelectedCategory(null)}>
+                        <ArrowRight className="ml-2 h-4 w-4" /> العودة
+                    </Button>
+                ) : (
+                    <CardDescription className="text-gray-600">وصول سريع إلى الأقسام والوظائف الأساسية.</CardDescription>
+                )}
             </div>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dashboardActions.map((action) => {
-                const Icon = action.icon;
-                return (
-                    <Card key={action.title} className="card-hover-effect flex flex-col h-full text-right">
-                         <CardHeader className="pb-4">
-                            <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-start gap-2">
-                                <Icon className={cn("h-6 w-6", action.colorClass)} /> {action.title}
-                            </CardTitle>
-                        </CardHeader>
-                         <CardContent className="flex-grow pt-0 pb-4">
-                             <p className="text-gray-600 text-sm">{action.description}</p>
-                         </CardContent>
-                         <CardFooter className="pt-0">
-                             <Button asChild variant="outline" className={cn("w-full", action.buttonClass)}>
-                                <Link href={action.href}>
-                                     الانتقال إلى القسم <ArrowLeft className="mr-2 h-4 w-4" />
-                                 </Link>
-                             </Button>
-                         </CardFooter>
-                    </Card>
-                );
-            })}
+        <CardContent>
+            {!activeCategory ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {dashboardCategories.map((category) => {
+                        const Icon = category.icon;
+                        return (
+                            <Card 
+                                key={category.key} 
+                                className="card-hover-effect flex flex-col h-full text-right cursor-pointer group"
+                                onClick={() => setSelectedCategory(category.key)}
+                            >
+                                 <CardHeader className="pb-4">
+                                    <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-start gap-2">
+                                        <Icon className={cn("h-6 w-6", category.colorClass)} /> {category.title}
+                                    </CardTitle>
+                                </CardHeader>
+                                 <CardContent className="flex-grow pt-0 pb-4">
+                                     <p className="text-gray-600 text-sm">{category.description}</p>
+                                 </CardContent>
+                                 <CardFooter className="pt-0 mt-auto">
+                                    <div className={cn("w-full py-2 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-between border-2", category.buttonClass)}>
+                                       <span>الانتقال إلى القسم</span>
+                                       <ArrowLeft className="h-4 w-4" />
+                                    </div>
+                                 </CardFooter>
+                            </Card>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {activeCategory.links.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                            <Link href={link.href} key={link.href} className="block">
+                                <Card className="card-hover-effect flex flex-col h-full text-right">
+                                    <CardContent className="p-6 flex items-center justify-start gap-4">
+                                        <Icon className={cn("h-8 w-8", activeCategory.colorClass)} />
+                                        <span className="text-lg font-semibold text-gray-800">{link.label}</span>
+                                    </CardContent>
+                                </Card>
+                            </Link>
+                        );
+                    })}
+                </div>
+            )}
         </CardContent>
       </Card>
     </div>
   );
 }
-

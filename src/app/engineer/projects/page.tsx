@@ -183,12 +183,12 @@ export default function EngineerProjectsPage() {
                     </TableCell>
                     <TableCell className="text-center space-x-1 rtl:space-x-reverse">
                       <Button asChild variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800" title="عرض">
-                        <Link href={`/my-projects/${project.id}`}>
+                        <Link href={`/engineer/projects/${project.id}`}>
                           <Eye className="h-5 w-5" />
                         </Link>
                       </Button>
                       <Button asChild variant="ghost" size="icon" className="text-green-600 hover:text-green-800" title="تعديل">
-                         <Link href={`/my-projects/${project.id}`}>
+                         <Link href={`/engineer/projects/${project.id}`}>
                            <Edit className="h-5 w-5" />
                          </Link>
                       </Button>

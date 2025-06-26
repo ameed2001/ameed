@@ -119,7 +119,7 @@ export default function AdminProjectsPage() {
               {filteredProjects.length > 0 ? filteredProjects.map((project) => (
                 <TableRow key={project.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium text-app-red hover:underline">
-                    <Link href={`/my-projects/${project.id}`}>{project.name}</Link>
+                    <Link href={`/engineer/projects/${project.id}`}>{project.name}</Link>
                   </TableCell>
                   <TableCell>{project.engineer || 'غير محدد'}</TableCell>
                   <TableCell>{project.clientName || 'غير محدد'}</TableCell>
@@ -135,7 +135,7 @@ export default function AdminProjectsPage() {
                   </TableCell>
                   <TableCell className="text-center space-x-1 space-x-reverse">
                     <Button asChild variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100">
-                      <Link href={`/my-projects/${project.id}`}>
+                      <Link href={`/engineer/projects/${project.id}`}>
                         <Eye className="h-5 w-5" /><span className="sr-only">عرض التفاصيل</span>
                       </Link>
                     </Button>

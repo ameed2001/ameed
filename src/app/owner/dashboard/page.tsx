@@ -119,7 +119,7 @@ export default function OwnerDashboardPage() {
                   {recentProjects.map(project => (
                     <TableRow key={project.id}>
                       <TableCell className="font-medium text-app-red hover:underline">
-                        <Link href={`/my-projects/${project.id}`}>{project.name}</Link>
+                        <Link href={`/owner/projects/${project.id}`}>{project.name}</Link>
                       </TableCell>
                       <TableCell>{project.status}</TableCell>
                       <TableCell>
@@ -129,7 +129,7 @@ export default function OwnerDashboardPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Link href={`/my-projects/${project.id}`} passHref>
+                        <Link href={`/owner/projects/${project.id}`} passHref>
                           <Button variant="link" className="text-blue-600 hover:underline px-2 py-1 h-auto">
                             <ExternalLink size={16} className="ms-1"/> عرض
                           </Button>

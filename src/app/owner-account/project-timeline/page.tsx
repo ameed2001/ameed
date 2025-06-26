@@ -24,7 +24,7 @@ const ProjectTimelinePage: React.FC = () => {
             تتوفر الجداول الزمنية التفصيلية، بما في ذلك المراحل والمهام، ضمن صفحة تفاصيل كل مشروع عند تحديد المشروع من قائمة "مشاريعي".
           </p>
           <Button asChild className="bg-app-red hover:bg-red-700 text-white font-semibold">
-            <Link href="/my-projects">
+            <Link href="/owner/projects">
               الذهاب إلى قائمة المشاريع
             </Link>
           </Button>

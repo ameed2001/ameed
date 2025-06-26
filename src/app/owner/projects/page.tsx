@@ -156,7 +156,7 @@ export default function OwnerProjectsPage() {
                 {filteredProjects.map((project) => (
                   <TableRow key={project.id} className="hover:bg-gray-50">
                     <TableCell className="font-medium text-app-red hover:underline">
-                        <Link href={`/my-projects/${project.id}`}>{project.name}</Link>
+                        <Link href={`/owner/projects/${project.id}`}>{project.name}</Link>
                     </TableCell>
                     <TableCell>
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
@@ -176,7 +176,7 @@ export default function OwnerProjectsPage() {
                     </TableCell>
                     <TableCell className="text-center">
                       <Button asChild variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100/50">
-                        <Link href={`/my-projects/${project.id}`}>
+                        <Link href={`/owner/projects/${project.id}`}>
                           <Eye className="h-4 w-4 ms-1" /> عرض التفاصيل
                         </Link>
                       </Button>

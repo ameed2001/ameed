@@ -225,7 +225,7 @@ export default function EngineerDashboardPage() {
                     </TableCell>
                     <TableCell className="text-center">
                       <Button asChild variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white">
-                        <Link href={`/my-projects/${project.id}`}>
+                        <Link href={`/engineer/projects/${project.id}`}>
                           عرض <ExternalLink className="mr-1 h-4 w-4" />
                         </Link>
                       </Button>

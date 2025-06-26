@@ -3,7 +3,6 @@
 
 import { useParams } from 'next/navigation';
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
-import AppLayout from "@/components/AppLayout"; // This page still uses AppLayout as it's not exclusive to owner layout
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -21,15 +20,10 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose, DialogDescription } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
-import { findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask } from '@/lib/db'; // Using new db.ts
+import { findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask } from '@/lib/db';
 import Link from 'next/link';
 
-// Simulate logged-in user - replace with actual auth context in a real app
-const MOCK_CURRENT_USER_ROLE: "Owner" | "Engineer" | "Admin" = "Engineer"; 
-const MOCK_CURRENT_USER_EMAIL: string = "engineer@example.com"; 
-
-
-export default function ProjectDetailPage() {
+export default function EngineerProjectDetailPage() {
   const params = useParams();
   const projectId = params.projectId as string;
   const { toast } = useToast();
@@ -43,16 +37,10 @@ export default function ProjectDetailPage() {
   const [isContactEngineerModalOpen, setIsContactEngineerModalOpen] = useState(false);
   const [engineerMessage, setEngineerMessage] = useState('');
 
-
-  const isOwnerView = MOCK_CURRENT_USER_ROLE === "Owner";
+  const isOwnerView = false; // This is the Engineer's view
 
   const refreshProjectFromDb = async () => { 
     const currentProject = await findProjectById(projectId); 
-     if (isOwnerView && currentProject && currentProject.linkedOwnerEmail !== MOCK_CURRENT_USER_EMAIL) {
-        setProject(null);
-        toast({ title: "غير مصرح به", description: "ليس لديك صلاحية لعرض هذا المشروع.", variant: "destructive" });
-        return;
-    }
     setProject(currentProject ? {...currentProject} : null); 
     if (currentProject?.linkedOwnerEmail) {
       setLinkedOwnerEmailInput(currentProject.linkedOwnerEmail);
@@ -114,7 +102,7 @@ export default function ProjectDetailPage() {
 
     if (updatedProjectResult.success) {
         refreshProjectFromDb();
-        toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%. ${progressUpdate.notes ? 'الملاحظات: ' + progressUpdate.notes : ''}` });
+        toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%.` });
         setProgressUpdate(prev => ({ ...prev, notes: '' })); 
     } else {
         toast({ title: "خطأ", description: "فشل تحديث التقدم.", variant: "destructive" });
@@ -176,18 +164,6 @@ export default function ProjectDetailPage() {
     setIsUploadingFile(false);
   };
 
-  const handleSendEngineerMessage = (e: FormEvent) => {
-    e.preventDefault();
-    if (!engineerMessage.trim() || !project || !project.engineer) {
-        toast({ title: "خطأ", description: "يرجى كتابة رسالة.", variant: "destructive" });
-        return;
-    }
-    console.log("Sending message to engineer:", project.engineer, "Message:", engineerMessage);
-    toast({ title: "تم إرسال الرسالة", description: `تم إرسال رسالتك إلى المهندس ${project.engineer} (محاكاة).` });
-    setEngineerMessage('');
-    setIsContactEngineerModalOpen(false);
-};
-
   const projectStartDate = project?.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.min(...project.timelineTasks.map(task => new Date(task.startDate).getTime()))) : new Date();
   const projectEndDate = project?.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.max(...project.timelineTasks.map(task => new Date(task.endDate).getTime()))) : new Date();
   let totalProjectDurationDays = project?.timelineTasks && project.timelineTasks.length > 0 ? Math.ceil((projectEndDate.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1 : 30;
@@ -208,28 +184,25 @@ export default function ProjectDetailPage() {
 
   if (!project) {
     return (
-      <AppLayout>
-        <div className="container mx-auto py-10 px-4 text-center">
-          <Alert variant="destructive">
-            <FileText className="h-5 w-5" />
-            <AlertTitle>المشروع غير موجود أو غير مصرح لك بعرضه</AlertTitle>
-            <AlertDescription>لم يتم العثور على تفاصيل المشروع المطلوب أو لا تملك الصلاحية اللازمة.</AlertDescription>
-          </Alert>
-           <Button asChild className="mt-6 bg-app-gold hover:bg-yellow-600 text-primary-foreground">
-             <Link href="/my-projects">العودة إلى قائمة المشاريع</Link>
-           </Button>
-        </div>
-      </AppLayout>
+      <div className="container mx-auto py-10 px-4 text-center">
+        <Alert variant="destructive">
+          <FileText className="h-5 w-5" />
+          <AlertTitle>المشروع غير موجود</AlertTitle>
+          <AlertDescription>لم يتم العثور على تفاصيل المشروع المطلوب.</AlertDescription>
+        </Alert>
+         <Button asChild className="mt-6 bg-app-gold hover:bg-yellow-600 text-primary-foreground">
+           <Link href="/engineer/projects">العودة إلى قائمة المشاريع</Link>
+         </Button>
+      </div>
     );
   }
 
   const simulateAction = (actionName: string) => {
     toast({ title: "محاكاة إجراء", description: `تم تنفيذ "${actionName}" (محاكاة).` });
   };
-
+  
   return (
-    <AppLayout>
-      <Dialog open={isContactEngineerModalOpen} onOpenChange={setIsContactEngineerModalOpen}>
+      <Dialog>
         <div className="container mx-auto py-8 px-4 text-right">
           <Card className="bg-white/95 shadow-xl mb-8">
             <CardHeader>
@@ -242,11 +215,6 @@ export default function ProjectDetailPage() {
                     {!isOwnerView && (
                         <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل بيانات المشروع")}>
                             <FileEdit size={18} className="ms-1.5" /> تعديل بيانات المشروع
-                        </Button>
-                    )}
-                    {isOwnerView && project.engineer && (
-                        <Button variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500/10" onClick={() => setIsContactEngineerModalOpen(true)}>
-                            <Mail size={18} className="ms-1.5" /> مراسلة المهندس
                         </Button>
                     )}
                   </div>
@@ -528,7 +496,6 @@ export default function ProjectDetailPage() {
           </div>
         </div>
 
-        {/* File Upload Dialog */}
         <DialogContent className="sm:max-w-[425px] bg-white/95 custom-dialog-overlay">
           <DialogHeader>
             <DialogTitle className="text-app-red text-right">رفع ملف جديد</DialogTitle>
@@ -549,49 +516,6 @@ export default function ProjectDetailPage() {
               <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-destructive-foreground hover:bg-destructive"><X size={20}/></Button>
           </DialogClose>
         </DialogContent>
-        
-        {/* Contact Engineer Dialog */}
-        <DialogContent className="sm:max-w-md bg-white/95 custom-dialog-overlay">
-            <DialogHeader className="text-right">
-                <DialogTitle className="text-app-red text-xl font-bold">
-                    مراسلة المهندس: {project?.engineer || "غير محدد"}
-                </DialogTitle>
-                <DialogDescription className="text-gray-600">
-                    أرسل رسالة مباشرة إلى المهندس المسؤول عن هذا المشروع.
-                </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSendEngineerMessage} className="space-y-4 py-2 text-right">
-                <div>
-                    <Label htmlFor="engineerMessage" className="font-semibold text-gray-700">نص الرسالة:</Label>
-                    <Textarea
-                        id="engineerMessage"
-                        value={engineerMessage}
-                        onChange={(e) => setEngineerMessage(e.target.value)}
-                        placeholder="اكتب رسالتك هنا..."
-                        rows={5}
-                        className="mt-1 bg-white focus:border-app-gold"
-                    />
-                </div>
-                <div className="flex justify-start gap-2">
-                    <Button type="submit" className="bg-app-red hover:bg-red-700 text-white">
-                        <Send size={18} className="ms-2"/> إرسال الرسالة
-                    </Button>
-                    <Button 
-                        type="button" 
-                        variant="secondary" 
-                        onClick={() => setIsContactEngineerModalOpen(false)}
-                        className="bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground"
-                    >
-                        إلغاء
-                    </Button>
-                </div>
-            </form>
-             <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-destructive-foreground hover:bg-destructive"><X size={20}/></Button>
-          </DialogClose>
-        </DialogContent>
-
       </Dialog>
-    </AppLayout>
   );
 }

@@ -215,10 +215,10 @@ export default function EngineerDashboardPage() {
                   <TableRow key={project.id}>
                     <TableCell className="font-medium text-right align-middle">{project.name}</TableCell>
                     <TableCell className="text-right align-middle">
-                        <div className="flex items-center justify-end gap-2">
-                           <Progress value={project.overallProgress} className="w-24" />
-                           <span className="text-sm font-mono">{project.overallProgress || 0}%</span>
-                        </div>
+                      <div className="flex items-center justify-start gap-2">
+                        <span className="text-sm font-mono">{project.overallProgress || 0}%</span>
+                        <Progress value={project.overallProgress} className="w-24" />
+                      </div>
                     </TableCell>
                     <TableCell className="text-right align-middle">
                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${

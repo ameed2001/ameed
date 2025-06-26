@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin } from 'lucide-react';
+import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin, FolderKanban } from 'lucide-react';
 import { getProjects as dbGetProjects, type Project, type ProjectStatusType } from "@/lib/db";
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -95,7 +95,7 @@ export default function EngineerProjectsPage() {
                 <FolderKanban className="h-8 w-8 text-app-gold" />
                 <CardTitle className="text-3xl font-bold text-app-red">إدارة المشاريع الإنشائية</CardTitle>
             </div>
-            <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button asChild className="bg-app-red hover:bg-red-700 text-white">
                 <Link href="/engineer/create-project">
                     <PlusCircle size={18} className="ms-2" />
                     إنشاء مشروع جديد
@@ -216,7 +216,7 @@ export default function EngineerProjectsPage() {
             <p className="text-sm">
                 {projects.length === 0 ? "لم تقم بإنشاء أي مشاريع بعد." : "لا توجد مشاريع تطابق معايير البحث الحالية."}
             </p>
-             <Button asChild size="sm" className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+             <Button asChild size="sm" className="mt-4 bg-app-red hover:bg-red-700 text-white">
                 <Link href="/engineer/create-project">
                     <PlusCircle size={16} className="ms-2" />
                     إنشاء مشروع الآن

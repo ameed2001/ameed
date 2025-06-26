@@ -151,7 +151,7 @@ export default function EngineerSidebar() {
               <AccordionContent className="pl-6 pr-2 pb-1 pt-1">
                 <ul className="space-y-1">
                   {item.links.map((link) => (
-                    <li key={link.href}>
+                    <li key={link.label}>
                       <Link
                         href={link.href}
                         className={cn(

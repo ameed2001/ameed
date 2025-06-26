@@ -114,7 +114,7 @@ export default function ProjectDetailPage() {
 
     if (updatedProjectResult.success) {
         refreshProjectFromDb();
-        toast({ title: "تم تحديث التقدم", description: \`تم تحديث تقدم المشروع إلى \${newProgress}%. \${progressUpdate.notes ? 'الملاحظات: ' + progressUpdate.notes : ''}\` });
+        toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%. ${progressUpdate.notes ? 'الملاحظات: ' + progressUpdate.notes : ''}` });
         setProgressUpdate(prev => ({ ...prev, notes: '' })); 
     } else {
         toast({ title: "خطأ", description: "فشل تحديث التقدم.", variant: "destructive" });
@@ -131,7 +131,7 @@ export default function ProjectDetailPage() {
     const updatedProjectResult = await dbUpdateProject(project.id.toString(), { linkedOwnerEmail: linkedOwnerEmailInput }); 
     if (updatedProjectResult.success) {
         refreshProjectFromDb();
-        toast({ title: "تم ربط المالك", description: \`تم ربط المالك بالبريد الإلكتروني: \${linkedOwnerEmailInput}.\` });
+        toast({ title: "تم ربط المالك", description: `تم ربط المالك بالبريد الإلكتروني: ${linkedOwnerEmailInput}.` });
     } else {
         toast({ title: "خطأ", description: "فشل ربط المالك.", variant: "destructive" });
     }
@@ -155,9 +155,9 @@ export default function ProjectDetailPage() {
     const newPhoto: ProjectPhoto = {
       id: crypto.randomUUID(),
       src: URL.createObjectURL(selectedFile), 
-      alt: \`Uploaded: \${selectedFile.name}\`,
+      alt: `Uploaded: ${selectedFile.name}`,
       dataAiHint: "uploaded image",
-      caption: \`تم الرفع: \${selectedFile.name}\`
+      caption: `تم الرفع: ${selectedFile.name}`
     };
     
     const updatedProjectResult = await dbUpdateProject(project.id.toString(), { 
@@ -169,7 +169,7 @@ export default function ProjectDetailPage() {
         setSelectedFile(null);
         const fileInput = document.getElementById('projectFileUpload') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
-        toast({ title: "تم رفع الملف بنجاح", description: \`\${selectedFile.name} جاهز الآن.\` });
+        toast({ title: "تم رفع الملف بنجاح", description: `${selectedFile.name} جاهز الآن.` });
     } else {
         toast({ title: "خطأ", description: "فشل رفع الملف.", variant: "destructive" });
     }
@@ -183,7 +183,7 @@ export default function ProjectDetailPage() {
         return;
     }
     console.log("Sending message to engineer:", project.engineer, "Message:", engineerMessage);
-    toast({ title: "تم إرسال الرسالة", description: \`تم إرسال رسالتك إلى المهندس \${project.engineer} (محاكاة).\` });
+    toast({ title: "تم إرسال الرسالة", description: `تم إرسال رسالتك إلى المهندس ${project.engineer} (محاكاة).` });
     setEngineerMessage('');
     setIsContactEngineerModalOpen(false);
 };
@@ -201,8 +201,8 @@ export default function ProjectDetailPage() {
     const leftPercentage = (offsetDays / totalProjectDurationDays) * 100;
     const widthPercentage = (durationDays / totalProjectDurationDays) * 100;
     return {
-      left: \`\${Math.max(0, Math.min(100 - widthPercentage, leftPercentage))}%\`,
-      width: \`\${Math.max(2, Math.min(100, widthPercentage))}%\`,
+      left: `${Math.max(0, Math.min(100 - widthPercentage, leftPercentage))}%`,
+      width: `${Math.max(2, Math.min(100, widthPercentage))}%`,
     };
   };
 
@@ -224,7 +224,7 @@ export default function ProjectDetailPage() {
   }
 
   const simulateAction = (actionName: string) => {
-    toast({ title: "محاكاة إجراء", description: \`تم تنفيذ "\${actionName}" (محاكاة).\` });
+    toast({ title: "محاكاة إجراء", description: `تم تنفيذ "${actionName}" (محاكاة).` });
   };
 
   return (
@@ -255,7 +255,7 @@ export default function ProjectDetailPage() {
                   <span><strong>الموقع:</strong> {project.location || 'غير محدد'}</span>
                   <span><strong>المهندس المسؤول:</strong> {project.engineer || 'غير محدد'}</span>
                   <span><strong>العميل:</strong> {project.clientName || 'غير محدد'}</span>
-                  <span><strong>الميزانية التقديرية:</strong> {project.budget ? \`\${project.budget.toLocaleString()} شيكل\` : 'غير محدد'}</span>
+                  <span><strong>الميزانية التقديرية:</strong> {project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</span>
                   <span><strong>تاريخ البدء:</strong> {project.startDate}</span>
                   <span><strong>التسليم المتوقع:</strong> {project.endDate}</span>
               </div>
@@ -267,11 +267,11 @@ export default function ProjectDetailPage() {
                   <Progress value={project.overallProgress} className="h-4 flex-grow" />
                   <span className="font-bold text-app-gold text-lg">{project.overallProgress}%</span>
                 </div>
-                <p className={\`text-sm font-semibold mt-1.5 \${
+                <p className={`text-sm font-semibold mt-1.5 ${
                       project.status === 'مكتمل' ? 'text-green-600' :
                       project.status === 'قيد التنفيذ' ? 'text-yellow-600' :
                       'text-blue-600' 
-                    }\`}>
+                    }`}>
                       الحالة الحالية: {project.status}
                 </p>
               </div>
@@ -328,7 +328,7 @@ export default function ProjectDetailPage() {
                     <div className="space-y-5 relative overflow-x-auto p-1 pb-4 min-h-[200px] bg-gray-50 rounded-lg shadow-inner">
                        <div className="absolute inset-0 grid grid-cols-6 gap-0 pointer-events-none opacity-20">
                           {Array.from({ length: 6 }).map((_, i) => (
-                          <div key={\`month-grid-detail-\${i}\`} className={cn("border-r border-gray-300", i === 5 && "border-r-0")}>
+                          <div key={`month-grid-detail-${i}`} className={cn("border-r border-gray-300", i === 5 && "border-r-0")}>
                               <span className="block p-1 text-xs text-gray-400 text-center">
                               {new Date(projectStartDate.getFullYear(), projectStartDate.getMonth() + Math.floor(i * totalProjectDurationDays / 6 / 30)).toLocaleString('ar', { month: 'short' })}
                               </span>
@@ -346,8 +346,8 @@ export default function ProjectDetailPage() {
                                 task.color
                               )}
                               style={{ left, width, right: 'auto' }}
-                              title={\`\${task.name} (من \${task.startDate} إلى \${task.endDate}) - \${task.status} \${task.progress !== undefined ? task.progress + '%' : ''}\`}
-                              onClick={!isOwnerView ? () => simulateAction(\`تعديل مهمة: \${task.name}\`) : undefined}
+                              title={`${task.name} (من ${task.startDate} إلى ${task.endDate}) - ${task.status} ${task.progress !== undefined ? task.progress + '%' : ''}`}
+                              onClick={!isOwnerView ? () => simulateAction(`تعديل مهمة: ${task.name}`) : undefined}
                             >
                               <span className="font-medium truncate">{task.name}</span>
                               {task.status === 'مكتمل' && <CheckCircle2 size={14} className="text-white/90 shrink-0 ml-1.5"/>}

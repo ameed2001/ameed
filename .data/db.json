@@ -23,7 +23,26 @@
       "profileImage": "https://placehold.co/100x100.png?text=AM"
     }
   ],
-  "projects": [],
+  "projects": [
+    {
+      "name": "فيلا",
+      "location": "بروقين",
+      "description": "جدار استنادي ",
+      "startDate": "2025-07-12",
+      "endDate": "2025-09-27",
+      "status": "مخطط له",
+      "engineer": "Ameed Samara",
+      "clientName": "عميد",
+      "budget": 150000,
+      "linkedOwnerEmail": "mediaplus64@gmail.com",
+      "quantitySummary": "",
+      "id": 1,
+      "overallProgress": 0,
+      "photos": [],
+      "timelineTasks": [],
+      "comments": []
+    }
+  ],
   "settings": {
     "siteName": "المحترف لحساب الكميات ",
     "defaultLanguage": "ar",
@@ -911,6 +930,54 @@
       "level": "WARNING",
       "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
       "timestamp": "2025-06-26T15:31:40.732Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750952100211-e884o",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:35:00.211Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750952108892-0pm0s",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:35:08.892Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750952118112-bwhr0",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:35:18.112Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750952190561-nbq83",
+      "action": "PROJECT_ADD_SUCCESS",
+      "level": "INFO",
+      "message": "Project \"فيلا\" (ID: 1) added.",
+      "timestamp": "2025-06-26T15:36:30.561Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750952459097-jn952",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:40:59.097Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750952473598-mtobn",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:41:13.598Z",
       "user": "System"
     }
   ],

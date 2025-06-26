@@ -20,11 +20,14 @@ export default function OwnerDashboardPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [ownerName, setOwnerName] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const email = localStorage.getItem('userEmail');
+      const name = localStorage.getItem('userName');
       setUserEmail(email);
+      setOwnerName(name);
     }
   }, []);
 
@@ -75,6 +78,15 @@ export default function OwnerDashboardPage() {
 
   return (
     <div className="space-y-8 text-right">
+      <Card className="mb-8 bg-gradient-to-r from-app-red via-red-700 to-red-800 text-white shadow-lg">
+        <CardContent className="p-6">
+          <h2 className="text-3xl font-bold">مرحباً بعودتك، {ownerName || 'أيها المالك'}!</h2>
+          <p className="mt-2 text-red-100">
+            هذه هي لوحة التحكم الخاصة بك. من هنا يمكنك متابعة مشاريعك، عرض التقارير، واستخدام أدواتنا.
+          </p>
+        </CardContent>
+      </Card>
+      
       <Card className="bg-white/95 shadow-xl">
         <CardHeader>
           <div className="flex items-center justify-end gap-3">

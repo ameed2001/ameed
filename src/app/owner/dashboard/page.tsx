@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
-  Gauge, Briefcase, FileText, Camera, Clock, MessageSquare, 
+  Briefcase, FileText, Camera, Clock, MessageSquare, 
   BarChart2, CheckCircle, PlayCircle, Loader2, Eye, Calculator, ArrowLeft
 } from 'lucide-react';
 import { getProjects, type Project } from '@/lib/db';
@@ -68,9 +69,7 @@ export default function OwnerDashboardPage() {
   const totalProjects = projects.length;
   const activeProjects = projects.filter(p => p.status === 'قيد التنفيذ').length;
   const completedProjects = projects.filter(p => p.status === 'مكتمل').length;
-  const averageProgress = totalProjects > 0
-    ? Math.round(projects.reduce((acc, p) => acc + (p.overallProgress || 0), 0) / totalProjects)
-    : 0;
+  
   const recentProjects = projects.sort((a, b) => 
     new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
   ).slice(0, 3);
@@ -80,29 +79,22 @@ export default function OwnerDashboardPage() {
       label: 'إجمالي المشاريع', 
       value: totalProjects, 
       icon: Briefcase, 
-      color: 'text-blue-500',
+      color: 'text-blue-600',
       bgColor: 'bg-blue-100'
     },
     { 
       label: 'المشاريع قيد التنفيذ', 
       value: activeProjects, 
       icon: PlayCircle, 
-      color: 'text-yellow-500',
+      color: 'text-yellow-600',
       bgColor: 'bg-yellow-100'
     },
     { 
       label: 'المشاريع المكتملة', 
       value: completedProjects, 
       icon: CheckCircle, 
-      color: 'text-green-500',
+      color: 'text-green-600',
       bgColor: 'bg-green-100'
-    },
-     { 
-      label: 'متوسط الإنجاز الكلي', 
-      value: `${averageProgress}%`, 
-      icon: Gauge, 
-      color: 'text-purple-500',
-      bgColor: 'bg-purple-100'
     },
   ];
 
@@ -174,17 +166,17 @@ export default function OwnerDashboardPage() {
       </div>
       
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
+          Array.from({ length: 3 }).map((_, i) => (
             <Card key={i} className="shadow-sm">
               <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="flex items-center justify-between">
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-[120px]" />
-                    <Skeleton className="h-6 w-[50px]" />
+                    <Skeleton className="h-8 w-[50px]" />
                   </div>
+                  <Skeleton className="h-14 w-14 rounded-full" />
                 </div>
               </CardContent>
             </Card>
@@ -193,16 +185,14 @@ export default function OwnerDashboardPage() {
           overviewStats.map(stat => {
             const Icon = stat.icon;
             return (
-              <Card key={stat.label} className="shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-full ${stat.bgColor} ${stat.color}`}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600 font-medium">{stat.label}</p>
-                      <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
-                    </div>
+              <Card key={stat.label} className="shadow-sm hover:shadow-md transition-shadow bg-white">
+                <CardContent className="p-6 flex items-center justify-between">
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
+                    <p className="text-3xl font-bold text-gray-800 mt-1">{stat.value}</p>
+                  </div>
+                  <div className={`p-3 rounded-full ${stat.bgColor}`}>
+                    <Icon className={`h-7 w-7 ${stat.color}`} />
                   </div>
                 </CardContent>
               </Card>

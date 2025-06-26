@@ -46,10 +46,12 @@ const baseUnits: Record<string, string> = {
   iron: "كغم",
   concrete: "م³",
   mesh: "لفة",
-  nails: "حبة", // Changed from "كغم"
+  nails: "حبة",
   cuttingDiscs: "قرص",
   cement: "كيس",
-  sand: "رمل"
+  sand: "م³",
+  hasma: "م³",
+  naama: "م³",
 };
 
 const getMaterialDisplayName = (key: string): string => {
@@ -61,7 +63,9 @@ const getMaterialDisplayName = (key: string): string => {
     nails: "مسامير",
     cuttingDiscs: "أقراص قطع",
     cement: "إسمنت",
-    sand: "رمل"
+    sand: "رمل",
+    hasma: "حصمة",
+    naama: "ناعمة",
   };
   return names[key] || key;
 };
@@ -74,7 +78,9 @@ const materialSubTypes: Record<string, string[]> = {
   nails: ["مسمار 6", "مسمار 10", "مسمار فولاذ"],
   cuttingDiscs: ["أقراص قطع حديد", "أقراص قطع خرسانة"],
   cement: ["اسمنت ابيض", "اسمنت اسود"],
-  sand: ["رمل ناعم", "رمل خشن"]
+  sand: ["رمل"],
+  hasma: ["حصمة حبة كبيرة", "حصمة حبة صغيرة"],
+  naama: ["ناعمة"],
 };
 
 export default function CostEstimatorForm() {

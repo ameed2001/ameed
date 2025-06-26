@@ -219,5 +219,3 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
     </aside>
   );
 }
-
-    

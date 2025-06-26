@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -64,7 +63,7 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
       description: "تم تسجيل خروجك بنجاح.",
     });
 
-    router.push("/engineer-login");
+    router.push("/login");
   };
 
   return (

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -16,24 +15,21 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
 import { Loader2, HardHat, ShieldCheck, Home as HomeIcon } from 'lucide-react';
-import { loginUserAction } from '../login/actions';
+import { loginUserAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 
-// ✅ مخطط التحقق باستخدام Zod
 const loginSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
   password_input: z.string().min(1, { message: "كلمة المرور مطلوبة." }),
 });
 
-// ✅ النوع المشتق من Zod
 type EngineerLoginFormValues = z.infer<typeof loginSchema>;
 
-export default function EngineerLoginPage() {
+export default function LoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ تحقق من تسجيل الدخول سابقًا
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -50,7 +46,6 @@ export default function EngineerLoginPage() {
     }
   }, [router, toast]);
 
-  // ✅ استخدام نموذج التسجيل
   const {
     register,
     handleSubmit,
@@ -65,7 +60,6 @@ export default function EngineerLoginPage() {
     }
   });
 
-  // ✅ المعالجة عند الإرسال
   const onSubmit: SubmitHandler<EngineerLoginFormValues> = async (data) => {
     setIsLoading(true);
     try {
@@ -80,18 +74,14 @@ export default function EngineerLoginPage() {
         });
         reset();
 
-        // Store user data in localStorage if login was successful and user data is provided
-        // This will be read by the sidebar on the client side.
         if (result.user) {
           localStorage.setItem('userName', result.user.name);
-          // Assuming user.role, user.email, user.id are also available in result.user if needed
           localStorage.setItem('userRole', result.user.role);
           localStorage.setItem('userEmail', result.user.email);
           localStorage.setItem('userId', result.user.id);
           console.log('Login Page: User Role set in localStorage:', result.user.role);
         }
         
-        // Introduce a small delay to ensure localStorage is set before redirect
         setTimeout(() => {
           if (result.redirectTo) {
             router.push(result.redirectTo);

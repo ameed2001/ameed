@@ -704,6 +704,22 @@
       "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
       "timestamp": "2025-06-26T14:55:42.759Z",
       "user": "System"
+    },
+    {
+      "id": "log-1750949818627-508mv",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T14:56:58.627Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750949829440-482ub",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T14:57:09.440Z",
+      "user": "System"
     }
   ],
   "roles": [

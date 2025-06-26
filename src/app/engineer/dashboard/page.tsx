@@ -148,16 +148,18 @@ export default function EngineerDashboardPage() {
           <StatCard title="المشاريع المكتملة" value={stats.completed} icon={<CheckCircle className="h-5 w-5 text-green-500" />} colorClass="text-green-500" />
         </div>
       )}
-
+      
       {/* Active Projects */}
       <Card className="bg-white/95 shadow-lg">
         <CardHeader>
-          <CardTitle className="flex items-center justify-end gap-2">
-            المشاريع النشطة <FolderKanban className="text-blue-700" />
-          </CardTitle>
-           <CardDescription className="text-right">
-            عرض سريع لآخر المشاريع التي تعمل عليها حالياً.
-          </CardDescription>
+          <div className="flex justify-between items-center">
+            <CardTitle className="flex items-center gap-2">
+              <FolderKanban className="text-blue-700" /> المشاريع النشطة
+            </CardTitle>
+            <CardDescription>
+              عرض سريع لآخر المشاريع التي تعمل عليها حالياً.
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -201,14 +203,16 @@ export default function EngineerDashboardPage() {
           )}
         </CardContent>
       </Card>
-      
+
       {/* Dashboard Action Cards */}
       <Card className="bg-white/95 shadow-lg">
-        <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl font-semibold text-gray-800">
-                أدوات ومهام رئيسية
-            </CardTitle>
-            <CardDescription className="text-gray-600">وصول سريع إلى الأقسام والوظائف الأساسية.</CardDescription>
+        <CardHeader>
+            <div className="flex justify-between items-center">
+                <CardTitle className="text-2xl font-semibold text-gray-800">
+                    أدوات ومهام رئيسية
+                </CardTitle>
+                <CardDescription className="text-gray-600">وصول سريع إلى الأقسام والوظائف الأساسية.</CardDescription>
+            </div>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {dashboardActions.map((action) => {

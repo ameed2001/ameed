@@ -184,9 +184,12 @@ export default function EngineerDashboardPage() {
       <Card className="bg-white/95 shadow-lg">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="flex items-center justify-start gap-2">
-              <FolderKanban className="text-blue-700" /> المشاريع النشطة
-            </CardTitle>
+            <div className="flex items-center justify-start gap-2">
+              <FolderKanban className="text-blue-700" />
+              <CardTitle>
+                المشاريع النشطة
+              </CardTitle>
+            </div>
             <CardDescription>
               عرض سريع لآخر المشاريع التي تعمل عليها حالياً.
             </CardDescription>
@@ -263,9 +266,12 @@ export default function EngineerDashboardPage() {
                                 onClick={() => setSelectedCategory(category.key)}
                             >
                                  <CardHeader className="pb-4">
-                                    <CardTitle className="text-xl font-semibold text-gray-800 flex items-center justify-start gap-2">
-                                        <Icon className={cn("h-6 w-6", category.colorClass)} /> {category.title}
-                                    </CardTitle>
+                                    <div className="flex items-center justify-start gap-2">
+                                        <Icon className={cn("h-6 w-6", category.colorClass)} /> 
+                                        <CardTitle className="text-xl font-semibold text-gray-800">
+                                            {category.title}
+                                        </CardTitle>
+                                    </div>
                                 </CardHeader>
                                  <CardContent className="flex-grow pt-0 pb-4">
                                      <p className="text-gray-600 text-sm">{category.description}</p>
@@ -285,7 +291,7 @@ export default function EngineerDashboardPage() {
                     {activeCategory.links.map((link) => {
                         const Icon = link.icon;
                         return (
-                            <Link href={link.href} key={link.href} className="block">
+                            <Link href={link.href} key={link.label} className="block">
                                 <Card className="card-hover-effect flex flex-col h-full text-right">
                                     <CardContent className="p-6 flex items-center justify-start gap-4">
                                         <Icon className={cn("h-8 w-8", activeCategory.colorClass)} />

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -68,6 +69,9 @@ export default function OwnerDashboardPage() {
   const totalProjects = projects.length;
   const activeProjects = projects.filter(p => p.status === 'قيد التنفيذ').length;
   const completedProjects = projects.filter(p => p.status === 'مكتمل').length;
+  const averageProgress = totalProjects > 0
+    ? Math.round(projects.reduce((acc, p) => acc + (p.overallProgress || 0), 0) / totalProjects)
+    : 0;
   const recentProjects = projects.sort((a, b) => 
     new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
   ).slice(0, 3);
@@ -93,6 +97,13 @@ export default function OwnerDashboardPage() {
       icon: CheckCircle, 
       color: 'text-green-500',
       bgColor: 'bg-green-100'
+    },
+     { 
+      label: 'متوسط الإنجاز الكلي', 
+      value: `${averageProgress}%`, 
+      icon: Gauge, 
+      color: 'text-purple-500',
+      bgColor: 'bg-purple-100'
     },
   ];
 
@@ -169,9 +180,9 @@ export default function OwnerDashboardPage() {
       </div>
       
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {isLoading ? (
-          Array.from({ length: 3 }).map((_, i) => (
+          Array.from({ length: 4 }).map((_, i) => (
             <Card key={i} className="shadow-sm">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
@@ -298,7 +309,7 @@ export default function OwnerDashboardPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                      لا توجد مشاريع لعرضها حالياً. ابدأ بإضافة مشروع جديد.
+                      لا توجد مشاريع لعرضها حالياً.
                     </TableCell>
                   </TableRow>
                 )}

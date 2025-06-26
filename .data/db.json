@@ -59,6 +59,24 @@
       "photos": [],
       "timelineTasks": [],
       "comments": []
+    },
+    {
+      "name": "فيلا",
+      "location": "على طريق كفر الديك",
+      "description": "يبيبيبيسبس",
+      "startDate": "2025-09-27",
+      "endDate": "2026-09-27",
+      "status": "مخطط له",
+      "engineer": "Ameed Samara",
+      "clientName": "عميد",
+      "budget": 55555555,
+      "linkedOwnerEmail": "mediaplus64@gmail.com",
+      "quantitySummary": "",
+      "id": 3,
+      "overallProgress": 0,
+      "photos": [],
+      "timelineTasks": [],
+      "comments": []
     }
   ],
   "settings": {
@@ -1036,6 +1054,38 @@
       "level": "INFO",
       "message": "Project \"بيت\" (ID: 2) added.",
       "timestamp": "2025-06-26T15:48:38.181Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750953013704-1905u",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:50:13.704Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750953015612-4nkan",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:50:15.612Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750953050759-c2r3i",
+      "action": "PROJECT_ADD_SUCCESS",
+      "level": "INFO",
+      "message": "Project \"فيلا\" (ID: 3) added.",
+      "timestamp": "2025-06-26T15:50:50.759Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750953082975-dy6v9",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempted with unknown user ID/Email: Ameed Samara",
+      "timestamp": "2025-06-26T15:51:22.975Z",
       "user": "System"
     }
   ],

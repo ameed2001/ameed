@@ -399,18 +399,18 @@ export interface GetProjectsResult {
   message?: string;
 }
 
-export async function getProjects(userEmailOrId: string): Promise<GetProjectsResult> {
+export async function getProjects(userIdentifier: string): Promise<GetProjectsResult> {
   try {
     const db = await readDb();
-    const user = db.users.find(u => u.email === userEmailOrId || u.id === userEmailOrId);
+    const user = db.users.find(u => u.email === userIdentifier || u.id === userIdentifier || u.name === userIdentifier);
 
     // Admin can see all projects
-    if (userEmailOrId === 'admin-id' || user?.role === 'ADMIN') {
+    if (userIdentifier === 'admin-id' || user?.role === 'ADMIN') {
       return { success: true, projects: db.projects };
     }
 
     if (!user) {
-        await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch attempted with unknown user ID/Email: ${userEmailOrId}`);
+        await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch attempted with unknown user identifier: ${userIdentifier}`);
         return { success: true, projects: [] }; // Return empty array if user not found
     }
 
@@ -418,14 +418,12 @@ export async function getProjects(userEmailOrId: string): Promise<GetProjectsRes
     if (user.role === 'OWNER') {
       filteredProjects = db.projects.filter(p => p.linkedOwnerEmail === user.email);
     } else if (user.role === 'ENGINEER') {
-      // The engineer's name is stored in the project's 'engineer' field.
-      // This is a weak link; using an ID would be better in a real-world scenario.
       filteredProjects = db.projects.filter(p => p.engineer === user.name);
     }
 
     return { success: true, projects: filteredProjects };
   } catch (error: any) {
-    await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Error fetching projects for ${userEmailOrId}: ${error.message || String(error)}`);
+    await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Error fetching projects for ${userIdentifier}: ${error.message || String(error)}`);
     return { success: false, message: "فشل تحميل المشاريع.", projects: [] };
   }
 }

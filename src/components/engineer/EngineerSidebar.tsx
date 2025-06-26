@@ -12,7 +12,7 @@ import {
   FolderKanban,
   PlusSquare,
   Archive,
-  ListPlus,
+  Layers,
   ClipboardCheck,
   Calculator,
   AreaChart,
@@ -21,7 +21,7 @@ import {
   FileCog,
   BarChartHorizontal,
   Upload,
-  Layers,
+  ListTree,
   UserRoundCog,
   Home,
 } from "lucide-react";
@@ -39,50 +39,46 @@ const sidebarSections = [
   {
     title: "المشاريع",
     icon: FolderKanban,
+    colorClass: "text-blue-500",
     defaultOpen: true,
     links: [
       { href: "/engineer/create-project", label: "إنشاء مشروع جديد", icon: PlusSquare },
       { href: "/engineer/projects", label: "إدارة المشاريع", icon: FolderKanban },
-      { href: "#", label: "أرشفة مشروع", icon: Archive, isAction: true },
+      { href: "#", label: "المشاريع المؤرشفة", icon: Archive, isAction: true },
     ],
   },
   {
-    title: "العناصر الإنشائية",
-    icon: Layers,
-    links: [
-      { href: "#", label: "إدخال تفاصيل العناصر", icon: ListPlus, isAction: true },
-      { href: "#", label: "التحقق من صحة البيانات", icon: ClipboardCheck, isAction: true },
-    ],
-  },
-  {
-    title: "حساب الكميات",
+    title: "الكميات والمواد",
     icon: Calculator,
+    colorClass: "text-green-500",
     links: [
-      { href: "/", label: "حساب كميات المواد", icon: Calculator },
-      { href: "#", label: "عرض تقارير الكميات", icon: AreaChart, isAction: true },
-      { href: "#", label: "تخصيص عرض التقارير", icon: Settings2, isAction: true },
+      { href: "#", label: "إدخال العناصر الإنشائية", icon: Layers, isAction: true },
+      { href: "/", label: "حساب الكميات", icon: Calculator },
+      { href: "#", label: "عرض التقارير", icon: AreaChart, isAction: true },
       { href: "#", label: "تصدير التقارير", icon: FileUp, isAction: true },
-      { href: "#", label: "توليد بيانات التقرير", icon: FileCog, isAction: true },
     ],
   },
   {
-    title: "تقدم البناء",
+    title: "سير العمل",
     icon: BarChartHorizontal,
+    colorClass: "text-purple-500",
     links: [
+      { href: "#", label: "تحديد مراحل الإنشاء", icon: ListTree, isAction: true },
       { href: "/engineer/update-progress", label: "تحديث التقدم", icon: BarChartHorizontal },
-      { href: "#", label: "ملاحظات التقدم", icon: ListPlus, isAction: true },
       { href: "#", label: "رفع صور/فيديوهات", icon: Upload, isAction: true },
-      { href: "#", label: "تحديد مراحل المشروع", icon: Layers, isAction: true },
     ],
   },
   {
-    title: "ربط أصحاب المشاريع",
-    icon: UserRoundCog,
+    title: "الإعدادات",
+    icon: Settings2,
+    colorClass: "text-gray-500",
     links: [
-       { href: "#", label: "ربط المالك بمشروع", icon: UserRoundCog, isAction: true },
-    ]
-  }
+      { href: "/profile", label: "الملف الشخصي", icon: UserCircle },
+      { href: "#", label: "إعدادات الحساب", icon: Settings2, isAction: true },
+    ],
+  },
 ];
+
 
 interface EngineerSidebarProps {
   isOpen: boolean;
@@ -105,6 +101,7 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
     localStorage.removeItem("userRole");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userId");
+    localStorage.removeItem("engineerSidebarState");
     toast({
       title: "تم تسجيل الخروج",
       description: "تم تسجيل خروجك بنجاح.",
@@ -167,7 +164,7 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
                   !isOpen && "justify-center"
               )}>
                 <div className="flex items-center gap-3">
-                  <section.icon className="h-5 w-5 text-app-gold" />
+                  <section.icon className={cn("h-5 w-5", section.colorClass)} />
                   {isOpen && <span className="text-base font-semibold">{section.title}</span>}
                 </div>
               </AccordionTrigger>
@@ -181,7 +178,7 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
                           <button
                             onClick={() => handleActionClick(link.label)}
                             className={cn(
-                              "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                              "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 text-right",
                               "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                             )}
                           >
@@ -192,7 +189,7 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
                           <Link
                             href={link.href}
                             className={cn(
-                              "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                              "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 text-right",
                               isActive
                                 ? "bg-primary text-primary-foreground"
                                 : "text-foreground/80 hover:bg-muted/80"
@@ -216,13 +213,13 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
         <button
           onClick={handleLogout}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full",
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full text-right",
             "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white",
             !isOpen && "justify-center py-3"
           )}
           title={!isOpen ? "تسجيل الخروج" : undefined}
         >
-          <LogOut size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0" />
+          <LogOut size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0"/>
           {isOpen && <span className="truncate">تسجيل الخروج</span>}
         </button>
       </div>

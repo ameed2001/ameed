@@ -10,75 +10,46 @@ import {
   UserCircle,
   LayoutDashboard,
   FolderKanban,
-  PlusSquare,
-  Archive,
-  Layers,
-  ClipboardCheck,
-  Calculator,
-  AreaChart,
   Settings2,
-  FileUp,
-  FileCog,
-  BarChartHorizontal,
-  Upload,
-  ListTree,
-  UserRoundCog,
   Home,
+  Calculator,
+  Briefcase,
+  CheckCircle2,
+  AlertTriangle,
+  Mail,
+  HelpCircle,
+  Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import type { Project } from "@/lib/db";
+import { getProjects } from "@/lib/db";
 
-const sidebarSections = [
-  {
-    title: "المشاريع",
-    icon: FolderKanban,
-    colorClass: "text-blue-500",
-    defaultOpen: true,
-    links: [
-      { href: "/engineer/create-project", label: "إنشاء مشروع جديد", icon: PlusSquare },
-      { href: "/engineer/projects", label: "إدارة المشاريع", icon: FolderKanban },
-      { href: "#", label: "المشاريع المؤرشفة", icon: Archive, isAction: true },
-    ],
-  },
-  {
-    title: "الكميات والمواد",
-    icon: Calculator,
-    colorClass: "text-green-500",
-    links: [
-      { href: "#", label: "إدخال العناصر الإنشائية", icon: Layers, isAction: true },
-      { href: "/", label: "حساب الكميات", icon: Calculator },
-      { href: "#", label: "عرض التقارير", icon: AreaChart, isAction: true },
-      { href: "#", label: "تصدير التقارير", icon: FileUp, isAction: true },
-    ],
-  },
-  {
-    title: "سير العمل",
-    icon: BarChartHorizontal,
-    colorClass: "text-purple-500",
-    links: [
-      { href: "#", label: "تحديد مراحل الإنشاء", icon: ListTree, isAction: true },
-      { href: "/engineer/update-progress", label: "تحديث التقدم", icon: BarChartHorizontal },
-      { href: "#", label: "رفع صور/فيديوهات", icon: Upload, isAction: true },
-    ],
-  },
-  {
-    title: "الإعدادات",
-    icon: Settings2,
-    colorClass: "text-gray-500",
-    links: [
-      { href: "/profile", label: "الملف الشخصي", icon: UserCircle },
-      { href: "#", label: "إعدادات الحساب", icon: Settings2, isAction: true },
-    ],
-  },
+interface StatCardProps {
+  label: string;
+  value: number;
+  icon: React.ElementType;
+  color: string;
+}
+
+const StatCard = ({ label, value, icon: Icon, color }: StatCardProps) => (
+  <div className="bg-muted/40 p-3 rounded-md text-center shadow-sm flex-1">
+    <Icon className={cn("h-6 w-6 mx-auto mb-1.5", color)} />
+    <div className="text-xl font-bold text-foreground">{value}</div>
+    <div className="text-xs text-muted-foreground truncate">{label}</div>
+  </div>
+);
+
+const navItems = [
+  { href: "/", label: "الرئيسية للموقع", icon: Home },
+  { href: "/engineer/dashboard", label: "لوحة التحكم", icon: LayoutDashboard },
+  { href: "/engineer/projects", label: "إدارة المشاريع", icon: FolderKanban },
+  { href: "/", label: "حساب الكميات", icon: Calculator },
+  { href: "/profile", label: "الملف الشخصي", icon: Settings2 },
+  { href: "/help", label: "المساعدة", icon: HelpCircle },
+  { href: "/contact", label: "تواصل معنا", icon: Phone },
 ];
-
 
 interface EngineerSidebarProps {
   isOpen: boolean;
@@ -90,10 +61,23 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
   const router = useRouter();
   const { toast } = useToast();
   const [engineerName, setEngineerName] = useState("المهندس");
+  const [stats, setStats] = useState({ active: 0, completed: 0 });
 
   useEffect(() => {
-    const storedName = localStorage.getItem("userName");
-    if (storedName) setEngineerName(storedName);
+    const name = localStorage.getItem("userName");
+    const email = localStorage.getItem("userEmail");
+    if (name) setEngineerName(name);
+
+    async function fetchStats() {
+      if (!email) return;
+      const result = await getProjects(email);
+      if (result.success && result.projects) {
+        const active = result.projects.filter(p => p.status === "قيد التنفيذ" || p.status === "مخطط له").length;
+        const completed = result.projects.filter(p => p.status === "مكتمل").length;
+        setStats({ active, completed });
+      }
+    }
+    fetchStats();
   }, []);
 
   const handleLogout = () => {
@@ -102,21 +86,16 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userId");
     localStorage.removeItem("engineerSidebarState");
-    toast({
-      title: "تم تسجيل الخروج",
-      description: "تم تسجيل خروجك بنجاح.",
-    });
+    toast({ title: "تم تسجيل الخروج", description: "تم تسجيل خروجك بنجاح." });
     router.push("/login");
   };
 
-  const handleActionClick = (label: string) => {
-    toast({
-      title: "ميزة قيد التطوير",
-      description: `خيار "${label}" سيتم تفعيله داخل صفحات إدارة المشاريع قريباً.`,
-    });
-  };
-
-  const defaultActiveItems = sidebarSections.filter(s => s.defaultOpen).map(s => s.title);
+  const statCards: StatCardProps[] = [
+    { label: "المشاريع النشطة", value: stats.active, icon: Briefcase, color: "text-amber-500" },
+    { label: "الرسائل الجديدة", value: 0, icon: Mail, color: "text-blue-500" },
+    { label: "المشاريع المكتملة", value: stats.completed, icon: CheckCircle2, color: "text-green-500" },
+    { label: "المهام المتأخرة", value: 0, icon: AlertTriangle, color: "text-red-500" },
+  ];
 
   return (
     <aside
@@ -128,8 +107,8 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
       <div className="p-4 flex justify-between items-center border-b border-border h-[70px] flex-shrink-0">
         {isOpen && (
           <Link href="/engineer/dashboard" className="flex items-center gap-2 overflow-hidden">
-            <Home className="h-8 w-8 text-app-gold flex-shrink-0" />
-            <h2 className="text-lg font-bold text-app-red truncate">لوحة تحكم المهندس</h2>
+            <UserCircle className="h-8 w-8 text-app-gold flex-shrink-0" />
+            <h2 className="text-lg font-bold text-app-red truncate">مرحباً، {engineerName}</h2>
           </Link>
         )}
         <button
@@ -140,86 +119,58 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
           {isOpen ? <ChevronLeft size={24} /> : <MenuIcon size={24} />}
         </button>
       </div>
-      
+
       {isOpen && (
-        <div className="text-center p-3 border-b border-border">
-          <UserCircle className="h-10 w-10 text-app-gold mx-auto mb-2" />
-          <h2 className="text-base font-bold truncate">مرحباً، {engineerName}</h2>
+        <div className="p-3 border-b border-border flex-shrink-0">
+          <div className="grid grid-cols-2 gap-2">
+            {statCards.map(stat => <StatCard key={stat.label} {...stat} />)}
+          </div>
         </div>
       )}
 
       <nav className="flex-grow overflow-y-auto">
-        <Accordion type="multiple" className="w-full p-2" defaultValue={defaultActiveItems}>
-          <Link href="/engineer/dashboard" className={cn(
-             "flex items-center gap-3 w-full text-right py-2.5 px-2 hover:no-underline hover:bg-muted rounded-md font-semibold",
-             !isOpen && "justify-center"
-            )}>
-             <LayoutDashboard className="h-5 w-5 text-app-gold" />
-             {isOpen && <span>الرئيسية (Dashboard)</span>}
-          </Link>
-          {sidebarSections.map((section) => (
-            <AccordionItem value={section.title} key={section.title} className="border-b-0">
-              <AccordionTrigger className={cn(
-                  "py-2.5 px-2 hover:no-underline hover:bg-muted rounded-md",
-                  !isOpen && "justify-center"
-              )}>
-                <div className="flex items-center gap-3">
-                  <section.icon className={cn("h-5 w-5", section.colorClass)} />
-                  {isOpen && <span className="text-base font-semibold">{section.title}</span>}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-2">
-                <ul className={cn("space-y-1", isOpen ? "pr-4 border-r-2 border-app-gold/20" : "hidden")}>
-                  {section.links.map((link) => {
-                    const isActive = pathname === link.href;
-                    return (
-                      <li key={link.label}>
-                        {link.isAction ? (
-                          <button
-                            onClick={() => handleActionClick(link.label)}
-                            className={cn(
-                              "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 text-right",
-                              "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                            )}
-                          >
-                            <link.icon className="h-4 w-4" />
-                            <span className="truncate">{link.label}</span>
-                          </button>
-                        ) : (
-                          <Link
-                            href={link.href}
-                            className={cn(
-                              "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 text-right",
-                              isActive
-                                ? "bg-primary text-primary-foreground"
-                                : "text-foreground/80 hover:bg-muted/80"
-                            )}
-                          >
-                            <link.icon className="h-4 w-4" />
-                            <span className="truncate">{link.label}</span>
-                          </Link>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <ul className="space-y-1 p-2">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            const isContact = item.href === '/contact';
+            const LinkComponent = isContact ? 'a' : Link;
+            const linkProps = isContact 
+              ? { href: 'https://forms.gle/WaXPkD8BZMQ7pVev6', target: '_blank', rel: 'noopener noreferrer' } 
+              : { href: item.href };
+
+            return (
+              <li key={item.label}>
+                <LinkComponent
+                  {...linkProps}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
+                    !isOpen && "justify-center py-3",
+                    isActive
+                      ? "bg-app-gold text-primary-foreground shadow-md"
+                      : "text-foreground/80 hover:bg-muted"
+                  )}
+                  title={!isOpen ? item.label : undefined}
+                >
+                  <item.icon size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0" />
+                  {isOpen && <span className="truncate">{item.label}</span>}
+                </LinkComponent>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
       <div className="mt-auto p-3 border-t border-border flex-shrink-0">
         <button
           onClick={handleLogout}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full text-right",
-            "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white",
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full text-left",
+            "bg-red-700/10 text-red-600 hover:bg-red-700/20",
             !isOpen && "justify-center py-3"
           )}
           title={!isOpen ? "تسجيل الخروج" : undefined}
         >
-          <LogOut size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0"/>
+          <LogOut size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0" />
           {isOpen && <span className="truncate">تسجيل الخروج</span>}
         </button>
       </div>

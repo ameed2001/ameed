@@ -4,10 +4,9 @@
 import Link from 'next/link';
 import { 
     Home, 
-    UserCircle as DashboardIcon, 
+    UserCircle,
     Briefcase, 
     Settings, 
-    Info, 
     HelpCircle, 
     Phone, 
     LogOut, 
@@ -16,37 +15,35 @@ import {
     Mail,
     AlertTriangle,
     CheckCircle2,
-    Wrench, 
-    PieChart, 
-    Clock, 
-    ListTree, 
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
+import { getProjects } from '@/lib/db';
+
+interface StatCardProps {
+  label: string;
+  value: number;
+  icon: React.ElementType;
+  color: string;
+}
+
+const StatCard = ({ label, value, icon: Icon, color }: StatCardProps) => (
+  <div className="bg-muted/40 p-3 rounded-md text-center shadow-sm flex-1">
+    <Icon className={cn("h-6 w-6 mx-auto mb-1.5", color)} />
+    <div className="text-xl font-bold text-foreground">{value}</div>
+    <div className="text-xs text-muted-foreground truncate">{label}</div>
+  </div>
+);
 
 const ownerNavItems = [
   { href: '/', label: 'الرئيسية للموقع', icon: Home },
-  { href: '/owner/dashboard', label: 'لوحة التحكم', icon: DashboardIcon },
-  { href: '/owner/projects', label: 'مشاريعي', icon: Briefcase }, 
-  { href: '/owner-account/quantity-reports', label: 'تقارير الكميات', icon: PieChart }, 
-  { href: '/owner-account/comments-inquiries', label: 'التعليقات والاستفسارات', icon: Mail }, 
-  { href: '/owner-account/project-progress', label: 'تقدم المشروع', icon: Briefcase }, 
-  { href: '/owner-account/project-timeline', label: 'الجدول الزمني للمشروع', icon: Clock }, 
-  { href: '/owner-account/project-stages', label: 'مراحل المشروع', icon: ListTree }, 
+  { href: '/owner/dashboard', label: 'لوحة التحكم', icon: UserCircle },
+  { href: '/owner/projects', label: 'مشاريعي', icon: Briefcase },
   { href: '/profile', label: 'الملف الشخصي', icon: Settings },
-  { href: '/owner/other-tools', label: 'أدوات أخرى', icon: Wrench }, 
-  { href: '/about', label: 'عن الموقع', icon: Info },
   { href: '/help', label: 'المساعدة', icon: HelpCircle },
   { href: '/contact', label: 'تواصل معنا', icon: Phone },
-];
-
-const sidebarStats = [
-  { label: "المشاريع النشطة", value: 0, icon: Briefcase, color: "text-amber-400" },
-  { label: "الرسائل الجديدة", value: 0, icon: Mail, color: "text-blue-400" },
-  { label: "المهام المتأخرة", value: 0, icon: AlertTriangle, color: "text-red-400" },
-  { label: "المشاريع المكتملة", value: 0, icon: CheckCircle2, color: "text-green-400" },
 ];
 
 interface OwnerSidebarProps {
@@ -58,51 +55,57 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const [isClient, setIsClient] = useState(false);
-  const [ownerName, setOwnerName] = useState("المالك"); 
+  const [ownerName, setOwnerName] = useState("المالك");
+  const [stats, setStats] = useState({ active: 0, completed: 0 });
 
   useEffect(() => {
-    setIsClient(true); 
-  }, []);
+    const name = localStorage.getItem('userName');
+    const email = localStorage.getItem('userEmail');
+    if (name) setOwnerName(name);
 
-  useEffect(() => {
-    if (isClient) { 
-      const storedUserName = localStorage.getItem('userName');
-      if (storedUserName) {
-        setOwnerName(storedUserName);
-      }
+    async function fetchStats() {
+        if (!email) return;
+        const result = await getProjects(email);
+        if (result.success && result.projects) {
+            const active = result.projects.filter(p => p.status === "قيد التنفيذ" || p.status === "مخطط له").length;
+            const completed = result.projects.filter(p => p.status === "مكتمل").length;
+            setStats({ active, completed });
+        }
     }
-  }, [isClient]); 
+    fetchStats();
+  }, []); 
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('userName');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('ownerSidebarState');
-    }
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('ownerSidebarState');
     toast({
       title: "تم تسجيل الخروج",
       description: "تم تسجيل خروجك بنجاح.",
-      variant: "default",
     });
-    router.push('/owner-login'); // Redirect to owner login page
+    router.push('/owner-login');
   };
+
+  const statCards: StatCardProps[] = [
+    { label: "المشاريع النشطة", value: stats.active, icon: Briefcase, color: "text-amber-500" },
+    { label: "الرسائل الجديدة", value: 0, icon: Mail, color: "text-blue-500" },
+    { label: "المشاريع المكتملة", value: stats.completed, icon: CheckCircle2, color: "text-green-500" },
+    { label: "المهام المتأخرة", value: 0, icon: AlertTriangle, color: "text-red-500" },
+  ];
 
   return (
     <aside className={cn(
-      "bg-card text-foreground shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0 border-r", 
+      "bg-card text-foreground shadow-xl flex flex-col sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0 border-l", 
       isOpen ? "w-72" : "w-20"
     )}>
       <div className="p-4 flex justify-between items-center border-b border-border h-[70px] flex-shrink-0">
-        {isOpen ? (
-          <div className="flex items-center gap-2 overflow-hidden">
-            <DashboardIcon className="h-8 w-8 text-app-gold flex-shrink-0" />
-            <h2 className="text-lg font-bold text-app-red truncate">لوحة التحكم</h2>
-          </div>
-        ) : (
-          <DashboardIcon className="h-8 w-8 text-app-gold mx-auto" />
+        {isOpen && (
+          <Link href="/owner/dashboard" className="flex items-center gap-2 overflow-hidden">
+            <UserCircle className="h-8 w-8 text-app-gold flex-shrink-0" />
+            <h2 className="text-lg font-bold text-app-red truncate">مرحباً، {ownerName}</h2>
+          </Link>
         )}
         <button 
           onClick={onToggle}
@@ -112,30 +115,11 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
           {isOpen ? <ChevronLeft size={24} /> : <MenuIcon size={24} />}
         </button>
       </div>
-
-      {isOpen && (
-        <div className={cn(
-          "text-center mb-2 p-3 border-b border-border flex-shrink-0"
-        )}>
-          <h2 className="text-lg font-bold text-foreground truncate">مرحباً، {isClient ? ownerName : "المالك"}</h2>
-          <p className="text-xs text-muted-foreground">لوحة تحكم المالك</p>
-        </div>
-      )}
-
+      
       {isOpen && (
         <div className="p-3 border-b border-border flex-shrink-0">
-          <h3 className="text-sm font-semibold text-foreground mb-2 px-1 text-right">نظرة عامة سريعة</h3>
           <div className="grid grid-cols-2 gap-2">
-            {sidebarStats.map(stat => {
-              const IconComponent = stat.icon;
-              return (
-                <div key={stat.label} className="bg-muted/40 p-2 rounded-md text-center">
-                  <IconComponent className={cn("h-5 w-5 mx-auto mb-1", stat.color)} />
-                  <div className="text-xs text-muted-foreground truncate">{stat.label}</div>
-                  <div className="text-lg font-bold text-foreground">{stat.value}</div>
-                </div>
-              );
-            })}
+            {statCards.map(stat => <StatCard key={stat.label} {...stat} />)}
           </div>
         </div>
       )}
@@ -144,44 +128,47 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         <ul className="space-y-1 p-2">
           {ownerNavItems.map((item) => {
             const isActive = pathname === item.href;
+            const isContact = item.href === '/contact';
+            const LinkComponent = isContact ? 'a' : Link;
+            const linkProps = isContact 
+              ? { href: 'https://forms.gle/WaXPkD8BZMQ7pVev6', target: '_blank', rel: 'noopener noreferrer' } 
+              : { href: item.href };
             return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
+              <li key={item.label}>
+                <LinkComponent
+                  {...linkProps}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out",
                     !isOpen && "justify-center py-3",
                     isActive
-                      ? "bg-app-gold text-gray-900 shadow-md" 
-                      : "text-foreground/80 hover:bg-app-gold hover:text-gray-900" 
+                      ? "bg-app-gold text-primary-foreground shadow-md"
+                      : "text-foreground/80 hover:bg-muted"
                   )}
                   title={!isOpen ? item.label : undefined}
                 >
                   <item.icon size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0" />
                   {isOpen && <span className="truncate">{item.label}</span>}
-                </Link>
+                </LinkComponent>
               </li>
             );
           })}
         </ul>
       </nav>
 
-      {isClient && ( 
-        <div className="mt-auto p-3 border-t border-border flex-shrink-0">
-          <button
-            onClick={handleLogout}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out w-full",
-              "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white", 
-              !isOpen && "justify-center py-3"
-            )}
-            title={!isOpen ? "تسجيل الخروج" : undefined}
-          >
-            <LogOut size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0"/>
-            {isOpen && <span className="truncate">تسجيل الخروج</span>}
-          </button>
-        </div>
-      )}
+      <div className="mt-auto p-3 border-t border-border flex-shrink-0">
+        <button
+          onClick={handleLogout}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full text-left",
+            "bg-red-700/10 text-red-600 hover:bg-red-700/20",
+            !isOpen && "justify-center py-3"
+          )}
+          title={!isOpen ? "تسجيل الخروج" : undefined}
+        >
+          <LogOut size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0"/>
+          {isOpen && <span className="truncate">تسجيل الخروج</span>}
+        </button>
+      </div>
     </aside>
   );
 }

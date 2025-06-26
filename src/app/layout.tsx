@@ -7,6 +7,9 @@ import InitialLoader from '@/components/loading/InitialLoader';
 export const metadata: Metadata = {
   title: 'المحترف لحساب الكميات',
   description: 'تطبيق لحساب كميات مواد البناء وتتبع تقدم المشاريع الإنشائية',
+  icons: {
+    icon: 'https://i.imgur.com/79bO3U2.png',
+  },
 };
 
 export default function RootLayout({

@@ -100,7 +100,7 @@ export default function CreateProjectPage() {
       <Card className="max-w-2xl mx-auto bg-white/95 shadow-xl">
         <CardHeader className="text-center">
           <PlusCircle className="mx-auto h-16 w-16 text-app-gold mb-3" />
-          <CardTitle className="text-3xl font-bold text-app-red">إنشاء مشروع إنشاء جديد</CardTitle>
+          <CardTitle className="text-3xl font-bold text-app-red">إنشاء مشروع بناء جديد</CardTitle>
           <CardDescription className="text-gray-600 mt-1">
             أدخل تفاصيل المشروع الإنشائي الجديد للبدء في إدارته وحساب كمياته.
           </CardDescription>

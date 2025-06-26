@@ -3,38 +3,84 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
-  House,
-  Wrench,
-  Plus,
-  Settings,
   LogOut,
   ChevronLeft,
   Menu as MenuIcon,
   UserCircle,
   LayoutDashboard,
-  AlertTriangle,
-  Camera,
-  Layers,
+  FolderKanban,
+  PlusSquare,
+  Archive,
+  ListPlus,
+  ClipboardCheck,
   Calculator,
+  AreaChart,
+  Settings2,
+  FileUp,
+  FileSymlink,
+  BarChartHorizontal,
+  FileCog,
+  Upload,
+  Layers,
+  UserRoundCog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-const engineerNavItems = [
-  { href: '/engineer/dashboard', label: 'لوحة التحكم', icon: LayoutDashboard },
-  { href: '/', label: 'حساب الكميات', icon: Calculator },
-  { href: '/engineer/create-project', label: 'إنشاء مشروع جديد', icon: Plus },
-  { href: '/engineer/projects', label: 'إدارة المشاريع', icon: Wrench },
-  { href: '/profile', label: 'الملف الشخصي', icon: Settings },
-];
-
-const sidebarStats = [
-  { label: "المشاريع النشطة", value: 5, icon: Wrench, color: "text-amber-400" },
-  { label: "المهام المتأخرة", value: 3, icon: AlertTriangle, color: "text-red-400" },
-  { label: "الوسائط الجديدة", value: 12, icon: Camera, color: "text-blue-400" },
-  { label: "العناصر المعلقة", value: 7, icon: Layers, color: "text-purple-400" },
+const sidebarSections = [
+  {
+    title: "المشاريع",
+    icon: FolderKanban,
+    links: [
+      { href: "/engineer/create-project", label: "إنشاء مشروع جديد", icon: PlusSquare },
+      { href: "/engineer/projects", label: "إدارة المشاريع", icon: FolderKanban },
+      { href: "#", label: "أرشفة مشروع", icon: Archive, isAction: true },
+    ],
+  },
+  {
+    title: "العناصر الإنشائية",
+    icon: Layers,
+    links: [
+      { href: "#", label: "إدخال تفاصيل العناصر", icon: ListPlus, isAction: true },
+      { href: "#", label: "التحقق من صحة البيانات", icon: ClipboardCheck, isAction: true },
+    ],
+  },
+  {
+    title: "حساب الكميات",
+    icon: Calculator,
+    links: [
+      { href: "/", label: "حساب كميات المواد", icon: Calculator },
+      { href: "#", label: "عرض تقارير الكميات", icon: AreaChart, isAction: true },
+      { href: "#", label: "تخصيص عرض التقارير", icon: Settings2, isAction: true },
+      { href: "#", label: "تصدير التقارير", icon: FileUp, isAction: true },
+      { href: "#", label: "توليد بيانات التقرير", icon: FileCog, isAction: true },
+    ],
+  },
+  {
+    title: "تقدم البناء",
+    icon: BarChartHorizontal,
+    links: [
+      { href: "/engineer/update-progress", label: "تحديث التقدم", icon: BarChartHorizontal },
+      { href: "#", label: "ملاحظات التقدم", icon: ListPlus, isAction: true },
+      { href: "#", label: "رفع صور/فيديوهات", icon: Upload, isAction: true },
+      { href: "#", label: "تحديد مراحل المشروع", icon: Layers, isAction: true },
+    ],
+  },
+  {
+    title: "ربط أصحاب المشاريع",
+    icon: UserRoundCog,
+    links: [
+       { href: "#", label: "ربط المالك بمشروع", icon: FileSymlink, isAction: true },
+    ]
+  }
 ];
 
 interface EngineerSidebarProps {
@@ -46,7 +92,6 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-
   const [engineerName, setEngineerName] = useState("المهندس");
 
   useEffect(() => {
@@ -59,13 +104,18 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
     localStorage.removeItem("userRole");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userId");
-
     toast({
       title: "تم تسجيل الخروج",
       description: "تم تسجيل خروجك بنجاح.",
     });
-
     router.push("/login");
+  };
+
+  const handleActionClick = (label: string) => {
+    toast({
+      title: "ميزة قيد التطوير",
+      description: `خيار "${label}" سيتم تفعيله داخل صفحات إدارة المشاريع قريباً.`,
+    });
   };
 
   return (
@@ -75,17 +125,13 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
         isOpen ? "w-72" : "w-20"
       )}
     >
-      {/* الرأس */}
       <div className="p-4 flex justify-between items-center border-b border-border h-[70px] flex-shrink-0">
-        {isOpen ? (
-          <div className="flex items-center gap-2">
-            <UserCircle className="h-8 w-8 text-app-gold" />
-            <h2 className="text-lg font-bold text-app-red truncate">لوحة المهندس</h2>
-          </div>
-        ) : (
-          <UserCircle className="h-8 w-8 text-app-gold mx-auto" />
+        {isOpen && (
+          <Link href="/engineer/dashboard" className="flex items-center gap-2 overflow-hidden">
+            <LayoutDashboard className="h-8 w-8 text-app-gold flex-shrink-0" />
+            <h2 className="text-lg font-bold text-app-red truncate">لوحة تحكم المهندس</h2>
+          </Link>
         )}
-
         <button
           onClick={onToggle}
           className="text-muted-foreground hover:text-foreground p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-app-gold"
@@ -94,58 +140,68 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
           {isOpen ? <ChevronLeft size={24} /> : <MenuIcon size={24} />}
         </button>
       </div>
-
-      {/* المعلومات والإحصائيات */}
+      
       {isOpen && (
-        <>
-          <div className="text-center p-3 border-b border-border">
-            <h2 className="text-lg font-bold truncate">مرحباً، {engineerName}</h2>
-            <p className="text-xs text-muted-foreground">لوحة تحكم المهندس</p>
-          </div>
-
-          <div className="p-3 border-b border-border">
-            <h3 className="text-sm font-semibold text-foreground mb-2 text-right">نظرة عامة سريعة</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {sidebarStats.map((stat) => (
-                <div key={stat.label} className="bg-muted/40 p-2 rounded-md text-center">
-                  <stat.icon className={cn("h-5 w-5 mx-auto mb-1", stat.color)} />
-                  <div className="text-xs text-muted-foreground truncate">{stat.label}</div>
-                  <div className="text-lg font-bold">{stat.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </>
+        <div className="text-center p-3 border-b border-border">
+          <UserCircle className="h-10 w-10 text-app-gold mx-auto mb-2" />
+          <h2 className="text-base font-bold truncate">مرحباً، {engineerName}</h2>
+        </div>
       )}
 
-      {/* التنقل */}
       <nav className="flex-grow overflow-y-auto">
-        <ul className="space-y-1 p-2">
-          {engineerNavItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                    !isOpen && "justify-center py-3",
-                    isActive
-                      ? "bg-app-gold text-gray-900 shadow-md"
-                      : "text-foreground/80 hover:bg-app-gold hover:text-gray-900"
-                  )}
-                  title={!isOpen ? item.label : undefined}
-                >
-                  <item.icon size={isOpen ? 20 : 24} className="flex-shrink-0" />
-                  {isOpen && <span className="truncate">{item.label}</span>}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <Accordion type="multiple" className="w-full p-2" defaultValue={["المشاريع"]}>
+          {sidebarSections.map((section) => (
+            <AccordionItem value={section.title} key={section.title} className="border-b-0">
+              <AccordionTrigger className={cn(
+                  "py-2.5 px-2 hover:no-underline hover:bg-muted rounded-md",
+                  !isOpen && "justify-center"
+              )}>
+                <div className="flex items-center gap-3">
+                  <section.icon className="h-5 w-5 text-app-gold" />
+                  {isOpen && <span className="text-base font-semibold">{section.title}</span>}
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-2">
+                <ul className={cn("space-y-1", isOpen ? "pr-4 border-r-2 border-app-gold/20" : "hidden")}>
+                  {section.links.map((link) => {
+                    const isActive = pathname === link.href;
+                    return (
+                      <li key={link.label}>
+                        {link.isAction ? (
+                          <button
+                            onClick={() => handleActionClick(link.label)}
+                            className={cn(
+                              "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                              "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                            )}
+                          >
+                            <link.icon className="h-4 w-4" />
+                            <span className="truncate">{link.label}</span>
+                          </button>
+                        ) : (
+                          <Link
+                            href={link.href}
+                            className={cn(
+                              "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                              isActive
+                                ? "bg-primary text-primary-foreground"
+                                : "text-foreground/80 hover:bg-muted/80"
+                            )}
+                          >
+                            <link.icon className="h-4 w-4" />
+                            <span className="truncate">{link.label}</span>
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </nav>
 
-      {/* تسجيل الخروج */}
       <div className="mt-auto p-3 border-t border-border flex-shrink-0">
         <button
           onClick={handleLogout}
@@ -156,10 +212,12 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
           )}
           title={!isOpen ? "تسجيل الخروج" : undefined}
         >
-          <LogOut size={isOpen ? 20 : 24} className="flex-shrink-0" />
+          <LogOut size={isOpen ? 20 : 24} className="opacity-90 flex-shrink-0" />
           {isOpen && <span className="truncate">تسجيل الخروج</span>}
         </button>
       </div>
     </aside>
   );
 }
+
+    

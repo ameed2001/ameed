@@ -1,4 +1,5 @@
-"use client"; // ضروري لتمكين استخدام الحالة والتأثيرات
+
+"use client";
 
 import type { ReactNode } from 'react';
 import Header from '@/components/layout/Header';
@@ -10,7 +11,6 @@ import { cn } from '@/lib/utils';
 export default function EngineerAppLayout({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // تحميل الحالة من localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedState = localStorage.getItem('engineerSidebarState');
@@ -27,13 +27,13 @@ export default function EngineerAppLayout({ children }: { children: ReactNode })
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
-      <div className="flex flex-grow">
+      <div className="flex flex-1" style={{ direction: 'rtl' }}>
         <EngineerSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <main
           className={cn(
-            "flex-grow container mx-auto py-6 px-4 overflow-y-auto w-full transition-all duration-300 ease-in-out"
+            "flex-grow p-4 sm:p-6 lg:p-8 bg-gray-50 overflow-y-auto transition-all duration-300 ease-in-out"
           )}
         >
           {children}
@@ -43,3 +43,5 @@ export default function EngineerAppLayout({ children }: { children: ReactNode })
     </div>
   );
 }
+
+    

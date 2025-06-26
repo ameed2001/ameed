@@ -8,11 +8,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Eye, Loader2, Info, PlusCircle, Wrench } from 'lucide-react';
+import { Search, Eye, Loader2, Info, PlusCircle, Wrench, Edit, Archive, MapPin } from 'lucide-react';
 import { getProjects as dbGetProjects, type Project, type ProjectStatusType } from "@/lib/db";
 import { useToast } from '@/hooks/use-toast';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from '@/components/ui/badge';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function EngineerProjectsPage() {
   const { toast } = useToast();
@@ -37,32 +47,30 @@ export default function EngineerProjectsPage() {
     }
   }, [toast]);
 
-  useEffect(() => {
-    async function fetchEngineerProjects() {
-      if (!userName) {
-        setIsLoading(false);
-        return;
-      }
-      setIsLoading(true);
-      try {
-        const result = await dbGetProjects(userName); 
-        if (result.success && result.projects) {
-          setProjects(result.projects);
-        } else {
-          toast({ title: "خطأ", description: result.message || "فشل تحميل المشاريع.", variant: "destructive" });
-          setProjects([]);
-        }
-      } catch (error) {
-        console.error("Error fetching projects for engineer:", error);
-        toast({ title: "خطأ فادح", description: "حدث خطأ أثناء تحميل بيانات المشاريع.", variant: "destructive" });
+  const fetchEngineerProjects = async () => {
+    if (!userName) return;
+    setIsLoading(true);
+    try {
+      const result = await dbGetProjects(userName); 
+      if (result.success && result.projects) {
+        setProjects(result.projects);
+      } else {
+        toast({ title: "خطأ", description: result.message || "فشل تحميل المشاريع.", variant: "destructive" });
         setProjects([]);
       }
-      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching projects for engineer:", error);
+      toast({ title: "خطأ فادح", description: "حدث خطأ أثناء تحميل بيانات المشاريع.", variant: "destructive" });
+      setProjects([]);
     }
+    setIsLoading(false);
+  };
 
+  useEffect(() => {
     if (userName) {
       fetchEngineerProjects();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userName, toast]);
 
   const filteredProjects = useMemo(() => {
@@ -73,34 +81,35 @@ export default function EngineerProjectsPage() {
     );
   }, [projects, searchTerm, statusFilter]);
 
-  const projectStatusOptions: { value: ProjectStatusType | 'all'; label: string }[] = [
-    { value: 'all', label: 'جميع الحالات' },
-    { value: 'مخطط له', label: 'مخطط له' },
-    { value: 'قيد التنفيذ', label: 'قيد التنفيذ' },
-    { value: 'مكتمل', label: 'مكتمل' },
-    { value: 'مؤرشف', label: 'مؤرشف' },
-  ];
+  const handleArchiveAction = (projectName: string) => {
+    toast({
+        title: "تمت أرشفة المشروع",
+        description: `تم أرشفة مشروع "${projectName}" بنجاح (محاكاة).`,
+    });
+    // In a real app, you would call an API to update the project status and then refetch.
+    // e.g., updateProjectStatus(projectId, 'مؤرشف').then(() => fetchEngineerProjects());
+  };
 
   return (
-    <Card className="bg-white/95 shadow-xl w-full">
+    <Card className="bg-white/95 shadow-xl w-full text-right">
       <CardHeader>
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
                 <Wrench className="h-8 w-8 text-app-gold" />
-                <CardTitle className="text-3xl font-bold text-app-red">إدارة المشاريع</CardTitle>
+                <CardTitle className="text-3xl font-bold text-app-red">إدارة المشاريع الإنشائية</CardTitle>
             </div>
-            <Button asChild className="bg-app-red hover:bg-red-700 text-white">
+            <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Link href="/engineer/create-project">
                     <PlusCircle size={18} className="ms-2" />
                     إنشاء مشروع جديد
                 </Link>
             </Button>
         </div>
-        <CardDescription className="text-gray-600 mt-1">
+        <CardDescription className="text-gray-600 mt-2">
           عرض، بحث، وإدارة جميع المشاريع الإنشائية المسندة إليك.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6 text-right">
+      <CardContent className="space-y-6">
         <div className="flex flex-col sm:flex-row gap-4 items-center p-4 border rounded-lg bg-gray-50">
           <div className="relative flex-grow w-full sm:w-auto">
             <Input
@@ -114,15 +123,14 @@ export default function EngineerProjectsPage() {
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter} dir="rtl">
-            <SelectTrigger className="w-full sm:w-auto bg-white focus:border-app-gold text-right" aria-label="تصفية حسب الحالة">
-              <SelectValue placeholder="تصفية حسب الحالة..." />
+            <SelectTrigger className="w-full sm:w-[180px] bg-white focus:border-app-gold text-right" aria-label="تصفية حسب الحالة">
+              <SelectValue placeholder="الحالة: الكل" />
             </SelectTrigger>
             <SelectContent>
-              {projectStatusOptions.map(option => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
+              <SelectItem value="all">الكل</SelectItem>
+              <SelectItem value="قيد التنفيذ">نشط</SelectItem>
+              <SelectItem value="مؤرشف">مؤرشف</SelectItem>
+              <SelectItem value="مكتمل">مكتمل</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -132,58 +140,69 @@ export default function EngineerProjectsPage() {
             <Loader2 className="h-12 w-12 animate-spin text-app-gold" />
             <p className="ms-3 text-lg">جاري تحميل المشاريع...</p>
           </div>
-        ) : !userName ? (
-            <Alert variant="destructive" className="text-right">
-                <Info className="h-5 w-5" />
-                <AlertTitle>مستخدم غير مسجل</AlertTitle>
-                <AlertDescription>
-                    يرجى تسجيل الدخول أولاً لعرض مشاريعك.
-                     <Link href="/login" className="font-semibold text-blue-600 hover:underline mr-1">
-                        تسجيل الدخول كمهندس
-                    </Link>
-                </AlertDescription>
-            </Alert>
         ) : filteredProjects.length > 0 ? (
           <div className="overflow-x-auto rounded-lg border">
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-100">
                   <TableHead className="text-right font-semibold text-gray-700">اسم المشروع</TableHead>
-                  <TableHead className="text-right font-semibold text-gray-700">المالك</TableHead>
+                  <TableHead className="text-right font-semibold text-gray-700">الموقع</TableHead>
                   <TableHead className="text-right font-semibold text-gray-700">الحالة</TableHead>
-                  <TableHead className="text-right font-semibold text-gray-700">نسبة الإنجاز</TableHead>
                   <TableHead className="text-center font-semibold text-gray-700">الإجراءات</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredProjects.map((project) => (
-                  <TableRow key={project.id} className="hover:bg-gray-50">
-                    <TableCell className="font-medium text-app-red hover:underline">
-                        <Link href={`/my-projects/${project.id}`}>{project.name}</Link>
+                  <TableRow key={project.id} className="hover:bg-gray-50/50">
+                    <TableCell className="font-medium text-app-red">
+                       {project.name}
                     </TableCell>
-                    <TableCell>{project.clientName || 'غير محدد'}</TableCell>
+                    <TableCell className="text-muted-foreground flex items-center gap-1">
+                        <MapPin size={14} />
+                        {project.location || 'غير محدد'}
+                    </TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      <Badge variant={project.status === 'قيد التنفيذ' ? "default" : project.status === 'مكتمل' ? "secondary" : "outline"}
+                       className={
+                        project.status === 'قيد التنفيذ' ? 'bg-blue-100 text-blue-700' :
                         project.status === 'مكتمل' ? 'bg-green-100 text-green-700' :
-                        project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-700' :
-                        project.status === 'مخطط له' ? 'bg-blue-100 text-blue-700' :
-                        'bg-gray-100 text-gray-700' 
-                      }`}>
+                        'bg-gray-100 text-gray-700'
+                       }>
                         {project.status}
-                      </span>
+                      </Badge>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Progress value={project.overallProgress || 0} className="w-[70%] h-2.5" />
-                        <span className="text-sm font-medium">{project.overallProgress || 0}%</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Button asChild variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100/50">
+                    <TableCell className="text-center space-x-1 rtl:space-x-reverse">
+                      <Button asChild variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800" title="عرض">
                         <Link href={`/my-projects/${project.id}`}>
-                          <Eye className="h-4 w-4 ms-1" /> عرض التفاصيل
+                          <Eye className="h-5 w-5" />
                         </Link>
                       </Button>
+                      <Button asChild variant="ghost" size="icon" className="text-green-600 hover:text-green-800" title="تعديل">
+                         <Link href={`/my-projects/${project.id}`}>
+                           <Edit className="h-5 w-5" />
+                         </Link>
+                      </Button>
+                      <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                             <Button variant="ghost" size="icon" className="text-amber-600 hover:text-amber-800" title="أرشفة">
+                               <Archive className="h-5 w-5" />
+                             </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent dir="rtl">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>تأكيد الأرشفة</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                هل أنت متأكد أنك تريد أرشفة المشروع "{project.name}"؟ سيتم إخفاؤه من القائمة النشطة.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleArchiveAction(project.name)} className="bg-amber-500 hover:bg-amber-600">
+                                تأكيد الأرشفة
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -192,21 +211,22 @@ export default function EngineerProjectsPage() {
           </div>
         ) : (
           <div className="text-center text-gray-500 py-10 bg-gray-50 rounded-lg" data-ai-hint="no engineer projects found">
-            <Wrench size={48} className="mx-auto mb-3 text-gray-400" />
-            {projects.length === 0 && !searchTerm && statusFilter === 'all' ? (
-              <>
-                <p>لم يتم إسناد أي مشاريع إليك بعد.</p>
-                <p className="text-sm">يمكنك البدء بإنشاء مشروع جديد.</p>
-              </>
-            ) : (
-              <p>لا توجد مشاريع تطابق معايير البحث أو التصفية الحالية.</p>
-            )}
+            <Info size={48} className="mx-auto mb-3 text-gray-400" />
+            <p className="font-semibold">لا توجد مشاريع لعرضها</p>
+            <p className="text-sm">
+                {projects.length === 0 ? "لم تقم بإنشاء أي مشاريع بعد." : "لا توجد مشاريع تطابق معايير البحث الحالية."}
+            </p>
+             <Button asChild size="sm" className="mt-4 bg-blue-600 hover:bg-blue-700 text-white">
+                <Link href="/engineer/create-project">
+                    <PlusCircle size={16} className="ms-2" />
+                    إنشاء مشروع الآن
+                </Link>
+            </Button>
           </div>
-        )}
-        {filteredProjects.length > 0 && (
-          <p className="text-xs text-gray-500 text-center">يتم عرض {filteredProjects.length} من إجمالي {projects.length} مشروع.</p>
         )}
       </CardContent>
     </Card>
   );
 }
+
+    

@@ -408,22 +408,6 @@ export default function CostEstimatorForm() {
           )}
 
           <div>
-            <Label htmlFor="pricePerUnitILS" className="flex items-center gap-2 mb-2 font-medium text-gray-700">
-              السعر لكل وحدة (شيكل):
-            </Label>
-            <Input
-              id="pricePerUnitILS"
-              type="number"
-              value={pricePerUnitILS}
-              onChange={(e) => setPricePerUnitILS(e.target.value)}
-              placeholder="أدخل سعر الوحدة بالشيكل"
-              className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-              min="0.01"
-              step="0.01"
-            />
-          </div>
-
-          <div>
             <Label htmlFor="quantity" className="flex items-center gap-2 mb-2 font-medium text-gray-700">
               الكمية:
             </Label>
@@ -442,6 +426,22 @@ export default function CostEstimatorForm() {
                 {currentUnitDisplay}
               </div>
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="pricePerUnitILS" className="flex items-center gap-2 mb-2 font-medium text-gray-700">
+              السعر لكل وحدة (شيكل):
+            </Label>
+            <Input
+              id="pricePerUnitILS"
+              type="number"
+              value={pricePerUnitILS}
+              onChange={(e) => setPricePerUnitILS(e.target.value)}
+              placeholder="أدخل سعر الوحدة بالشيكل"
+              className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              min="0.01"
+              step="0.01"
+            />
           </div>
           
           <Button

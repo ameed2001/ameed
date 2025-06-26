@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Printer, PlusCircle, Trash2, Calculator, Coins, HardHat, User, Save, Loader2, Blocks, Ruler, Tag, FileText, ShoppingBasket, FileSignature } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { UserDocument } from '@/lib/db';
@@ -52,8 +52,8 @@ const baseUnits: Record<string, string> = {
   cuttingDiscs: "قرص",
   cement: "كيس",
   sand: "م³",
-  hasma: "م³",
-  naama: "م³",
+  hasma: "حصمة",
+  naama: "ناعمة",
 };
 
 const getMaterialDisplayName = (key: string): string => {
@@ -476,4 +476,3 @@ export default function CostEstimatorForm() {
     </div>
   );
 }
-

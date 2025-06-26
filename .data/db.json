@@ -43,9 +43,9 @@
       "endDate": "2026-09-27",
       "status": "مخطط له",
       "engineer": "Ameed Samara",
-      "clientName": "عميد",
+      "clientName": "عميد سماره",
       "budget": 55555555,
-      "linkedOwnerEmail": "mediaplus64@gmail.com",
+      "linkedOwnerEmail": "malik@gmail.com",
       "quantitySummary": "",
       "id": 3,
       "overallProgress": 0,
@@ -1159,6 +1159,30 @@
       "message": "Cost report \"بيت\" (ID: cost-report-1750964071822-dgudb) added by engineer Ameed Samara.",
       "timestamp": "2025-06-26T18:54:31.832Z",
       "user": "System"
+    },
+    {
+      "id": "log-1750964248463-aqang",
+      "action": "COST_REPORT_ADD_SUCCESS",
+      "level": "INFO",
+      "message": "Cost report \"بيت\" (ID: cost-report-1750964248458-o6gdz) added by engineer Ameed Samara.",
+      "timestamp": "2025-06-26T18:57:28.463Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750964270454-ffh8z",
+      "action": "PROJECT_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 3 updated. Fields: linkedOwnerEmail, clientName",
+      "timestamp": "2025-06-26T18:57:50.454Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1750964288906-bpfgt",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: malik@gmail.com",
+      "timestamp": "2025-06-26T18:58:08.906Z",
+      "user": "user-1750959424627-e7rbf"
     }
   ],
   "roles": [
@@ -1482,6 +1506,26 @@
       "totalCost_ILS": 1,
       "id": "cost-report-1750964071822-dgudb",
       "createdAt": "2025-06-26T18:54:31.822Z"
+    },
+    {
+      "reportName": "بيت",
+      "engineerId": "user-1750945851175-hajdn",
+      "engineerName": "Ameed Samara",
+      "ownerId": "user-1750959424627-e7rbf",
+      "ownerName": "عميد سماره",
+      "items": [
+        {
+          "id": "1750964241136",
+          "name": "حصمة (حصمة حبة صغيرة)",
+          "quantity": 111,
+          "unit": "حصمة",
+          "pricePerUnit_ILS": 12,
+          "totalCost_ILS": 1332
+        }
+      ],
+      "totalCost_ILS": 1332,
+      "id": "cost-report-1750964248458-o6gdz",
+      "createdAt": "2025-06-26T18:57:28.458Z"
     }
   ]
 }

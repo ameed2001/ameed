@@ -182,14 +182,12 @@ export default function OwnerDashboardPage() {
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <Card key={i} className="shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-2">
+              <CardContent className="p-6 flex items-center justify-between">
+                  <div className="text-right">
                     <Skeleton className="h-4 w-[120px]" />
-                    <Skeleton className="h-8 w-[50px]" />
+                    <Skeleton className="h-8 w-[50px] mt-1" />
                   </div>
                   <Skeleton className="h-14 w-14 rounded-full" />
-                </div>
               </CardContent>
             </Card>
           ))
@@ -270,7 +268,7 @@ export default function OwnerDashboardPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        {project.startDate ? new Date(project.startDate).toLocaleDateString('ar-EG') : 'غير محدد'}
+                        {project.startDate ? new Date(project.startDate).toLocaleDateString('en-CA') : 'غير محدد'}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">

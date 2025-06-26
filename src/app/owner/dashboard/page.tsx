@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -9,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
   Briefcase, FileText, Camera, Clock, MessageSquare, 
-  BarChart2, CheckCircle, PlayCircle, Loader2, Eye, Calculator, ArrowLeft, BarChartHorizontal
+  BarChart2, CheckCircle, PlayCircle, Loader2, Eye, Calculator, ArrowLeft, BarChartHorizontal, SlidersHorizontal
 } from 'lucide-react';
 import { getProjects, type Project } from '@/lib/db';
 import { useToast } from '@/hooks/use-toast';
@@ -319,7 +318,7 @@ export default function OwnerDashboardPage() {
       <Card className="shadow-lg">
         <CardHeader>
           <div className="flex items-center gap-3">
-            <BarChart2 className="h-6 w-6 text-app-gold" />
+            <SlidersHorizontal className="h-6 w-6 text-app-red" />
             <CardTitle className="text-xl font-semibold text-gray-800">الأدوات والتقارير</CardTitle>
           </div>
           <CardDescription className="text-right">

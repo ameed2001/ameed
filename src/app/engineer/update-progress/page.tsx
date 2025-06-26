@@ -2,17 +2,17 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, CheckCircle, FolderKanban } from 'lucide-react';
+import { BarChartHorizontal, FolderKanban } from 'lucide-react';
 
 export default function UpdateProgressPage() {
   return (
     <div className="container mx-auto py-10 px-4 text-right">
       <Card className="max-w-2xl mx-auto bg-white/95 shadow-xl">
         <CardHeader className="text-center">
-          <CheckCircle className="mx-auto h-16 w-16 text-app-gold mb-3" />
+          <BarChartHorizontal className="mx-auto h-16 w-16 text-app-gold mb-3" />
           <CardTitle className="text-3xl font-bold text-app-red">تحديث تقدم المشروع</CardTitle>
           <CardDescription className="text-gray-600 mt-2 text-base">
-            يتم تحديث تقدم الإنشاء من داخل صفحة تفاصيل المشروع مباشرة.
+            يتم تحديث تقدم الإنشاء من داخل صفحة تفاصيل كل مشروع على حدة.
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center space-y-5 px-6">
@@ -30,5 +30,3 @@ export default function UpdateProgressPage() {
     </div>
   );
 }
-
-    

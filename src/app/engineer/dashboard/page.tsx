@@ -1,88 +1,183 @@
 
 "use client";
 
-import { HardHat, PlusSquare, FolderKanban, BarChartHorizontal } from "lucide-react";
+import { HardHat, Briefcase, CheckCircle, Hourglass, BarChart3, Activity, FolderKanban, ExternalLink, Loader2 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { useEffect, useState, type ReactNode } from "react";
+import Link from "next/link";
+import { getProjects, type Project } from "@/lib/db";
+import { useToast } from "@/hooks/use-toast";
 
-const engineerActions = [
-  {
-    title: "إنشاء مشروع إنشاء جديد",
-    href: "/engineer/create-project",
-    icon: PlusSquare,
-    description: "ابدأ مشروعًا جديدًا بإدخال الاسم والموقع والنطاق.",
-    iconBgClass: "bg-green-100 text-green-600",
-    buttonClassName: "bg-green-50 text-green-700 border-2 border-green-500 hover:bg-green-500 hover:text-white dark:bg-green-700/30 dark:text-green-300 dark:border-green-600 dark:hover:bg-green-600 dark:hover:text-white",
-    dataAiHint: "create new project"
-  },
-  {
-    title: "إدارة المشاريع",
-    href: "/engineer/projects",
-    icon: FolderKanban,
-    description: "عرض وتتبع جميع المشاريع النشطة والمؤرشفة.",
-    iconBgClass: "bg-blue-100 text-blue-600",
-    buttonClassName: "bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white dark:bg-blue-700/30 dark:text-blue-300 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white",
-    dataAiHint: "manage projects"
-  },
-  {
-    title: "تحديث تقدم المشروع",
-    href: "/engineer/update-progress",
-    icon: BarChartHorizontal,
-    description: "سجل المراحل المكتملة، وأضف ملاحظات وصور.",
-    iconBgClass: "bg-purple-100 text-purple-600",
-    buttonClassName: "bg-purple-50 text-purple-700 border-2 border-purple-500 hover:bg-purple-500 hover:text-white dark:bg-purple-700/30 dark:text-purple-300 dark:border-purple-600 dark:hover:bg-purple-600 dark:hover:text-white",
-    dataAiHint: "update progress"
-  }
-];
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: ReactNode;
+  colorClass: string;
+}
+
+function StatCard({ title, value, icon, colorClass }: StatCardProps) {
+  return (
+    <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+        <div className={`h-8 w-8 rounded-full flex items-center justify-center ${colorClass.replace('text-', 'bg-')}/10`}>
+          {icon}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function EngineerDashboardPage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userName, setUserName] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const name = localStorage.getItem('userName');
+    setUserName(name);
+  }, []);
+
+  useEffect(() => {
+    if (!userName) return;
+
+    async function fetchProjects() {
+      setIsLoading(true);
+      const result = await getProjects(userName);
+      if (result.success && result.projects) {
+        setProjects(result.projects);
+      } else {
+        toast({ title: "خطأ", description: "فشل تحميل بيانات المشاريع.", variant: "destructive" });
+      }
+      setIsLoading(false);
+    }
+
+    fetchProjects();
+  }, [userName, toast]);
+
+  const stats = {
+    active: projects.filter(p => p.status === "قيد التنفيذ" || p.status === "مخطط له").length,
+    inProgress: projects.filter(p => p.status === "قيد التنفيذ").length,
+    completed: projects.filter(p => p.status === "مكتمل").length,
+    totalMaterials: "5,200 م³" // Placeholder value
+  };
+
+  const recentActivity = [
+    { description: "تم تحديث تقدم مشروع 'بناء فيلا سكنية'", time: "منذ 2 ساعة" },
+    { description: "تم توليد تقرير كميات لمشروع 'برج إداري جدة'", time: "منذ 5 ساعات" },
+    { description: "أضاف المالك تعليقًا على مشروع 'مجمع سكني الرياض'", time: "أمس" },
+  ];
+
+  const recentProjects = projects.filter(p => p.status !== "مكتمل" && p.status !== "مؤرشف").slice(0, 5);
+
   return (
-    <>
-      <Card className="bg-white/95 shadow-xl border border-gray-200/80 mb-10 text-center">
+    <div className="space-y-8 text-right">
+      <Card className="bg-white/95 shadow-xl border-gray-200/80 mb-10 text-center">
         <CardHeader>
           <div className="flex justify-center items-center mb-3 gap-3">
-             <CardTitle className="text-3xl md:text-4xl font-bold text-app-red">
-                مرحباً بالمهندس 👷‍♂️
-             </CardTitle>
              <HardHat className="h-12 w-12 text-app-gold" />
+             <CardTitle className="text-3xl md:text-4xl font-bold text-app-red">
+                مرحباً بالمهندس
+             </CardTitle>
           </div>
           <CardDescription className="text-lg text-gray-700 mt-2">
-            مرحباً بك في لوحة التحكم الخاصة بالمهندسين. من هنا يمكنك إدارة مشاريعك وأدواتك الهندسية.
+            هذه هي لوحة التحكم المركزية الخاصة بك. راقب، أدر، وتابع جميع مشاريعك من هنا.
           </CardDescription>
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-        {engineerActions.map((action) => {
-          const IconComponent = action.icon;
-          return (
-            <Card
-              key={action.title}
-              className="bg-white rounded-xl shadow-lg overflow-hidden card-hover-effect border border-gray-200 flex flex-col h-full text-right"
-              data-ai-hint={action.dataAiHint}
-            >
-              <CardHeader className="flex-grow">
-                 <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-800 mt-1">{action.title}</h3>
-                    <div className={cn("p-3 rounded-full shadow-inner", action.iconBgClass)}>
-                        <IconComponent className="w-7 h-7" />
-                    </div>
-                </div>
-                <p className="text-gray-600 text-base mb-5">{action.description}</p>
-              </CardHeader>
-              <CardContent className="px-6 pb-6 pt-0 mt-auto">
-                <Button asChild className={cn("w-full py-3 text-base font-bold", action.buttonClassName)}>
-                    <Link href={action.href}>
-                       الذهاب إلى {action.title}
-                    </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
+      {/* Stats Cards */}
+      {isLoading ? (
+        <div className="flex justify-center items-center h-24"><Loader2 className="h-8 w-8 animate-spin text-app-gold" /></div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <StatCard title="المشاريع النشطة" value={stats.active} icon={<Briefcase className="h-5 w-5 text-blue-500" />} colorClass="text-blue-500" />
+          <StatCard title="قيد التنفيذ" value={stats.inProgress} icon={<Hourglass className="h-5 w-5 text-amber-500" />} colorClass="text-amber-500" />
+          <StatCard title="المشاريع المكتملة" value={stats.completed} icon={<CheckCircle className="h-5 w-5 text-green-500" />} colorClass="text-green-500" />
+          <StatCard title="إجمالي المواد (تقديري)" value={stats.totalMaterials} icon={<BarChart3 className="h-5 w-5 text-purple-500" />} colorClass="text-purple-500" />
+        </div>
+      )}
+
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* Recent Activity */}
+        <Card className="lg:col-span-1 bg-white/95 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="text-app-gold" /> النشاط الحديث
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-4">
+              {recentActivity.map((activity, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <div className="h-2 w-2 mt-1.5 rounded-full bg-app-red/50"></div>
+                  <div className="flex-grow">
+                    <p className="text-sm font-medium">{activity.description}</p>
+                    <p className="text-xs text-muted-foreground">{activity.time}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* Active Projects */}
+        <Card className="lg:col-span-2 bg-white/95 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FolderKanban className="text-app-gold" /> المشاريع النشطة
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+               <div className="flex justify-center items-center h-48"><Loader2 className="h-8 w-8 animate-spin text-app-gold" /></div>
+            ) : recentProjects.length === 0 ? (
+              <p className="text-center text-muted-foreground py-10">لا توجد مشاريع نشطة حالياً.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>اسم المشروع</TableHead>
+                    <TableHead>نسبة الإنجاز</TableHead>
+                    <TableHead>الحالة</TableHead>
+                    <TableHead className="text-center">إجراء</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentProjects.map(project => (
+                    <TableRow key={project.id}>
+                      <TableCell className="font-medium">{project.name}</TableCell>
+                      <TableCell><Progress value={project.overallProgress} className="h-2" /></TableCell>
+                      <TableCell>
+                         <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                            project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-700' :
+                            'bg-blue-100 text-blue-700' 
+                          }`}>
+                            {project.status}
+                          </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button asChild variant="ghost" size="sm">
+                          <Link href={`/my-projects/${project.id}`}>
+                            عرض <ExternalLink className="mr-1 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
-    </>
+    </div>
   );
 }

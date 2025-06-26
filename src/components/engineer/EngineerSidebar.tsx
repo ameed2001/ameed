@@ -18,12 +18,12 @@ import {
   AreaChart,
   Settings2,
   FileUp,
-  FileSymlink,
-  BarChartHorizontal,
   FileCog,
+  BarChartHorizontal,
   Upload,
   Layers,
   UserRoundCog,
+  Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -39,6 +39,7 @@ const sidebarSections = [
   {
     title: "المشاريع",
     icon: FolderKanban,
+    defaultOpen: true,
     links: [
       { href: "/engineer/create-project", label: "إنشاء مشروع جديد", icon: PlusSquare },
       { href: "/engineer/projects", label: "إدارة المشاريع", icon: FolderKanban },
@@ -78,7 +79,7 @@ const sidebarSections = [
     title: "ربط أصحاب المشاريع",
     icon: UserRoundCog,
     links: [
-       { href: "#", label: "ربط المالك بمشروع", icon: FileSymlink, isAction: true },
+       { href: "#", label: "ربط المالك بمشروع", icon: UserRoundCog, isAction: true },
     ]
   }
 ];
@@ -118,17 +119,19 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
     });
   };
 
+  const defaultActiveItems = sidebarSections.filter(s => s.defaultOpen).map(s => s.title);
+
   return (
     <aside
       className={cn(
-        "bg-card text-foreground shadow-xl flex flex-col sticky top-0 transition-all duration-300 border-l z-50",
+        "bg-card text-foreground shadow-xl flex flex-col sticky top-0 transition-all duration-300 border-l z-50 h-screen",
         isOpen ? "w-72" : "w-20"
       )}
     >
       <div className="p-4 flex justify-between items-center border-b border-border h-[70px] flex-shrink-0">
         {isOpen && (
           <Link href="/engineer/dashboard" className="flex items-center gap-2 overflow-hidden">
-            <LayoutDashboard className="h-8 w-8 text-app-gold flex-shrink-0" />
+            <Home className="h-8 w-8 text-app-gold flex-shrink-0" />
             <h2 className="text-lg font-bold text-app-red truncate">لوحة تحكم المهندس</h2>
           </Link>
         )}
@@ -149,7 +152,14 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
       )}
 
       <nav className="flex-grow overflow-y-auto">
-        <Accordion type="multiple" className="w-full p-2" defaultValue={["المشاريع"]}>
+        <Accordion type="multiple" className="w-full p-2" defaultValue={defaultActiveItems}>
+          <Link href="/engineer/dashboard" className={cn(
+             "flex items-center gap-3 w-full text-right py-2.5 px-2 hover:no-underline hover:bg-muted rounded-md font-semibold",
+             !isOpen && "justify-center"
+            )}>
+             <LayoutDashboard className="h-5 w-5 text-app-gold" />
+             {isOpen && <span>الرئيسية (Dashboard)</span>}
+          </Link>
           {sidebarSections.map((section) => (
             <AccordionItem value={section.title} key={section.title} className="border-b-0">
               <AccordionTrigger className={cn(

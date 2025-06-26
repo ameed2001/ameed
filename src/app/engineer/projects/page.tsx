@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Eye, Loader2, Info, PlusCircle, Wrench, Edit, Archive, MapPin } from 'lucide-react';
+import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin } from 'lucide-react';
 import { getProjects as dbGetProjects, type Project, type ProjectStatusType } from "@/lib/db";
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -23,60 +23,57 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { DatePickerWithRange } from '@/components/ui/DatePickerWithRange';
 
 export default function EngineerProjectsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<ProjectStatusType | 'all'>('all');
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const name = localStorage.getItem('userName');
-      setUserName(name);
-      if (!name) {
-        toast({
-          title: "مستخدم غير معروف",
-          description: "لم يتم العثور على معلومات المستخدم. يرجى تسجيل الدخول مرة أخرى.",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-      }
+    const name = localStorage.getItem('userName');
+    setUserName(name);
+    if (!name) {
+      toast({
+        title: "مستخدم غير معروف",
+        description: "لم يتم العثور على معلومات المستخدم. يرجى تسجيل الدخول مرة أخرى.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
     }
   }, [toast]);
 
-  const fetchEngineerProjects = async () => {
+  useEffect(() => {
     if (!userName) return;
-    setIsLoading(true);
-    try {
-      const result = await dbGetProjects(userName); 
-      if (result.success && result.projects) {
-        setProjects(result.projects);
-      } else {
-        toast({ title: "خطأ", description: result.message || "فشل تحميل المشاريع.", variant: "destructive" });
+
+    const fetchEngineerProjects = async () => {
+      setIsLoading(true);
+      try {
+        const result = await dbGetProjects(userName);
+        if (result.success && result.projects) {
+          setProjects(result.projects);
+        } else {
+          toast({ title: "خطأ", description: result.message || "فشل تحميل المشاريع.", variant: "destructive" });
+          setProjects([]);
+        }
+      } catch (error) {
+        console.error("Error fetching projects for engineer:", error);
+        toast({ title: "خطأ فادح", description: "حدث خطأ أثناء تحميل بيانات المشاريع.", variant: "destructive" });
         setProjects([]);
       }
-    } catch (error) {
-      console.error("Error fetching projects for engineer:", error);
-      toast({ title: "خطأ فادح", description: "حدث خطأ أثناء تحميل بيانات المشاريع.", variant: "destructive" });
-      setProjects([]);
-    }
-    setIsLoading(false);
-  };
+      setIsLoading(false);
+    };
 
-  useEffect(() => {
-    if (userName) {
-      fetchEngineerProjects();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchEngineerProjects();
   }, [userName, toast]);
 
   const filteredProjects = useMemo(() => {
     return projects.filter(project =>
       (project.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-       (project.clientName && project.clientName.toLowerCase().includes(searchTerm.toLowerCase()))) &&
+       project.location.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (statusFilter === 'all' || project.status === statusFilter)
     );
   }, [projects, searchTerm, statusFilter]);
@@ -95,7 +92,7 @@ export default function EngineerProjectsPage() {
       <CardHeader>
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-                <Wrench className="h-8 w-8 text-app-gold" />
+                <FolderKanban className="h-8 w-8 text-app-gold" />
                 <CardTitle className="text-3xl font-bold text-app-red">إدارة المشاريع الإنشائية</CardTitle>
             </div>
             <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -114,7 +111,7 @@ export default function EngineerProjectsPage() {
           <div className="relative flex-grow w-full sm:w-auto">
             <Input
               type="search"
-              placeholder="ابحث باسم المشروع أو المالك..."
+              placeholder="ابحث بالاسم أو الموقع..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pr-10 bg-white focus:border-app-gold"
@@ -122,13 +119,15 @@ export default function EngineerProjectsPage() {
             />
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           </div>
-          <Select value={statusFilter} onValueChange={setStatusFilter} dir="rtl">
+          <DatePickerWithRange className="w-full sm:w-auto" />
+          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as any)} dir="rtl">
             <SelectTrigger className="w-full sm:w-[180px] bg-white focus:border-app-gold text-right" aria-label="تصفية حسب الحالة">
               <SelectValue placeholder="الحالة: الكل" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">الكل</SelectItem>
-              <SelectItem value="قيد التنفيذ">نشط</SelectItem>
+              <SelectItem value="قيد التنفيذ">قيد التنفيذ</SelectItem>
+              <SelectItem value="مخطط له">مخطط له</SelectItem>
               <SelectItem value="مؤرشف">مؤرشف</SelectItem>
               <SelectItem value="مكتمل">مكتمل</SelectItem>
             </SelectContent>
@@ -166,7 +165,8 @@ export default function EngineerProjectsPage() {
                        className={
                         project.status === 'قيد التنفيذ' ? 'bg-blue-100 text-blue-700' :
                         project.status === 'مكتمل' ? 'bg-green-100 text-green-700' :
-                        'bg-gray-100 text-gray-700'
+                        project.status === 'مؤرشف' ? 'bg-gray-100 text-gray-700' :
+                        'bg-yellow-100 text-yellow-700'
                        }>
                         {project.status}
                       </Badge>
@@ -228,5 +228,3 @@ export default function EngineerProjectsPage() {
     </Card>
   );
 }
-
-    

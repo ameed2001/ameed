@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -28,7 +29,15 @@ import {
     LogOut,
     Home,
     Coins,
+    Menu as MenuIcon,
+    ChevronLeft
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
@@ -96,7 +105,12 @@ const accordionItems = [
   },
 ];
 
-export default function EngineerSidebar() {
+interface EngineerSidebarProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
@@ -112,6 +126,7 @@ export default function EngineerSidebar() {
     localStorage.removeItem("userRole");
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userId");
+    localStorage.removeItem('engineerSidebarState');
     toast({
       title: "تم تسجيل الخروج",
       description: "تم تسجيل خروجك بنجاح.",
@@ -120,70 +135,126 @@ export default function EngineerSidebar() {
   };
 
   return (
-    <aside className="w-72 bg-card text-card-foreground flex flex-col h-screen sticky top-0 shadow-lg border-l">
-      <div className="p-4 border-b text-center">
-        <h2 className="text-xl font-bold text-app-red">لوحة تحكم المهندس</h2>
-        <p className="text-sm text-muted-foreground">مرحباً، {engineerName}</p>
-      </div>
+    <TooltipProvider delayDuration={0}>
+      <aside className={cn(
+        "bg-card text-card-foreground flex flex-col h-screen sticky top-0 shadow-lg border-l transition-all duration-300 ease-in-out",
+        isOpen ? "w-72" : "w-20"
+      )}>
+        <div className="p-4 flex items-center border-b h-[70px] flex-shrink-0">
+          {isOpen && (
+            <div className="text-center flex-grow overflow-hidden">
+                <h2 className="text-xl font-bold text-app-red truncate">لوحة تحكم المهندس</h2>
+                <p className="text-sm text-muted-foreground truncate">مرحباً، {engineerName}</p>
+            </div>
+          )}
+          <Button 
+              variant="ghost"
+              onClick={onToggle} 
+              className="p-1.5 text-muted-foreground hover:text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-app-gold"
+              aria-label={isOpen ? "طي الشريط الجانبي" : "فتح الشريط الجانبي"}
+          >
+              {isOpen ? <ChevronLeft size={24} /> : <MenuIcon size={24} />}
+          </Button>
+        </div>
 
-      <nav className="flex-grow overflow-y-auto px-2 py-4">
-        {mainLinks.map((link) => (
-            <Link key={link.href} href={link.href}
-                className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors mb-2",
-                    pathname === link.href
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}>
-                <link.icon className="h-5 w-5" />
-                {link.label}
-            </Link>
-        ))}
-
-        <Accordion type="multiple" className="w-full">
-          {accordionItems.map((item) => (
-            <AccordionItem value={item.value} key={item.value}>
-              <AccordionTrigger className="hover:no-underline text-base font-semibold text-foreground px-3 py-2.5 rounded-md hover:bg-muted">
-                <div className="flex items-center gap-3">
-                  <item.icon className={cn("h-5 w-5", item.color)} />
-                  {item.title}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pl-6 pr-2 pb-1 pt-1">
-                <ul className="space-y-1">
-                  {item.links.map((link) => (
-                    <li key={link.label}>
-                      <Link
-                        href={link.href}
-                        className={cn(
-                          "flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                          pathname === link.href
-                            ? "bg-app-red text-white"
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        <link.icon className="h-4 w-4" />
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
+        <nav className="flex-grow overflow-y-auto px-2 py-4">
+          {mainLinks.map((link) => (
+            <Tooltip key={link.href}>
+              <TooltipTrigger asChild>
+                <Link href={link.href}
+                    className={cn(
+                        "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors mb-2",
+                        !isOpen && "justify-center",
+                        pathname === link.href
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}>
+                    <link.icon className="h-5 w-5 flex-shrink-0" />
+                    {isOpen && <span>{link.label}</span>}
+                </Link>
+              </TooltipTrigger>
+              {!isOpen && (
+                <TooltipContent side="left" align="center">
+                  <p>{link.label}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
           ))}
-        </Accordion>
-      </nav>
 
-      <div className="p-4 mt-auto border-t">
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-red-500 hover:bg-red-500/10 hover:text-red-500"
-          onClick={handleLogout}
-        >
-          <LogOut className="mr-2 h-5 w-5" />
-          تسجيل الخروج
-        </Button>
-      </div>
-    </aside>
+          {isOpen ? (
+            <Accordion type="multiple" className="w-full">
+              {accordionItems.map((item) => (
+                <AccordionItem value={item.value} key={item.value}>
+                  <AccordionTrigger className="hover:no-underline text-base font-semibold text-foreground px-3 py-2.5 rounded-md hover:bg-muted">
+                    <div className="flex items-center gap-3">
+                      <item.icon className={cn("h-5 w-5", item.color)} />
+                      {item.title}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pl-6 pr-2 pb-1 pt-1">
+                    <ul className="space-y-1">
+                      {item.links.map((link) => (
+                        <li key={link.label}>
+                          <Link
+                            href={link.href}
+                            className={cn(
+                              "flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                              pathname === link.href
+                                ? "bg-app-red text-white"
+                                : "text-muted-foreground hover:text-foreground"
+                            )}
+                          >
+                            <link.icon className="h-4 w-4" />
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          ) : (
+            <div className="space-y-2 mt-2 border-t pt-2">
+                {accordionItems.map(item => (
+                    <Tooltip key={item.value}>
+                        <TooltipTrigger asChild>
+                           <Button variant="ghost" className="w-full justify-center h-12">
+                                <item.icon className={cn("h-6 w-6", item.color)} />
+                           </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="left" align="center">
+                           <p>{item.title}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                ))}
+            </div>
+          )}
+        </nav>
+
+        <div className="p-4 mt-auto border-t">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                className={cn(
+                    "w-full justify-start text-red-500 hover:bg-red-500/10 hover:text-red-500",
+                    !isOpen && "justify-center"
+                )}
+                onClick={handleLogout}
+              >
+                <LogOut className="h-5 w-5 flex-shrink-0" />
+                {isOpen && <span className="mr-2">تسجيل الخروج</span>}
+              </Button>
+            </TooltipTrigger>
+            {!isOpen && (
+                <TooltipContent side="left" align="center">
+                    <p>تسجيل الخروج</p>
+                </TooltipContent>
+            )}
+          </Tooltip>
+        </div>
+      </aside>
+    </TooltipProvider>
   );
 }

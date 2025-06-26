@@ -83,31 +83,41 @@ export default function EngineerProjectDetailPage() {
     setIsSubmittingComment(false);
   };
 
-  const handleProgressSubmit = async (e: FormEvent) => { 
+  const handleProgressSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!project || !progressUpdate.percentage) {
-      toast({ title: "خطأ", description: "يرجى إدخال نسبة التقدم.", variant: "destructive"});
+      toast({ title: "خطأ", description: "يرجى إدخال نسبة التقدم.", variant: "destructive" });
       return;
     }
-    const newProgress = parseInt(progressUpdate.percentage);
+    const newProgress = parseInt(progressUpdate.percentage, 10);
     if (isNaN(newProgress) || newProgress < 0 || newProgress > 100) {
-      toast({ title: "خطأ", description: "الرجاء إدخال نسبة تقدم صالحة (0-100).", variant: "destructive"});
+      toast({ title: "خطأ", description: "الرجاء إدخال نسبة تقدم صالحة (0-100).", variant: "destructive" });
       return;
     }
-    
-    const updatedProjectResult = await dbUpdateProject(project.id.toString(), { 
-        overallProgress: newProgress,
-        quantitySummary: (project.quantitySummary || '') + ` (ملاحظة تقدم: ${progressUpdate.notes || 'لا يوجد'})`
-    });
-
+  
+    const updates: Partial<Project> = {
+      overallProgress: newProgress,
+      quantitySummary: (project.quantitySummary || '') + (progressUpdate.notes ? `\n(ملاحظة تقدم: ${progressUpdate.notes})` : '')
+    };
+  
+    // Automatically update status based on progress
+    if (newProgress > 0 && project.status === 'مخطط له') {
+      updates.status = 'قيد التنفيذ';
+    } else if (newProgress === 100 && project.status !== 'مكتمل') {
+      updates.status = 'مكتمل';
+    }
+  
+    const updatedProjectResult = await dbUpdateProject(project.id.toString(), updates);
+  
     if (updatedProjectResult.success) {
-        refreshProjectFromDb();
-        toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%.` });
-        setProgressUpdate(prev => ({ ...prev, notes: '' })); 
+      refreshProjectFromDb();
+      toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%.` });
+      setProgressUpdate(prev => ({ ...prev, notes: '' }));
     } else {
-        toast({ title: "خطأ", description: "فشل تحديث التقدم.", variant: "destructive" });
+      toast({ title: "خطأ", description: "فشل تحديث التقدم.", variant: "destructive" });
     }
   };
+  
 
   const handleLinkOwnerSubmit = async (e: FormEvent) => { 
     e.preventDefault();

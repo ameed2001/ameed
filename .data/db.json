@@ -1,3 +1,4 @@
+
 {
   "users": [
     {
@@ -41,14 +42,14 @@
       "description": "يبيبيبيسبس",
       "startDate": "2025-09-27",
       "endDate": "2026-09-27",
-      "status": "قيد التنفيذ",
+      "status": "مخطط له",
       "engineer": "Ameed Samara",
       "clientName": "عميد سماره",
       "budget": 55555555,
       "linkedOwnerEmail": "malik@gmail.com",
-      "quantitySummary": "تم إنجاز أعمال الحفر والأساسات بنسبة 50%. إجمالي الخرسانة المستخدمة حتى الآن: 120 متر مكعب. إجمالي الحديد المستخدم: 15 طن.",
+      "quantitySummary": "",
       "id": 3,
-      "overallProgress": 35,
+      "overallProgress": 0,
       "photos": [
         {
           "id": "photo-1",
@@ -79,8 +80,8 @@
           "startDate": "2025-09-27",
           "endDate": "2025-10-26",
           "color": "bg-sky-500",
-          "status": "مكتمل",
-          "progress": 100
+          "status": "مخطط له",
+          "progress": 0
         },
         {
           "id": "task-2",
@@ -88,8 +89,8 @@
           "startDate": "2025-10-27",
           "endDate": "2025-12-10",
           "color": "bg-amber-500",
-          "status": "قيد التنفيذ",
-          "progress": 50
+          "status": "مخطط له",
+          "progress": 0
         },
         {
           "id": "task-3",
@@ -128,24 +129,7 @@
           "progress": 0
         }
       ],
-      "comments": [
-        {
-          "id": "comment-1",
-          "user": "المهندس (أنت)",
-          "text": "تم الانتهاء من صب قواعد الطابق الأرضي وبدء العمل على الأعمدة.",
-          "date": "2025-11-20T10:00:00Z",
-          "avatar": "https://placehold.co/40x40.png?text=ME",
-          "dataAiHintAvatar": "engineer avatar"
-        },
-        {
-          "id": "comment-2",
-          "user": "المالك",
-          "text": "عمل ممتاز! متى تتوقعون الانتهاء من أعمدة الطابق الأرضي؟",
-          "date": "2025-11-21T14:30:00Z",
-          "avatar": "https://placehold.co/40x40.png?text=OW",
-          "dataAiHintAvatar": "owner avatar"
-        }
-      ],
+      "comments": [],
       "createdAt": "2025-06-26T15:50:50.759Z"
     }
   ],

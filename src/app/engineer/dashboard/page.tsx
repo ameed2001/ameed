@@ -212,15 +212,15 @@ export default function EngineerDashboardPage() {
               </TableHeader>
               <TableBody>
                 {recentProjects.map(project => (
-                  <TableRow key={project.id} className="align-middle">
-                    <TableCell className="font-medium text-right">{project.name}</TableCell>
-                    <TableCell className="text-right">
+                  <TableRow key={project.id}>
+                    <TableCell className="font-medium text-right align-middle">{project.name}</TableCell>
+                    <TableCell className="text-right align-middle">
                         <div className="flex items-center justify-end gap-2">
-                           <Progress value={project.overallProgress} className="h-2 w-24" />
-                           <span className="text-sm font-mono w-12 text-left">{project.overallProgress || 0}%</span>
+                           <Progress value={project.overallProgress} className="w-24" />
+                           <span className="text-sm font-mono">{project.overallProgress || 0}%</span>
                         </div>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right align-middle">
                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                           project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-700' :
                           project.status === 'مخطط له' ? 'bg-blue-100 text-blue-700' :
@@ -229,7 +229,7 @@ export default function EngineerDashboardPage() {
                           {project.status}
                         </span>
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center align-middle">
                       <Button asChild variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white">
                         <Link href={`/engineer/projects/${project.id}`}>
                           عرض <ExternalLink className="mr-1 h-4 w-4" />

@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
-    Briefcase, FileText, Camera, Clock,
-    Loader2, CheckCircle, Hourglass, BarChart3, FolderKanban, Calculator
+    Briefcase, FileText, Camera, Clock, MessageSquare,
+    Loader2, CheckCircle, Hourglass
 } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { getProjects as dbGetProjects, type Project } from '@/lib/db';
@@ -87,30 +87,34 @@ export default function OwnerDashboardPage() {
 
   const recentProjects = projects.slice(0, 3);
   
-  const quickAccessCards = [
+  const functionCards = [
     {
         title: "تقارير الكميات",
         description: "عرض ملخصات وتقارير الكميات من المهندس المسؤول.",
         href: "/owner/projects",
-        icon: <FileText className="h-6 w-6 text-green-600" />,
+        icon: <FileText className="h-8 w-8 text-green-600" />,
+        dataAiHint: "quantity reports"
     },
     {
         title: "التقدم البصري",
         description: "تصفح أحدث الصور ومقاطع الفيديو لمتابعة العمل في الموقع.",
         href: "/owner/projects",
-        icon: <Camera className="h-6 w-6 text-purple-600" />,
+        icon: <Camera className="h-8 w-8 text-purple-600" />,
+        dataAiHint: "visual progress"
     },
     {
         title: "الجداول الزمنية",
         description: "اطلع على الخطط الزمنية والمواعيد الهامة لكل مشروع.",
         href: "/owner/project-timeline",
-        icon: <Clock className="h-6 w-6 text-cyan-600" />,
+        icon: <Clock className="h-8 w-8 text-cyan-600" />,
+        dataAiHint: "project timeline"
     },
     {
-        title: "حاسبة التكاليف",
-        description: "أداة تقديرية سريعة لحساب تكاليف المواد لمساعدتك في التخطيط.",
-        href: "/owner/cost-estimator",
-        icon: <Calculator className="h-6 w-6 text-red-600" />,
+        title: "التعليقات والاستفسارات",
+        description: "تواصل مع المهندس وأضف ملاحظاتك على المشاريع.",
+        href: "/owner/projects",
+        icon: <MessageSquare className="h-8 w-8 text-orange-600" />,
+        dataAiHint: "comments inquiries"
     },
   ];
 
@@ -127,20 +131,22 @@ export default function OwnerDashboardPage() {
     <div className="space-y-8 text-right">
         <h1 className="text-3xl font-bold text-app-red mb-6 text-center">لوحة تحكم المالك</h1>
 
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <StatCard title="إجمالي المشاريع" value={stats.total} icon={<Briefcase className="h-5 w-5 text-blue-500" />} colorClass="text-blue-500" />
-            <StatCard title="قيد التنفيذ" value={stats.inProgress} icon={<Hourglass className="h-5 w-5 text-amber-500" />} colorClass="text-amber-500" />
-            <StatCard title="المشاريع المكتملة" value={stats.completed} icon={<CheckCircle className="h-5 w-5 text-green-500" />} colorClass="text-green-500" />
-        </div>
+        {/* نظرة عامة سريعة (Stat Cards) */}
+        <Card className="bg-white/95 shadow-lg">
+            <CardHeader>
+                <CardTitle className="text-2xl font-bold text-gray-800">نظرة عامة سريعة</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <StatCard title="إجمالي المشاريع" value={stats.total} icon={<Briefcase className="h-5 w-5 text-blue-500" />} colorClass="text-blue-500" />
+                <StatCard title="قيد التنفيذ" value={stats.inProgress} icon={<Hourglass className="h-5 w-5 text-amber-500" />} colorClass="text-amber-500" />
+                <StatCard title="المشاريع المكتملة" value={stats.completed} icon={<CheckCircle className="h-5 w-5 text-green-500" />} colorClass="text-green-500" />
+            </CardContent>
+        </Card>
 
-        {/* My Projects */}
+        {/* أحدث المشاريع */}
         <Card className="bg-white/95 shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                    <FolderKanban className="h-6 w-6 text-blue-700" />
-                    أحدث المشاريع
-                </CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-800">أحدث المشاريع</CardTitle>
                 <Button asChild variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white">
                     <Link href="/owner/projects">
                         عرض جميع المشاريع
@@ -186,31 +192,27 @@ export default function OwnerDashboardPage() {
             </CardContent>
         </Card>
 
-        {/* Quick Access Tools */}
-        <Card className="bg-white/95 shadow-lg">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-6 w-6 text-green-700" />
-                    أدوات ومتابعة سريعة
-                </CardTitle>
-                <CardDescription>وصول سريع للأدوات والتقارير الخاصة بمشاريعك.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {quickAccessCards.map((card) => (
-                    <Link href={card.href} key={card.title} className="block card-hover-effect">
-                        <div className="p-4 rounded-lg border bg-gray-50/50 hover:border-primary flex items-center gap-4 h-full">
-                            <div className="p-3 bg-muted rounded-full">
-                                {card.icon}
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-foreground">{card.title}</h3>
-                                <p className="text-sm text-muted-foreground">{card.description}</p>
-                            </div>
+        {/* Functional Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {functionCards.map((card) => (
+                <Card key={card.title} className="card-hover-effect" data-ai-hint={card.dataAiHint}>
+                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                        <CardTitle className="text-lg font-semibold text-gray-800">{card.title}</CardTitle>
+                        <div className="p-3 bg-muted rounded-full">
+                            {card.icon}
                         </div>
-                    </Link>
-                ))}
-            </CardContent>
-        </Card>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground mb-4">{card.description}</p>
+                        <Button asChild variant="link" className="p-0 h-auto text-blue-600">
+                           <Link href={card.href}>
+                               الانتقال إلى القسم
+                           </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
     </div>
   );
 }

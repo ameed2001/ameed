@@ -57,7 +57,7 @@ const getMaterialDisplayName = (key: string): string => {
     brick: "الطوب",
     iron: "الحديد",
     concrete: "الخرسانة",
-    mesh: "سلك خرساني",
+    mesh: "السلك",
     nails: "مسامير",
     cuttingDiscs: "أقراص قطع",
     cement: "إسمنت",
@@ -70,7 +70,7 @@ const materialSubTypes: Record<string, string[]> = {
   brick: ["طوب 10", "طوب 20", "طوب 15", "ربس 14", "ربس 17", "ربس 24"],
   iron: ["6 مم", "8 ملم", "10 ملم", "12 ملم", "14 ملم", "16 ملم", "18 ملم", "20 ملم", "شبك حديد"],
   concrete: ["خرسانة جاهزة (رملية)", "خرسانة جاهزة (ناعمة)"],
-  mesh: ["سلك خرسانة"],
+  mesh: ["سلك مجدول", "سلك ناعم"],
   nails: ["مسمار 6", "مسمار 10", "مسمار فولاذ", "مسمار 20", "مسمار خشب"],
   cuttingDiscs: ["أقراص قطع حديد", "أقراص قطع خرسانة"],
   cement: ["إسمنت بورتلاندي"],
@@ -481,3 +481,4 @@ export default function CostEstimatorForm() {
     </div>
   );
 }
+    

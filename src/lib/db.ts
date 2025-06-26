@@ -477,7 +477,7 @@ export async function findProjectById(projectIdString: string): Promise<Project 
   }
 }
 
-export async function addProject(projectData: Omit<Project, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'>): Promise<Project | null> {
+export async function addProject(projectData: Omit<Project, 'id' | 'overallProgress' | 'photos' | 'timelineTasks' | 'comments'>): Promise<Project | null> {
   try {
     const db = await readDb();
     const newProjectId = db.projects.length > 0 ? Math.max(...db.projects.map(p => p.id)) + 1 : 1;
@@ -485,7 +485,6 @@ export async function addProject(projectData: Omit<Project, 'id' | 'overallProgr
       ...projectData,
       id: newProjectId,
       overallProgress: 0,
-      status: 'مخطط له',
       photos: [],
       timelineTasks: [],
       comments: [],

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm, type SubmitHandler } from 'react-hook-form';
+import { useForm, type SubmitHandler, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,10 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, PlusCircle, MapPin, CalendarRange } from 'lucide-react';
+import { Loader2, PlusCircle, MapPin, CalendarRange, ListChecks } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // Import useRouter
-import { addProject as dbAddProject, type Project } from '@/lib/db'; // Updated import path
+import { useRouter } from 'next/navigation';
+import { addProject as dbAddProject, type Project, type ProjectStatusType } from '@/lib/db';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 const createProjectSchema = z.object({
@@ -23,8 +24,11 @@ const createProjectSchema = z.object({
   description: z.string().min(10, { message: "وصف المشروع مطلوب (10 أحرف على الأقل)." }),
   startDate: z.string().refine(val => !isNaN(Date.parse(val)), { message: "تاريخ البدء غير صالح." }),
   endDate: z.string().refine(val => !isNaN(Date.parse(val)), { message: "تاريخ الانتهاء غير صالح." }),
-  engineer: z.string().min(3, { message: "اسم المهندس مطلوب." }), // Assuming engineer creates it
-  clientName: z.string().optional(), // Optional for now
+  status: z.enum(['مخطط له', 'قيد التنفيذ', 'مكتمل', 'مؤرشف'], {
+    required_error: "حالة المشروع مطلوبة."
+  }),
+  engineer: z.string().min(3, { message: "اسم المهندس مطلوب." }), 
+  clientName: z.string().optional(),
   budget: z.number().positive({ message: "الميزانية يجب أن تكون رقمًا موجبًا." }).optional(),
   linkedOwnerEmail: z.string().email({ message: "بريد المالك الإلكتروني غير صالح."}).optional(),
 }).refine(data => new Date(data.endDate) >= new Date(data.startDate), {
@@ -34,35 +38,44 @@ const createProjectSchema = z.object({
 
 type CreateProjectFormValues = z.infer<typeof createProjectSchema>;
 
+const projectStatusOptions: { value: ProjectStatusType; label: string }[] = [
+    { value: 'مخطط له', label: 'مخطط له' },
+    { value: 'قيد التنفيذ', label: 'قيد التنفيذ' },
+    { value: 'مكتمل', label: 'مكتمل' },
+    { value: 'مؤرشف', label: 'مؤرشف' },
+];
+
 export default function CreateProjectPage() {
   const { toast } = useToast();
   const router = useRouter(); 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateProjectFormValues>({
+  const { register, handleSubmit, formState: { errors }, reset, control } = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
-        engineer: "المهندس الحالي (محاكاة)", // Default or fetch from auth
+        engineer: "المهندس الحالي (محاكاة)",
+        status: 'مخطط له',
     }
   });
 
   const onSubmit: SubmitHandler<CreateProjectFormValues> = async (data) => {
     setIsLoading(true);
     
-    const projectDataForDb: Omit<Project, 'id' | 'overallProgress' | 'status' | 'photos' | 'timelineTasks' | 'comments'> = {
+    const projectDataForDb: Omit<Project, 'id' | 'overallProgress' | 'photos' | 'timelineTasks' | 'comments'> = {
         name: data.projectName,
         location: data.location,
         description: data.description,
         startDate: data.startDate,
         endDate: data.endDate,
+        status: data.status as ProjectStatusType,
         engineer: data.engineer,
         clientName: data.clientName,
         budget: data.budget,
         linkedOwnerEmail: data.linkedOwnerEmail,
-        quantitySummary: "" // Initial empty summary
+        quantitySummary: ""
     };
 
-    const newProject = await dbAddProject(projectDataForDb); // addProject is now async
+    const newProject = await dbAddProject(projectDataForDb);
 
     if (newProject) {
         toast({
@@ -71,7 +84,7 @@ export default function CreateProjectPage() {
           variant: "default",
         });
         reset();
-        router.push(`/my-projects/${newProject.id}`); // Redirect to the new project's page
+        router.push(`/my-projects/${newProject.id}`);
     } else {
         toast({
             title: "خطأ في إنشاء المشروع",
@@ -136,14 +149,38 @@ export default function CreateProjectPage() {
                 {errors.startDate && <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>}
               </div>
               <div>
+                <Label htmlFor="endDate" className="block mb-1.5 font-semibold text-gray-700">تاريخ الانتهاء المتوقع</Label>
                 <div className="relative">
-                  <Label htmlFor="endDate" className="block mb-1.5 font-semibold text-gray-700">تاريخ الانتهاء المتوقع</Label>
                   <Input id="endDate" type="date" {...register("endDate")} className="bg-white focus:border-app-gold pr-10"/>
                   <CalendarRange className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 </div>
                 {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>}
               </div>
             </div>
+
+             <div>
+                <Label htmlFor="status" className="block mb-1.5 font-semibold text-gray-700">المرحلة الحالية</Label>
+                <Controller
+                  name="status"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} defaultValue={field.value} dir="rtl">
+                      <SelectTrigger id="status" className="w-full bg-white focus:border-app-gold text-right">
+                        <SelectValue placeholder="اختر الحالة الأولية للمشروع..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {projectStatusOptions.map(option => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.status && <p className="text-red-500 text-sm mt-1">{errors.status.message}</p>}
+            </div>
+
             <div>
                 <Label htmlFor="clientName" className="block mb-1.5 font-semibold text-gray-700">اسم العميل/المالك (اختياري)</Label>
                 <Input id="clientName" type="text" {...register("clientName")} className="bg-white focus:border-app-gold" placeholder="اسم صاحب المشروع" />
@@ -190,4 +227,3 @@ export default function CreateProjectPage() {
     </div>
   );
 }
-

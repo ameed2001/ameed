@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -132,6 +131,19 @@ export default function EngineerDashboardPage() {
 
   return (
     <div className="space-y-8 text-right">
+       {/* Welcome Banner */}
+      <div className="relative rounded-xl overflow-hidden bg-gradient-to-r from-blue-600 to-cyan-500 shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5 opacity-50"></div>
+        <div className="relative p-6 md:p-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-white">
+            مرحباً بعودتك، {userName ? `م. ${userName}` : 'أيها المهندس'}!
+          </h1>
+          <p className="mt-2 text-blue-100 max-w-2xl">
+            هنا يمكنك إدارة مشاريعك، حساب الكميات، تحديث التقدم، وإصدار التقارير.
+          </p>
+        </div>
+      </div>
+
        <Card className="bg-white/95 shadow-xl">
         <CardHeader>
           <div className="flex items-center justify-end gap-3">

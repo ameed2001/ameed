@@ -1135,6 +1135,14 @@
       "message": "User logged in successfully: malik@gmail.com",
       "timestamp": "2025-06-26T18:12:27.954Z",
       "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1750963417350-i96h9",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in successfully: ameed2001@mohandis.com",
+      "timestamp": "2025-06-26T18:43:37.351Z",
+      "user": "user-1750945851175-hajdn"
     }
   ],
   "roles": [

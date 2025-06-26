@@ -1,21 +1,21 @@
+
 // src/app/owner/dashboard/page.tsx
 "use client";
 
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
     Gauge, Briefcase, FileText, Camera, Clock, MessageSquare, DollarSign, ExternalLink, 
-    Loader2, Hourglass, CheckCircle, FolderKanban, Wrench, Calculator, GanttChartSquare, ArrowLeft 
+    Loader2, Hourglass, CheckCircle, FolderKanban, Wrench, Calculator, GanttChartSquare, ArrowLeft, UserCircle 
 } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { getProjects as dbGetProjects, type Project } from '@/lib/db';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import InfoCard from '@/components/ui/InfoCard';
 
-// StatCard component definition, similar to engineer's dashboard
+// StatCard component definition
 interface StatCardProps {
   title: string;
   value: string | number;
@@ -26,45 +26,67 @@ interface StatCardProps {
 function StatCard({ title, value, icon, colorClass }: StatCardProps) {
   return (
     <Card className="shadow-md hover:shadow-lg transition-shadow duration-300">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 text-right">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <div className={cn("h-8 w-8 rounded-full flex items-center justify-center", colorClass.replace('text-', 'bg-') + '/10')}>
           {icon}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="text-right">
         <div className="text-2xl font-bold">{value}</div>
       </CardContent>
     </Card>
   );
 }
 
-const dashboardCategories = [
+const dashboardCards = [
     {
-      key: "projects",
-      title: "المشاريع والتقدم",
-      description: "عرض تفاصيل المشاريع ومتابعة تقدمها.",
-      icon: FolderKanban,
-      colorClass: "text-blue-500",
-      buttonClass: "border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white",
-      links: [
-        { href: "/owner/projects", label: "عرض جميع المشاريع", icon: Briefcase },
-        { href: "/owner/project-timeline", label: "عرض الجداول الزمنية", icon: GanttChartSquare },
-        { href: "/owner/projects", label: "عرض الصور والفيديوهات", icon: Camera },
-      ]
+        title: "مشاريعي",
+        description: "عرض كافة مشاريعك، متابعة التقدم، الصور، والتقارير.",
+        icon: <Briefcase className="h-10 w-10 text-blue-600" />,
+        href: "/owner/projects",
+        dataAiHint: "owner projects list",
+        iconWrapperClass: "bg-blue-100 dark:bg-blue-900/50",
     },
     {
-      key: "tools",
-      title: "الأدوات والتواصل",
-      description: "استخدام الأدوات المتاحة ومراجعة التقارير.",
-      icon: Wrench,
-      colorClass: "text-green-500",
-      buttonClass: "border-green-500 text-green-600 hover:bg-green-500 hover:text-white",
-      links: [
-        { href: "/owner/cost-estimator", label: "حاسبة التكلفة التقديرية", icon: Calculator },
-        { href: "/owner/projects", label: "مراجعة تقارير الكميات", icon: FileText },
-        { href: "/owner/projects", label: "إضافة تعليقات واستفسارات", icon: MessageSquare },
-      ]
+        title: "الجداول الزمنية",
+        description: "عرض الجداول الزمنية والمراحل المخطط لها لكل مشروع.",
+        icon: <GanttChartSquare className="h-10 w-10 text-purple-600" />,
+        href: "/owner/project-timeline",
+        dataAiHint: "project timelines",
+        iconWrapperClass: "bg-purple-100 dark:bg-purple-900/50",
+    },
+    {
+        title: "حاسبة التكلفة التقديرية",
+        description: "أداة بسيطة لتقدير تكاليف المواد لمساعدتك في التخطيط.",
+        icon: <Calculator className="h-10 w-10 text-green-600" />,
+        href: "/owner/cost-estimator",
+        dataAiHint: "cost estimator tool",
+        iconWrapperClass: "bg-green-100 dark:bg-green-900/50",
+    },
+    {
+        title: "الملف الشخصي",
+        description: "إدارة معلومات حسابك الشخصي وتغيير كلمة المرور.",
+        icon: <UserCircle className="h-10 w-10 text-orange-600" />,
+        href: "/profile",
+        dataAiHint: "user profile management",
+        iconWrapperClass: "bg-orange-100 dark:bg-orange-900/50",
+    },
+     {
+        title: "تقارير الكميات",
+        description: "عرض ملخصات وتقارير الكميات التي يعدها المهندس.",
+        icon: <FileText className="h-10 w-10 text-cyan-600" />,
+        href: "/owner/projects",
+        dataAiHint: "quantity reports",
+        iconWrapperClass: "bg-cyan-100 dark:bg-cyan-900/50",
+    },
+    {
+        title: "أدوات أخرى",
+        description: "اكتشف المزيد من الأدوات التي سيتم إضافتها مستقبلاً.",
+        icon: <Wrench className="h-10 w-10 text-gray-600" />,
+        href: "/owner/other-tools",
+        dataAiHint: "more tools",
+        iconWrapperClass: "bg-gray-100 dark:bg-gray-700",
     },
 ];
 
@@ -73,7 +95,6 @@ export default function OwnerDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -84,7 +105,10 @@ export default function OwnerDashboardPage() {
   
   useEffect(() => {
     async function fetchProjects() {
-      if (!userEmail) return;
+      if (!userEmail) {
+           setIsLoading(false);
+           return;
+      }
       setIsLoading(true);
       try {
         const result = await dbGetProjects(userEmail);
@@ -110,9 +134,6 @@ export default function OwnerDashboardPage() {
     inProgress: projects.filter(p => p.status === "قيد التنفيذ").length,
     completed: projects.filter(p => p.status === "مكتمل").length,
   };
-
-  const recentProjects = projects.filter(p => p.status !== "مكتمل" && p.status !== "مؤرشف").slice(0, 5);
-  const activeCategory = selectedCategory ? dashboardCategories.find(c => c.key === selectedCategory) : null;
 
   return (
     <div className="space-y-8 text-right">
@@ -141,143 +162,43 @@ export default function OwnerDashboardPage() {
         </div>
       )}
       
-      {/* Recent Projects */}
-      <Card className="bg-white/95 shadow-lg">
+      {/* Main dashboard cards restored */}
+       <Card className="bg-white/95 shadow-lg">
         <CardHeader>
-          <div className="flex justify-between items-center">
-             <div className="flex items-center justify-start gap-2">
-                <FolderKanban className="text-blue-700" />
-                <CardTitle>
-                    أحدث المشاريع
-                </CardTitle>
-             </div>
-             <CardDescription>
-                عرض سريع لآخر المشاريع المسجلة باسمك.
-             </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-             <div className="flex justify-center items-center h-48"><Loader2 className="h-8 w-8 animate-spin text-app-gold" /></div>
-          ) : recentProjects.length === 0 ? (
-            <div className="text-center text-muted-foreground py-10" data-ai-hint="no projects available">
-              <div className="flex justify-center mb-3">
-                <Briefcase size={48} className="text-gray-400" />
-              </div>
-              <p>لا توجد مشاريع مرتبطة بحسابك حاليًا.</p>
-              <p className="text-sm">عندما يقوم المهندس بربط مشروع بحسابك، سيظهر هنا.</p>
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">اسم المشروع</TableHead>
-                  <TableHead className="text-right">نسبة الإنجاز</TableHead>
-                  <TableHead className="text-right">الحالة</TableHead>
-                  <TableHead className="text-center">إجراء</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentProjects.map(project => (
-                  <TableRow key={project.id}>
-                    <TableCell className="font-medium text-right align-middle text-app-red hover:underline">
-                        <Link href={`/owner/projects/${project.id}`}>{project.name}</Link>
-                    </TableCell>
-                    <TableCell className="text-right align-middle">
-                      <div className="flex items-center justify-start gap-2">
-                        <span className="text-sm font-mono">{project.overallProgress || 0}%</span>
-                        <Progress value={project.overallProgress} className="w-24" />
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right align-middle">
-                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-700' :
-                          project.status === 'مخطط له' ? 'bg-blue-100 text-blue-700' :
-                          'bg-green-100 text-green-700'
-                        }`}>
-                          {project.status}
-                        </span>
-                    </TableCell>
-                    <TableCell className="text-center align-middle">
-                      <Button asChild variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white">
-                        <Link href={`/owner/projects/${project.id}`}>
-                          عرض <ExternalLink className="mr-1 h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Main content: either main categories or sub-categories */}
-      <Card className="bg-white/95 shadow-lg">
-        <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="text-right">
                 <CardTitle className="text-2xl font-semibold text-gray-800">
-                    {activeCategory ? activeCategory.title : 'أدوات ومهام رئيسية'}
+                    أدوات ومهام رئيسية
                 </CardTitle>
-                {activeCategory ? (
-                    <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-                        <ArrowLeft className="ml-2 h-4 w-4" /> العودة
-                    </Button>
-                ) : (
-                    <CardDescription className="text-gray-600">وصول سريع إلى الأقسام والوظائف الأساسية.</CardDescription>
-                )}
+                <CardDescription className="text-gray-600">
+                    وصول سريع إلى الأقسام والوظائف الأساسية.
+                </CardDescription>
             </div>
         </CardHeader>
         <CardContent>
-            {!activeCategory ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {dashboardCategories.map((category) => {
-                        const Icon = category.icon;
-                        return (
-                            <Card 
-                                key={category.key} 
-                                className="card-hover-effect flex flex-col h-full text-right cursor-pointer group"
-                                onClick={() => setSelectedCategory(category.key)}
-                            >
-                                 <CardHeader className="pb-4">
-                                    <div className="flex items-center justify-start gap-2">
-                                        <Icon className={cn("h-6 w-6", category.colorClass)} /> 
-                                        <CardTitle className="text-xl font-semibold text-gray-800">
-                                            {category.title}
-                                        </CardTitle>
-                                    </div>
-                                </CardHeader>
-                                 <CardContent className="flex-grow pt-0 pb-4">
-                                     <p className="text-gray-600 text-sm">{category.description}</p>
-                                 </CardContent>
-                                 <CardFooter className="pt-0 mt-auto">
-                                    <div className={cn("w-full py-2 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-between border-2", category.buttonClass)}>
-                                       <span>الانتقال إلى القسم</span>
-                                       <ArrowLeft className="h-4 w-4" />
-                                    </div>
-                                 </CardFooter>
-                            </Card>
-                        );
-                    })}
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {activeCategory.links.map((link) => {
-                        const Icon = link.icon;
-                        return (
-                            <Link href={link.href} key={link.label} className="block">
-                                <Card className="card-hover-effect flex flex-col h-full text-right">
-                                    <CardContent className="p-6 flex items-center justify-start gap-4">
-                                        <Icon className={cn("h-8 w-8", activeCategory.colorClass)} />
-                                        <span className="text-lg font-semibold text-gray-800">{link.label}</span>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {dashboardCards.map((card) => (
+                    <InfoCard 
+                        key={card.title}
+                        {...card}
+                        cardHeightClass="h-auto min-h-[220px]"
+                        applyFlipEffect={false}
+                        className="text-right"
+                    >
+                         <Link href={card.href} className="block w-full h-full">
+                           <div className="flex flex-col items-end h-full">
+                             <div className={cn("p-4 rounded-full inline-flex items-center justify-center mb-4", card.iconWrapperClass)}>
+                               {card.icon}
+                             </div>
+                             <h3 className="text-xl font-bold text-foreground mb-2">{card.title}</h3>
+                             <p className="text-sm text-muted-foreground flex-grow">{card.description}</p>
+                             <Button variant="link" className="text-app-red mt-4 p-0">
+                                الذهاب إلى القسم <ArrowLeft className="mr-2 h-4 w-4" />
+                            </Button>
+                           </div>
+                         </Link>
+                    </InfoCard>
+                ))}
+             </div>
         </CardContent>
       </Card>
     </div>

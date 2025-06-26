@@ -14,7 +14,7 @@ const engineerActions = [
     icon: PlusSquare,
     description: "ابدأ مشروعًا جديدًا بإدخال الاسم والموقع والنطاق.",
     iconBgClass: "bg-green-100 text-green-600",
-    buttonClassName: "bg-green-600 hover:bg-green-700 text-white",
+    buttonClassName: "bg-green-50 text-green-700 border-2 border-green-500 hover:bg-green-500 hover:text-white dark:bg-green-700/30 dark:text-green-300 dark:border-green-600 dark:hover:bg-green-600 dark:hover:text-white",
     dataAiHint: "create new project"
   },
   {
@@ -23,7 +23,7 @@ const engineerActions = [
     icon: FolderKanban,
     description: "عرض وتتبع جميع المشاريع النشطة والمؤرشفة.",
     iconBgClass: "bg-blue-100 text-blue-600",
-    buttonClassName: "bg-blue-600 hover:bg-blue-700 text-white",
+    buttonClassName: "bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white dark:bg-blue-700/30 dark:text-blue-300 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white",
     dataAiHint: "manage projects"
   },
   {
@@ -32,7 +32,7 @@ const engineerActions = [
     icon: BarChartHorizontal,
     description: "سجل المراحل المكتملة، وأضف ملاحظات وصور.",
     iconBgClass: "bg-purple-100 text-purple-600",
-    buttonClassName: "bg-purple-600 hover:bg-purple-700 text-white",
+    buttonClassName: "bg-purple-50 text-purple-700 border-2 border-purple-500 hover:bg-purple-500 hover:text-white dark:bg-purple-700/30 dark:text-purple-300 dark:border-purple-600 dark:hover:bg-purple-600 dark:hover:text-white",
     dataAiHint: "update progress"
   }
 ];

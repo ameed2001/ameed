@@ -200,19 +200,19 @@ export default function EngineerProjectsPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-center space-x-1 rtl:space-x-reverse">
-                      <Button asChild variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800" title="عرض">
+                      <Button asChild variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-transparent" title="عرض">
                         <Link href={`/engineer/projects/${project.id}`}>
                           <Eye className="h-5 w-5" />
                         </Link>
                       </Button>
-                      <Button asChild variant="ghost" size="icon" className="text-green-600 hover:text-green-800" title="تعديل">
+                      <Button asChild variant="ghost" size="icon" className="text-green-600 hover:text-green-800 hover:bg-transparent" title="تعديل">
                          <Link href={`/engineer/projects/${project.id}`}>
                            <Edit className="h-5 w-5" />
                          </Link>
                       </Button>
                       <AlertDialog>
                           <AlertDialogTrigger asChild>
-                             <Button variant="ghost" size="icon" className="text-amber-600 hover:text-amber-800" title="أرشفة">
+                             <Button variant="ghost" size="icon" className="text-amber-600 hover:text-amber-800 hover:bg-transparent" title="أرشفة">
                                <Archive className="h-5 w-5" />
                              </Button>
                           </AlertDialogTrigger>
@@ -233,7 +233,7 @@ export default function EngineerProjectsPage() {
                         </AlertDialog>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                             <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800" title="حذف">
+                             <Button size="icon" className="bg-red-700 text-white hover:bg-red-800 rounded-md" title="حذف">
                                <Trash2 className="h-5 w-5" />
                              </Button>
                           </AlertDialogTrigger>

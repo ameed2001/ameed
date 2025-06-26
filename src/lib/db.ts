@@ -109,6 +109,27 @@ export interface Project {
   createdAt?: string;
 }
 
+export interface CostReportItem {
+  id: string;
+  name: string;
+  quantity: number;
+  unit: string;
+  pricePerUnit_ILS: number;
+  totalCost_ILS: number;
+}
+
+export interface CostReport {
+  id: string;
+  reportName: string;
+  engineerId: string;
+  engineerName: string;
+  ownerId: string;
+  ownerName: string;
+  items: CostReportItem[];
+  totalCost_ILS: number;
+  createdAt: string;
+}
+
 interface DatabaseStructure {
   users: UserDocument[];
   projects: Project[];
@@ -116,6 +137,7 @@ interface DatabaseStructure {
   logs: LogEntryDocument[];
   roles: string[];
   useCases: any[];
+  costReports: CostReport[];
 }
 
 // Ensure the directory for db.json exists
@@ -147,7 +169,8 @@ async function readDb(): Promise<DatabaseStructure> {
         },
         logs: [],
         roles: ["Admin", "Engineer", "Owner", "GeneralUser"],
-        useCases: []
+        useCases: [],
+        costReports: [],
       };
     }
 
@@ -185,7 +208,8 @@ async function readDb(): Promise<DatabaseStructure> {
       projects: [],
       logs: [],
       roles: ["Admin", "Engineer", "Owner", "GeneralUser"],
-      useCases: []
+      useCases: [],
+      costReports: [],
     };
   }
 }
@@ -694,5 +718,27 @@ export async function changeUserPassword(
   } catch (error: any) {
     await logAction('USER_PASSWORD_CHANGE_FAILURE', 'ERROR', `Error changing password for user ${userId}: ${error.message || String(error)}`, userId);
     return { success: false, message: "فشل تغيير كلمة المرور.", errorType: 'db_error' };
+  }
+}
+
+export async function addCostReport(reportData: Omit<CostReport, 'id' | 'createdAt'>): Promise<CostReport | null> {
+  try {
+    const db = await readDb();
+    if (!db.costReports) {
+      db.costReports = []; // Initialize if it doesn't exist
+    }
+    const newReportId = `cost-report-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const newReport: CostReport = {
+      ...reportData,
+      id: newReportId,
+      createdAt: new Date().toISOString(),
+    };
+    db.costReports.push(newReport);
+    await writeDb(db);
+    await logAction('COST_REPORT_ADD_SUCCESS', 'INFO', `Cost report "${newReport.reportName}" (ID: ${newReportId}) added by engineer ${reportData.engineerName}.`);
+    return newReport;
+  } catch (error: any) {
+    await logAction('COST_REPORT_ADD_FAILURE', 'ERROR', `Error adding cost report: ${error.message || String(error)}`);
+    return null;
   }
 }

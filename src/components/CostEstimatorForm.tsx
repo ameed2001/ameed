@@ -7,10 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Printer, PlusCircle, Trash2, Calculator, Coins } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast'; // Corrected path
+import { Printer, PlusCircle, Trash2, Calculator, Coins, HardHat, User, Save, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import type { UserDocument } from '@/lib/db';
+import { getUsers, addCostReport } from '@/lib/db';
 
-// Inline SVG for Shekel symbol
 const ShekelIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +35,7 @@ const ShekelIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 interface MaterialItem {
   id: string;
-  name: string; // Full name including type, e.g., "الطوب (طوب أسمنتي)"
+  name: string;
   quantity: number;
   unit: string;
   pricePerUnit_ILS: number;
@@ -93,10 +94,36 @@ export default function CostEstimatorForm() {
   const [showReport, setShowReport] = useState(false);
   const [currentUnitDisplay, setCurrentUnitDisplay] = useState<string>('--');
 
+  // New state for linking report
+  const [engineerName, setEngineerName] = useState<string>('');
+  const [engineerId, setEngineerId] = useState<string>('');
+  const [reportName, setReportName] = useState<string>('');
+  const [owners, setOwners] = useState<UserDocument[]>([]);
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>('');
+  const [isSaving, setIsSaving] = useState(false);
+
+
+  useEffect(() => {
+    const name = localStorage.getItem('userName');
+    const id = localStorage.getItem('userId');
+    if (name) setEngineerName(name);
+    if (id) setEngineerId(id);
+
+    async function fetchOwners() {
+      const result = await getUsers("admin-id"); // getUsers fetches all users
+      if (result.success && result.users) {
+        setOwners(result.users.filter(u => u.role === 'OWNER' && u.status === 'ACTIVE'));
+      } else {
+        toast({ title: "خطأ", description: "فشل تحميل قائمة المالكين.", variant: "destructive"});
+      }
+    }
+    fetchOwners();
+  }, [toast]);
+
   useEffect(() => {
     if (selectedMaterialKey) {
       setCurrentUnitDisplay(baseUnits[selectedMaterialKey] || '--');
-      setSelectedSubType(''); // Reset subtype when material changes
+      setSelectedSubType('');
     } else {
       setCurrentUnitDisplay('--');
       setSelectedSubType('');
@@ -181,6 +208,8 @@ export default function CostEstimatorForm() {
     setPricePerUnitILS('');
     setQuantity('');
     setCurrentUnitDisplay('--');
+    setReportName('');
+    setSelectedOwnerId('');
     toast({
         title: "تم مسح الكل",
         description: "تم مسح جميع المواد من القائمة.",
@@ -201,8 +230,47 @@ export default function CostEstimatorForm() {
   const calculateOverallTotal_ILS = () => {
     return items.reduce((sum, item) => sum + item.totalCost_ILS, 0);
   };
+  
+  const handleSaveAndPrintReport = async () => {
+    if (!reportName.trim()) {
+      toast({ title: "بيانات ناقصة", description: "يرجى إدخال اسم للتقرير.", variant: "destructive" });
+      return;
+    }
+    if (!selectedOwnerId) {
+      toast({ title: "بيانات ناقصة", description: "يرجى اختيار مالك لربط التقرير به.", variant: "destructive" });
+      return;
+    }
 
-  const handlePrintReport = () => {
+    setIsSaving(true);
+    const selectedOwner = owners.find(o => o.id === selectedOwnerId);
+    if (!selectedOwner) {
+      toast({ title: "خطأ", description: "المالك المختار غير موجود.", variant: "destructive" });
+      setIsSaving(false);
+      return;
+    }
+
+    const reportData = {
+      reportName,
+      engineerId,
+      engineerName,
+      ownerId: selectedOwnerId,
+      ownerName: selectedOwner.name,
+      items: items,
+      totalCost_ILS: calculateOverallTotal_ILS(),
+    };
+    
+    const result = await addCostReport(reportData);
+    setIsSaving(false);
+
+    if (result) {
+      toast({ title: "تم الحفظ بنجاح", description: "تم حفظ التقرير وربطه بالمالك.", variant: "default" });
+      printReport(reportName, engineerName, selectedOwner.name);
+    } else {
+      toast({ title: "فشل الحفظ", description: "حدث خطأ أثناء حفظ التقرير.", variant: "destructive" });
+    }
+  };
+
+  const printReport = (reportTitle: string, engName: string, ownerName: string) => {
     const printWindow = window.open('', '_blank');
     if (printWindow) {
       const tableRows = items.map(item => `
@@ -219,20 +287,24 @@ export default function CostEstimatorForm() {
       printWindow.document.write(`
         <html>
           <head>
-            <title>تقرير تكلفة المواد</title>
+            <title>${reportTitle}</title>
             <style>
               body { font-family: 'Tajawal', sans-serif; direction: rtl; padding: 20px; }
               table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
               th, td { border: 1px solid #ddd; padding: 10px; text-align: right; }
               th { background-color: #f2f2f2; }
               .header { text-align: center; margin-bottom: 30px; }
+              .header h1 { color: #2563eb; }
+              .header p { margin: 2px 0; color: #555; }
               .total-row td { font-weight: bold; }
             </style>
           </head>
           <body>
             <div class="header">
-              <h1>تقرير تكلفة مواد البناء</h1>
-              <p>تاريخ الطباعة: ${new Date().toLocaleString('ar-EG')}</p>
+              <h1>${reportTitle}</h1>
+              <p>المهندس المسؤول: ${engName}</p>
+              <p>المالك/العميل: ${ownerName}</p>
+              <p>تاريخ التقرير: ${new Date().toLocaleString('ar-EG')}</p>
               <p>العملة: شيكل</p>
             </div>
             <table>
@@ -356,7 +428,7 @@ export default function CostEstimatorForm() {
               الكمية:
             </Label>
             <div className="relative">
-              <Input
+                <Input
                 id="quantity"
                 type="number"
                 value={quantity}
@@ -366,7 +438,7 @@ export default function CostEstimatorForm() {
                 min="0.01"
                 step="0.01"
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 bg-gray-200 px-3 py-1 rounded text-sm text-gray-700 pointer-events-none">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 bg-gray-200 px-3 py-1 rounded text-sm text-gray-700 pointer-events-none">
                 {currentUnitDisplay}
               </div>
             </div>
@@ -382,6 +454,49 @@ export default function CostEstimatorForm() {
           </Button>
         </CardContent>
       </Card>
+      
+      {showReport && items.length > 0 && (
+         <Card className="mt-6 shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+                <div className="flex items-center gap-2">
+                    <Save className="h-6 w-6" />
+                    <CardTitle>حفظ وربط التقرير</CardTitle>
+                </div>
+                <CardDescription className="text-indigo-100">
+                    احفظ هذا التقرير وقم بربطه بمالك معين ليتمكن من الاطلاع عليه.
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+                <div>
+                    <Label htmlFor="engineerName" className="flex items-center gap-2 mb-2 font-medium text-gray-700">
+                        <HardHat className="h-4 w-4" /> اسم المهندس (تلقائي)
+                    </Label>
+                    <Input id="engineerName" value={engineerName} readOnly className="bg-gray-100 cursor-not-allowed"/>
+                </div>
+                <div>
+                    <Label htmlFor="reportName" className="flex items-center gap-2 mb-2 font-medium text-gray-700">
+                        اسم التقرير
+                    </Label>
+                    <Input id="reportName" value={reportName} onChange={(e) => setReportName(e.target.value)} placeholder="مثال: تقدير تكلفة فيلا السيد أحمد" />
+                </div>
+                <div>
+                    <Label htmlFor="owner" className="flex items-center gap-2 mb-2 font-medium text-gray-700">
+                        <User className="h-4 w-4" /> ربط بمالك
+                    </Label>
+                    <Select onValueChange={setSelectedOwnerId} value={selectedOwnerId} dir="rtl">
+                        <SelectTrigger id="owner" className="w-full text-right">
+                            <SelectValue placeholder="اختر مالكًا..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {owners.map(owner => (
+                                <SelectItem key={owner.id} value={owner.id}>{owner.name} ({owner.email})</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </CardContent>
+        </Card>
+      )}
 
       {showReport && items.length > 0 && (
         <div className="mt-8 space-y-6 print:mt-0">
@@ -447,19 +562,12 @@ export default function CostEstimatorForm() {
               مسح كل المواد
             </Button>
             <Button
-              onClick={handleAddAnotherMaterial}
-              variant="outline"
-              className="flex-1 border-blue-500 text-blue-500 hover:bg-blue-50 hover:text-blue-700"
-            >
-              <PlusCircle className="ml-2 h-5 w-5" />
-              إضافة مادة أخرى
-            </Button>
-            <Button
-              onClick={handlePrintReport}
+              onClick={handleSaveAndPrintReport}
+              disabled={isSaving}
               className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
             >
-              <Printer className="ml-2 h-5 w-5" />
-              طباعة التقرير
+              {isSaving ? <Loader2 className="ml-2 h-5 w-5 animate-spin"/> : <Printer className="ml-2 h-5 w-5" />}
+              {isSaving ? "جاري الحفظ..." : "حفظ وطباعة التقرير"}
             </Button>
           </div>
         </div>
@@ -480,7 +588,7 @@ export default function CostEstimatorForm() {
             <li>اضغط على زر "إضافة المادة للقائمة".</li>
             <li>ستظهر المادة وتكلفتها في جدول التقرير أدناه.</li>
             <li>كرر الخطوات لإضافة المزيد من المواد.</li>
-            <li>استخدم الأزرار في الأسفل لمسح مادة معينة، مسح كل المواد، إضافة مادة أخرى، أو طباعة التقرير.</li>
+            <li>عند الانتهاء، املأ قسم "حفظ وربط التقرير" ثم اضغط على زر الحفظ والطباعة.</li>
           </ul>
         </CardContent>
       </Card>

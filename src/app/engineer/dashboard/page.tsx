@@ -204,21 +204,27 @@ export default function EngineerDashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>اسم المشروع</TableHead>
-                  <TableHead>نسبة الإنجاز</TableHead>
-                  <TableHead>الحالة</TableHead>
+                  <TableHead className="text-right">اسم المشروع</TableHead>
+                  <TableHead className="text-right">نسبة الإنجاز</TableHead>
+                  <TableHead className="text-right">الحالة</TableHead>
                   <TableHead className="text-center">إجراء</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {recentProjects.map(project => (
-                  <TableRow key={project.id}>
-                    <TableCell className="font-medium">{project.name}</TableCell>
-                    <TableCell><Progress value={project.overallProgress} className="h-2" /></TableCell>
-                    <TableCell>
+                  <TableRow key={project.id} className="align-middle">
+                    <TableCell className="font-medium text-right">{project.name}</TableCell>
+                    <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                           <Progress value={project.overallProgress} className="h-2 w-24" />
+                           <span className="text-sm font-mono w-12 text-left">{project.overallProgress || 0}%</span>
+                        </div>
+                    </TableCell>
+                    <TableCell className="text-right">
                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                           project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-blue-100 text-blue-700' 
+                          project.status === 'مخطط له' ? 'bg-blue-100 text-blue-700' :
+                          'bg-green-100 text-green-700'
                         }`}>
                           {project.status}
                         </span>

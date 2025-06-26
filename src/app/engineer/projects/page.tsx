@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin, FolderKanban } from 'lucide-react';
-import { getProjects as dbGetProjects, type Project, type ProjectStatusType } from "@/lib/db";
+import { getProjects as dbGetProjects, updateProject, type Project, type ProjectStatusType } from "@/lib/db";
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -33,6 +33,25 @@ export default function EngineerProjectsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [userName, setUserName] = useState<string | null>(null);
 
+  const fetchEngineerProjects = async () => {
+    if (!userName) return;
+    setIsLoading(true);
+    try {
+      const result = await dbGetProjects(userName);
+      if (result.success && result.projects) {
+        setProjects(result.projects);
+      } else {
+        toast({ title: "خطأ", description: result.message || "فشل تحميل المشاريع.", variant: "destructive" });
+        setProjects([]);
+      }
+    } catch (error) {
+      console.error("Error fetching projects for engineer:", error);
+      toast({ title: "خطأ فادح", description: "حدث خطأ أثناء تحميل بيانات المشاريع.", variant: "destructive" });
+      setProjects([]);
+    }
+    setIsLoading(false);
+  };
+
   useEffect(() => {
     const name = localStorage.getItem('userName');
     setUserName(name);
@@ -47,28 +66,11 @@ export default function EngineerProjectsPage() {
   }, [toast]);
 
   useEffect(() => {
-    if (!userName) return;
-
-    const fetchEngineerProjects = async () => {
-      setIsLoading(true);
-      try {
-        const result = await dbGetProjects(userName);
-        if (result.success && result.projects) {
-          setProjects(result.projects);
-        } else {
-          toast({ title: "خطأ", description: result.message || "فشل تحميل المشاريع.", variant: "destructive" });
-          setProjects([]);
-        }
-      } catch (error) {
-        console.error("Error fetching projects for engineer:", error);
-        toast({ title: "خطأ فادح", description: "حدث خطأ أثناء تحميل بيانات المشاريع.", variant: "destructive" });
-        setProjects([]);
-      }
-      setIsLoading(false);
-    };
-
-    fetchEngineerProjects();
-  }, [userName, toast]);
+    if (userName) {
+      fetchEngineerProjects();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userName]);
 
   const filteredProjects = useMemo(() => {
     return projects.filter(project =>
@@ -78,13 +80,21 @@ export default function EngineerProjectsPage() {
     );
   }, [projects, searchTerm, statusFilter]);
 
-  const handleArchiveAction = (projectName: string) => {
-    toast({
-        title: "تمت أرشفة المشروع",
-        description: `تم أرشفة مشروع "${projectName}" بنجاح (محاكاة).`,
-    });
-    // In a real app, you would call an API to update the project status and then refetch.
-    // e.g., updateProjectStatus(projectId, 'مؤرشف').then(() => fetchEngineerProjects());
+  const handleArchiveAction = async (projectId: number, projectName: string) => {
+    const result = await updateProject(projectId.toString(), { status: 'مؤرشف' });
+    if (result.success) {
+        toast({
+            title: "تمت أرشفة المشروع",
+            description: `تم أرشفة مشروع "${projectName}" بنجاح.`,
+        });
+        fetchEngineerProjects(); // Refresh the list
+    } else {
+        toast({
+            title: "خطأ في الأرشفة",
+            description: result.message || "فشل أرشفة المشروع. يرجى المحاولة مرة أخرى.",
+            variant: "destructive",
+        });
+    }
   };
 
   return (
@@ -197,7 +207,7 @@ export default function EngineerProjectsPage() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleArchiveAction(project.name)} className="bg-amber-500 hover:bg-amber-600">
+                              <AlertDialogAction onClick={() => handleArchiveAction(project.id, project.name)} className="bg-amber-500 hover:bg-amber-600">
                                 تأكيد الأرشفة
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -228,3 +238,5 @@ export default function EngineerProjectsPage() {
     </Card>
   );
 }
+
+    

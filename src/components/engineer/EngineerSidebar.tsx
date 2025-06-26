@@ -109,7 +109,7 @@ const accordionItems = [
     icon: Users,
     color: "text-red-500",
     links: [
-      { href: "#", label: "ربط مالك بمشروع", icon: Users },
+      { href: "/engineer/link-owner", label: "ربط مالك بمشروع", icon: Users },
     ],
   },
 ];

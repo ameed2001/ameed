@@ -379,17 +379,28 @@ export default function OwnerProjectDetailPage() {
                                       </Button>
                                     </AlertDialogTrigger>
                                     <AlertDialogContent dir="rtl" className="sm:max-w-md">
-                                      <AlertDialogHeader className="text-right">
-                                        <AlertDialogTitle className="text-xl font-bold">تأكيد الحذف</AlertDialogTitle>
-                                        <AlertDialogDescription className="text-muted-foreground pt-2">
-                                          هل أنت متأكد أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء.
-                                        </AlertDialogDescription>
+                                      <AlertDialogHeader className="text-center items-center space-y-4">
+                                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                                            <Trash2 className="h-8 w-8 text-red-600" />
+                                        </div>
+                                        <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد الحذف</AlertDialogTitle>
                                       </AlertDialogHeader>
-                                      <AlertDialogFooter className="flex-row justify-start gap-3 pt-4">
-                                        <AlertDialogAction onClick={() => handleDeleteComment(comment.id)} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700" disabled={isDeletingComment}>
-                                          {isDeletingComment ? <LoaderIcon className="animate-spin" /> : "حذف"}
-                                        </AlertDialogAction>
-                                        <AlertDialogCancel className="w-full sm:w-auto mt-0">إلغاء</AlertDialogCancel>
+
+                                      <AlertDialogDescription asChild>
+                                          <div className="text-center text-base text-gray-600 space-y-4">
+                                              <p>هل أنت متأكد أنك تريد حذف هذا الإجراء؟</p>
+                                              <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
+                                                  سيتم حذف التعليق: <span className="font-bold italic">"{comment.text.substring(0, 30)}..."</span>
+                                              </div>
+                                              <p className="text-xs text-gray-500">لا يمكن التراجع عن هذا الإجراء.</p>
+                                          </div>
+                                      </AlertDialogDescription>
+                                      
+                                      <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
+                                          <AlertDialogAction onClick={() => handleDeleteComment(comment.id)} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg" disabled={isDeletingComment}>
+                                              {isDeletingComment ? <LoaderIcon className="animate-spin" /> : "حذف نهائي"}
+                                          </AlertDialogAction>
+                                          <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
                                       </AlertDialogFooter>
                                     </AlertDialogContent>
                                   </AlertDialog>

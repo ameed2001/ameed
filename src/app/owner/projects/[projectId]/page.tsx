@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
@@ -12,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2,
-  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, Send, MapPin
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, Send, MapPin, AlertTriangle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -422,19 +423,22 @@ export default function OwnerProjectDetailPage() {
                                         <Trash2 className="h-4 w-4" />
                                       </Button>
                                     </AlertDialogTrigger>
-                                    <AlertDialogContent dir="rtl">
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          هل أنت متأكد أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleDeleteComment(comment.id)} className="bg-destructive hover:bg-destructive/90" disabled={isDeletingComment}>
-                                          {isDeletingComment ? <LoaderIcon className="animate-spin" /> : "حذف"}
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
+                                    <AlertDialogContent dir="rtl" className="sm:max-w-md">
+                                        <AlertDialogHeader className="text-center items-center">
+                                            <div className="p-3 bg-red-100 rounded-full mb-2">
+                                                <AlertTriangle className="h-8 w-8 text-destructive" />
+                                            </div>
+                                            <AlertDialogTitle className="text-xl font-bold">تأكيد الحذف</AlertDialogTitle>
+                                            <AlertDialogDescription className="text-muted-foreground">
+                                            هل أنت متأكد أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter className="flex-row justify-center gap-2 pt-4">
+                                            <AlertDialogCancel className="w-full sm:w-auto">إلغاء</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleDeleteComment(comment.id)} className="w-full sm:w-auto bg-destructive hover:bg-destructive/90" disabled={isDeletingComment}>
+                                            {isDeletingComment ? <LoaderIcon className="animate-spin" /> : "نعم، قم بالحذف"}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
                                     </AlertDialogContent>
                                   </AlertDialog>
                                 </div>

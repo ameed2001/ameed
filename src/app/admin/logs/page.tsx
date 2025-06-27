@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from '@/components/ui/button';
-import { ScrollText, Search, Download, Loader2, Trash2 } from 'lucide-react';
+import { ScrollText, Search, Download, Loader2, Trash2, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
@@ -142,18 +142,21 @@ export default function AdminLogsPage() {
                   {isDeleting ? "جاري الحذف..." : "حذف جميع السجلات"}
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent dir="rtl">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>تأكيد حذف جميع السجلات</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    هل أنت متأكد أنك تريد حذف جميع سجلات النظام بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.
-                  </AlertDialogDescription>
+              <AlertDialogContent dir="rtl" className="sm:max-w-md">
+                <AlertDialogHeader className="text-center items-center">
+                    <div className="p-3 bg-red-100 rounded-full mb-2">
+                        <AlertTriangle className="h-8 w-8 text-destructive" />
+                    </div>
+                    <AlertDialogTitle className="text-xl font-bold">تأكيد حذف جميع السجلات</AlertDialogTitle>
+                    <AlertDialogDescription className="text-muted-foreground">
+                        هل أنت متأكد أنك تريد حذف جميع سجلات النظام بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.
+                    </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteAllLogs} className="bg-destructive hover:bg-destructive/90">
-                    {isDeleting ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : "تأكيد الحذف"}
-                  </AlertDialogAction>
+                <AlertDialogFooter className="flex-row justify-center gap-2 pt-4">
+                    <AlertDialogCancel className="w-full sm:w-auto">إلغاء</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteAllLogs} className="w-full sm:w-auto bg-destructive hover:bg-destructive/90">
+                        {isDeleting ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : "نعم، قم بالحذف"}
+                    </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>

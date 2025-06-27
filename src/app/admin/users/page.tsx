@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Edit, Trash2, KeyRound, UserCheck, Loader2, UserPlus } from 'lucide-react'; 
+import { Search, Edit, Trash2, KeyRound, UserCheck, Loader2, UserPlus, AlertTriangle } from 'lucide-react'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   type UserDocument as User, 
@@ -256,23 +256,22 @@ export default function AdminUsersPage() {
                                   <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
                                   </Button>
                               </AlertDialogTrigger>
-                              <AlertDialogContent dir="rtl">
-                                  <AlertDialogHeader>
-                                  <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                      هل أنت متأكد أنك تريد حذف المستخدم "{user.name}"؟ لا يمكن التراجع عن هذا الإجراء.
+                              <AlertDialogContent dir="rtl" className="sm:max-w-md">
+                                <AlertDialogHeader className="text-center items-center">
+                                  <div className="p-3 bg-red-100 rounded-full mb-2">
+                                    <AlertTriangle className="h-8 w-8 text-destructive" />
+                                  </div>
+                                  <AlertDialogTitle className="text-xl font-bold">تأكيد الحذف</AlertDialogTitle>
+                                  <AlertDialogDescription className="text-muted-foreground">
+                                    هل أنت متأكد أنك تريد حذف المستخدم "{user.name}"؟ لا يمكن التراجع عن هذا الإجراء.
                                   </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel
-                                      className="bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground"
-                                    >
-                                      إلغاء
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="bg-destructive hover:bg-destructive/90">
-                                      حذف
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter className="flex-row justify-center gap-2 pt-4">
+                                  <AlertDialogCancel className="w-full sm:w-auto">إلغاء</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="w-full sm:w-auto bg-destructive hover:bg-destructive/90">
+                                      نعم، قم بالحذف
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
                               </AlertDialogContent>
                               </AlertDialog>
                           )}

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin, FolderKanban, Trash2, Printer } from 'lucide-react';
+import { Search, Eye, Loader2, Info, PlusCircle, Edit, Archive, MapPin, FolderKanban, Trash2, Printer, AlertTriangle } from 'lucide-react';
 import { getProjects as dbGetProjects, updateProject, deleteProject as dbDeleteProject, type Project, type ProjectStatusType } from "@/lib/db";
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -320,17 +320,20 @@ export default function EngineerProjectsPage() {
                                <Archive className="h-5 w-5" />
                              </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent dir="rtl">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>تأكيد الأرشفة</AlertDialogTitle>
-                              <AlertDialogDescription>
+                          <AlertDialogContent dir="rtl" className="sm:max-w-md">
+                            <AlertDialogHeader className="text-center items-center">
+                              <div className="p-3 bg-amber-100 rounded-full mb-2">
+                                <Archive className="h-8 w-8 text-amber-600" />
+                              </div>
+                              <AlertDialogTitle className="text-xl font-bold">تأكيد الأرشفة</AlertDialogTitle>
+                              <AlertDialogDescription className="text-muted-foreground">
                                 هل أنت متأكد أنك تريد أرشفة المشروع "{project.name}"؟ سيتم إخفاؤه من القائمة النشطة.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleArchiveAction(project.id, project.name)} className="bg-amber-500 hover:bg-amber-600">
-                                تأكيد الأرشفة
+                            <AlertDialogFooter className="flex-row justify-center gap-2 pt-4">
+                              <AlertDialogCancel className="w-full sm:w-auto">إلغاء</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleArchiveAction(project.id, project.name)} className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white">
+                                نعم، قم بالأرشفة
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -341,17 +344,20 @@ export default function EngineerProjectsPage() {
                                <Trash2 className="h-5 w-5" />
                              </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent dir="rtl">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
-                              <AlertDialogDescription>
+                          <AlertDialogContent dir="rtl" className="sm:max-w-md">
+                            <AlertDialogHeader className="text-center items-center">
+                              <div className="p-3 bg-red-100 rounded-full mb-2">
+                                <AlertTriangle className="h-8 w-8 text-destructive" />
+                              </div>
+                              <AlertDialogTitle className="text-xl font-bold">تأكيد الحذف</AlertDialogTitle>
+                              <AlertDialogDescription className="text-muted-foreground">
                                 هل أنت متأكد أنك تريد حذف المشروع "{project.name}" نهائياً؟ لا يمكن التراجع عن هذا الإجراء.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeleteProject(project.id, project.name)} className="bg-destructive hover:bg-destructive/90">
-                                تأكيد الحذف
+                            <AlertDialogFooter className="flex-row justify-center gap-2 pt-4">
+                              <AlertDialogCancel className="w-full sm:w-auto">إلغاء</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDeleteProject(project.id, project.name)} className="w-full sm:w-auto bg-destructive hover:bg-destructive/90">
+                                نعم، قم بالحذف
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>

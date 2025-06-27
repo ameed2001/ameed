@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getDb } from './mongodb';
@@ -399,19 +400,36 @@ export async function getProjects(userIdentifier: string): Promise<GetProjectsRe
     const db = await getDb();
     const projectsCollection = db.collection<ProjectSchema>('projects');
     const usersCollection = db.collection<UserSchema>('users');
-    const user = await usersCollection.findOne({ $or: [{ email: userIdentifier }, { name: userIdentifier }] });
 
     let query = {};
-    if (userIdentifier !== 'admin-id' && user?.role !== 'ADMIN') {
-        if (!user) {
-            await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch with unknown user: ${userIdentifier}`);
-            return { success: true, projects: [] };
-        }
-        if (user.role === 'OWNER') {
-            query = { linkedOwnerEmail: user.email };
-        } else if (user.role === 'ENGINEER') {
-            query = { engineer: user.name };
-        }
+
+    // Handles the generic admin ID string and any user who is an admin.
+    if (userIdentifier === 'admin-id') {
+      query = {}; // Admin sees all projects
+    } else {
+      // Find the user by their unique email or their potentially non-unique name
+      const user = await usersCollection.findOne({ $or: [{ email: userIdentifier }, { name: userIdentifier }] });
+
+      if (!user) {
+        await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch with unknown user: ${userIdentifier}`);
+        return { success: true, projects: [] };
+      }
+
+      // Assign query based on the found user's role
+      switch (user.role) {
+        case 'ADMIN':
+          query = {}; // Admins see all projects
+          break;
+        case 'OWNER':
+          query = { linkedOwnerEmail: user.email };
+          break;
+        case 'ENGINEER':
+          query = { engineer: user.name };
+          break;
+        default:
+          // If the user has an unrecognized role, they see no projects.
+          return { success: true, projects: [] };
+      }
     }
     
     const projectDocs = await projectsCollection.find(query).sort({ createdAt: -1 }).toArray();

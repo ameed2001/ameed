@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Instagram, Facebook, Clock, BookOpen } from 'lucide-react';
+import { Instagram, Facebook, Clock, BookOpen, CalendarDays } from 'lucide-react';
 // import { getSystemSettings, type SystemSettingsDocument } from '@/lib/db'; // Temporarily removed
 
 // SVG for WhatsApp icon
@@ -26,12 +26,15 @@ const surahAlFatiha = [
 
 const Header = () => {
   const [formattedDisplayTime, setFormattedDisplayTime] = useState('');
+  const [gregorianDate, setGregorianDate] = useState('');
+  const [hijriDate, setHijriDate] = useState('');
   const [dailyVerse, setDailyVerse] = useState('');
   const siteName = "المحترف لحساب الكميات"; // Static site name for now
 
   useEffect(() => {
-    const updateTime = () => {
+    const updateDateTime = () => {
       const now = new Date();
+      // Set time
       const timeString = now.toLocaleTimeString('en-US', {
         timeZone: "Asia/Jerusalem",
         hour: '2-digit',
@@ -47,19 +50,23 @@ const Header = () => {
       } else {
         setFormattedDisplayTime(timeString);
       }
+
+      // Set dates
+      // Gregorian Date
+      const gregorianFormatter = new Intl.DateTimeFormat('ar-EG', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+      setGregorianDate(gregorianFormatter.format(now));
+
+      // Hijri Date
+      const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+      setHijriDate(hijriFormatter.format(now));
     };
 
-    updateTime();
-    const timerId = setInterval(updateTime, 1000);
-
-    // // Fetch site name from settings - Temporarily disabled
-    // async function fetchSiteName() {
-    //   const settings = await getSystemSettings();
-    //   if (settings) {
-    //     setSiteName(settings.siteName);
-    //   }
-    // }
-    // fetchSiteName();
+    updateDateTime(); // Initial call
+    const timerId = setInterval(updateDateTime, 1000); // Update every second
 
     // Select daily verse
     const today = new Date();
@@ -69,7 +76,6 @@ const Header = () => {
     const dayOfYear = Math.floor(diff / oneDay);
     const verseIndex = (dayOfYear - 1) % surahAlFatiha.length;
     setDailyVerse(surahAlFatiha[verseIndex >= 0 ? verseIndex : surahAlFatiha.length -1]);
-
 
     return () => {
       clearInterval(timerId);
@@ -92,21 +98,29 @@ const Header = () => {
           />
           <div className="mr-3 text-right">
             <h1 className="text-app-red text-2xl md:text-3xl font-bold">
- {siteName} {/* Display dynamic site name */}
+              {siteName}
             </h1>
             <p className="text-sm text-gray-300">الحديد والباطون للأبنية الإنشائية</p>
           </div>
         </div>
         
         <div className="flex flex-col sm:flex-row items-center gap-x-4 gap-y-3 text-right">
+          
           <div 
-            className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center justify-start gap-2"
-            dir="ltr"
+            className="bg-header-info-bg text-white px-3 py-1.5 rounded-lg text-sm shadow-md flex items-center justify-start gap-3"
           >
-            <span className="tabular-nums font-medium min-w-[10ch] text-left text-xl"> 
-              {formattedDisplayTime || 'Loading...'}
-            </span>
-            <Clock size={20} className="flex-shrink-0" />
+            <div className="flex items-center gap-2" dir="ltr">
+              <span className="tabular-nums font-medium min-w-[10ch] text-left text-xl"> 
+                {formattedDisplayTime || '...'}
+              </span>
+              <Clock size={20} className="flex-shrink-0 text-app-gold" />
+            </div>
+            <div className="w-px h-8 bg-gray-600"></div>
+            <div className="text-right">
+                <p className="font-medium text-gray-200 text-xs">{gregorianDate || '...'}</p>
+                <p className="font-medium text-gray-400 text-xs">{hijriDate || '...'}</p>
+            </div>
+            <CalendarDays size={20} className="flex-shrink-0 text-app-gold" />
           </div>
 
           <div className="bg-header-info-bg text-white p-3 rounded-lg text-xs shadow-md min-w-[250px] max-w-xs">
@@ -141,4 +155,3 @@ const Header = () => {
 };
 
 export default Header;
-    

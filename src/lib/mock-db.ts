@@ -1,2 +1,3 @@
-// This file is being removed as the project converts to MongoDB.
-// Data access will be handled by src/lib/db.ts using the MongoDB driver.
+// This file is no longer needed as the application has been migrated to MongoDB.
+// The new data access logic is in /src/lib/db.ts.
+// This file can be safely deleted.

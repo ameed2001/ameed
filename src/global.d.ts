@@ -1,2 +1,2 @@
-// This file can be deleted as Prisma is being removed.
-// If global types are needed for MongoDB, they can be defined elsewhere or here.
+// This file is no longer needed as Prisma has been removed from the project.
+// It can be safely deleted.

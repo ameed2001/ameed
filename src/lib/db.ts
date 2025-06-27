@@ -118,7 +118,7 @@ export interface TimelineTask {
   id: string;
   name: string;
   startDate: string; // ISO string
-  endDate: string; // ISO string
+  endDate: string;   // ISO string
   color: string;
   status: TaskStatus;
   progress?: number;
@@ -178,14 +178,24 @@ export interface SystemSettingsDocument {
 
 // ---- HELPER FUNCTIONS ----
 
+function isValidDate(d: any) {
+  return d instanceof Date && !isNaN(d.getTime());
+}
+
+function toSafeDateString(d: any, defaultVal: string = ''): string {
+    if (!d) return defaultVal;
+    const date = new Date(d);
+    return isValidDate(date) ? date.toISOString() : defaultVal;
+}
+
 function mongoDocToUser(doc: WithId<UserSchema>): UserDocument {
   const { _id, ...rest } = doc;
   const now = new Date().toISOString();
   return {
     ...rest,
     id: _id.toHexString(),
-    createdAt: rest.createdAt ? new Date(rest.createdAt).toISOString() : now,
-    updatedAt: rest.updatedAt ? new Date(rest.updatedAt).toISOString() : now,
+    createdAt: toSafeDateString(rest.createdAt, now),
+    updatedAt: toSafeDateString(rest.updatedAt, now),
   };
 }
 
@@ -195,29 +205,27 @@ function mongoDocToProject(doc: WithId<ProjectSchema>): Project {
     return {
         ...rest,
         id: _id.toHexString(),
-        startDate: rest.startDate ? new Date(rest.startDate).toISOString().split('T')[0] : '',
-        endDate: rest.endDate ? new Date(rest.endDate).toISOString().split('T')[0] : '',
-        createdAt: rest.createdAt ? new Date(rest.createdAt).toISOString() : now.toISOString(),
+        startDate: toSafeDateString(rest.startDate, '').split('T')[0],
+        endDate: toSafeDateString(rest.endDate, '').split('T')[0],
+        createdAt: toSafeDateString(rest.createdAt, now.toISOString()),
     };
 }
 
 function mongoDocToLogEntry(doc: WithId<LogSchema>): LogEntry {
   const { _id, timestamp, ...rest } = doc;
-  const now = new Date().toISOString();
   return {
     ...rest,
     id: _id.toHexString(),
-    timestamp: timestamp ? new Date(timestamp).toISOString() : now,
+    timestamp: toSafeDateString(timestamp, new Date().toISOString()),
   };
 }
 
 function mongoDocToCostReport(doc: WithId<CostReportSchema>): CostReport {
     const { _id, createdAt, ...rest } = doc;
-    const now = new Date().toISOString();
     return {
         ...rest,
         id: _id.toHexString(),
-        createdAt: createdAt ? new Date(createdAt).toISOString() : now,
+        createdAt: toSafeDateString(createdAt, new Date().toISOString()),
     };
 }
 

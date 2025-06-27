@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getDb } from './mongodb';
@@ -408,8 +409,9 @@ export async function loginUser(email: string, password_input: string): Promise<
     const user = mongoDocToUser(userDoc);
     return { success: true, user };
   } catch (error: any) {
+    console.error(`[db.ts] loginUser: A critical error occurred for ${email}:`, error);
     await logAction('USER_LOGIN_FAILURE', 'ERROR', `DB error on login for ${email}: ${error.message}`);
-    return { success: false, message: "حدث خطأ أثناء تسجيل الدخول.", errorType: 'db_error' };
+    return { success: false, message: "خطأ في الاتصال بالبيانات. يرجى التأكد من صحة إعدادات الاتصال بقاعدة البيانات في ملف .env", errorType: 'db_error' };
   }
 }
 
@@ -419,7 +421,6 @@ export interface GetProjectsResult {
   message?: string;
 }
 
-// Corrected getProjects function as per user feedback
 export async function getProjects(userId: string): Promise<GetProjectsResult> {
   try {
     const db = await getDb();
@@ -456,8 +457,9 @@ export async function getProjects(userId: string): Promise<GetProjectsResult> {
     const projectDocs = await projectsCollection.find(query).sort({ createdAt: -1 }).toArray();
     return { success: true, projects: projectDocs.map(mongoDocToProject) };
   } catch (error: any) {
-    await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Error fetching projects for user ${userId}: ${error.message}`);
-    return { success: false, message: "فشل تحميل المشاريع." };
+    console.error(`[db.ts] getProjects: A critical error occurred for user ${userId}:`, error);
+    await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Critical error fetching projects for user ${userId}: ${error.message}`);
+    return { success: false, message: "خطأ في الاتصال بالبيانات. يرجى التأكد من صحة إعدادات الاتصال بقاعدة البيانات في ملف .env" };
   }
 }
 
@@ -559,8 +561,9 @@ export async function getUsers(): Promise<{ success: boolean, users?: UserDocume
     const usersDocs = await db.collection<UserSchema>('users').find().toArray();
     return { success: true, users: usersDocs.map(mongoDocToUser) };
   } catch (error: any) {
+    console.error(`[db.ts] getUsers: A critical error occurred:`, error);
     await logAction('USERS_FETCH_FAILURE', 'ERROR', `Error fetching all users: ${error.message}`);
-    return { success: false, message: "فشل تحميل قائمة المستخدمين." };
+    return { success: false, message: "خطأ في الاتصال بالبيانات. يرجى التأكد من صحة إعدادات الاتصال بقاعدة البيانات في ملف .env" };
   }
 }
 
@@ -730,3 +733,5 @@ export async function addCostReport(reportData: Omit<CostReport, 'id' | 'created
         return null;
     }
 }
+
+    

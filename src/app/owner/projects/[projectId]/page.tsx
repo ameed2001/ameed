@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
-  CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail,
-  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon
+  CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2,
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, Send
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -21,6 +21,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { X } from 'lucide-react';
 import { findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto } from '@/lib/db';
 import Link from 'next/link';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
 
 export default function OwnerProjectDetailPage() {
   const params = useParams();
@@ -35,6 +37,9 @@ export default function OwnerProjectDetailPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
 
+  const [editingComment, setEditingComment] = useState<{ id: string; text: string } | null>(null);
+  const [isDeletingComment, setIsDeletingComment] = useState(false);
+
   useEffect(() => {
     setIsClient(true);
     const email = localStorage.getItem('userEmail');
@@ -42,7 +47,7 @@ export default function OwnerProjectDetailPage() {
   }, []);
 
   const refreshProjectFromDb = async () => { 
-    if (!userEmail) return;
+    if (!userEmail && !isClient) return;
     const currentProject = await findProjectById(projectId); 
     if (currentProject && currentProject.linkedOwnerEmail !== userEmail) {
       setProject(null);
@@ -52,12 +57,14 @@ export default function OwnerProjectDetailPage() {
     }
     setProject(currentProject ? {...currentProject} : null); 
   };
-
+  
   useEffect(() => {
     if(isClient && userEmail) {
       refreshProjectFromDb();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, userEmail, isClient]); 
+
 
   const handleCommentSubmit = async (e: FormEvent) => { 
     e.preventDefault();
@@ -99,6 +106,35 @@ export default function OwnerProjectDetailPage() {
     setIsContactEngineerModalOpen(false);
   };
 
+  const handleUpdateComment = async () => {
+    if (!editingComment || !project) return;
+    const updatedComments = project.comments.map(c =>
+      c.id === editingComment.id ? { ...c, text: editingComment.text, date: new Date().toISOString() } : c
+    );
+    const result = await dbUpdateProject(project.id.toString(), { comments: updatedComments });
+    if (result.success) {
+      toast({ title: "تم تحديث التعليق" });
+      setEditingComment(null);
+      await refreshProjectFromDb();
+    } else {
+      toast({ title: "فشل تحديث التعليق", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!project) return;
+    setIsDeletingComment(true);
+    const updatedComments = project.comments.filter(c => c.id !== commentId);
+    const result = await dbUpdateProject(project.id.toString(), { comments: updatedComments });
+    if (result.success) {
+      toast({ title: "تم حذف التعليق" });
+      await refreshProjectFromDb();
+    } else {
+      toast({ title: "فشل حذف التعليق", variant: "destructive" });
+    }
+    setIsDeletingComment(false);
+  };
+
   if (!project) {
     return (
       <div className="container mx-auto py-10 px-4 text-center">
@@ -117,7 +153,6 @@ export default function OwnerProjectDetailPage() {
   return (
     <Dialog open={isContactEngineerModalOpen} onOpenChange={setIsContactEngineerModalOpen}>
       <div className="container mx-auto py-8 px-4 text-right">
-        {/* بطاقة معلومات المشروع الرئيسية */}
         <Card className="bg-gradient-to-r from-white to-gray-50 shadow-lg border-0 mb-8">
           <CardHeader className="pb-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -180,11 +215,8 @@ export default function OwnerProjectDetailPage() {
           </CardContent>
         </Card>
 
-        {/* شبكة المحتوى الرئيسي */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* القسم الرئيسي (2/3 الشاشة) */}
           <div className="lg:col-span-2 space-y-6">
-            {/* معرض الصور */}
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
@@ -222,9 +254,7 @@ export default function OwnerProjectDetailPage() {
             </Card>
           </div>
 
-          {/* الشريط الجانبي (1/3 الشاشة) */}
           <div className="space-y-6">
-            {/* الجدول الزمني */}
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
@@ -245,7 +275,6 @@ export default function OwnerProjectDetailPage() {
               </CardContent>
             </Card>
 
-            {/* تقارير الكميات */}
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
@@ -266,11 +295,10 @@ export default function OwnerProjectDetailPage() {
               </CardContent>
             </Card>
 
-            {/* التعليقات والاستفسارات */}
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
-                  <MessageSquare size={20} className="text-app-red" /> التواصل مع المهندس
+                  <MessageSquare size={20} className="text-app-red" /> الاستفسارات والتعليقات
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -299,7 +327,10 @@ export default function OwnerProjectDetailPage() {
                         جاري الإرسال...
                       </>
                     ) : (
-                      "إرسال التعليق"
+                      <>
+                        <Send className="mr-2 h-4 w-4" />
+                        إرسال التعليق
+                      </>
                     )}
                   </Button>
                 </form>
@@ -332,17 +363,64 @@ export default function OwnerProjectDetailPage() {
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex justify-between items-baseline">
-                              <p className="text-sm font-medium text-gray-900 truncate">
-                                {comment.user}
-                              </p>
-                              <p className="text-xs text-gray-500 whitespace-nowrap">
-                                {new Date(comment.date).toLocaleDateString('ar-EG')}
-                              </p>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {comment.user}
+                                </p>
+                                <p className="text-xs text-gray-500 whitespace-nowrap">
+                                  {new Date(comment.date).toLocaleString('ar-EG', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                              </div>
+                              {comment.user === 'المالك' && (
+                                <div className="flex items-center gap-1">
+                                  <Button variant="ghost" size="icon" className="h-7 w-7 text-blue-600 hover:bg-blue-100" onClick={() => setEditingComment({ id: comment.id, text: comment.text })}>
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button variant="ghost" size="icon" className="h-7 w-7 text-red-600 hover:bg-red-100">
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent dir="rtl">
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          هل أنت متأكد أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDeleteComment(comment.id)} className="bg-destructive hover:bg-destructive/90" disabled={isDeletingComment}>
+                                          {isDeletingComment ? <LoaderIcon className="animate-spin" /> : "حذف"}
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </div>
+                              )}
                             </div>
-                            <p className="mt-1 text-sm text-gray-700">
-                              {comment.text}
-                            </p>
+                            
+                            {editingComment?.id === comment.id ? (
+                              <div className="mt-2 space-y-2">
+                                <Textarea
+                                  value={editingComment.text}
+                                  onChange={(e) => setEditingComment({ ...editingComment, text: e.target.value })}
+                                  className="bg-white"
+                                  rows={3}
+                                />
+                                <div className="flex gap-2 justify-end">
+                                  <Button size="sm" variant="ghost" onClick={() => setEditingComment(null)}>إلغاء</Button>
+                                  <Button size="sm" onClick={handleUpdateComment}>حفظ</Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="mt-1 text-sm text-gray-700 break-words">
+                                {comment.text}
+                              </p>
+                            )}
+
                           </div>
                         </div>
                       </div>
@@ -359,7 +437,6 @@ export default function OwnerProjectDetailPage() {
         </div>
       </div>
 
-      {/* نافذة مراسلة المهندس */}
       <DialogContent className="sm:max-w-md bg-white rounded-lg">
         <DialogHeader className="text-right">
           <DialogTitle className="text-xl font-bold text-app-red">

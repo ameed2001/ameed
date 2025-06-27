@@ -1,51 +1,26 @@
-
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect, type FormEvent } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
-  Briefcase,
-  MapPin,
-  HardHat,
-  User as UserIcon,
-  Wallet,
-  CalendarDays,
-  Image as ImageIcon, 
-  FileText, 
-  MessageSquare, 
-  Send, 
-  GanttChartSquare, 
-  Loader2 as LoaderIcon, 
-  Mail,
-  ArrowLeft,
-  Info
+  CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail,
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose, DialogDescription } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
-import { findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment } from '@/lib/db';
+import { findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto } from '@/lib/db';
 import Link from 'next/link';
-
-// Component to render a single detail item with an icon
-const DetailItem = ({ icon: Icon, label, value }: { icon: React.ElementType, label: string, value: string | number | undefined }) => (
-  <div className="flex items-start gap-3">
-    <Icon className="h-5 w-5 text-app-gold flex-shrink-0 mt-1" />
-    <div>
-      <p className="text-sm font-semibold text-gray-500">{label}</p>
-      <p className="text-base font-medium text-gray-800">{value || 'غير محدد'}</p>
-    </div>
-  </div>
-);
-
 
 export default function OwnerProjectDetailPage() {
   const params = useParams();
@@ -59,7 +34,6 @@ export default function OwnerProjectDetailPage() {
   const [engineerMessage, setEngineerMessage] = useState('');
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
@@ -69,23 +43,20 @@ export default function OwnerProjectDetailPage() {
 
   const refreshProjectFromDb = async () => { 
     if (!userEmail) return;
-    setIsLoading(true);
     const currentProject = await findProjectById(projectId); 
-    if (!currentProject || currentProject.linkedOwnerEmail !== userEmail) {
-        setProject(null);
-        toast({ title: "غير مصرح به", description: "ليس لديك صلاحية لعرض هذا المشروع.", variant: "destructive" });
-        router.push('/owner/dashboard');
-        return;
+    if (currentProject && currentProject.linkedOwnerEmail !== userEmail) {
+      setProject(null);
+      toast({ title: "غير مصرح به", description: "ليس لديك صلاحية لعرض هذا المشروع.", variant: "destructive" });
+      router.push('/owner/dashboard');
+      return;
     }
-    setProject(currentProject); 
-    setIsLoading(false);
+    setProject(currentProject ? {...currentProject} : null); 
   };
 
   useEffect(() => {
     if(isClient && userEmail) {
-        refreshProjectFromDb();
+      refreshProjectFromDb();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, userEmail, isClient]); 
 
   const handleCommentSubmit = async (e: FormEvent) => { 
@@ -103,15 +74,15 @@ export default function OwnerProjectDetailPage() {
     };
     
     const updatedProjectResult = await dbUpdateProject(project.id.toString(), { 
-        comments: [...(project.comments || []), commentToAdd]
+      comments: [...(project.comments || []), commentToAdd]
     });
 
     if (updatedProjectResult.success) {
-        refreshProjectFromDb();
-        setNewComment('');
-        toast({ title: "تم إضافة التعليق", description: "تم نشر تعليقك بنجاح." });
+      refreshProjectFromDb();
+      setNewComment('');
+      toast({ title: "تم إضافة التعليق", description: "تم نشر تعليقك بنجاح." });
     } else {
-        toast({ title: "خطأ", description: "فشل إضافة التعليق.", variant: "destructive" });
+      toast({ title: "خطأ", description: "فشل إضافة التعليق.", variant: "destructive" });
     }
     setIsSubmittingComment(false);
   };
@@ -119,8 +90,8 @@ export default function OwnerProjectDetailPage() {
   const handleSendEngineerMessage = (e: FormEvent) => {
     e.preventDefault();
     if (!engineerMessage.trim() || !project || !project.engineer) {
-        toast({ title: "خطأ", description: "يرجى كتابة رسالة.", variant: "destructive" });
-        return;
+      toast({ title: "خطأ", description: "يرجى كتابة رسالة.", variant: "destructive" });
+      return;
     }
     console.log("Sending message to engineer:", project.engineer, "Message:", engineerMessage);
     toast({ title: "تم إرسال الرسالة", description: `تم إرسال رسالتك إلى المهندس ${project.engineer} (محاكاة).` });
@@ -128,248 +99,317 @@ export default function OwnerProjectDetailPage() {
     setIsContactEngineerModalOpen(false);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-          <LoaderIcon className="h-12 w-12 animate-spin text-app-gold" />
-      </div>
-    );
-  }
-
   if (!project) {
     return (
       <div className="container mx-auto py-10 px-4 text-center">
-        <Alert variant="destructive">
-          <Info className="h-5 w-5" />
-          <AlertTitle>المشروع غير موجود</AlertTitle>
+        <Alert variant="destructive" className="max-w-2xl mx-auto">
+          <FileText className="h-5 w-5" />
+          <AlertTitle>المشروع غير موجود أو غير مصرح لك بعرضه</AlertTitle>
           <AlertDescription>لم يتم العثور على تفاصيل المشروع المطلوب أو لا تملك الصلاحية اللازمة.</AlertDescription>
         </Alert>
-         <Button asChild className="mt-6 bg-app-gold hover:bg-yellow-600 text-primary-foreground">
-           <Link href="/owner/projects">العودة إلى قائمة المشاريع</Link>
-         </Button>
+        <Button asChild className="mt-6 bg-app-gold hover:bg-yellow-600 text-primary-foreground">
+          <Link href="/owner/projects">العودة إلى قائمة المشاريع</Link>
+        </Button>
       </div>
     );
   }
 
   return (
-      <Dialog open={isContactEngineerModalOpen} onOpenChange={setIsContactEngineerModalOpen}>
-        <div className="space-y-8 text-right">
-            {/* Main Header Card */}
-            <Card className="bg-white/95 shadow-xl overflow-hidden">
-                <CardHeader className="bg-gray-50 border-b p-6">
-                    <div className="flex justify-between items-start flex-wrap gap-4">
-                        <div>
-                            <div className="flex items-center gap-3">
-                                <Briefcase className="h-8 w-8 text-app-red"/>
-                                <CardTitle className="text-3xl font-bold text-app-red">{project.name}</CardTitle>
-                            </div>
-                            <CardDescription className="text-gray-700 mt-2 max-w-2xl">{project.description}</CardDescription>
-                        </div>
-                        <div className="flex-shrink-0">
-                           {project.engineer && (
-                                <Button variant="outline" size="sm" className="border-blue-500 text-blue-600 hover:bg-blue-100 hover:text-black" onClick={() => setIsContactEngineerModalOpen(true)}>
-                                    <Mail size={16} className="ms-1.5" /> مراسلة المهندس
-                                </Button>
-                           )}
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent className="p-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                        <DetailItem icon={MapPin} label="الموقع" value={project.location} />
-                        <DetailItem icon={HardHat} label="المهندس المسؤول" value={project.engineer} />
-                        <DetailItem icon={UserIcon} label="العميل" value={project.clientName} />
-                        <DetailItem icon={Wallet} label="الميزانية" value={project.budget ? `${project.budget.toLocaleString()} شيكل` : undefined} />
-                        <DetailItem icon={CalendarDays} label="تاريخ البدء" value={project.startDate} />
-                        <DetailItem icon={CalendarDays} label="التسليم المتوقع" value={project.endDate} />
-                    </div>
-                    <Separator className="my-4"/>
-                    <div>
-                        <Label className="text-base font-semibold text-gray-800">التقدم العام للمشروع:</Label>
-                        <div className="flex items-center gap-4 mt-2">
-                            <Progress value={project.overallProgress} className="h-3 flex-grow" />
-                            <div className="flex items-center gap-2">
-                                <span className="font-bold text-app-gold text-lg">{project.overallProgress}%</span>
-                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                                    project.status === 'مكتمل' ? 'bg-green-100 text-green-700' :
-                                    project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-700' :
-                                    'bg-blue-100 text-blue-700' 
-                                }`}>
-                                    {project.status}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
+    <Dialog open={isContactEngineerModalOpen} onOpenChange={setIsContactEngineerModalOpen}>
+      <div className="container mx-auto py-8 px-4 text-right">
+        {/* بطاقة معلومات المشروع الرئيسية */}
+        <Card className="bg-gradient-to-r from-white to-gray-50 shadow-lg border-0 mb-8">
+          <CardHeader className="pb-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <CardTitle className="text-3xl font-bold text-app-red">{project.name}</CardTitle>
+                <CardDescription className="text-gray-600 mt-1">{project.description}</CardDescription>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                onClick={() => setIsContactEngineerModalOpen(true)}
+              >
+                <Mail size={18} className="ms-1.5" /> مراسلة المهندس
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-500">الموقع</p>
+                <p className="font-medium">{project.location || 'غير محدد'}</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-500">المهندس المسؤول</p>
+                <p className="font-medium">{project.engineer || 'غير محدد'}</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-500">الميزانية</p>
+                <p className="font-medium">{project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                <p className="text-sm text-gray-500">الفترة الزمنية</p>
+                <p className="font-medium">
+                  {project.startDate} - {project.endDate}
+                </p>
+              </div>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="pt-0">
+            <div className="space-y-4">
+              <div>
+                <Label className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                  <Percent size={18} /> التقدم العام للمشروع
+                </Label>
+                <div className="flex items-center gap-3 mt-2">
+                  <Progress value={project.overallProgress} className="h-3 flex-grow" />
+                  <span className="font-bold text-app-gold text-lg min-w-[3rem]">{project.overallProgress}%</span>
+                </div>
+              </div>
+              
+              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                project.status === 'مكتمل' ? 'bg-green-100 text-green-800' :
+                project.status === 'قيد التنفيذ' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-blue-100 text-blue-800'
+              }`}>
+                {project.status}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* شبكة المحتوى الرئيسي */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* القسم الرئيسي (2/3 الشاشة) */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* معرض الصور */}
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
+                  <ImageIcon size={20} className="text-app-red" /> معرض المشروع
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {project.photos && project.photos.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {project.photos.map((photo) => (
+                      <div key={photo.id} className="group relative rounded-lg overflow-hidden border border-gray-200">
+                        <Image 
+                          src={photo.src} 
+                          alt={photo.alt} 
+                          width={600} 
+                          height={400} 
+                          className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        {photo.caption && (
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <p className="text-white text-sm">{photo.caption}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">لا توجد صور متاحة</h3>
+                    <p className="mt-1 text-sm text-gray-500">سيتم إضافة صور المشروع قريباً</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* الشريط الجانبي (1/3 الشاشة) */}
+          <div className="space-y-6">
+            {/* الجدول الزمني */}
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
+                  <GanttChartSquare size={20} className="text-app-red" /> الجدول الزمني
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <p className="text-gray-600 text-sm">
+                    تتبع مراحل المشروع الرئيسية وتقدمها الزمني
+                  </p>
+                  <Button asChild className="w-full" variant="outline">
+                    <Link href={`/owner/projects/${projectId}/timeline`}>
+                      عرض التفاصيل الكاملة
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
             </Card>
 
-            {/* Main content grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left/Main column */}
-                <div className="lg:col-span-2 space-y-8">
-                    {/* Photos Card */}
-                    <Card className="bg-white/95 shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                                <ImageIcon size={28} /> صور تقدم المشروع
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                        {project.photos && project.photos.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            {project.photos.map((photo) => (
-                                <div key={photo.id} className="group relative rounded-lg overflow-hidden shadow-md">
-                                <Image 
-                                    src={photo.src} alt={photo.alt} width={600} height={400} 
-                                    className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                                    data-ai-hint={photo.dataAiHint} 
-                                />
-                                {photo.caption && (
-                                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        {photo.caption}
-                                    </div>
-                                )}
-                                </div>
-                            ))}
-                            </div>
-                        ) : (
-                            <div className="text-center text-gray-500 py-10 bg-gray-50 rounded-lg">
-                                <ImageIcon size={48} className="mx-auto text-gray-400 mb-3" />
-                                <p>لا توجد صور مرفوعة لهذا المشروع حالياً.</p>
-                            </div>
-                        )}
-                        </CardContent>
-                    </Card>
-
-                     {/* Comments Card */}
-                    <Card className="bg-white/95 shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                                <MessageSquare size={28} /> التعليقات والاستفسارات
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleCommentSubmit} className="space-y-4 mb-6">
-                                <div>
-                                    <Label htmlFor="newComment" className="font-semibold text-gray-700">أضف تعليقاً أو استفساراً:</Label>
-                                    <Textarea
-                                        id="newComment" value={newComment} onChange={(e) => setNewComment(e.target.value)}
-                                        placeholder="اكتب تعليقك هنا..." rows={3} className="mt-1 bg-white focus:border-app-gold"
-                                    />
-                                </div>
-                                <Button type="submit" className="bg-app-red hover:bg-red-700 text-white font-semibold" disabled={isSubmittingComment || !newComment.trim()}>
-                                    {isSubmittingComment ? <LoaderIcon className="ms-2 h-5 w-5 animate-spin" /> : <Send size={18} className="ms-2"/>}
-                                    إرسال
-                                </Button>
-                            </form>
-                            <Separator className="my-6" />
-                            <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
-                                {project.comments && project.comments.length > 0 ? (
-                                project.comments.slice().reverse().map((comment) => (
-                                    <div key={comment.id} className={cn(
-                                    "flex items-start gap-4 p-4 rounded-lg border shadow-sm",
-                                    comment.user === "المالك" ? "bg-yellow-50 border-app-gold" : "bg-gray-50 border-gray-200"
-                                    )}>
-                                    {comment.avatar && <Image src={comment.avatar} alt={comment.user} width={40} height={40} className="rounded-full mt-1" data-ai-hint={comment.dataAiHintAvatar || "avatar person"} />}
-                                    <div className="flex-grow">
-                                        <div className="flex items-center justify-between">
-                                            <p className="font-semibold text-gray-800">{comment.user}</p>
-                                            <p className="text-xs text-gray-500">{new Date(comment.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                                        </div>
-                                        <p className="text-gray-700 mt-1">{comment.text}</p>
-                                    </div>
-                                    </div>
-                                ))
-                                ) : (
-                                <div className="text-center text-gray-500 py-10 bg-gray-50 rounded-lg">
-                                    <MessageSquare size={48} className="mx-auto text-gray-400 mb-3" />
-                                    <p>لا توجد تعليقات حتى الآن. كن أول من يعلق!</p>
-                                </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+            {/* تقارير الكميات */}
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
+                  <BarChart3 size={20} className="text-app-red" /> تقارير الكميات
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <p className="text-gray-600 text-sm">
+                    {project.quantitySummary || "سيتم إضافة تقارير الكميات قريباً"}
+                  </p>
+                  <Button asChild className="w-full" variant="outline">
+                    <Link href={`/owner/projects/${projectId}/reports`}>
+                      عرض التقارير الكاملة
+                    </Link>
+                  </Button>
                 </div>
-                
-                {/* Right/Sidebar column */}
-                <div className="space-y-8">
-                     {/* Timeline Card */}
-                    <Card className="bg-white/95 shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                                <GanttChartSquare size={28} /> الجدول الزمني للمشروع
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-center">
-                            <p className="text-gray-600 mb-4">
-                                عرض الجدول الزمني المفصل للمشروع، بما في ذلك المراحل والمهام الرئيسية.
-                            </p>
-                            <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
-                                <Link href={`/owner/projects/${projectId}/timeline`}>
-                                    <ArrowLeft className="mr-2 h-4 w-4" />
-                                    عرض الجدول الزمني التفصيلي
-                                </Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
+              </CardContent>
+            </Card>
 
-                    {/* Quantity Reports Card */}
-                    <Card className="bg-white/95 shadow-lg">
-                        <CardHeader>
-                        <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                            <FileText size={28} /> تقارير الكميات
-                        </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                        <p className="text-gray-700 leading-relaxed">
-                            {project.quantitySummary || "لا توجد تقارير كميات ملخصة متاحة حالياً."}
-                        </p>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-        </div>
-
-        {/* Contact Engineer Modal */}
-        <DialogContent className="sm:max-w-md bg-white/95 custom-dialog-overlay">
-            <DialogHeader className="text-right">
-                <DialogTitle className="text-app-red text-xl font-bold">
-                    مراسلة المهندس: {project?.engineer || "غير محدد"}
-                </DialogTitle>
-                <DialogDescription className="text-gray-600">
-                    أرسل رسالة مباشرة إلى المهندس المسؤول عن هذا المشروع.
-                </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSendEngineerMessage} className="space-y-4 py-2 text-right">
-                <div>
-                    <Label htmlFor="engineerMessage" className="font-semibold text-gray-700">نص الرسالة:</Label>
+            {/* التعليقات والاستفسارات */}
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
+                  <MessageSquare size={20} className="text-app-red" /> التواصل مع المهندس
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleCommentSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="newComment" className="block text-sm font-medium text-gray-700 mb-1">
+                      أضف تعليقاً أو استفساراً
+                    </Label>
                     <Textarea
-                        id="engineerMessage"
-                        value={engineerMessage}
-                        onChange={(e) => setEngineerMessage(e.target.value)}
-                        placeholder="اكتب رسالتك هنا..."
-                        rows={5}
-                        className="mt-1 bg-white focus:border-app-gold"
+                      id="newComment" 
+                      value={newComment} 
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="اكتب تعليقك هنا..." 
+                      rows={3} 
+                      className="focus:ring-2 focus:ring-app-gold focus:border-app-gold"
                     />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-app-red hover:bg-red-700"
+                    disabled={isSubmittingComment || !newComment.trim()}
+                  >
+                    {isSubmittingComment ? (
+                      <>
+                        <LoaderIcon className="animate-spin mr-2 h-4 w-4" />
+                        جاري الإرسال...
+                      </>
+                    ) : (
+                      "إرسال التعليق"
+                    )}
+                  </Button>
+                </form>
+
+                <Separator className="my-4" />
+
+                <div className="space-y-4 max-h-64 overflow-y-auto pr-2">
+                  {project.comments && project.comments.length > 0 ? (
+                    project.comments.slice().reverse().map((comment) => (
+                      <div key={comment.id} className={cn(
+                        "p-3 rounded-lg border",
+                        comment.user === "المالك" 
+                          ? "bg-yellow-50 border-yellow-200" 
+                          : "bg-gray-50 border-gray-200"
+                      )}>
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0">
+                            {comment.avatar ? (
+                              <Image 
+                                src={comment.avatar} 
+                                alt={comment.user} 
+                                width={40} 
+                                height={40} 
+                                className="rounded-full"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">
+                                {comment.user.substring(0,1)}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-baseline">
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {comment.user}
+                              </p>
+                              <p className="text-xs text-gray-500 whitespace-nowrap">
+                                {new Date(comment.date).toLocaleDateString('ar-EG')}
+                              </p>
+                            </div>
+                            <p className="mt-1 text-sm text-gray-700">
+                              {comment.text}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">لا توجد تعليقات حتى الآن</p>
+                    </div>
+                  )}
                 </div>
-                <div className="flex justify-start gap-2">
-                    <Button type="submit" className="bg-app-red hover:bg-red-700 text-white">
-                        <Send size={18} className="ms-2"/> إرسال الرسالة
-                    </Button>
-                    <Button 
-                        type="button" 
-                        variant="secondary" 
-                        onClick={() => setIsContactEngineerModalOpen(false)}
-                        className="bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground"
-                    >
-                        إلغاء
-                    </Button>
-                </div>
-            </form>
-             <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="absolute top-3 left-3 text-gray-500 hover:text-destructive-foreground hover:bg-destructive"><X size={20}/></Button>
-          </DialogClose>
-        </DialogContent>
-      </Dialog>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* نافذة مراسلة المهندس */}
+      <DialogContent className="sm:max-w-md bg-white rounded-lg">
+        <DialogHeader className="text-right">
+          <DialogTitle className="text-xl font-bold text-app-red">
+            <Mail className="inline mr-2 h-5 w-5" />
+            مراسلة المهندس
+          </DialogTitle>
+          <DialogDescription className="text-gray-600">
+            أرسل رسالة مباشرة إلى المهندس المسؤول عن المشروع
+          </DialogDescription>
+        </DialogHeader>
+        
+        <form onSubmit={handleSendEngineerMessage} className="mt-4 space-y-4">
+          <div>
+            <Label htmlFor="engineerMessage" className="block text-sm font-medium text-gray-700 mb-1">
+              نص الرسالة
+            </Label>
+            <Textarea
+              id="engineerMessage"
+              value={engineerMessage}
+              onChange={(e) => setEngineerMessage(e.target.value)}
+              placeholder="اكتب رسالتك هنا..."
+              rows={5}
+              className="focus:ring-2 focus:ring-app-gold focus:border-app-gold"
+            />
+          </div>
+          
+          <div className="flex justify-end gap-3">
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={() => setIsContactEngineerModalOpen(false)}
+              className="text-gray-700"
+            >
+              إلغاء
+            </Button>
+            <Button 
+              type="submit" 
+              className="bg-app-red hover:bg-red-700"
+            >
+              إرسال الرسالة
+            </Button>
+          </div>
+        </form>
+        
+        <DialogClose asChild>
+          <Button variant="ghost" size="icon" className="absolute top-4 left-4">
+            <X className="h-5 w-5" />
+          </Button>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
   );
 }

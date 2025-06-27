@@ -472,9 +472,9 @@ export default function EngineerProjectDetailPage() {
                         placeholder="اكتب تعليقك هنا..." rows={3} className="mt-1 bg-white focus:border-app-gold"
                       />
                     </div>
-                    <Button type="submit" className="bg-app-red hover:bg-red-700 text-white font-semibold" disabled={isSubmittingComment || !newComment.trim()}>
-                      {isSubmittingComment ? <LoaderIcon className="ms-2 h-5 w-5 animate-spin" /> : <Send size={18} className="ms-2"/>}
-                      إرسال
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" disabled={isSubmittingComment || !newComment.trim()}>
+                      {isSubmittingComment ? <LoaderIcon className="h-5 w-5 animate-spin" /> : <Send size={18} />}
+                      إرسال التعليق
                     </Button>
                   </form>
                   <Separator className="my-6" />
@@ -527,5 +527,6 @@ export default function EngineerProjectDetailPage() {
           </DialogClose>
         </DialogContent>
       </Dialog>
+    </>
   );
 }

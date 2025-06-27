@@ -12,8 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
-  CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2,
-  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, Send, MapPin, AlertTriangle, Check
+  CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2, Send,
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, MapPin, AlertTriangle, Check
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -327,17 +327,17 @@ export default function OwnerProjectDetailPage() {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-app-red hover:bg-red-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     disabled={isSubmittingComment || !newComment.trim()}
                   >
                     {isSubmittingComment ? (
                       <>
-                        <LoaderIcon className="animate-spin mr-2 h-4 w-4" />
+                        <LoaderIcon className="animate-spin h-4 w-4" />
                         جاري الإرسال...
                       </>
                     ) : (
                       <>
-                        <Send className="mr-2 h-4 w-4" />
+                        <Send className="h-4 w-4" />
                         إرسال التعليق
                       </>
                     )}

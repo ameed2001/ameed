@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -61,7 +62,7 @@ const accordionItems = [
     color: "text-blue-500",
     links: [
       { href: "/owner/projects", label: "عرض كل المشاريع", icon: FolderKanban },
-      { href: "/owner/project-timeline", label: "الجداول الزمنية", icon: GanttChartSquare },
+      { href: "/owner/project-timeline", label: "الجداول الزمنية للمشاريع", icon: GanttChartSquare },
     ],
   },
   {

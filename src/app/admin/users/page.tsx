@@ -39,12 +39,19 @@ export default function AdminUsersPage() {
   const [selectedUserForEdit, setSelectedUserForEdit] = useState<User | null>(null); // State for user to edit
 
 
-  const currentUser = { id: 'admin-001', role: 'Admin' }; // Mock admin user ID
+  const [adminUserId, setAdminUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = localStorage.getItem('userId');
+    if (id) {
+      setAdminUserId(id);
+    }
+  }, []);
 
   const refreshUsersFromDb = async () => {
      setIsFetching(true);
      try {
-        const usersResponse = await getUsers(currentUser.id); 
+        const usersResponse = await getUsers(); 
         if (usersResponse.success && usersResponse.users) {
             setUsersState([...usersResponse.users]);
             setTotalUsersCount(usersResponse.users.length);
@@ -104,7 +111,8 @@ export default function AdminUsersPage() {
   };
 
   const handleApproveEngineer = async (userId: string, userName: string) => {
-    const result = await approveEngineer(currentUser.id, userId); 
+    if (!adminUserId) return;
+    const result = await approveEngineer(adminUserId, userId); 
     if (result.success) {
       refreshUsersFromDb();
       toast({ title: "تمت الموافقة على المهندس", description: `تم تفعيل حساب المهندس ${userName} وجعله نشطاً.`, variant: "default" });
@@ -114,7 +122,8 @@ export default function AdminUsersPage() {
   };
 
   const handleSuspendUser = async (userId: string, userName: string) => {
-    const result = await suspendUser(currentUser.id, userId); 
+    if (!adminUserId) return;
+    const result = await suspendUser(adminUserId, userId); 
     if (result.success) {
       refreshUsersFromDb();
       toast({ title: "تم التعامل مع المستخدم", description: `${result.message}`, variant: "default" });
@@ -304,7 +313,7 @@ export default function AdminUsersPage() {
         onClose={() => setIsAddUserDialogOpen(false)}
         onUserAdded={handleUserAddedOrUpdated} 
       />
-      {selectedUserForPasswordReset && (
+      {selectedUserForPasswordReset && adminUserId && (
         <ResetPasswordDialog
           isOpen={isResetPasswordDialogOpen}
           onClose={() => {
@@ -313,10 +322,10 @@ export default function AdminUsersPage() {
           }}
           userId={selectedUserForPasswordReset.id}
           userName={selectedUserForPasswordReset.name}
-          adminUserId={currentUser.id} 
+          adminUserId={adminUserId} 
         />
       )}
-      {selectedUserForEdit && (
+      {selectedUserForEdit && adminUserId && (
         <EditUserDialog
           isOpen={isEditUserDialogOpen}
           onClose={() => {
@@ -325,11 +334,9 @@ export default function AdminUsersPage() {
           }}
           onUserUpdated={handleUserAddedOrUpdated}
           user={selectedUserForEdit}
-          adminUserId={currentUser.id}
+          adminUserId={adminUserId}
         />
       )}
     </>
   );
 }
-    
-    

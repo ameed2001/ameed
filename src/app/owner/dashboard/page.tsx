@@ -19,27 +19,27 @@ export default function OwnerDashboardPage() {
   const { toast } = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [ownerName, setOwnerName] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const email = localStorage.getItem('userEmail');
+      const id = localStorage.getItem('userId');
       const name = localStorage.getItem('userName');
-      setUserEmail(email);
+      setUserId(id);
       setOwnerName(name);
     }
   }, []);
 
   useEffect(() => {
     async function fetchOwnerProjects() {
-      if (!userEmail) {
+      if (!userId) {
         setIsLoading(false);
         return;
       }
       setIsLoading(true);
       try {
-        const result = await getProjects(userEmail);
+        const result = await getProjects(userId);
         if (result.success && result.projects) {
           setProjects(result.projects);
         } else {
@@ -63,7 +63,7 @@ export default function OwnerDashboardPage() {
     }
 
     fetchOwnerProjects();
-  }, [userEmail, toast]);
+  }, [userId, toast]);
 
   const totalProjects = projects.length;
   const activeProjects = projects.filter(p => p.status === 'قيد التنفيذ').length;

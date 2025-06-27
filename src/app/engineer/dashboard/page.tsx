@@ -78,12 +78,15 @@ export default function EngineerDashboardPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [userName, setUserName] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
           const name = localStorage.getItem('userName');
+          const id = localStorage.getItem('userId');
           setUserName(name);
-          if (!name) {
+          setUserId(id);
+          if (!id) {
             setIsLoading(false);
             toast({
               title: "مستخدم غير معروف",
@@ -92,14 +95,14 @@ export default function EngineerDashboardPage() {
             });
           }
         }
-      }, [toast]);
+    }, [toast]);
 
     useEffect(() => {
     async function fetchEngineerProjects() {
-        if (!userName) return;
+        if (!userId) return;
         setIsLoading(true);
         try {
-        const result = await getProjects(userName);
+        const result = await getProjects(userId);
         if (result.success && result.projects) {
             setProjects(result.projects);
         } else {
@@ -114,10 +117,10 @@ export default function EngineerDashboardPage() {
         setIsLoading(false);
     }
 
-    if (userName) {
+    if (userId) {
         fetchEngineerProjects();
     }
-    }, [userName, toast]);
+    }, [userId, toast]);
 
     const totalProjects = projects.length;
     const activeProjects = projects.filter(p => p.status === 'قيد التنفيذ').length;

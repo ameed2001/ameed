@@ -31,13 +31,13 @@ export default function EngineerProjectsPage() {
   const [statusFilter, setStatusFilter] = useState<ProjectStatusType | 'all'>('all');
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [userName, setUserName] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const fetchEngineerProjects = async () => {
-    if (!userName) return;
+    if (!userId) return;
     setIsLoading(true);
     try {
-      const result = await dbGetProjects(userName);
+      const result = await dbGetProjects(userId);
       if (result.success && result.projects) {
         setProjects(result.projects);
       } else {
@@ -53,9 +53,9 @@ export default function EngineerProjectsPage() {
   };
 
   useEffect(() => {
-    const name = localStorage.getItem('userName');
-    setUserName(name);
-    if (!name) {
+    const id = localStorage.getItem('userId');
+    setUserId(id);
+    if (!id) {
       toast({
         title: "مستخدم غير معروف",
         description: "لم يتم العثور على معلومات المستخدم. يرجى تسجيل الدخول مرة أخرى.",
@@ -66,11 +66,11 @@ export default function EngineerProjectsPage() {
   }, [toast]);
 
   useEffect(() => {
-    if (userName) {
+    if (userId) {
       fetchEngineerProjects();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userName]);
+  }, [userId]);
 
   const filteredProjects = useMemo(() => {
     return projects.filter(project =>
@@ -329,7 +329,7 @@ export default function EngineerProjectsPage() {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>إلغاء</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleArchiveAction(project.id, projectName)} className="bg-amber-500 hover:bg-amber-600">
+                              <AlertDialogAction onClick={() => handleArchiveAction(project.id, project.name)} className="bg-amber-500 hover:bg-amber-600">
                                 تأكيد الأرشفة
                               </AlertDialogAction>
                             </AlertDialogFooter>

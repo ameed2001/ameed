@@ -17,13 +17,20 @@ import {
   getProjects,
   deleteProject,
   updateProject
-} from '@/lib/db'; // Changed from @/lib/mock-db to @/lib/db
+} from '@/lib/db';
 
 export default function AdminProjectsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [projects, setProjects] = useState<Project[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // On component mount, get the user ID from localStorage
+    const id = localStorage.getItem('userId');
+    setCurrentUserId(id);
+  }, []);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
@@ -38,22 +45,29 @@ export default function AdminProjectsPage() {
  ) &&
       (statusFilter === 'all' || project.status === statusFilter));
   }, [projects, searchTerm, statusFilter]);
-
-  const currentUserId = 'admin-id'; // Replace with actual user ID
-
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
+  
   async function loadProjects() {
+    if (!currentUserId) {
+      // Don't attempt to load if there's no user ID
+      // Optionally show a toast or message
+      return;
+    }
     const result = await getProjects(currentUserId);
     if (result.success && result.projects) {
       setProjects(result.projects);
+    } else {
+      toast({ title: "خطأ", description: result.message || "فشل تحميل المشاريع.", variant: "destructive" });
     }
   }
 
+  // Reload projects when currentUserId is set
+  useEffect(() => {
+    loadProjects();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserId]);
+
   async function handleDeleteProject(projectId: number) {
-    const result = await deleteProject(projectId.toString()); // Ensure projectId is passed as string
+    const result = await deleteProject(projectId.toString());
     if (result.success) {
       toast({ title: "نجاح", description: result.message });
       loadProjects();
@@ -179,4 +193,3 @@ export default function AdminProjectsPage() {
     </Card>
   );
 }
-

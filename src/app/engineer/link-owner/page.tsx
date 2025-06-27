@@ -36,8 +36,8 @@ export default function LinkOwnerPage() {
   useEffect(() => {
     async function fetchData() {
       setIsFetchingData(true);
-      const engineerName = localStorage.getItem('userName');
-      if (!engineerName) {
+      const engineerId = localStorage.getItem('userId');
+      if (!engineerId) {
         toast({ title: "خطأ", description: "لم يتم العثور على معلومات المهندس. يرجى تسجيل الدخول.", variant: "destructive" });
         router.push('/login');
         return;
@@ -45,8 +45,8 @@ export default function LinkOwnerPage() {
 
       try {
         const [projectsResult, usersResult] = await Promise.all([
-          getProjects(engineerName),
-          getUsers("admin-id") // Fetch all users
+          getProjects(engineerId),
+          getUsers() // Fetch all users
         ]);
 
         if (projectsResult.success && projectsResult.projects) {

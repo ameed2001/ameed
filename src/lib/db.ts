@@ -1,4 +1,3 @@
-
 'use server';
 
 import { getDb } from './mongodb';
@@ -92,8 +91,8 @@ export interface Project {
   engineer?: string;
   clientName?: string;
   status: ProjectStatusType;
-  startDate: string; // ISO string
-  endDate: string; // ISO string
+  startDate: string; // Date-only string (YYYY-MM-DD)
+  endDate: string; // Date-only string (YYYY-MM-DD)
   description: string;
   location: string;
   budget?: number;
@@ -178,7 +177,7 @@ export interface SystemSettingsDocument {
 
 // ---- HELPER FUNCTIONS ----
 
-function isValidDate(d: any) {
+function isValidDate(d: any): d is Date {
   return d instanceof Date && !isNaN(d.getTime());
 }
 
@@ -187,6 +186,18 @@ function toSafeDateString(d: any, defaultVal: string = ''): string {
     const date = new Date(d);
     return isValidDate(date) ? date.toISOString() : defaultVal;
 }
+
+// New robust function to get YYYY-MM-DD format
+function toDateOnlyString(d: any): string {
+    if (!d) return '';
+    const date = new Date(d);
+    if (!isValidDate(date)) return '';
+    // Adjust for timezone offset to prevent day shifts
+    const tzOffset = date.getTimezoneOffset() * 60000;
+    const localDate = new Date(date.getTime() - tzOffset);
+    return localDate.toISOString().split('T')[0];
+}
+
 
 function mongoDocToUser(doc: WithId<UserSchema>): UserDocument {
   const { _id, ...rest } = doc;
@@ -201,13 +212,12 @@ function mongoDocToUser(doc: WithId<UserSchema>): UserDocument {
 
 function mongoDocToProject(doc: WithId<ProjectSchema>): Project {
     const { _id, ...rest } = doc;
-    const now = new Date();
     return {
         ...rest,
         id: _id.toHexString(),
-        startDate: toSafeDateString(rest.startDate, '').split('T')[0],
-        endDate: toSafeDateString(rest.endDate, '').split('T')[0],
-        createdAt: toSafeDateString(rest.createdAt, now.toISOString()),
+        startDate: toDateOnlyString(rest.startDate),
+        endDate: toDateOnlyString(rest.endDate),
+        createdAt: toSafeDateString(rest.createdAt),
     };
 }
 
@@ -277,6 +287,7 @@ export async function getSystemSettings(): Promise<SystemSettingsDocument> {
   } catch (error) {
     console.error('[db.ts] getSystemSettings: Error fetching system settings:', error);
     await logAction('SYSTEM_SETTINGS_FETCH_ERROR', 'ERROR', `Error fetching system settings: ${error instanceof Error ? error.message : String(error)}`);
+    // Return default settings on error to prevent app crash
     return {
       siteName: 'المحترف لحساب الكميات',
       defaultLanguage: 'ar',
@@ -327,7 +338,7 @@ export async function registerUser(userData: {
             return { success: false, message: "البريد الإلكتروني مسجل بالفعل.", errorType: 'email_exists' };
         }
         
-        let initialStatus: UserStatus = status || 'ACTIVE'; // Admins can set status, otherwise defaults to active
+        let initialStatus: UserStatus = status || 'ACTIVE';
 
         const hashedPassword = await bcrypt.hash(password_input, 10);
         const now = new Date();
@@ -382,10 +393,11 @@ export async function loginUser(email: string, password_input: string): Promise<
     }
 
     if (userDoc.status !== 'ACTIVE') {
-      const errorMap = {
+      const errorMap: Record<UserStatus, { message: string; errorType: LoginResult['errorType'] }> = {
         'PENDING_APPROVAL': { message: "حسابك قيد المراجعة.", errorType: 'pending_approval' },
         'SUSPENDED': { message: "حسابك موقوف.", errorType: 'account_suspended' },
         'DELETED': { message: "هذا الحساب تم حذفه.", errorType: 'account_deleted' },
+        'ACTIVE': { message: '', errorType: undefined } // Should not happen here
       };
       const errorInfo = errorMap[userDoc.status] || { message: "الحساب غير نشط.", errorType: 'other' };
       await logAction('USER_LOGIN_FAILURE', 'WARNING', `Login attempt for inactive account (${userDoc.status}): ${email}`, userDoc._id.toHexString());
@@ -394,8 +406,7 @@ export async function loginUser(email: string, password_input: string): Promise<
     
     await logAction('USER_LOGIN_SUCCESS', 'INFO', `User logged in: ${userDoc.email}`, userDoc._id.toHexString());
     const user = mongoDocToUser(userDoc);
-    const { password_hash, ...rest } = user as any; // This is a bit of a hack to remove password_hash from the returned object
-    return { success: true, user: rest };
+    return { success: true, user };
   } catch (error: any) {
     await logAction('USER_LOGIN_FAILURE', 'ERROR', `DB error on login for ${email}: ${error.message}`);
     return { success: false, message: "حدث خطأ أثناء تسجيل الدخول.", errorType: 'db_error' };
@@ -408,53 +419,51 @@ export interface GetProjectsResult {
   message?: string;
 }
 
-export async function getProjects(userIdentifier: string): Promise<GetProjectsResult> {
+// Corrected getProjects function as per user feedback
+export async function getProjects(userId: string): Promise<GetProjectsResult> {
   try {
     const db = await getDb();
+    if (!ObjectId.isValid(userId)) {
+        await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch attempt with invalid user ID format: ${userId}`);
+        return { success: false, message: "معرف المستخدم غير صالح." };
+    }
     const projectsCollection = db.collection<ProjectSchema>('projects');
     const usersCollection = db.collection<UserSchema>('users');
 
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!user) {
+      await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch attempt with unknown user ID: ${userId}`);
+      return { success: false, message: "المستخدم غير موجود." };
+    }
+
     let query = {};
-
-    // Handles the generic admin ID string and any user who is an admin.
-    if (userIdentifier === 'admin-id') {
-      query = {}; // Admin sees all projects
-    } else {
-      // Find the user by their unique email or their potentially non-unique name
-      const user = await usersCollection.findOne({ $or: [{ email: userIdentifier }, { name: userIdentifier }] });
-
-      if (!user) {
-        await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch with unknown user: ${userIdentifier}`);
+    switch (user.role) {
+      case 'ADMIN':
+        query = {}; // Admin sees all projects
+        break;
+      case 'OWNER':
+        query = { linkedOwnerEmail: user.email };
+        break;
+      case 'ENGINEER':
+        query = { engineer: user.name };
+        break;
+      default:
+        // Users with other roles see no projects
         return { success: true, projects: [] };
-      }
-
-      // Assign query based on the found user's role
-      switch (user.role) {
-        case 'ADMIN':
-          query = {}; // Admins see all projects
-          break;
-        case 'OWNER':
-          query = { linkedOwnerEmail: user.email };
-          break;
-        case 'ENGINEER':
-          query = { engineer: user.name };
-          break;
-        default:
-          // If the user has an unrecognized role, they see no projects.
-          return { success: true, projects: [] };
-      }
     }
     
     const projectDocs = await projectsCollection.find(query).sort({ createdAt: -1 }).toArray();
     return { success: true, projects: projectDocs.map(mongoDocToProject) };
   } catch (error: any) {
-    await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Error fetching projects for ${userIdentifier}: ${error.message}`);
-    return { success: false, message: "فشل تحميل المشاريع.", projects: [] };
+    await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Error fetching projects for user ${userId}: ${error.message}`);
+    return { success: false, message: "فشل تحميل المشاريع." };
   }
 }
 
 export async function findProjectById(projectId: string): Promise<Project | null> {
     try {
+        if (!ObjectId.isValid(projectId)) return null;
         const db = await getDb();
         const projectsCollection = db.collection<ProjectSchema>('projects');
         const projectDoc = await projectsCollection.findOne({ _id: new ObjectId(projectId) });
@@ -471,7 +480,7 @@ export async function addProject(projectData: Partial<Project>): Promise<Project
         const db = await getDb();
         const projectsCollection: Collection<Omit<ProjectSchema, '_id'>> = db.collection('projects');
         const now = new Date();
-        const newProjectData = {
+        const newProjectData: Omit<ProjectSchema, '_id'> = {
             name: projectData.name || "مشروع جديد",
             location: projectData.location || "غير محدد",
             description: projectData.description || "",
@@ -492,7 +501,7 @@ export async function addProject(projectData: Partial<Project>): Promise<Project
 
         const result = await projectsCollection.insertOne(newProjectData);
         await logAction('PROJECT_ADD_SUCCESS', 'INFO', `Project "${projectData.name}" added.`);
-        return { ...mongoDocToProject({ ...newProjectData, _id: result.insertedId }) };
+        return mongoDocToProject({ ...newProjectData, _id: result.insertedId });
 
     } catch (error: any) {
         await logAction('PROJECT_ADD_FAILURE', 'ERROR', `Error adding project: ${error.message}`);
@@ -502,6 +511,7 @@ export async function addProject(projectData: Partial<Project>): Promise<Project
 
 export async function updateProject(projectId: string, updates: Partial<Project>): Promise<{ success: boolean; project?: Project; message?: string; }> {
     try {
+        if (!ObjectId.isValid(projectId)) return { success: false, message: "معرف المشروع غير صالح." };
         const db = await getDb();
         const projectsCollection = db.collection<ProjectSchema>('projects');
         const updateDoc: any = { ...updates };
@@ -527,10 +537,12 @@ export async function updateProject(projectId: string, updates: Partial<Project>
 
 export async function deleteProject(projectId: string): Promise<{ success: boolean; message?: string }> {
     try {
+        if (!ObjectId.isValid(projectId)) return { success: false, message: "معرف المشروع غير صالح." };
         const db = await getDb();
         const projectsCollection = db.collection('projects');
         const result = await projectsCollection.deleteOne({ _id: new ObjectId(projectId) });
         if (result.deletedCount === 0) {
+            await logAction('PROJECT_DELETE_FAILURE', 'WARNING', `Attempted to delete non-existent project ID ${projectId}.`);
             return { success: false, message: "المشروع غير موجود ليتم حذفه." };
         }
         await logAction('PROJECT_DELETE_SUCCESS', 'INFO', `Project ID ${projectId} deleted.`);
@@ -541,12 +553,13 @@ export async function deleteProject(projectId: string): Promise<{ success: boole
     }
 }
 
-export async function getUsers(adminUserId: string): Promise<{ success: boolean, users?: UserDocument[], message?: string }> {
+export async function getUsers(): Promise<{ success: boolean, users?: UserDocument[], message?: string }> {
   try {
     const db = await getDb();
     const usersDocs = await db.collection<UserSchema>('users').find().toArray();
     return { success: true, users: usersDocs.map(mongoDocToUser) };
   } catch (error: any) {
+    await logAction('USERS_FETCH_FAILURE', 'ERROR', `Error fetching all users: ${error.message}`);
     return { success: false, message: "فشل تحميل قائمة المستخدمين." };
   }
 }
@@ -560,6 +573,7 @@ export interface AdminUserUpdateResult {
 
 export async function updateUser(userId: string, updates: Partial<Omit<UserDocument, 'id'>>): Promise<AdminUserUpdateResult> {
   try {
+    if (!ObjectId.isValid(userId)) return { success: false, message: "معرف المستخدم غير صالح." };
     const db = await getDb();
     const usersCollection = db.collection<UserSchema>('users');
 
@@ -591,6 +605,7 @@ export async function updateUser(userId: string, updates: Partial<Omit<UserDocum
 
 export async function deleteUser(userId: string): Promise<{ success: boolean, message?: string }> {
   try {
+    if (!ObjectId.isValid(userId)) return { success: false, message: "معرف المستخدم غير صالح." };
     const db = await getDb();
     const result = await db.collection('users').deleteOne({ _id: new ObjectId(userId) });
     if (result.deletedCount === 0) {
@@ -606,6 +621,7 @@ export async function deleteUser(userId: string): Promise<{ success: boolean, me
 
 export async function adminResetUserPassword(adminUserId: string, targetUserId: string, newPassword_input: string): Promise<{ success: boolean, message?: string }> {
     try {
+        if (!ObjectId.isValid(targetUserId)) return { success: false, message: "معرف المستخدم غير صالح." };
         const db = await getDb();
         const newPasswordHash = await bcrypt.hash(newPassword_input, 10);
         const result = await db.collection<UserSchema>('users').updateOne(
@@ -613,7 +629,7 @@ export async function adminResetUserPassword(adminUserId: string, targetUserId: 
             { $set: { password_hash: newPasswordHash, updatedAt: new Date() } }
         );
         if (result.modifiedCount === 0) {
-            return { success: false, message: "المستخدم غير موجود." };
+            return { success: false, message: "المستخدم غير موجود أو لم يتم تغيير كلمة المرور." };
         }
         await logAction('USER_PASSWORD_RESET_BY_ADMIN', 'INFO', `Admin ${adminUserId} reset password for user ${targetUserId}.`);
         return { success: true, message: "تم إعادة تعيين كلمة مرور المستخدم بنجاح." };
@@ -634,6 +650,7 @@ export async function approveEngineer(adminUserId: string, engineerUserId: strin
 
 export async function suspendUser(adminUserId: string, targetUserId: string): Promise<{ success: boolean, message?: string }> {
     try {
+        if (!ObjectId.isValid(targetUserId)) return { success: false, message: "معرف المستخدم غير صالح." };
         const db = await getDb();
         const usersCollection = db.collection<UserSchema>('users');
         const user = await usersCollection.findOne({ _id: new ObjectId(targetUserId) });
@@ -645,7 +662,7 @@ export async function suspendUser(adminUserId: string, targetUserId: string): Pr
         
         if (result.success) {
             const actionMessage = newStatus === 'SUSPENDED' ? "تعليق المستخدم" : "إلغاء تعليق المستخدم";
-            await logAction(newStatus === 'SUSPENDED' ? 'USER_SUSPEND_SUCCESS' : 'USER_UNSUSPEND_SUCCESS', 'INFO', `Admin ${adminUserId} ${newStatus} user ${targetUserId}.`);
+            await logAction(newStatus === 'SUSPENDED' ? 'USER_SUSPEND_SUCCESS' : 'USER_UNSUSPEND_SUCCESS', 'INFO', `Admin ${adminUserId} ${newStatus === 'SUSPENDED' ? 'suspended' : 'unsuspended'} user ${targetUserId}.`);
             return { success: true, message: `تم ${actionMessage} بنجاح.` };
         }
         return { success: false, message: result.message || "فشل تعديل حالة المستخدم." };
@@ -675,6 +692,7 @@ export interface ChangePasswordResult {
 
 export async function changeUserPassword(userId: string, currentPassword_input: string, newPassword_input: string): Promise<ChangePasswordResult> {
     try {
+        if (!ObjectId.isValid(userId)) return { success: false, message: "معرف المستخدم غير صالح.", errorType: 'user_not_found' };
         const db = await getDb();
         const usersCollection = db.collection<UserSchema>('users');
         const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
@@ -712,5 +730,3 @@ export async function addCostReport(reportData: Omit<CostReport, 'id' | 'created
         return null;
     }
 }
-
-    

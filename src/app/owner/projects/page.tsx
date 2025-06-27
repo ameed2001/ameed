@@ -20,13 +20,13 @@ export default function OwnerProjectsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const email = localStorage.getItem('userEmail');
-      setUserEmail(email);
-      if (!email) {
+      const id = localStorage.getItem('userId');
+      setUserId(id);
+      if (!id) {
         toast({
           title: "مستخدم غير معروف",
           description: "لم يتم العثور على معلومات المستخدم. يرجى تسجيل الدخول مرة أخرى.",
@@ -39,13 +39,13 @@ export default function OwnerProjectsPage() {
 
   useEffect(() => {
     async function fetchOwnerProjects() {
-      if (!userEmail) {
+      if (!userId) {
         setIsLoading(false);
         return;
       }
       setIsLoading(true);
       try {
-        const result = await dbGetProjects(userEmail);
+        const result = await dbGetProjects(userId);
         if (result.success && result.projects) {
           setProjects(result.projects);
         } else {
@@ -60,10 +60,10 @@ export default function OwnerProjectsPage() {
       setIsLoading(false);
     }
 
-    if (userEmail) {
+    if (userId) {
       fetchOwnerProjects();
     }
-  }, [userEmail, toast]);
+  }, [userId, toast]);
 
   const filteredProjects = useMemo(() => {
     return projects.filter(project =>
@@ -131,7 +131,7 @@ export default function OwnerProjectsPage() {
             <Loader2 className="h-12 w-12 animate-spin text-app-gold" />
             <p className="ms-3 text-lg">جاري تحميل المشاريع...</p>
           </div>
-        ) : !userEmail ? (
+        ) : !userId ? (
             <Alert variant="destructive" className="text-right">
                 <Info className="h-5 w-5" />
                 <AlertTitle>مستخدم غير مسجل</AlertTitle>

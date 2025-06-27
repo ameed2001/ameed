@@ -51,7 +51,16 @@
       "overallProgress": 0,
       "photos": [],
       "timelineTasks": [],
-      "comments": [],
+      "comments": [
+        {
+          "id": "81fda397-2c43-43be-9e52-7816c7d213de",
+          "user": "المالك",
+          "text": "جيد جدا",
+          "date": "2025-06-27T13:06:48.977Z",
+          "avatar": "https://placehold.co/40x40.png?text=OW",
+          "dataAiHintAvatar": "owner avatar"
+        }
+      ],
       "createdAt": "2025-06-26T15:50:50.759Z"
     }
   ],
@@ -1430,6 +1439,14 @@
       "level": "WARNING",
       "message": "Project fetch attempt with unknown user ID: malik@gmail.com",
       "timestamp": "2025-06-27T12:28:49.919Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751029608055-bht9o",
+      "action": "PROJECT_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 3 updated. Fields: comments",
+      "timestamp": "2025-06-27T13:06:48.056Z",
       "user": "System"
     }
   ],

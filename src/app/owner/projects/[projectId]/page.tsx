@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
@@ -196,6 +197,24 @@ export default function OwnerProjectDetailPage() {
             </div>
 
             <div className="space-y-8">
+              <Card className="bg-white/95 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                    <GanttChartSquare size={28} /> الجدول الزمني للمشروع
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <p className="text-gray-600 mb-4">
+                    عرض الجدول الزمني المفصل للمشروع، بما في ذلك المراحل والمهام الرئيسية.
+                  </p>
+                  <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+                    <Link href={`/owner/projects/${projectId}/timeline`}>
+                      عرض الجدول الزمني التفصيلي
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+
               <Card className="bg-white/95 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">

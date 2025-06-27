@@ -180,40 +180,44 @@ export interface SystemSettingsDocument {
 
 function mongoDocToUser(doc: WithId<UserSchema>): UserDocument {
   const { _id, ...rest } = doc;
+  const now = new Date().toISOString();
   return {
     ...rest,
     id: _id.toHexString(),
-    createdAt: rest.createdAt.toISOString(),
-    updatedAt: rest.updatedAt.toISOString(),
+    createdAt: rest.createdAt ? new Date(rest.createdAt).toISOString() : now,
+    updatedAt: rest.updatedAt ? new Date(rest.updatedAt).toISOString() : now,
   };
 }
 
 function mongoDocToProject(doc: WithId<ProjectSchema>): Project {
     const { _id, ...rest } = doc;
+    const now = new Date();
     return {
         ...rest,
         id: _id.toHexString(),
-        startDate: (new Date(rest.startDate)).toISOString().split('T')[0],
-        endDate: (new Date(rest.endDate)).toISOString().split('T')[0],
-        createdAt: (new Date(rest.createdAt)).toISOString(),
+        startDate: rest.startDate ? new Date(rest.startDate).toISOString().split('T')[0] : '',
+        endDate: rest.endDate ? new Date(rest.endDate).toISOString().split('T')[0] : '',
+        createdAt: rest.createdAt ? new Date(rest.createdAt).toISOString() : now.toISOString(),
     };
 }
 
 function mongoDocToLogEntry(doc: WithId<LogSchema>): LogEntry {
   const { _id, timestamp, ...rest } = doc;
+  const now = new Date().toISOString();
   return {
     ...rest,
     id: _id.toHexString(),
-    timestamp: timestamp.toISOString(),
+    timestamp: timestamp ? new Date(timestamp).toISOString() : now,
   };
 }
 
 function mongoDocToCostReport(doc: WithId<CostReportSchema>): CostReport {
     const { _id, createdAt, ...rest } = doc;
+    const now = new Date().toISOString();
     return {
         ...rest,
         id: _id.toHexString(),
-        createdAt: createdAt.toISOString(),
+        createdAt: createdAt ? new Date(createdAt).toISOString() : now,
     };
 }
 
@@ -381,8 +385,9 @@ export async function loginUser(email: string, password_input: string): Promise<
     }
     
     await logAction('USER_LOGIN_SUCCESS', 'INFO', `User logged in: ${userDoc.email}`, userDoc._id.toHexString());
-    const { password_hash, ...user } = mongoDocToUser(userDoc);
-    return { success: true, user };
+    const user = mongoDocToUser(userDoc);
+    const { password_hash, ...rest } = user as any; // This is a bit of a hack to remove password_hash from the returned object
+    return { success: true, user: rest };
   } catch (error: any) {
     await logAction('USER_LOGIN_FAILURE', 'ERROR', `DB error on login for ${email}: ${error.message}`);
     return { success: false, message: "حدث خطأ أثناء تسجيل الدخول.", errorType: 'db_error' };
@@ -699,3 +704,5 @@ export async function addCostReport(reportData: Omit<CostReport, 'id' | 'created
         return null;
     }
 }
+
+    

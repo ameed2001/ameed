@@ -53,10 +53,10 @@
       "timelineTasks": [],
       "comments": [
         {
-          "id": "81fda397-2c43-43be-9e52-7816c7d213de",
+          "id": "24f5b0be-f9b0-4670-86ed-d8f42422fb2a",
           "user": "المالك",
-          "text": "جيد جدا",
-          "date": "2025-06-27T13:06:48.977Z",
+          "text": "لل",
+          "date": "2025-06-27T13:26:37.105Z",
           "avatar": "https://placehold.co/40x40.png?text=OW",
           "dataAiHintAvatar": "owner avatar"
         }
@@ -1447,6 +1447,30 @@
       "level": "INFO",
       "message": "Project ID 3 updated. Fields: comments",
       "timestamp": "2025-06-27T13:06:48.056Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751030759769-9sn9g",
+      "action": "PROJECT_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 3 updated. Fields: comments",
+      "timestamp": "2025-06-27T13:25:59.769Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751030765961-rxgsy",
+      "action": "PROJECT_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 3 updated. Fields: comments",
+      "timestamp": "2025-06-27T13:26:05.961Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751030796135-s3fox",
+      "action": "PROJECT_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 3 updated. Fields: comments",
+      "timestamp": "2025-06-27T13:26:36.135Z",
       "user": "System"
     }
   ],

@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -12,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserCircle, Edit3, Trash2, Save } from 'lucide-react';
+import { Loader2, UserCircle, Edit3, Trash2, Save, Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { updateProfileAction, changePasswordAction } from './actions';
@@ -50,6 +49,10 @@ export function ProfilePageContent() {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserProfileData | null>(null);
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
   const {
     register: registerProfile,
@@ -245,17 +248,32 @@ export function ProfilePageContent() {
             <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-5 text-right">
               <div>
                 <Label htmlFor="currentPassword"  className="block mb-1.5 font-semibold text-gray-700">كلمة المرور الحالية</Label>
-                <Input id="currentPassword" type="password" {...registerPassword("currentPassword")} className="bg-white focus:border-app-gold" />
+                <div className="relative">
+                  <Input id="currentPassword" type={showCurrentPassword ? "text" : "password"} {...registerPassword("currentPassword")} className="bg-white focus:border-app-gold pl-10" />
+                  <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
+                    {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
                 {passwordErrors.currentPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.currentPassword.message}</p>}
               </div>
               <div>
                 <Label htmlFor="newPassword" className="block mb-1.5 font-semibold text-gray-700">كلمة المرور الجديدة</Label>
-                <Input id="newPassword" type="password" {...registerPassword("newPassword")} className="bg-white focus:border-app-gold" />
+                <div className="relative">
+                  <Input id="newPassword" type={showNewPassword ? "text" : "password"} {...registerPassword("newPassword")} className="bg-white focus:border-app-gold pl-10" />
+                  <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
+                    {showNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
                 {passwordErrors.newPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.newPassword.message}</p>}
               </div>
               <div>
                 <Label htmlFor="confirmNewPassword" className="block mb-1.5 font-semibold text-gray-700">تأكيد كلمة المرور الجديدة</Label>
-                <Input id="confirmNewPassword" type="password" {...registerPassword("confirmNewPassword")} className="bg-white focus:border-app-gold" />
+                <div className="relative">
+                  <Input id="confirmNewPassword" type={showConfirmNewPassword ? "text" : "password"} {...registerPassword("confirmNewPassword")} className="bg-white focus:border-app-gold pl-10" />
+                  <button type="button" onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
+                    {showConfirmNewPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
                 {passwordErrors.confirmNewPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.confirmNewPassword.message}</p>}
               </div>
               <Button type="submit" className="w-full bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-600 font-bold py-2.5 text-lg" disabled={isPasswordLoading}>

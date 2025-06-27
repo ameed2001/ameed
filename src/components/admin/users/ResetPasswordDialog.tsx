@@ -118,8 +118,8 @@ export default function ResetPasswordDialog({ isOpen, onClose, userId, userName,
           <div className="space-y-1.5">
             <Label htmlFor="newPassword" className="text-sm font-medium text-gray-700">كلمة المرور الجديدة</Label>
             <div className="relative">
-                <Input id="newPassword" type={showNewPassword ? "text" : "password"} {...register("newPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
-                <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showNewPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>
+                <Input id="newPassword" type={showNewPassword ? "text" : "password"} {...register("newPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pl-10 pr-4" />
+                <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showNewPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>
                     {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
             </div>
@@ -128,8 +128,8 @@ export default function ResetPasswordDialog({ isOpen, onClose, userId, userName,
           <div className="space-y-1.5">
             <Label htmlFor="confirmNewPassword" className="text-sm font-medium text-gray-700">تأكيد كلمة المرور الجديدة</Label>
             <div className="relative">
-                <Input id="confirmNewPassword" type={showConfirmPassword ? "text" : "password"} {...register("confirmNewPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
-                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showConfirmPassword ? "إخفاء تأكيد كلمة المرور" : "إظهار تأكيد كلمة المرور"}>
+                <Input id="confirmNewPassword" type={showConfirmPassword ? "text" : "password"} {...register("confirmNewPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pl-10 pr-4" />
+                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showConfirmPassword ? "إخفاء تأكيد كلمة المرور" : "إظهار تأكيد كلمة المرور"}>
                     {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
             </div>

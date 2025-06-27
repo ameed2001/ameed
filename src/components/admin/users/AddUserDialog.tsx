@@ -138,8 +138,8 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
           <div className="space-y-1.5">
             <Label htmlFor="add-password" className="text-sm font-medium text-gray-700">كلمة المرور</Label>
             <div className="relative">
-                <Input id="add-password" type={showPassword ? "text" : "password"} {...register("password")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>
+                <Input id="add-password" type={showPassword ? "text" : "password"} {...register("password")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pl-10 pr-4" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}>
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
             </div>
@@ -148,8 +148,8 @@ export default function AddUserDialog({ isOpen, onClose, onUserAdded }: AddUserD
           <div className="space-y-1.5">
             <Label htmlFor="add-confirmPassword" className="text-sm font-medium text-gray-700">تأكيد كلمة المرور</Label>
             <div className="relative">
-                <Input id="add-confirmPassword" type={showConfirmPassword ? "text" : "password"} {...register("confirmPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pr-10" />
-                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showConfirmPassword ? "إخفاء تأكيد كلمة المرور" : "إظهار تأكيد كلمة المرور"}>
+                <Input id="add-confirmPassword" type={showConfirmPassword ? "text" : "password"} {...register("confirmPassword")} placeholder="********" className="bg-gray-50 border-gray-300 focus:border-blue-500 pl-10 pr-4" />
+                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-400 hover:text-gray-600 cursor-pointer" aria-label={showConfirmPassword ? "إخفاء تأكيد كلمة المرور" : "إظهار تأكيد كلمة المرور"}>
                     {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
             </div>

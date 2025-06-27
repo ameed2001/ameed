@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Home as HomeIcon, ArrowLeft, HardHat, ShieldCheck, UserPlus } from 'lucide-react';
+import { Loader2, Home as HomeIcon, ArrowLeft, HardHat, ShieldCheck, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { ownerLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
@@ -27,6 +28,7 @@ export default function OwnerLoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -138,13 +140,23 @@ export default function OwnerLoginPage() {
 
               <div>
                 <Label htmlFor="password_input" className="block mb-1.5 font-semibold text-gray-700">كلمة المرور</Label>
-                <Input
-                  id="password_input"
-                  type="password"
-                  {...register("password_input")}
-                  className="bg-white focus:border-app-gold"
-                  placeholder="********"
-                />
+                <div className="relative">
+                    <Input
+                        id="password_input"
+                        type={showPassword ? "text" : "password"}
+                        {...register("password_input")}
+                        className="bg-white focus:border-app-gold pl-10"
+                        placeholder="********"
+                    />
+                     <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
+                        aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                    >
+                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                </div>
                 {errors.password_input && <p className="text-red-500 text-sm mt-1">{errors.password_input.message}</p>}
               </div>
 

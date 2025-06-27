@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, HardHat, Info } from 'lucide-react'; // Icon for Engineer
+import { Loader2, HardHat, Info, Eye, EyeOff } from 'lucide-react'; // Icon for Engineer
 import { engineerSignupUserAction, type SignupActionResponse } from './actions'; // Uses engineerSignupUserAction
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -35,6 +35,8 @@ export default function EngineerSignupPage() { // Renamed component for clarity,
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showPendingApprovalMessage, setShowPendingApprovalMessage] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset, setError } = useForm<EngineerSignupFormValues>({
     resolver: zodResolver(engineerSignupSchema),
@@ -122,13 +124,45 @@ export default function EngineerSignupPage() { // Renamed component for clarity,
 
               <div>
                 <Label htmlFor="password" className="block mb-1.5 font-semibold text-gray-700">كلمة المرور</Label>
-                <Input id="password" type="password" {...register("password")} className="bg-white focus:border-app-gold" placeholder="********" />
+                <div className="relative">
+                    <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        {...register("password")}
+                        className="bg-white focus:border-app-gold pl-10"
+                        placeholder="********"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
+                        aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                    >
+                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                </div>
                 {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
               </div>
 
               <div>
                 <Label htmlFor="confirmPassword" className="block mb-1.5 font-semibold text-gray-700">تأكيد كلمة المرور</Label>
-                <Input id="confirmPassword" type="password" {...register("confirmPassword")} className="bg-white focus:border-app-gold" placeholder="********" />
+                <div className="relative">
+                    <Input
+                        id="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        {...register("confirmPassword")}
+                        className="bg-white focus:border-app-gold pl-10"
+                        placeholder="********"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
+                        aria-label={showConfirmPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                    >
+                        {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                </div>
                 {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>}
               </div>
 

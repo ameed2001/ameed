@@ -1412,6 +1412,22 @@
       "message": "Project fetch attempt with unknown user ID: malik@gmail.com",
       "timestamp": "2025-06-27T12:24:00.724Z",
       "user": "System"
+    },
+    {
+      "id": "log-1751027107465-xt9bz",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown user ID: malik@gmail.com",
+      "timestamp": "2025-06-27T12:25:07.465Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751027109550-jqm4i",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown user ID: malik@gmail.com",
+      "timestamp": "2025-06-27T12:25:09.550Z",
+      "user": "System"
     }
   ],
   "roles": [

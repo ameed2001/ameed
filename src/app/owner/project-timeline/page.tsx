@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -104,7 +103,7 @@ export default function OwnerProjectTimelinePage() {
                 </Badge>
               </div>
               <Button asChild className="font-semibold bg-app-red hover:bg-red-700 text-white">
-                <Link href={`/owner/projects/${project.id}`}>
+                <Link href={`/owner/projects/${project.id}/timeline`}>
                   <GanttChartSquare className="ml-2 h-4 w-4" />
                   عرض الجدول الزمني
                 </Link>

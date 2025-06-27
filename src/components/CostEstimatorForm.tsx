@@ -7,10 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Printer, PlusCircle, Trash2, Calculator, Coins, HardHat, User, Save, Loader2, Blocks, Ruler, Tag, FileText, ShoppingBasket, FileSignature } from 'lucide-react';
+import { Printer, PlusCircle, Trash2, Calculator, Coins, HardHat, User, Save, Loader2, Blocks, Ruler, Tag, FileText, ShoppingBasket, FileSignature, Briefcase } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import type { UserDocument } from '@/lib/db';
-import { getUsers, addCostReport } from '@/lib/db';
+import type { UserDocument, Project } from '@/lib/db';
+import { getUsers, addCostReport, getProjects } from '@/lib/db';
 import { cn } from '@/lib/utils';
 
 const ShekelIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -98,6 +98,8 @@ export default function CostEstimatorForm() {
   const [reportName, setReportName] = useState<string>('');
   const [owners, setOwners] = useState<UserDocument[]>([]);
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>('');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
 
 
@@ -107,15 +109,26 @@ export default function CostEstimatorForm() {
     if (name) setEngineerName(name);
     if (id) setEngineerId(id);
 
-    async function fetchOwners() {
-      const result = await getUsers("admin-id");
-      if (result.success && result.users) {
-        setOwners(result.users.filter(u => u.role === 'OWNER' && u.status === 'ACTIVE'));
+    async function fetchData() {
+      if (!id) return;
+      const [usersResult, projectsResult] = await Promise.all([
+        getUsers(),
+        getProjects(id)
+      ]);
+
+      if (usersResult.success && usersResult.users) {
+        setOwners(usersResult.users.filter(u => u.role === 'OWNER' && u.status === 'ACTIVE'));
       } else {
         toast({ title: "خطأ", description: "فشل تحميل قائمة المالكين.", variant: "destructive"});
       }
+
+      if (projectsResult.success && projectsResult.projects) {
+        setProjects(projectsResult.projects.filter(p => p.status !== 'مؤرشف'));
+      } else {
+        toast({ title: "خطأ", description: "فشل تحميل قائمة المشاريع.", variant: "destructive" });
+      }
     }
-    fetchOwners();
+    fetchData();
   }, [toast]);
 
   useEffect(() => {
@@ -127,6 +140,20 @@ export default function CostEstimatorForm() {
       setSelectedSubType('');
     }
   }, [selectedMaterialKey]);
+  
+  const handleProjectChange = (projectId: string) => {
+    setSelectedProjectId(projectId);
+    const project = projects.find(p => p.id.toString() === projectId);
+    if (project) {
+        setReportName(project.name); 
+        const owner = owners.find(o => o.email === project.linkedOwnerEmail);
+        if (owner) {
+            setSelectedOwnerId(owner.id);
+        } else {
+            setSelectedOwnerId('');
+        }
+    }
+  };
 
   const handleAddItem = () => {
     if (!selectedMaterialKey || !selectedSubType || !pricePerUnitILS || !quantity) {
@@ -186,6 +213,7 @@ export default function CostEstimatorForm() {
     setCurrentUnitDisplay('--');
     setReportName('');
     setSelectedOwnerId('');
+    setSelectedProjectId('');
     toast({
         title: "تم مسح الكل",
         description: "تم مسح جميع المواد من القائمة.",
@@ -197,6 +225,10 @@ export default function CostEstimatorForm() {
   };
   
   const handleSaveAndPrintReport = async () => {
+    if (!selectedProjectId) {
+      toast({ title: "بيانات ناقصة", description: "يرجى اختيار مشروع لربط التقرير به.", variant: "destructive" });
+      return;
+    }
     if (!reportName.trim()) {
       toast({ title: "بيانات ناقصة", description: "يرجى إدخال اسم للتقرير.", variant: "destructive" });
       return;
@@ -213,6 +245,7 @@ export default function CostEstimatorForm() {
       return;
     }
     const reportData = {
+      projectId: parseInt(selectedProjectId, 10),
       reportName,
       engineerId,
       engineerName,
@@ -323,6 +356,16 @@ export default function CostEstimatorForm() {
               </div>
             </CardHeader>
             <CardContent className="p-6 space-y-5">
+               <div>
+                  <Label htmlFor="project" className="flex items-center gap-2 mb-2 font-medium text-gray-700"><Briefcase size={16} /> اختر المشروع</Label>
+                  <Select onValueChange={handleProjectChange} value={selectedProjectId} dir="rtl">
+                      <SelectTrigger id="project" className="w-full text-right bg-gray-50"><SelectValue placeholder="اختر مشروعًا لربط التقرير به..." /></SelectTrigger>
+                      <SelectContent>
+                        {projects.map(project => (<SelectItem key={project.id} value={project.id.toString()}>{project.name}</SelectItem>))}
+                      </SelectContent>
+                  </Select>
+              </div>
+
               <div>
                 <Label htmlFor="material" className="flex items-center gap-2 mb-2 font-medium text-gray-700">
                     <Blocks size={16} /> اختر مادة البناء
@@ -455,11 +498,11 @@ export default function CostEstimatorForm() {
                 <CardContent className="space-y-4">
                     <div>
                         <Label htmlFor="reportName" className="flex items-center gap-2 mb-2 font-medium text-gray-700"><FileSignature size={16} /> اسم التقرير</Label>
-                        <Input id="reportName" value={reportName} onChange={(e) => setReportName(e.target.value)} placeholder="مثال: تقدير تكلفة فيلا السيد أحمد" className="bg-gray-50"/>
+                        <Input id="reportName" value={reportName} onChange={(e) => setReportName(e.target.value)} placeholder="مثال: تقدير تكلفة فيلا السيد أحمد" className="bg-gray-50" disabled={!!selectedProjectId} />
                     </div>
                     <div>
                         <Label htmlFor="owner" className="flex items-center gap-2 mb-2 font-medium text-gray-700"><User size={16} /> ربط بمالك</Label>
-                        <Select onValueChange={setSelectedOwnerId} value={selectedOwnerId} dir="rtl">
+                        <Select onValueChange={setSelectedOwnerId} value={selectedOwnerId} dir="rtl" disabled={!!selectedProjectId}>
                             <SelectTrigger id="owner" className="w-full text-right bg-gray-50"><SelectValue placeholder="اختر مالكًا..." /></SelectTrigger>
                             <SelectContent>{owners.map(owner => (<SelectItem key={owner.id} value={owner.id}>{owner.name} ({owner.email})</SelectItem>))}</SelectContent>
                         </Select>

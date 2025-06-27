@@ -13,14 +13,14 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Edit, Send, Palette, CheckCircle2, 
-  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2, Loader2 as LoaderIcon, Mail, Calculator, Wrench, ListChecks
+  UploadCloud, Download, Link2, HardHat, Users, Percent, FileEdit, BarChart3, GanttChartSquare, Settings2, Loader2 as LoaderIcon, Mail, Calculator, Wrench, ListChecks, Wallet
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose, DialogDescription } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
-import { findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask } from '@/lib/db';
+import { findProjectById, updateProject as dbUpdateProject, getCostReportsForProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask, type CostReport } from '@/lib/db';
 import Link from 'next/link';
 
 export default function EngineerProjectDetailPage() {
@@ -28,6 +28,7 @@ export default function EngineerProjectDetailPage() {
   const projectId = params.projectId as string;
   const { toast } = useToast();
   const [project, setProject] = useState<Project | null>(null);
+  const [costReports, setCostReports] = useState<CostReport[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [progressUpdate, setProgressUpdate] = useState({ percentage: '', notes: '' });
@@ -39,9 +40,14 @@ export default function EngineerProjectDetailPage() {
 
   const isOwnerView = false; // This is the Engineer's view
 
-  const refreshProjectFromDb = async () => { 
-    const currentProject = await findProjectById(projectId); 
+  const refreshProjectData = async () => { 
+    const [currentProject, reports] = await Promise.all([
+        findProjectById(projectId),
+        getCostReportsForProject(projectId)
+    ]);
     setProject(currentProject ? {...currentProject} : null); 
+    setCostReports(reports);
+
     if (currentProject?.linkedOwnerEmail) {
       setLinkedOwnerEmailInput(currentProject.linkedOwnerEmail);
     }
@@ -51,7 +57,7 @@ export default function EngineerProjectDetailPage() {
   };
 
   useEffect(() => {
-    refreshProjectFromDb();
+    refreshProjectData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]); 
 
@@ -74,7 +80,7 @@ export default function EngineerProjectDetailPage() {
     });
 
     if (updatedProjectResult.success) {
-        refreshProjectFromDb();
+        await refreshProjectData();
         setNewComment('');
         toast({ title: "تم إضافة التعليق", description: "تم نشر تعليقك بنجاح." });
     } else {
@@ -110,7 +116,7 @@ export default function EngineerProjectDetailPage() {
     const updatedProjectResult = await dbUpdateProject(project.id.toString(), updates);
   
     if (updatedProjectResult.success) {
-      refreshProjectFromDb();
+      await refreshProjectData();
       toast({ title: "تم تحديث التقدم", description: `تم تحديث تقدم المشروع إلى ${newProgress}%.` });
       setProgressUpdate(prev => ({ ...prev, notes: '' }));
     } else {
@@ -128,7 +134,7 @@ export default function EngineerProjectDetailPage() {
     
     const updatedProjectResult = await dbUpdateProject(project.id.toString(), { linkedOwnerEmail: linkedOwnerEmailInput }); 
     if (updatedProjectResult.success) {
-        refreshProjectFromDb();
+        await refreshProjectData();
         toast({ title: "تم ربط المالك", description: `تم ربط المالك بالبريد الإلكتروني: ${linkedOwnerEmailInput}.` });
     } else {
         toast({ title: "خطأ", description: "فشل ربط المالك.", variant: "destructive" });
@@ -163,7 +169,7 @@ export default function EngineerProjectDetailPage() {
     });
 
     if (updatedProjectResult.success) {
-        refreshProjectFromDb();
+        await refreshProjectData();
         setSelectedFile(null);
         const fileInput = document.getElementById('projectFileUpload') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
@@ -435,28 +441,37 @@ export default function EngineerProjectDetailPage() {
               )}
               
               <Card className="bg-white/95 shadow-lg">
-                <CardHeader className="flex flex-row justify-between items-center">
-                  <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                    <FileText size={28} /> تقارير الكميات
-                  </CardTitle>
-                   {!isOwnerView && (
-                     <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقرير الكميات PDF/Excel")}>
-                        <Download size={18} className="ms-1.5" /> تصدير
-                    </Button>
-                   )}
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                        <Wallet size={28}/> تقارير التكاليف
+                    </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 leading-relaxed">
-                    {project.quantitySummary || "لا توجد تقارير كميات ملخصة متاحة حالياً."}
-                  </p>
-                   {!isOwnerView && (
-                    <div className="mt-4 text-sm text-gray-500 italic">
-                      (سيتم إضافة خيارات لتخصيص عرض التقرير هنا لاحقًا)
+                {costReports.length > 0 ? (
+                    <div className="space-y-3">
+                        {costReports.map(report => (
+                        <div key={report.id} className="flex justify-between items-center p-2 bg-gray-50 rounded-md border">
+                            <div>
+                            <p className="font-medium text-sm text-gray-700">{report.reportName}</p>
+                            <p className="text-xs text-gray-500">{new Date(report.createdAt).toLocaleDateString('ar-EG')}</p>
+                            </div>
+                            <p className="font-semibold text-base text-green-700">{report.totalCost_ILS.toLocaleString()} شيكل</p>
+                        </div>
+                        ))}
+                        <Separator />
+                        <div className="flex justify-between items-center pt-2">
+                        <p className="font-bold text-base text-app-red">الإجمالي الكلي:</p>
+                        <p className="font-bold text-lg text-app-red">
+                            {costReports.reduce((acc, r) => acc + r.totalCost_ILS, 0).toLocaleString()} شيكل
+                        </p>
+                        </div>
                     </div>
-                   )}
+                    ) : (
+                    <p className="text-gray-500 text-sm">لا توجد تقارير تكاليف محفوظة لهذا المشروع بعد.</p>
+                    )}
                 </CardContent>
               </Card>
-              
+
               <Card className="bg-white/95 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">

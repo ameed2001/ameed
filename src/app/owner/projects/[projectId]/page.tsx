@@ -13,16 +13,16 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2, Send,
-  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, MapPin, AlertTriangle, Check
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, MapPin, AlertTriangle, Check, Wallet
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose, DialogDescription } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
-import { findProjectById, updateProject as dbUpdateProject, type Project, type ProjectComment, type ProjectPhoto } from '@/lib/db';
+import { findProjectById, updateProject as dbUpdateProject, getCostReportsForProject, type Project, type ProjectComment, type ProjectPhoto, type CostReport } from '@/lib/db';
 import Link from 'next/link';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const ShekelIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -50,6 +50,7 @@ export default function OwnerProjectDetailPage() {
   const projectId = params.projectId as string;
   const { toast } = useToast();
   const [project, setProject] = useState<Project | null>(null);
+  const [costReports, setCostReports] = useState<CostReport[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [isContactEngineerModalOpen, setIsContactEngineerModalOpen] = useState(false);
@@ -68,9 +69,14 @@ export default function OwnerProjectDetailPage() {
     setUserEmail(email);
   }, []);
 
-  const refreshProjectFromDb = async () => { 
+  const refreshProjectData = async () => { 
     if (!userEmail && !isClient) return;
-    const currentProject = await findProjectById(projectId); 
+    
+    const [currentProject, reports] = await Promise.all([
+      findProjectById(projectId),
+      getCostReportsForProject(projectId)
+    ]);
+    
     if (currentProject && currentProject.linkedOwnerEmail !== userEmail) {
       setProject(null);
       toast({ title: "غير مصرح به", description: "ليس لديك صلاحية لعرض هذا المشروع.", variant: "destructive" });
@@ -78,11 +84,12 @@ export default function OwnerProjectDetailPage() {
       return;
     }
     setProject(currentProject ? {...currentProject} : null); 
+    setCostReports(reports);
   };
   
   useEffect(() => {
     if(isClient && userEmail) {
-      refreshProjectFromDb();
+      refreshProjectData();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId, userEmail, isClient]); 
@@ -107,7 +114,7 @@ export default function OwnerProjectDetailPage() {
     });
 
     if (updatedProjectResult.success) {
-      refreshProjectFromDb();
+      await refreshProjectData();
       setNewComment('');
       toast({ title: "تم إضافة التعليق", description: "تم نشر تعليقك بنجاح." });
     } else {
@@ -137,7 +144,7 @@ export default function OwnerProjectDetailPage() {
     if (result.success) {
       toast({ title: "تم تحديث التعليق" });
       setEditingComment(null);
-      await refreshProjectFromDb();
+      await refreshProjectData();
     } else {
       toast({ title: "فشل تحديث التعليق", variant: "destructive" });
     }
@@ -160,7 +167,7 @@ export default function OwnerProjectDetailPage() {
         setDeleteStep('success');
         setTimeout(() => {
             setIsDeleteDialogOpen(false);
-            refreshProjectFromDb();
+            refreshProjectData();
         }, 2000);
     } else {
       toast({ title: "فشل حذف التعليق", variant: "destructive" });
@@ -428,7 +435,38 @@ export default function OwnerProjectDetailPage() {
 
           {/* الشريط الجانبي (1/3 الشاشة) */}
           <div className="space-y-6">
-            {/* الجدول الزمني */}
+            <Card className="border-0 shadow-sm">
+                <CardHeader className="pb-3">
+                    <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
+                    <Wallet size={20} className="text-app-red" /> تقارير التكاليف
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {costReports.length > 0 ? (
+                    <div className="space-y-3">
+                        {costReports.map(report => (
+                        <div key={report.id} className="flex justify-between items-center p-2 bg-gray-50 rounded-md border">
+                            <div>
+                            <p className="font-medium text-sm text-gray-700">{report.reportName}</p>
+                            <p className="text-xs text-gray-500">{new Date(report.createdAt).toLocaleDateString('ar-EG')}</p>
+                            </div>
+                            <p className="font-semibold text-base text-green-700">{report.totalCost_ILS.toLocaleString()} شيكل</p>
+                        </div>
+                        ))}
+                        <Separator />
+                        <div className="flex justify-between items-center pt-2">
+                        <p className="font-bold text-base text-app-red">الإجمالي الكلي:</p>
+                        <p className="font-bold text-lg text-app-red">
+                            {costReports.reduce((acc, r) => acc + r.totalCost_ILS, 0).toLocaleString()} شيكل
+                        </p>
+                        </div>
+                    </div>
+                    ) : (
+                    <p className="text-gray-500 text-sm">لا توجد تقارير تكاليف محفوظة لهذا المشروع بعد.</p>
+                    )}
+                </CardContent>
+            </Card>
+
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
@@ -449,7 +487,6 @@ export default function OwnerProjectDetailPage() {
               </CardContent>
             </Card>
 
-            {/* تقارير الكميات */}
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
@@ -469,7 +506,6 @@ export default function OwnerProjectDetailPage() {
                 </div>
               </CardContent>
             </Card>
-
           </div>
         </div>
       </div>

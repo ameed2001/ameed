@@ -98,6 +98,7 @@ export interface CostReportItem {
 
 export interface CostReport {
   id: string;
+  projectId: number;
   reportName: string;
   engineerId: string;
   engineerName: string;
@@ -555,6 +556,15 @@ export async function addCostReport(reportData: Omit<CostReport, 'id' | 'created
     }
     db.costReports.push(newReport);
     await writeDb(db);
-    await logAction('COST_REPORT_ADD_SUCCESS', 'INFO', `Cost report "${reportData.reportName}" (ID: ${newReport.id}) added by engineer ${reportData.engineerName}.`);
+    await logAction('COST_REPORT_ADD_SUCCESS', 'INFO', `Cost report "${reportData.reportName}" (ID: ${newReport.id}) added for project ID ${reportData.projectId} by engineer ${reportData.engineerName}.`);
     return newReport;
+}
+
+export async function getCostReportsForProject(projectId: string): Promise<CostReport[]> {
+    const db = await readDb();
+    if (!db.costReports) {
+        return [];
+    }
+    const reports = db.costReports.filter((report: CostReport) => report.projectId?.toString() === projectId);
+    return reports.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }

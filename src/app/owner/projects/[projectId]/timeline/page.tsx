@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -5,9 +6,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { GanttChartSquare, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { GanttChartSquare, Loader2, ArrowLeft, Info, Calendar, User, FileText as NotesIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from '@/lib/utils';
 import { findProjectById, type Project, type TimelineTask } from '@/lib/db';
 import Link from 'next/link';
 
@@ -44,6 +45,18 @@ export default function ProjectSpecificTimelinePage() {
     fetchProject();
   }, [projectId, router, toast]);
 
+  const calculateDuration = (startDate: string, endDate: string): string => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return "غير محدد";
+    }
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return `${diffDays} يومًا`;
+  };
+
+
   if (isLoading) {
     return (
        <div className="flex justify-center items-center h-64">
@@ -67,24 +80,6 @@ export default function ProjectSpecificTimelinePage() {
       </div>
     );
   }
-  
-  const projectStartDate = project.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.min(...project.timelineTasks.map(task => new Date(task.startDate).getTime()))) : new Date();
-  const projectEndDate = project.timelineTasks && project.timelineTasks.length > 0 ? new Date(Math.max(...project.timelineTasks.map(task => new Date(task.endDate).getTime()))) : new Date();
-  let totalProjectDurationDays = project.timelineTasks && project.timelineTasks.length > 0 ? Math.ceil((projectEndDate.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1 : 30;
-  if (totalProjectDurationDays <= 0) totalProjectDurationDays = 30;
-
-  const getTaskPositionAndWidth = (task: TimelineTask) => {
-    const taskStart = new Date(task.startDate);
-    const taskEnd = new Date(task.endDate);
-    const offsetDays = Math.ceil((taskStart.getTime() - projectStartDate.getTime()) / (1000 * 60 * 60 * 24));
-    const durationDays = Math.ceil((taskEnd.getTime() - taskStart.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-    const leftPercentage = (offsetDays / totalProjectDurationDays) * 100;
-    const widthPercentage = (durationDays / totalProjectDurationDays) * 100;
-    return {
-      left: `${Math.max(0, Math.min(100 - widthPercentage, leftPercentage))}%`,
-      width: `${Math.max(2, Math.min(100, widthPercentage))}%`,
-    };
-  };
 
   return (
     <div className="container mx-auto py-8 px-4 text-right">
@@ -98,45 +93,59 @@ export default function ProjectSpecificTimelinePage() {
           </Button>
       </div>
       <Card className="bg-white/95 shadow-lg">
-        <CardHeader className="flex flex-row justify-between items-center">
+        <CardHeader>
           <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-            <GanttChartSquare size={28} /> مخطط جانت الزمني
+            <GanttChartSquare size={28} /> جدول مراحل المشروع
           </CardTitle>
+          <CardDescription>تفاصيل المراحل والأنشطة الرئيسية للمشروع.</CardDescription>
         </CardHeader>
         <CardContent>
           {project.timelineTasks && project.timelineTasks.length > 0 ? (
-            <div className="space-y-5 relative overflow-x-auto p-1 pb-4 min-h-[400px] bg-gray-50 rounded-lg shadow-inner">
-              <div className="absolute inset-0 grid grid-cols-6 gap-0 pointer-events-none opacity-20">
-                {Array.from({ length: 6 }).map((_, i) => (
-                <div key={`month-grid-detail-${i}`} className={cn("border-r border-gray-300", i === 5 && "border-r-0")}>
-                    <span className="block p-1 text-xs text-gray-400 text-center">
-                    {new Date(projectStartDate.getFullYear(), projectStartDate.getMonth() + Math.floor(i * totalProjectDurationDays / 6 / 30)).toLocaleString('ar', { month: 'short' })}
-                    </span>
-                </div>
-                ))}
-              </div>
-              {project.timelineTasks.map((task, index) => {
-                const { left, width } = getTaskPositionAndWidth(task);
-                return (
-                  <div key={task.id} className="relative h-12 flex items-center text-right pr-3 group" style={{ zIndex: index + 1 }}>
-                    <div 
-                      className={cn(
-                        "absolute h-8 rounded-md shadow-sm flex items-center justify-between px-2.5 text-white transition-all duration-300 ease-in-out hover:opacity-90 text-xs",
-                        task.color
-                      )}
-                      style={{ left, width, right: 'auto' }}
-                      title={`${task.name} (من ${task.startDate} إلى ${task.endDate}) - ${task.status} ${task.progress !== undefined ? task.progress + '%' : ''}`}
-                    >
-                      <span className="font-medium truncate">{task.name}</span>
-                      {task.status === 'مكتمل' && <CheckCircle2 size={14} className="text-white/90 shrink-0 ml-1.5"/>}
-                      {task.status === 'قيد التنفيذ' && <div className="h-2.5 w-2.5 rounded-full bg-white/80 animate-pulse shrink-0 ml-1.5"></div>}
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="overflow-x-auto rounded-lg border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-100">
+                    <TableHead className="text-right font-semibold text-gray-700">المرحلة</TableHead>
+                    <TableHead className="text-right font-semibold text-gray-700 w-2/5">الأنشطة الرئيسية</TableHead>
+                    <TableHead className="text-right font-semibold text-gray-700">المدة الزمنية</TableHead>
+                    <TableHead className="text-right font-semibold text-gray-700">المسؤول</TableHead>
+                    <TableHead className="text-right font-semibold text-gray-700">الملاحظات</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {project.timelineTasks.map((task, index) => (
+                    <TableRow key={task.id} className="hover:bg-gray-50">
+                      <TableCell className="font-medium">{index + 1}</TableCell>
+                      <TableCell>{task.name}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                            <Calendar size={14} className="text-gray-500"/>
+                            {calculateDuration(task.startDate, task.endDate)}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                         <div className="flex items-center gap-2">
+                            <User size={14} className="text-gray-500"/>
+                            {project.engineer || 'غير محدد'}
+                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                            <NotesIcon size={14} className="text-gray-500"/>
+                            لا توجد
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-10">لا يوجد جدول زمني محدد لهذا المشروع بعد.</p>
+             <div className="text-center text-gray-500 py-10 bg-gray-50 rounded-lg">
+                <Info size={48} className="mx-auto mb-3 text-gray-400" />
+                <p className="font-semibold">لا يوجد جدول زمني محدد</p>
+                <p className="text-sm">لم يقم المهندس بإضافة مهام للجدول الزمني لهذا المشروع بعد.</p>
+            </div>
           )}
         </CardContent>
       </Card>

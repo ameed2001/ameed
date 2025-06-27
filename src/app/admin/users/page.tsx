@@ -251,28 +251,25 @@ export default function AdminUsersPage() {
                           </Button>
                           {user.role !== 'ADMIN' && (
                               <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100" title="حذف">
-                                  <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
-                                  </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent dir="rtl" className="sm:max-w-md">
-                                <AlertDialogHeader className="text-center items-center">
-                                  <div className="p-3 bg-red-100 rounded-full mb-2">
-                                    <AlertTriangle className="h-8 w-8 text-destructive" />
-                                  </div>
-                                  <AlertDialogTitle className="text-xl font-bold">تأكيد الحذف</AlertDialogTitle>
-                                  <AlertDialogDescription className="text-muted-foreground">
-                                    هل أنت متأكد أنك تريد حذف المستخدم "{user.name}"؟ لا يمكن التراجع عن هذا الإجراء.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter className="flex-row justify-center gap-2 pt-4">
-                                  <AlertDialogCancel className="w-full sm:w-auto">إلغاء</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="w-full sm:w-auto bg-destructive hover:bg-destructive/90">
-                                      نعم، قم بالحذف
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100" title="حذف">
+                                    <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent dir="rtl" className="sm:max-w-md">
+                                  <AlertDialogHeader className="text-right">
+                                    <AlertDialogTitle className="text-xl font-bold">تأكيد الحذف</AlertDialogTitle>
+                                    <AlertDialogDescription className="text-muted-foreground pt-2">
+                                      هل أنت متأكد أنك تريد حذف المستخدم "{user.name}"؟ لا يمكن التراجع عن هذا الإجراء.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter className="flex-row justify-start gap-3 pt-4">
+                                    <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700">
+                                        حذف
+                                    </AlertDialogAction>
+                                    <AlertDialogCancel className="w-full sm:w-auto mt-0">إلغاء</AlertDialogCancel>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
                               </AlertDialog>
                           )}
                           <Button 

@@ -1472,6 +1472,14 @@
       "message": "Project ID 3 updated. Fields: comments",
       "timestamp": "2025-06-27T13:26:36.135Z",
       "user": "System"
+    },
+    {
+      "id": "log-1751031503790-savub",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: malik@gmail.com",
+      "timestamp": "2025-06-27T13:38:23.790Z",
+      "user": "user-1750959424627-e7rbf"
     }
   ],
   "roles": [

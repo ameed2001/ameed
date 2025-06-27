@@ -288,51 +288,6 @@ export default function OwnerProjectDetailPage() {
                 )}
               </CardContent>
             </Card>
-          </div>
-
-          {/* الشريط الجانبي (1/3 الشاشة) */}
-          <div className="space-y-6">
-            {/* الجدول الزمني */}
-            <Card className="border-0 shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
-                  <GanttChartSquare size={20} className="text-app-red" /> الجدول الزمني
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <p className="text-gray-600 text-sm">
-                    تتبع مراحل المشروع الرئيسية وتقدمها الزمني
-                  </p>
-                  <Button asChild className="w-full" variant="outline">
-                    <Link href={`/owner/projects/${projectId}/timeline`}>
-                      عرض التفاصيل الكاملة
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* تقارير الكميات */}
-            <Card className="border-0 shadow-sm">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
-                  <BarChart3 size={20} className="text-app-red" /> تقارير الكميات
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <p className="text-gray-600 text-sm">
-                    {project.quantitySummary || "سيتم إضافة تقارير الكميات قريباً"}
-                  </p>
-                  <Button asChild className="w-full" variant="outline">
-                    <Link href={`/owner/projects/${projectId}/reports`}>
-                      عرض التقارير الكاملة
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
 
             {/* التعليقات والاستفسارات */}
             <Card className="border-0 shadow-sm">
@@ -377,7 +332,7 @@ export default function OwnerProjectDetailPage() {
 
                 <Separator className="my-4" />
 
-                <div className="space-y-4 max-h-64 overflow-y-auto pr-2">
+                <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
                   {project.comments && project.comments.length > 0 ? (
                     project.comments.slice().reverse().map((comment) => (
                       <div key={comment.id} className={cn(
@@ -424,21 +379,18 @@ export default function OwnerProjectDetailPage() {
                                       </Button>
                                     </AlertDialogTrigger>
                                     <AlertDialogContent dir="rtl" className="sm:max-w-md">
-                                        <AlertDialogHeader className="text-center items-center">
-                                            <div className="p-3 bg-red-100 rounded-full mb-2">
-                                                <AlertTriangle className="h-8 w-8 text-destructive" />
-                                            </div>
-                                            <AlertDialogTitle className="text-xl font-bold">تأكيد الحذف</AlertDialogTitle>
-                                            <AlertDialogDescription className="text-muted-foreground">
-                                            هل أنت متأكد أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter className="flex-row justify-center gap-2 pt-4">
-                                            <AlertDialogCancel className="w-full sm:w-auto">إلغاء</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => handleDeleteComment(comment.id)} className="w-full sm:w-auto bg-destructive hover:bg-destructive/90" disabled={isDeletingComment}>
-                                            {isDeletingComment ? <LoaderIcon className="animate-spin" /> : "نعم، قم بالحذف"}
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
+                                      <AlertDialogHeader className="text-right">
+                                        <AlertDialogTitle className="text-xl font-bold">تأكيد الحذف</AlertDialogTitle>
+                                        <AlertDialogDescription className="text-muted-foreground pt-2">
+                                          هل أنت متأكد أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter className="flex-row justify-start gap-3 pt-4">
+                                        <AlertDialogAction onClick={() => handleDeleteComment(comment.id)} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700" disabled={isDeletingComment}>
+                                          {isDeletingComment ? <LoaderIcon className="animate-spin" /> : "حذف"}
+                                        </AlertDialogAction>
+                                        <AlertDialogCancel className="w-full sm:w-auto mt-0">إلغاء</AlertDialogCancel>
+                                      </AlertDialogFooter>
                                     </AlertDialogContent>
                                   </AlertDialog>
                                 </div>
@@ -476,6 +428,52 @@ export default function OwnerProjectDetailPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+
+          {/* الشريط الجانبي (1/3 الشاشة) */}
+          <div className="space-y-6">
+            {/* الجدول الزمني */}
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
+                  <GanttChartSquare size={20} className="text-app-red" /> الجدول الزمني للمشروع
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <p className="text-gray-600 text-sm">
+                    تتبع مراحل المشروع الرئيسية وتقدمها الزمني
+                  </p>
+                  <Button asChild className="w-full" variant="outline">
+                    <Link href={`/owner/projects/${projectId}/timeline`}>
+                      عرض التفاصيل الكاملة
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* تقارير الكميات */}
+            <Card className="border-0 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
+                  <BarChart3 size={20} className="text-app-red" /> تقارير الكميات
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <p className="text-gray-600 text-sm">
+                    {project.quantitySummary || "سيتم إضافة تقارير الكميات قريباً"}
+                  </p>
+                  <Button asChild className="w-full" variant="outline">
+                    <Link href={`/owner/projects/${projectId}/reports`}>
+                      عرض التقارير الكاملة
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
           </div>
         </div>
       </div>

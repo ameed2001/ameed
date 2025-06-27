@@ -160,20 +160,17 @@ export default function AdminProjectsPage() {
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent dir="rtl" className="sm:max-w-md">
-                        <AlertDialogHeader className="text-center items-center">
-                          <div className="p-3 bg-red-100 rounded-full mb-2">
-                            <AlertTriangle className="h-8 w-8 text-destructive" />
-                          </div>
+                        <AlertDialogHeader className="text-right">
                           <AlertDialogTitle className="text-xl font-bold">تأكيد الحذف</AlertDialogTitle>
-                          <AlertDialogDescription className="text-muted-foreground">
+                          <AlertDialogDescription className="text-muted-foreground pt-2">
                             هل أنت متأكد أنك تريد حذف المشروع "{project.name}"؟ لا يمكن التراجع عن هذا الإجراء.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter className="flex-row justify-center gap-2 pt-4">
-                          <AlertDialogCancel className="w-full sm:w-auto">إلغاء</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteProject(project.id)} className="w-full sm:w-auto bg-destructive hover:bg-destructive/90">
-                            نعم، قم بالحذف
+                        <AlertDialogFooter className="flex-row justify-start gap-3 pt-4">
+                          <AlertDialogAction onClick={() => handleDeleteProject(project.id)} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700">
+                            حذف
                           </AlertDialogAction>
+                          <AlertDialogCancel className="w-full sm:w-auto mt-0">إلغاء</AlertDialogCancel>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

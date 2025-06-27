@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2,
-  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, Send, MapPin, AlertTriangle
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, Send, MapPin, AlertTriangle, Check
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -58,7 +58,9 @@ export default function OwnerProjectDetailPage() {
   const [isClient, setIsClient] = useState(false);
 
   const [editingComment, setEditingComment] = useState<{ id: string; text: string } | null>(null);
-  const [isDeletingComment, setIsDeletingComment] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<ProjectComment | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<'confirm' | 'loading' | 'success'>('confirm');
 
   useEffect(() => {
     setIsClient(true);
@@ -141,18 +143,29 @@ export default function OwnerProjectDetailPage() {
     }
   };
 
-  const handleDeleteComment = async (commentId: string) => {
-    if (!project) return;
-    setIsDeletingComment(true);
-    const updatedComments = project.comments.filter(c => c.id !== commentId);
+  const handleOpenDeleteDialog = (comment: ProjectComment) => {
+    setCommentToDelete(comment);
+    setDeleteStep('confirm');
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteComment = async () => {
+    if (!project || !commentToDelete) return;
+    setDeleteStep('loading');
+
+    const updatedComments = project.comments.filter(c => c.id !== commentToDelete.id);
     const result = await dbUpdateProject(project.id.toString(), { comments: updatedComments });
+    
     if (result.success) {
-      toast({ title: "تم حذف التعليق" });
-      await refreshProjectFromDb();
+        setDeleteStep('success');
+        setTimeout(() => {
+            setIsDeleteDialogOpen(false);
+            refreshProjectFromDb();
+        }, 2000);
     } else {
       toast({ title: "فشل حذف التعليق", variant: "destructive" });
+      setIsDeleteDialogOpen(false);
     }
-    setIsDeletingComment(false);
   };
 
   if (!project) {
@@ -171,6 +184,7 @@ export default function OwnerProjectDetailPage() {
   }
 
   return (
+    <>
     <Dialog open={isContactEngineerModalOpen} onOpenChange={setIsContactEngineerModalOpen}>
       <div className="container mx-auto py-8 px-4 text-right">
         {/* بطاقة معلومات المشروع الرئيسية */}
@@ -372,38 +386,9 @@ export default function OwnerProjectDetailPage() {
                                   <Button variant="ghost" size="icon" className="h-7 w-7 text-blue-600 hover:bg-blue-100" onClick={() => setEditingComment({ id: comment.id, text: comment.text })}>
                                     <Edit className="h-4 w-4" />
                                   </Button>
-                                  <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                      <Button variant="ghost" size="icon" className="h-7 w-7 text-red-600 hover:bg-red-100">
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent dir="rtl" className="sm:max-w-md">
-                                      <AlertDialogHeader className="text-center items-center space-y-4">
-                                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-                                            <Trash2 className="h-8 w-8 text-red-600" />
-                                        </div>
-                                        <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد الحذف</AlertDialogTitle>
-                                      </AlertDialogHeader>
-
-                                      <AlertDialogDescription asChild>
-                                          <div className="text-center text-base text-gray-600 space-y-4">
-                                              <p>هل أنت متأكد أنك تريد حذف هذا الإجراء؟</p>
-                                              <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
-                                                  سيتم حذف التعليق: <span className="font-bold italic">"{comment.text.substring(0, 30)}..."</span>
-                                              </div>
-                                              <p className="text-xs text-gray-500">لا يمكن التراجع عن هذا الإجراء.</p>
-                                          </div>
-                                      </AlertDialogDescription>
-                                      
-                                      <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
-                                          <AlertDialogAction onClick={() => handleDeleteComment(comment.id)} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg" disabled={isDeletingComment}>
-                                              {isDeletingComment ? <LoaderIcon className="animate-spin" /> : "حذف نهائي"}
-                                          </AlertDialogAction>
-                                          <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
+                                  <Button variant="ghost" size="icon" className="h-7 w-7 text-red-600 hover:bg-red-100" onClick={() => handleOpenDeleteDialog(comment)}>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
                                 </div>
                               )}
                             </div>
@@ -489,6 +474,55 @@ export default function OwnerProjectDetailPage() {
         </div>
       </div>
 
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent dir="rtl" className="sm:max-w-md">
+            {deleteStep === 'confirm' && commentToDelete && (
+                <>
+                    <AlertDialogHeader className="text-center items-center space-y-4">
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                            <Trash2 className="h-8 w-8 text-red-600" />
+                        </div>
+                        <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد الحذف</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogDescription asChild>
+                        <div className="text-center text-base text-gray-600 space-y-4">
+                            <p>هل أنت متأكد أنك تريد حذف هذا الإجراء؟</p>
+                            <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
+                                سيتم حذف التعليق: <span className="font-bold italic">"{commentToDelete.text.substring(0, 30)}..."</span>
+                            </div>
+                            <p className="text-xs text-gray-500">لا يمكن التراجع عن هذا الإجراء.</p>
+                        </div>
+                    </AlertDialogDescription>
+                    <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
+                        <Button onClick={async (e) => { e.preventDefault(); await handleDeleteComment(); }} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg">
+                            حذف نهائي
+                        </Button>
+                        <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
+                    </AlertDialogFooter>
+                </>
+            )}
+            {deleteStep === 'loading' && (
+                <div className="flex flex-col items-center justify-center space-y-6 p-8 text-center">
+                    <div className="w-24 h-24 bg-amber-100 rounded-full animate-pulse"></div>
+                    <h2 className="text-3xl font-bold text-amber-700">جاري الحذف...</h2>
+                    <p className="text-lg text-gray-500">يتم حذف التعليق الآن...</p>
+                    <div className="w-full h-2 bg-amber-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-amber-400 w-full animate-pulse"></div>
+                    </div>
+                </div>
+            )}
+            {deleteStep === 'success' && (
+                <div className="flex flex-col items-center justify-center space-y-4 p-8 text-center">
+                    <div className="h-24 w-24 bg-green-100 rounded-full flex items-center justify-center ring-4 ring-green-200">
+                        <Check className="h-12 w-12 text-green-600" />
+                    </div>
+                    <h2 className="text-3xl font-bold text-green-700">تم الحذف بنجاح</h2>
+                    <p className="text-lg text-gray-500">تم حذف التعليق بنجاح من النظام.</p>
+                </div>
+            )}
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* نافذة مراسلة المهندس */}
       <DialogContent className="sm:max-w-md bg-white rounded-lg">
         <DialogHeader className="text-right">
@@ -541,5 +575,6 @@ export default function OwnerProjectDetailPage() {
         </DialogClose>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

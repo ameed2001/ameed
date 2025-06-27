@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from '@/components/ui/button';
-import { ScrollText, Search, Download, Loader2, Trash2, AlertTriangle } from 'lucide-react';
+import { ScrollText, Search, Download, Loader2, Trash2, AlertTriangle, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
@@ -33,6 +33,8 @@ export default function AdminLogsPage() {
   const [isFetching, setIsFetching] = useState(true);
   const [totalLogsCount, setTotalLogsCount] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<'confirm' | 'loading' | 'success'>('confirm');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const fetchLogsFromDb = async () => {
     setIsFetching(true);
@@ -92,27 +94,27 @@ export default function AdminLogsPage() {
   };
 
   const handleDeleteAllLogs = async () => {
-    setIsDeleting(true);
+    setDeleteStep('loading');
     // Simulate deletion for now, replace with actual API call to backend if needed
-    // const result = await dbDeleteLogs(); // This would be the actual call
-    // For now, just clear client-side state
     console.log("Simulating deletion of all logs by admin.");
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate async operation
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate async operation
 
     setLogsState([]);
     setTotalLogsCount(0);
     // Log this admin action
     await logAction('ADMIN_DELETE_ALL_LOGS', 'WARNING', 'Admin deleted all system logs.', 'admin-user-id'); // Replace 'admin-user-id' with actual admin ID
 
-    toast({
-      title: "تم حذف السجلات",
-      description: "تم حذف جميع سجلات النظام بنجاح (محاكاة).",
-      variant: "default",
-    });
-    setIsDeleting(false);
-    // Optionally, re-fetch logs if the backend handles deletion, but for simulation, this is enough.
-    // fetchLogsFromDb(); 
+    setDeleteStep('success');
+    
+    setTimeout(() => {
+        setIsDialogOpen(false);
+    }, 2000);
   };
+  
+  const handleOpenDialog = () => {
+    setDeleteStep('confirm');
+    setIsDialogOpen(true);
+  }
 
 
   return (
@@ -131,41 +133,65 @@ export default function AdminLogsPage() {
             >
               <Download className="ms-2 h-4 w-4" /> تصدير السجلات
             </Button>
-            <AlertDialog>
+            <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <AlertDialogTrigger asChild>
                 <Button
+                  onClick={handleOpenDialog}
                   variant="destructive"
                   className="bg-red-50 text-red-700 border-2 border-red-500 hover:bg-red-600 hover:text-white dark:bg-red-700/30 dark:text-red-300 dark:border-red-600 dark:hover:bg-red-600 dark:hover:text-white font-medium"
-                  disabled={logs.length === 0 || isDeleting}
+                  disabled={logs.length === 0}
                 >
-                  {isDeleting ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : <Trash2 className="ms-2 h-4 w-4" />}
-                  {isDeleting ? "جاري الحذف..." : "حذف جميع السجلات"}
+                  <Trash2 className="ms-2 h-4 w-4" />
+                  حذف جميع السجلات
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent dir="rtl" className="sm:max-w-md">
-                <AlertDialogHeader className="text-center items-center space-y-4">
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-                    <Trash2 className="h-8 w-8 text-red-600" />
-                  </div>
-                  <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد الحذف</AlertDialogTitle>
-                </AlertDialogHeader>
+                {deleteStep === 'confirm' && (
+                    <>
+                        <AlertDialogHeader className="text-center items-center space-y-4">
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                            <Trash2 className="h-8 w-8 text-red-600" />
+                        </div>
+                        <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد الحذف</AlertDialogTitle>
+                        </AlertDialogHeader>
 
-                <AlertDialogDescription asChild>
-                  <div className="text-center text-base text-gray-600 space-y-4">
-                    <p>هل أنت متأكد أنك تريد حذف هذا الإجراء؟</p>
-                    <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
-                      سيتم حذف: <span className="font-bold">"جميع سجلات النظام"</span>
+                        <AlertDialogDescription asChild>
+                        <div className="text-center text-base text-gray-600 space-y-4">
+                            <p>هل أنت متأكد أنك تريد حذف هذا الإجراء؟</p>
+                            <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
+                            سيتم حذف: <span className="font-bold">"جميع سجلات النظام"</span>
+                            </div>
+                            <p className="text-xs text-gray-500">لا يمكن التراجع عن هذا الإجراء.</p>
+                        </div>
+                        </AlertDialogDescription>
+
+                        <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
+                        <AlertDialogAction onClick={async (e) => { e.preventDefault(); await handleDeleteAllLogs(); }} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg" disabled={isDeleting}>
+                            {isDeleting ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : "حذف نهائي"}
+                        </AlertDialogAction>
+                        <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
+                        </AlertDialogFooter>
+                    </>
+                )}
+                {deleteStep === 'loading' && (
+                    <div className="flex flex-col items-center justify-center space-y-6 p-8 text-center">
+                        <div className="w-24 h-24 bg-amber-100 rounded-full animate-pulse"></div>
+                        <h2 className="text-3xl font-bold text-amber-700">جاري الحذف...</h2>
+                        <p className="text-lg text-gray-500">يتم حذف السجلات الآن...</p>
+                        <div className="w-full h-2 bg-amber-200 rounded-full overflow-hidden">
+                            <div className="h-full bg-amber-400 w-full animate-pulse"></div>
+                        </div>
                     </div>
-                    <p className="text-xs text-gray-500">لا يمكن التراجع عن هذا الإجراء.</p>
-                  </div>
-                </AlertDialogDescription>
-
-                <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
-                  <AlertDialogAction onClick={handleDeleteAllLogs} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg" disabled={isDeleting}>
-                    {isDeleting ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : "حذف نهائي"}
-                  </AlertDialogAction>
-                  <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
-                </AlertDialogFooter>
+                )}
+                {deleteStep === 'success' && (
+                    <div className="flex flex-col items-center justify-center space-y-4 p-8 text-center">
+                        <div className="h-24 w-24 bg-green-100 rounded-full flex items-center justify-center ring-4 ring-green-200">
+                            <Check className="h-12 w-12 text-green-600" />
+                        </div>
+                        <h2 className="text-3xl font-bold text-green-700">تم الحذف بنجاح</h2>
+                        <p className="text-lg text-gray-500">تم حذف جميع السجلات بنجاح.</p>
+                    </div>
+                )}
               </AlertDialogContent>
             </AlertDialog>
         </div>

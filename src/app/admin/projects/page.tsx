@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Search, Eye, Trash2, AlertTriangle } from 'lucide-react';
+import { Search, Eye, Trash2, AlertTriangle, Loader2, Check } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   type Project,
@@ -26,6 +26,10 @@ export default function AdminProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<'confirm' | 'loading' | 'success'>('confirm');
+
   useEffect(() => {
     // On component mount, get the user ID from localStorage
     const id = localStorage.getItem('userId');
@@ -35,7 +39,6 @@ export default function AdminProjectsPage() {
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
   };
-
 
   const filteredProjects = useMemo(() => {
     return projects.filter(project =>
@@ -60,19 +63,31 @@ export default function AdminProjectsPage() {
     }
   }
 
-  // Reload projects when currentUserId is set
   useEffect(() => {
     loadProjects();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUserId]);
 
-  async function handleDeleteProject(projectId: number) {
-    const result = await deleteProject(projectId.toString());
+  const handleOpenDeleteDialog = (project: Project) => {
+    setProjectToDelete(project);
+    setDeleteStep('confirm');
+    setIsDeleteDialogOpen(true);
+  };
+
+  async function handleDeleteProject() {
+    if (!projectToDelete) return;
+    setDeleteStep('loading');
+
+    const result = await deleteProject(projectToDelete.id.toString());
     if (result.success) {
-      toast({ title: "نجاح", description: result.message });
-      loadProjects();
+      setDeleteStep('success');
+      setTimeout(() => {
+        setIsDeleteDialogOpen(false);
+        loadProjects();
+      }, 2000);
     } else {
       toast({ title: "خطأ", description: result.message, variant: "destructive" });
+      setIsDeleteDialogOpen(false);
     }
   }
 
@@ -87,6 +102,7 @@ export default function AdminProjectsPage() {
   }
 
   return (
+    <>
     <Card className="bg-white/95 shadow-xl w-full">
       <CardHeader>
         <CardTitle className="text-3xl font-bold text-app-red">إدارة المشاريع</CardTitle>
@@ -153,38 +169,9 @@ export default function AdminProjectsPage() {
                         <Eye className="h-5 w-5" /><span className="sr-only">عرض التفاصيل</span>
                       </Link>
                     </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100">
-                          <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent dir="rtl" className="sm:max-w-md">
-                        <AlertDialogHeader className="text-center items-center space-y-4">
-                            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-                                <Trash2 className="h-8 w-8 text-red-600" />
-                            </div>
-                            <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد الحذف</AlertDialogTitle>
-                        </AlertDialogHeader>
-
-                        <AlertDialogDescription asChild>
-                            <div className="text-center text-base text-gray-600 space-y-4">
-                                <p>هل أنت متأكد أنك تريد حذف هذا الإجراء؟</p>
-                                <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
-                                    سيتم حذف المشروع: <span className="font-bold">"{project.name}"</span>
-                                </div>
-                                <p className="text-xs text-gray-500">لا يمكن التراجع عن هذا الإجراء.</p>
-                            </div>
-                        </AlertDialogDescription>
-
-                        <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
-                            <AlertDialogAction onClick={() => handleDeleteProject(project.id)} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg">
-                                حذف نهائي
-                            </AlertDialogAction>
-                            <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100" onClick={() => handleOpenDeleteDialog(project)}>
+                        <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
+                    </Button>
                   </TableCell>
                 </TableRow>
               )) : (
@@ -202,5 +189,55 @@ export default function AdminProjectsPage() {
         )}
       </CardContent>
     </Card>
+
+    <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent dir="rtl" className="sm:max-w-md">
+            {deleteStep === 'confirm' && projectToDelete && (
+                <>
+                    <AlertDialogHeader className="text-center items-center space-y-4">
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                            <Trash2 className="h-8 w-8 text-red-600" />
+                        </div>
+                        <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد الحذف</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogDescription asChild>
+                        <div className="text-center text-base text-gray-600 space-y-4">
+                            <p>هل أنت متأكد أنك تريد حذف هذا الإجراء؟</p>
+                            <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
+                                سيتم حذف المشروع: <span className="font-bold">"{projectToDelete.name}"</span>
+                            </div>
+                            <p className="text-xs text-gray-500">لا يمكن التراجع عن هذا الإجراء.</p>
+                        </div>
+                    </AlertDialogDescription>
+                    <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
+                        <Button onClick={async (e) => { e.preventDefault(); await handleDeleteProject(); }} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg">
+                            حذف نهائي
+                        </Button>
+                        <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
+                    </AlertDialogFooter>
+                </>
+            )}
+            {deleteStep === 'loading' && (
+                <div className="flex flex-col items-center justify-center space-y-6 p-8 text-center">
+                    <div className="w-24 h-24 bg-amber-100 rounded-full animate-pulse"></div>
+                    <h2 className="text-3xl font-bold text-amber-700">جاري الحذف...</h2>
+                    <p className="text-lg text-gray-500">يتم حذف المشروع الآن...</p>
+                    <div className="w-full h-2 bg-amber-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-amber-400 w-full animate-pulse"></div>
+                    </div>
+                </div>
+            )}
+            {deleteStep === 'success' && (
+                <div className="flex flex-col items-center justify-center space-y-4 p-8 text-center">
+                    <div className="h-24 w-24 bg-green-100 rounded-full flex items-center justify-center ring-4 ring-green-200">
+                        <Check className="h-12 w-12 text-green-600" />
+                    </div>
+                    <h2 className="text-3xl font-bold text-green-700">تم الحذف بنجاح</h2>
+                    <p className="text-lg text-gray-500">تم حذف المشروع بنجاح من النظام.</p>
+                </div>
+            )}
+        </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

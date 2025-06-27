@@ -53,10 +53,10 @@
       "timelineTasks": [],
       "comments": [
         {
-          "id": "24f5b0be-f9b0-4670-86ed-d8f42422fb2a",
+          "id": "fd21009d-bac3-402a-893b-f48d7fcbfbf8",
           "user": "المالك",
-          "text": "لل",
-          "date": "2025-06-27T13:26:37.105Z",
+          "text": "666",
+          "date": "2025-06-27T13:49:57.203Z",
           "avatar": "https://placehold.co/40x40.png?text=OW",
           "dataAiHintAvatar": "owner avatar"
         }
@@ -1480,6 +1480,22 @@
       "message": "User logged in: malik@gmail.com",
       "timestamp": "2025-06-27T13:38:23.790Z",
       "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1751032189189-1d48j",
+      "action": "PROJECT_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 3 updated. Fields: comments",
+      "timestamp": "2025-06-27T13:49:49.189Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751032196165-wklv9",
+      "action": "PROJECT_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 3 updated. Fields: comments",
+      "timestamp": "2025-06-27T13:49:56.165Z",
+      "user": "System"
     }
   ],
   "roles": [

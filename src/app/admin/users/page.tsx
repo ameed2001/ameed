@@ -8,21 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Edit, Trash2, KeyRound, UserCheck, Loader2, UserPlus, AlertTriangle } from 'lucide-react'; 
+import { Search, Edit, Trash2, KeyRound, UserCheck, Loader2, UserPlus, AlertTriangle, Check } from 'lucide-react'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   type UserDocument as User, 
   type UserRole, 
   type UserStatus, 
   deleteUser as dbDeleteUser, 
-  // updateUser as dbUpdateUser, // Direct dbUpdateUser call removed, will use action
   getUsers,
   suspendUser,
   approveEngineer
 } from '@/lib/db'; 
 import AddUserDialog from '@/components/admin/users/AddUserDialog'; 
 import ResetPasswordDialog from '@/components/admin/users/ResetPasswordDialog';
-import EditUserDialog from '@/components/admin/users/EditUserDialog'; // Added EditUserDialog import
+import EditUserDialog from '@/components/admin/users/EditUserDialog';
 
 export default function AdminUsersPage() {
   const { toast } = useToast();
@@ -35,9 +34,12 @@ export default function AdminUsersPage() {
   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false); 
   const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] = useState(false);
   const [selectedUserForPasswordReset, setSelectedUserForPasswordReset] = useState<{id: string, name: string} | null>(null);
-  const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false); // State for EditUserDialog
-  const [selectedUserForEdit, setSelectedUserForEdit] = useState<User | null>(null); // State for user to edit
-
+  const [isEditUserDialogOpen, setIsEditUserDialogOpen] = useState(false);
+  const [selectedUserForEdit, setSelectedUserForEdit] = useState<User | null>(null);
+  
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<'confirm' | 'loading' | 'success'>('confirm');
 
   const [adminUserId, setAdminUserId] = useState<string | null>(null);
 
@@ -82,21 +84,26 @@ export default function AdminUsersPage() {
     );
   }, [users, searchTerm, roleFilter, statusFilter]);
 
-  async function handleDeleteUser(userId: string, userName: string) {
-    const result = await dbDeleteUser(userId); 
+  const handleOpenDeleteDialog = (user: User) => {
+    setUserToDelete(user);
+    setDeleteStep('confirm');
+    setIsDeleteDialogOpen(true);
+  };
+
+  async function handleDeleteUser() {
+    if (!userToDelete) return;
+    setDeleteStep('loading');
+
+    const result = await dbDeleteUser(userToDelete.id);
     if (result.success) {
-      toast({
-        title: "نجاح",
-        description: result.message,
-        variant: "default",
-      });
-      refreshUsersFromDb();
+        setDeleteStep('success');
+        setTimeout(() => {
+            setIsDeleteDialogOpen(false);
+            refreshUsersFromDb();
+        }, 2000);
     } else {
-      toast({
-        title: "خطأ",
-        description: result.message,
-        variant: "destructive",
-      });
+        toast({ title: "خطأ", description: result.message, variant: "destructive" });
+        setIsDeleteDialogOpen(false);
     }
   }
   
@@ -137,10 +144,10 @@ export default function AdminUsersPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleUserAddedOrUpdated = () => { // Renamed to handle both add and update
+  const handleUserAddedOrUpdated = () => {
     refreshUsersFromDb();
     setIsAddUserDialogOpen(false); 
-    setIsEditUserDialogOpen(false); // Close edit dialog as well
+    setIsEditUserDialogOpen(false);
   };
 
   return (
@@ -250,38 +257,9 @@ export default function AdminUsersPage() {
                             <Edit className="h-5 w-5" /><span className="sr-only">تعديل</span>
                           </Button>
                           {user.role !== 'ADMIN' && (
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100" title="حذف">
-                                    <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent dir="rtl" className="sm:max-w-md">
-                                  <AlertDialogHeader className="text-center items-center space-y-4">
-                                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-                                      <Trash2 className="h-8 w-8 text-red-600" />
-                                    </div>
-                                    <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد الحذف</AlertDialogTitle>
-                                  </AlertDialogHeader>
-
-                                  <AlertDialogDescription asChild>
-                                      <div className="text-center text-base text-gray-600 space-y-4">
-                                          <p>هل أنت متأكد أنك تريد حذف هذا الإجراء؟</p>
-                                          <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
-                                              سيتم حذف المستخدم: <span className="font-bold">"{user.name}"</span>
-                                          </div>
-                                          <p className="text-xs text-gray-500">لا يمكن التراجع عن هذا الإجراء.</p>
-                                      </div>
-                                  </AlertDialogDescription>
-
-                                  <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
-                                      <AlertDialogAction onClick={() => handleDeleteUser(user.id, user.name)} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg">
-                                          حذف نهائي
-                                      </AlertDialogAction>
-                                      <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                            <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100" title="حذف" onClick={() => handleOpenDeleteDialog(user)}>
+                              <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
+                            </Button>
                           )}
                           <Button 
                             variant="ghost" 
@@ -315,6 +293,56 @@ export default function AdminUsersPage() {
           )}
         </CardContent>
       </Card>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent dir="rtl" className="sm:max-w-md">
+            {deleteStep === 'confirm' && userToDelete && (
+                <>
+                    <AlertDialogHeader className="text-center items-center space-y-4">
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                            <Trash2 className="h-8 w-8 text-red-600" />
+                        </div>
+                        <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد الحذف</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogDescription asChild>
+                        <div className="text-center text-base text-gray-600 space-y-4">
+                            <p>هل أنت متأكد أنك تريد حذف هذا الإجراء؟</p>
+                            <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
+                                سيتم حذف المستخدم: <span className="font-bold">"{userToDelete.name}"</span>
+                            </div>
+                            <p className="text-xs text-gray-500">لا يمكن التراجع عن هذا الإجراء.</p>
+                        </div>
+                    </AlertDialogDescription>
+                    <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
+                        <Button onClick={async (e) => { e.preventDefault(); await handleDeleteUser(); }} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg">
+                            حذف نهائي
+                        </Button>
+                        <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
+                    </AlertDialogFooter>
+                </>
+            )}
+            {deleteStep === 'loading' && (
+                <div className="flex flex-col items-center justify-center space-y-6 p-8 text-center">
+                    <div className="w-24 h-24 bg-amber-100 rounded-full animate-pulse"></div>
+                    <h2 className="text-3xl font-bold text-amber-700">جاري الحذف...</h2>
+                    <p className="text-lg text-gray-500">يتم حذف المستخدم الآن...</p>
+                    <div className="w-full h-2 bg-amber-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-amber-400 w-full animate-pulse"></div>
+                    </div>
+                </div>
+            )}
+            {deleteStep === 'success' && (
+                <div className="flex flex-col items-center justify-center space-y-4 p-8 text-center">
+                    <div className="h-24 w-24 bg-green-100 rounded-full flex items-center justify-center ring-4 ring-green-200">
+                        <Check className="h-12 w-12 text-green-600" />
+                    </div>
+                    <h2 className="text-3xl font-bold text-green-700">تم الحذف بنجاح</h2>
+                    <p className="text-lg text-gray-500">تم حذف المستخدم بنجاح من النظام.</p>
+                </div>
+            )}
+        </AlertDialogContent>
+      </AlertDialog>
+
       <AddUserDialog 
         isOpen={isAddUserDialogOpen} 
         onClose={() => setIsAddUserDialogOpen(false)}

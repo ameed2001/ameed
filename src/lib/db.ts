@@ -337,43 +337,36 @@ export interface GetProjectsResult {
 export async function getProjects(userId: string): Promise<GetProjectsResult> {
     try {
         const db = await readDb();
-        const user = db.users.find((u: UserDocument) => u.id === userId);
+        // User could be identified by ID (from localStorage) or email (from owner linking)
+        const user = db.users.find((u: UserDocument) => u.id === userId || u.email === userId);
 
         if (!user) {
-            await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch attempt with unknown user ID: ${userId}`);
-            // Also check if it's an email for owner-login edge cases
-            const userByEmail = db.users.find((u: UserDocument) => u.email === userId);
-            if (!userByEmail) {
-                return { success: false, message: "المستخدم غير موجود." };
-            }
-            // If it was an email, proceed with that user object
-            return getProjectsForUser(userByEmail, db.projects);
+            await logAction('PROJECT_FETCH_FAILURE', 'WARNING', `Project fetch attempt with unknown identifier: ${userId}`);
+            return { success: false, message: "المستخدم غير موجود." };
         }
 
-        return getProjectsForUser(user, db.projects);
+        let userProjects: Project[] = [];
+        switch (user.role) {
+            case 'ADMIN':
+                userProjects = db.projects;
+                break;
+            case 'OWNER':
+                userProjects = db.projects.filter((p: Project) => p.linkedOwnerEmail === user.email);
+                break;
+            case 'ENGINEER':
+                userProjects = db.projects.filter((p: Project) => p.engineer === user.name);
+                break;
+            default:
+                userProjects = [];
+        }
+
+        const sortedProjects = userProjects.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+        return { success: true, projects: sortedProjects };
 
     } catch (error: any) {
-        await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Error fetching projects for user ${userId}: ${error.message}`);
-        return { success: false, message: "فشل تحميل المشاريع." };
+        await logAction('PROJECT_FETCH_FAILURE', 'ERROR', `Error fetching projects for identifier ${userId}: ${error.message}`);
+        return { success: false, message: "فشل تحميل المشاريع بسبب خطأ في الخادم." };
     }
-}
-
-function getProjectsForUser(user: UserDocument, allProjects: Project[]): GetProjectsResult {
-    let userProjects: Project[] = [];
-    switch (user.role) {
-        case 'ADMIN':
-            userProjects = allProjects;
-            break;
-        case 'OWNER':
-            userProjects = allProjects.filter(p => p.linkedOwnerEmail === user.email);
-            break;
-        case 'ENGINEER':
-            userProjects = allProjects.filter(p => p.engineer === user.name);
-            break;
-        default:
-            userProjects = [];
-    }
-    return { success: true, projects: userProjects.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()) };
 }
 
 export async function findProjectById(projectId: string): Promise<Project | null> {

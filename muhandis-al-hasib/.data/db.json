@@ -1,4 +1,3 @@
-
 {
   "users": [
     {
@@ -1221,6 +1220,30 @@
       "message": "User logged in successfully: malik@gmail.com",
       "timestamp": "2025-06-26T18:58:08.906Z",
       "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1751026046052-8cao7",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown user ID: malik@gmail.com",
+      "timestamp": "2025-06-27T12:07:26.052Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751026046459-8ea1l",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown user ID: malik@gmail.com",
+      "timestamp": "2025-06-27T12:07:26.459Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751026070113-coq3z",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown user ID: malik@gmail.com",
+      "timestamp": "2025-06-27T12:07:50.113Z",
+      "user": "System"
     }
   ],
   "roles": [

@@ -52,11 +52,13 @@ const Header = () => {
       }
 
       // Set dates
-      // Gregorian Date
-      const gregorianFormatter = new Intl.DateTimeFormat('ar-EG', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-      });
-      setGregorianDate(gregorianFormatter.format(now));
+      // Gregorian Date (Arabic day name, English numerals)
+      const dayFormatter = new Intl.DateTimeFormat('ar-EG', { weekday: 'long' });
+      const day = now.getDate();
+      const month = now.toLocaleDateString('ar-EG', { month: 'long' });
+      const year = now.getFullYear();
+      setGregorianDate(`${dayFormatter.format(now)}, ${day} ${month} ${year}`);
+
 
       // Hijri Date
       const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
@@ -117,7 +119,7 @@ const Header = () => {
             </div>
             <div className="w-px h-8 bg-gray-600"></div>
             <div className="text-right">
-                <p className="font-medium text-gray-200 text-xs">{gregorianDate || '...'}</p>
+                <p className="font-medium text-gray-200 text-lg">{gregorianDate || '...'}</p>
                 <p className="font-medium text-gray-400 text-xs">{hijriDate || '...'}</p>
             </div>
             <CalendarDays size={20} className="flex-shrink-0 text-app-gold" />

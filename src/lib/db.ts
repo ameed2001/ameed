@@ -193,9 +193,9 @@ function mongoDocToProject(doc: WithId<ProjectSchema>): Project {
     return {
         ...rest,
         id: _id.toHexString(),
-        startDate: rest.startDate.toISOString().split('T')[0],
-        endDate: rest.endDate.toISOString().split('T')[0],
-        createdAt: rest.createdAt.toISOString(),
+        startDate: (new Date(rest.startDate)).toISOString().split('T')[0],
+        endDate: (new Date(rest.endDate)).toISOString().split('T')[0],
+        createdAt: (new Date(rest.createdAt)).toISOString(),
     };
 }
 
@@ -538,7 +538,14 @@ export async function getUsers(adminUserId: string): Promise<{ success: boolean,
   }
 }
 
-export async function updateUser(userId: string, updates: Partial<Omit<UserDocument, 'id'>>): Promise<{ success: boolean, user?: UserDocument, message?: string, fieldErrors?: any }> {
+export interface AdminUserUpdateResult {
+    success: boolean;
+    user?: UserDocument;
+    message?: string;
+    fieldErrors?: Record<string, string[]>;
+}
+
+export async function updateUser(userId: string, updates: Partial<Omit<UserDocument, 'id'>>): Promise<AdminUserUpdateResult> {
   try {
     const db = await getDb();
     const usersCollection = db.collection<UserSchema>('users');

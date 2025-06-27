@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2,
-  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, Send
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, Send, MapPin, Wallet
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -153,6 +153,7 @@ export default function OwnerProjectDetailPage() {
   return (
     <Dialog open={isContactEngineerModalOpen} onOpenChange={setIsContactEngineerModalOpen}>
       <div className="container mx-auto py-8 px-4 text-right">
+        {/* بطاقة معلومات المشروع الرئيسية */}
         <Card className="bg-gradient-to-r from-white to-gray-50 shadow-lg border-0 mb-8">
           <CardHeader className="pb-4">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -171,23 +172,35 @@ export default function OwnerProjectDetailPage() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                <p className="text-sm text-gray-500">الموقع</p>
-                <p className="font-medium">{project.location || 'غير محدد'}</p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
+                <MapPin className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
+                <div>
+                  <p className="text-sm text-gray-500">الموقع</p>
+                  <p className="font-medium text-gray-800">{project.location || 'غير محدد'}</p>
+                </div>
               </div>
-              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                <p className="text-sm text-gray-500">المهندس المسؤول</p>
-                <p className="font-medium">{project.engineer || 'غير محدد'}</p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
+                <HardHat className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
+                <div>
+                  <p className="text-sm text-gray-500">المهندس المسؤول</p>
+                  <p className="font-medium text-gray-800">{project.engineer || 'غير محدد'}</p>
+                </div>
               </div>
-              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                <p className="text-sm text-gray-500">الميزانية</p>
-                <p className="font-medium">{project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
+                <Wallet className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
+                <div>
+                  <p className="text-sm text-gray-500">الميزانية</p>
+                  <p className="font-medium text-gray-800">{project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</p>
+                </div>
               </div>
-              <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                <p className="text-sm text-gray-500">الفترة الزمنية</p>
-                <p className="font-medium">
-                  {project.startDate} - {project.endDate}
-                </p>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
+                <CalendarDays className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
+                <div>
+                  <p className="text-sm text-gray-500">الفترة الزمنية</p>
+                  <p className="font-medium text-gray-800">
+                    {project.startDate} - {project.endDate}
+                  </p>
+                </div>
               </div>
             </div>
           </CardHeader>
@@ -215,8 +228,11 @@ export default function OwnerProjectDetailPage() {
           </CardContent>
         </Card>
 
+        {/* شبكة المحتوى الرئيسي */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* القسم الرئيسي (2/3 الشاشة) */}
           <div className="lg:col-span-2 space-y-6">
+            {/* معرض الصور */}
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
@@ -254,7 +270,9 @@ export default function OwnerProjectDetailPage() {
             </Card>
           </div>
 
+          {/* الشريط الجانبي (1/3 الشاشة) */}
           <div className="space-y-6">
+            {/* الجدول الزمني */}
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
@@ -275,6 +293,7 @@ export default function OwnerProjectDetailPage() {
               </CardContent>
             </Card>
 
+            {/* تقارير الكميات */}
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
@@ -295,6 +314,7 @@ export default function OwnerProjectDetailPage() {
               </CardContent>
             </Card>
 
+            {/* التعليقات والاستفسارات */}
             <Card className="border-0 shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-semibold flex items-center gap-2 text-gray-800">
@@ -437,6 +457,7 @@ export default function OwnerProjectDetailPage() {
         </div>
       </div>
 
+      {/* نافذة مراسلة المهندس */}
       <DialogContent className="sm:max-w-md bg-white rounded-lg">
         <DialogHeader className="text-right">
           <DialogTitle className="text-xl font-bold text-app-red">

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -113,7 +112,7 @@ const SocialAndClock = () => {
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
-      setTime(now.toLocaleTimeString('ar-EG-u-nu-latn', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setTime(now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }));
       setDate(now.toLocaleDateString('ar-EG-u-nu-latn', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
     };
     updateDateTime();
@@ -158,7 +157,7 @@ export default function Header() {
   useEffect(() => setIsClient(true), []);
 
   return (
-    <header className="sticky top-0 z-50 shadow-md">
+    <header className="shadow-md">
         <SocialAndClock />
         <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
@@ -168,11 +167,9 @@ export default function Header() {
                 </div>
                 
                 {/* Center: Logo & Title */}
-                <div className="flex-shrink-0">
+                <div className="flex-1 flex justify-center">
                     <Link href="/" className="flex items-center gap-4 text-right">
-                        <div className="relative">
-                            <Image src="https://i.imgur.com/79bO3U2.jpg" alt="شعار الموقع" width={56} height={56} className="rounded-full border-2 border-app-gold" data-ai-hint="logo construction"/>
-                        </div>
+                         <Image src="https://i.imgur.com/79bO3U2.jpg" alt="شعار الموقع" width={56} height={56} className="rounded-full border-2 border-app-gold" data-ai-hint="logo construction"/>
                         <div>
                             <h1 className="text-2xl font-extrabold text-app-red">المحترف لحساب الكميات</h1>
                             <p className="hidden sm:block text-sm text-gray-400">للحديد والباطون والابنية الانشائية</p>

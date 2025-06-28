@@ -121,7 +121,7 @@ const SocialAndClock = () => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-sm py-2">
+    <div className="bg-zinc-900 text-white text-sm py-2">
       <div className="container mx-auto flex justify-between items-center px-4">
         {/* Left Side: Social Icons */}
         <div className="flex-1 flex justify-start">
@@ -159,7 +159,7 @@ export default function Header() {
   return (
     <header className="shadow-md">
         <SocialAndClock />
-        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white backdrop-blur-sm">
+        <div className="bg-zinc-900 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
                 {/* Left Side: User Nav */}
                 <div className="flex-1 flex justify-start">

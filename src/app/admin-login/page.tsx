@@ -96,49 +96,111 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="admin-login-page-wrapper">
-        <div className="container">
-            <div className="login-box">
-                <div className="text-center mb-4">
-                  <ShieldCheck className="mx-auto h-16 w-16 text-app-gold" />
-                </div>
-                <h2>دخول لوحة التحكم</h2>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="input-box">
-                        <input
-                            {...register("email")}
-                            type="email"
-                            required
-                            data-filled={!!emailValue}
-                        />
-                        <label>البريد الإلكتروني</label>
-                         {errors.email && <p className="text-red-400 text-xs mt-1 -mb-4 text-left px-2">{errors.email.message}</p>}
-                    </div>
-                    <div className="input-box">
-                        <input
-                            {...register("password_input")}
-                            type="password"
-                            required
-                            data-filled={!!passwordValue}
-                        />
-                        <label>كلمة المرور</label>
-                        {errors.password_input && <p className="text-red-400 text-xs mt-1 -mb-4 text-left px-2">{errors.password_input.message}</p>}
-                    </div>
-                    <div className="forgot-pass">
-                        <Link href="/forgot-password">هل نسيت كلمة المرور؟</Link>
-                    </div>
-                    <button className="btn" type="submit" disabled={isLoading}>
-                      {isLoading ? <Loader2 className="animate-spin" /> : 'تسجيل الدخول'}
-                    </button>
-                    <div className="signup-link">
-                        <Link href="/">العودة للرئيسية</Link>
-                    </div>
-                </form>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated background elements */}
+      {Array.from({ length: 20 }).map((_, i) => (
+        <div 
+          key={i} 
+          className="absolute rounded-full bg-app-gold/10"
+          style={{
+            width: `${Math.random() * 100 + 50}px`,
+            height: `${Math.random() * 100 + 50}px`,
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            animation: `float ${Math.random() * 10 + 10}s linear infinite`,
+            animationDelay: `${Math.random() * 5}s`
+          }}
+        />
+      ))}
+      
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl shadow-2xl overflow-hidden p-8">
+          <div className="text-center mb-8">
+            <div className="mx-auto w-fit p-4 bg-app-gold/10 rounded-full">
+              <ShieldCheck className="h-12 w-12 text-app-gold" />
             </div>
-             {Array.from({ length: 50 }).map((_, i) => (
-                <span key={i} style={{ '--i': i } as React.CSSProperties}></span>
-            ))}
+            <h1 className="text-2xl font-bold text-white mt-4">دخول لوحة التحكم</h1>
+            <p className="text-gray-400 mt-2">الرجاء إدخال بيانات الاعتماد الخاصة بك</p>
+          </div>
+          
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <div className="relative">
+                  <input
+                    {...register("email")}
+                    type="email"
+                    id="email"
+                    className={`w-full px-4 py-3 bg-white/5 border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-app-gold focus:border-transparent peer`}
+                    required
+                    placeholder=" "
+                  />
+                  <label htmlFor="email" className={`absolute right-3 -top-2.5 bg-gray-800 px-1 text-sm text-gray-400 transition-all duration-200 pointer-events-none peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-app-gold peer-focus:bg-gray-800`}>
+                    البريد الإلكتروني
+                  </label>
+                </div>
+                {errors.email && (
+                  <p className="text-red-400 text-xs mt-1 text-right">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+              
+              <div>
+                <div className="relative">
+                  <input
+                    {...register("password_input")}
+                    id="password_input"
+                    type="password"
+                    className={`w-full px-4 py-3 bg-white/5 border ${errors.password_input ? 'border-red-500' : 'border-white/10'} rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-app-gold focus:border-transparent peer`}
+                    required
+                    placeholder=" "
+                  />
+                  <label htmlFor="password_input" className={`absolute right-3 -top-2.5 bg-gray-800 px-1 text-sm text-gray-400 transition-all duration-200 pointer-events-none peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-app-gold peer-focus:bg-gray-800`}>
+                    كلمة المرور
+                  </label>
+                </div>
+                {errors.password_input && (
+                  <p className="text-red-400 text-xs mt-1 text-right">
+                    {errors.password_input.message}
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex justify-end">
+              <Link 
+                href="/forgot-password" 
+                className="text-sm text-app-gold hover:text-app-gold/80 transition-colors"
+              >
+                هل نسيت كلمة المرور؟
+              </Link>
+            </div>
+            
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-app-gold hover:bg-app-gold/90 text-gray-900 font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin h-5 w-5" />
+                  جاري المعالجة...
+                </>
+              ) : 'تسجيل الدخول'}
+            </button>
+            
+            <div className="text-center">
+              <Link 
+                href="/" 
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                العودة للرئيسية
+              </Link>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
   );
 }

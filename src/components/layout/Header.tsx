@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Instagram, Facebook, UserCircle, LogOut, Settings as SettingsIcon, LayoutDashboard } from 'lucide-react';
+import { Instagram, Facebook, UserCircle, LogOut, Settings as SettingsIcon, LayoutDashboard, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,6 +18,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 // --- UserNav Component ---
 function UserNav() {
@@ -165,7 +166,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full shadow-md">
       <InfoBar />
-      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white border-b border-slate-700">
         <div className="container mx-auto flex h-20 items-center justify-between">
             <div className="mr-4 flex">
               <Link href="/" className="flex items-center gap-2">

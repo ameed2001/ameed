@@ -1,11 +1,11 @@
 "use client";
 import Link from 'next/link';
 import Image from 'next/image';
-import { Instagram, Facebook, Phone, Mail, MapPin, ExternalLink, Heart } from 'lucide-react';
-import type { ReactNode } from 'react'; // Import ReactNode
+import { Instagram, Facebook, Phone, Mail, MapPin, ExternalLink, Heart, LayoutDashboard, LogOut } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useState, useEffect } from 'react';
-// import { getSystemSettings } from '@/lib/db'; // Temporarily removed
-
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 // SVG for WhatsApp icon (consistent with Header.tsx)
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -16,18 +16,63 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 interface QuickLinkItem {
   key: string;
-  label: ReactNode; // Allow ReactNode for custom labels
+  label: ReactNode;
   href?: string;
-  isCustom?: boolean; // Flag for custom rendering
+  isCustom?: boolean;
+  onClick?: () => void;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
 const Footer = () => {
-  const siteName = "المحترف لحساب الكميات"; // Static site name for now
-  const isLoadingSettings = false; // Assume not loading for now
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
+  useEffect(() => {
+    // This effect runs on the client after hydration
+    if (typeof window !== 'undefined') {
+        const role = localStorage.getItem('userRole');
+        if (role) {
+            setIsLoggedIn(true);
+            setUserRole(role);
+        }
+    }
+  }, []);
+
+  const handleLogout = () => {
+      if (typeof window !== 'undefined') {
+          localStorage.clear();
+          setIsLoggedIn(false);
+          setUserRole(null);
+          toast({
+              title: "تم تسجيل الخروج",
+              description: "تم تسجيل خروجك بنجاح.",
+          });
+          router.push('/');
+      }
+  };
+
+  const getDashboardLink = () => {
+      switch(userRole) {
+          case 'ADMIN': return '/admin';
+          case 'ENGINEER': return '/engineer/dashboard';
+          case 'OWNER': return '/owner/dashboard';
+          default: return '/';
+      }
+  };
+
+  const siteName = "المحترف لحساب الكميات";
+  const isLoadingSettings = false;
   const currentYear = new Date().getFullYear();
 
-  const quickLinks: QuickLinkItem[] = [
+  const quickLinks: QuickLinkItem[] = isLoggedIn ? [
+    { key: 'home', href: '/', label: 'الرئيسية' },
+    { key: 'about', href: '/about', label: 'عن الموقع' },
+    { key: 'help', href: '/help', label: 'مركز المساعدة' },
+    { key: 'dashboard', href: getDashboardLink(), label: 'لوحة التحكم', icon: LayoutDashboard },
+    { key: 'logout', label: 'تسجيل الخروج', onClick: handleLogout, icon: LogOut },
+  ] : [
     { key: 'home', href: '/', label: 'الرئيسية' },
     { key: 'about', href: '/about', label: 'عن الموقع' },
     { key: 'contact', href: 'https://forms.gle/WaXPkD8BZMQ7pVev6', label: 'تواصل معنا' },
@@ -66,22 +111,6 @@ const Footer = () => {
     },
     { key: 'admin-login', href: '/admin-login', label: 'تسجيل دخول المدير' },
   ];
-
-  // useEffect(() => { // Temporarily disabled
-  //   async function fetchSettings() {
-  //     try {
-  //       const settings = await getSystemSettings();
-  //       setSiteName(settings?.siteName || 'المحترف لحساب الكميات');
-  //     } catch (error) {
-  //       console.error('Error fetching system settings for footer:', error);
-  //       setSiteName('المحترف لحساب الكميات'); // Fallback
-  //     } finally {
-  //       setIsLoadingSettings(false);
-  //     }
-  //   }
-  //   fetchSettings();
-  // }, []);
-
 
   return (
     <footer className="bg-slate-900 text-white mt-auto relative overflow-hidden" dir="rtl">
@@ -135,6 +164,14 @@ const Footer = () => {
                       <div className="group flex items-center justify-center lg:justify-start gap-1.5 text-gray-300 py-0.5">
                         <span>{link.label}</span>
                       </div>
+                    ) : link.onClick ? (
+                      <button
+                        onClick={link.onClick}
+                        className="group flex items-center justify-center lg:justify-start gap-1.5 text-gray-300 hover:text-app-gold transition-colors duration-200 py-0.5 w-full text-right"
+                      >
+                        {link.icon && <link.icon className="h-4 w-4" />}
+                        <span className="mr-1">{link.label}</span>
+                      </button>
                     ) : (
                       <Link
                         href={link.href!}
@@ -142,8 +179,9 @@ const Footer = () => {
                         rel={link.href!.startsWith('/') ? '' : 'noopener noreferrer'}
                         className="group flex items-center justify-center lg:justify-start gap-1.5 text-gray-300 hover:text-app-gold transition-colors duration-200 py-0.5"
                       >
-                        <span>{typeof link.label === 'string' ? link.label : ''}</span>
-                        <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        {link.icon && <link.icon className="h-4 w-4" />}
+                        <span className="mr-1">{link.label}</span>
+                        {!link.icon && link.href && link.href.startsWith('http') && <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />}
                       </Link>
                     )}
                   </li>

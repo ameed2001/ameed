@@ -12,7 +12,7 @@ import { ScrollText, Search, Download, Loader2, Trash2, AlertTriangle, Check } f
 import { format } from 'date-fns';
 import { arSA } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
-import { getLogs, type LogEntry, type LogLevel, logAction } from '@/lib/db'; // Updated import
+import { getLogs, type LogEntry, type LogLevel, deleteAllLogs } from '@/lib/db';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,9 +32,14 @@ export default function AdminLogsPage() {
   const [logs, setLogsState] = useState<LogEntry[]>([]);
   const [isFetching, setIsFetching] = useState(true);
   const [totalLogsCount, setTotalLogsCount] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [deleteStep, setDeleteStep] = useState<'confirm' | 'loading' | 'success'>('confirm');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [adminUserId, setAdminUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = localStorage.getItem('userId');
+    setAdminUserId(id);
+  }, []);
 
   const fetchLogsFromDb = async () => {
     setIsFetching(true);
@@ -83,7 +88,7 @@ export default function AdminLogsPage() {
       toast({ title: "لا توجد سجلات للتصدير", description: "يرجى تعديل الفلاتر إذا كنت تتوقع وجود سجلات.", variant: "default" });
       return;
     }
-    const logData = filteredLogs.map(log => `${format(log.timestamp, "yyyy/MM/dd HH:mm:ss", { locale: arSA })} | ${log.level} | ${log.user || 'N/A'} | ${log.message}`).join("\n");
+    const logData = filteredLogs.map(log => `${format(new Date(log.timestamp), "yyyy/MM/dd HH:mm:ss", { locale: arSA })} | ${log.level} | ${log.user || 'N/A'} | ${log.message}`).join("\n");
     const blob = new Blob([logData], { type: 'text/plain;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -94,21 +99,26 @@ export default function AdminLogsPage() {
   };
 
   const handleDeleteAllLogs = async () => {
+    if (!adminUserId) {
+        toast({ title: "خطأ", description: "لم يتم التعرف على هوية المسؤول.", variant: "destructive"});
+        return;
+    }
     setDeleteStep('loading');
-    // Simulate deletion for now, replace with actual API call to backend if needed
-    console.log("Simulating deletion of all logs by admin.");
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate async operation
-
-    setLogsState([]);
-    setTotalLogsCount(0);
-    // Log this admin action
-    await logAction('ADMIN_DELETE_ALL_LOGS', 'WARNING', 'Admin deleted all system logs.', 'admin-user-id'); // Replace 'admin-user-id' with actual admin ID
-
-    setDeleteStep('success');
     
-    setTimeout(() => {
+    const result = await deleteAllLogs(adminUserId);
+
+    if (result.success) {
+        setDeleteStep('success');
+        setTimeout(() => {
+            setIsDialogOpen(false);
+            fetchLogsFromDb();
+        }, 2000);
+        toast({ title: "تم الحذف", description: result.message || "تم حذف جميع السجلات بنجاح."});
+    } else {
+        setDeleteStep('confirm');
         setIsDialogOpen(false);
-    }, 2000);
+        toast({ title: "خطأ في الحذف", description: result.message || "فشل حذف السجلات.", variant: "destructive"});
+    }
   };
   
   const handleOpenDialog = () => {
@@ -166,8 +176,8 @@ export default function AdminLogsPage() {
                         </AlertDialogDescription>
 
                         <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
-                        <AlertDialogAction onClick={async (e) => { e.preventDefault(); await handleDeleteAllLogs(); }} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg" disabled={isDeleting}>
-                            {isDeleting ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : "حذف نهائي"}
+                        <AlertDialogAction onClick={handleDeleteAllLogs} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg" disabled={deleteStep === 'loading'}>
+                            {deleteStep === 'loading' ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : "حذف نهائي"}
                         </AlertDialogAction>
                         <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 hover:text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
                         </AlertDialogFooter>

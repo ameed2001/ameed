@@ -577,3 +577,34 @@ export async function getCostReportsForProject(projectId: string): Promise<CostR
     const reports = db.costReports.filter((report: CostReport) => report.projectId?.toString() === projectId);
     return reports.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
+
+export async function deleteAllLogs(adminUserId: string): Promise<{ success: boolean; message?: string }> {
+    try {
+        const db = await readDb(true);
+        const logsCount = db.logs.length;
+
+        if (logsCount === 0) {
+            return { success: true, message: "لا توجد سجلات لحذفها." };
+        }
+        
+        // Create a log entry for the deletion action itself
+        const newLog: LogEntry = {
+            id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+            action: 'ADMIN_DELETE_ALL_LOGS',
+            level: 'WARNING',
+            message: `Admin deleted all ${logsCount} system logs.`,
+            timestamp: new Date().toISOString(),
+            user: adminUserId,
+        };
+        
+        // Replace all logs with just the new deletion log
+        db.logs = [newLog];
+        
+        await writeDb(db);
+        
+        return { success: true, message: "تم حذف جميع السجلات بنجاح." };
+    } catch (error: any) {
+        console.error('[db.ts] deleteAllLogs: Failed to delete logs:', error);
+        return { success: false, message: "فشل حذف السجلات بسبب خطأ في الخادم." };
+    }
+}

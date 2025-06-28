@@ -121,7 +121,7 @@ const SocialAndClock = () => {
   }, []);
 
   return (
-    <div className="bg-zinc-900 text-white text-sm py-2">
+    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-sm py-2">
       <div className="container mx-auto flex justify-between items-center px-4">
         {/* Left Side: Social Icons */}
         <div className="flex-1 flex justify-start">
@@ -163,10 +163,12 @@ const SocialAndClock = () => {
 
         {/* Right Side: Time and Date */}
         <div className="flex-1 flex justify-end">
-          <div className="flex items-center gap-4 text-gray-300 font-mono" style={{ direction: 'ltr' }}>
-              <span>{time}</span>
-              <span>-</span>
-              <span>{date}</span>
+          <div className="border border-app-gold/50 rounded-lg px-3 py-1.5">
+            <div className="flex items-center gap-4 text-gray-300 font-mono" style={{ direction: 'ltr' }}>
+                <span>{time}</span>
+                <span>-</span>
+                <span>{date}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -181,9 +183,9 @@ export default function Header() {
   useEffect(() => setIsClient(true), []);
 
   return (
-    <header className="shadow-md">
+    <header className="shadow-md border-b-2 border-app-gold">
         <SocialAndClock />
-        <div className="bg-zinc-900 text-white backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
                 {/* Left Side: User Nav */}
                 <div className="flex-1 flex justify-start">

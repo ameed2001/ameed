@@ -15,7 +15,7 @@ export default function Navbar() {
   const pathname = usePathname();
   // Removed sticky classes to make navbar scroll with the page
   return (
-    <nav className="bg-zinc-900 shadow-lg"> 
+    <nav className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-lg"> 
         <div className="container mx-auto px-4">
             <ul className="flex justify-center items-center h-14">
                 {navLinks.map((link) => (

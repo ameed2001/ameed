@@ -168,9 +168,8 @@ export default function OwnerSignupPage() {
                 <Image
                     src="https://i.imgur.com/v0tPitY.jpg"
                     alt="خلفية معمارية"
-                    layout="fill"
-                    objectFit="cover"
-                    className="opacity-10"
+                    fill
+                    className="object-cover opacity-10"
                     data-ai-hint="modern architecture house"
                 />
             </div>

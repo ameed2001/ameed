@@ -80,6 +80,22 @@
       "message": "Admin deleted all 187 system logs.",
       "timestamp": "2025-06-28T22:05:39.088Z",
       "user": "admin-hardcoded-001"
+    },
+    {
+      "id": "log-1751148676808-kz6hm",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown identifier: admin-hardcoded-001",
+      "timestamp": "2025-06-28T22:11:16.808Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751148719167-h1m20",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown identifier: admin-hardcoded-001",
+      "timestamp": "2025-06-28T22:11:59.167Z",
+      "user": "System"
     }
   ],
   "roles": [

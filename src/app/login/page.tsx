@@ -185,9 +185,8 @@ export default function LoginPage() {
                 <Image
                     src="https://i.imgur.com/pAQ7w0g.jpg"
                     alt="خلفية هندسية"
-                    layout="fill"
-                    objectFit="cover"
-                    className="opacity-10"
+                    fill
+                    className="object-cover opacity-10"
                     data-ai-hint="engineering blueprint"
                 />
             </div>

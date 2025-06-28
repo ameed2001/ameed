@@ -88,10 +88,9 @@ const Footer = () => {
         <Image
             src="https://i.imgur.com/CqHksgC.jpg"
             alt="خلفية تذييل معمارية"
-            layout="fill"
-            objectFit="cover"
+            fill
             quality={75}
-            className="absolute inset-0 z-0 opacity-5"
+            className="absolute inset-0 z-0 opacity-5 object-cover"
             data-ai-hint="architecture blueprint"
         />
         <div className="absolute inset-0 bg-slate-900/80 z-0" />

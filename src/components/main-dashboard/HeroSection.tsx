@@ -17,7 +17,6 @@ const HeroSection = () => {
         backgroundImage: `url('https://i.imgur.com/9YdRlNn.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
-        backgroundAttachment: 'fixed'
       }}
       data-ai-hint="construction site crane"
     >

@@ -14,7 +14,7 @@ interface InfoCardProps {
   className?: string;
   icon?: ReactNode;
   iconWrapperClass?: string;
-  iconColorClass?: string; // This might not be needed if icons are white by default
+  iconColorClass?: string; 
   dataAiHint?: string;
   cardHeightClass?: string; 
   applyFlipEffect?: boolean; 
@@ -45,7 +45,7 @@ const InfoCard = (props: InfoCardProps) => {
 
   const FrontContent = () => (
     <div className={cn(
-      "card-front p-6 sm:p-8 flex flex-col justify-center items-center text-center text-white",
+      "card-front p-6 sm:p-8 flex flex-col justify-center items-center text-center",
       frontCustomClass
     )}>
       {icon && (
@@ -53,11 +53,11 @@ const InfoCard = (props: InfoCardProps) => {
           "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 card-icon",
           iconWrapperClass
         )}>
-          {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:w-8", iconColorClass) }) : icon}
+          {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:h-8", iconColorClass) }) : icon}
         </div>
       )}
       <h3 className="text-xl sm:text-2xl font-bold mb-2">{title}</h3>
-      {description && <p className="text-sm sm:text-base text-white/80 flex-grow">{description}</p>}
+      {description && <p className="text-sm sm:text-base flex-grow">{description}</p>}
     </div>
   );
 
@@ -105,7 +105,7 @@ const InfoCard = (props: InfoCardProps) => {
           "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0",
           iconWrapperClass
         )}>
-          {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:w-8", iconColorClass) }) : icon}
+          {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:h-8", iconColorClass) }) : icon}
         </div>
       )}
       <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">{title}</h3>

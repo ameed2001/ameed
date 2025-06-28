@@ -18,12 +18,12 @@ import { cn } from '@/lib/utils';
 const authCardsData = [
  {
     id: "signup",
-    icon: <UserPlus className="h-8 w-8 text-white" />,
-    iconWrapperClass: "bg-white/20",
+    icon: <UserPlus className="h-8 w-8 text-red-600" />,
+    iconWrapperClass: "bg-red-100",
     title: "إنشاء حساب جديد",
     description: "انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
+    frontCustomClass: "bg-white [&>h3]:text-app-red [&>p]:text-gray-600",
     backCustomClass: "bg-gradient-to-br from-red-700 to-red-900",
-    frontCustomClass: "bg-gradient-to-br from-red-600 to-red-800",
     back: {
       title: "خيارات التسجيل",
       description: "اختر نوع الحساب الذي يناسبك.",
@@ -45,12 +45,12 @@ const authCardsData = [
   },
   {
     id: "user-login",
-    icon: <LogIn className="h-8 w-8 text-white" />,
-    iconWrapperClass: "bg-white/20",
+    icon: <LogIn className="h-8 w-8 text-blue-600" />,
+    iconWrapperClass: "bg-blue-100",
     title: "تسجيل الدخول",
     description: "لديك حساب مهندس أو مالك؟ قم بالدخول لمتابعة أعمالك.",
+    frontCustomClass: "bg-white [&>h3]:text-app-red [&>p]:text-gray-600",
     backCustomClass: "bg-gradient-to-br from-blue-700 to-blue-900",
-    frontCustomClass: "bg-gradient-to-br from-blue-600 to-blue-800",
     back: {
       title: "خيارات الدخول",
       description: "اختر بوابة الدخول المناسبة لحسابك.",
@@ -72,12 +72,12 @@ const authCardsData = [
   },
   {
     id: "admin-login",
-    icon: <ShieldCheck className="h-8 w-8 text-white" />,
-    iconWrapperClass: "bg-white/20",
+    icon: <ShieldCheck className="h-8 w-8 text-green-600" />,
+    iconWrapperClass: "bg-green-100",
     title: "دخول المسؤول",
     description: "هذا القسم مخصص لإدارة النظام والمستخدمين.",
+    frontCustomClass: "bg-white [&>h3]:text-app-red [&>p]:text-gray-600",
     backCustomClass: "bg-gradient-to-br from-green-700 to-green-900",
-    frontCustomClass: "bg-gradient-to-br from-green-600 to-green-800",
     back: {
       title: "لوحة تحكم المسؤول",
       description: "الوصول إلى أدوات الإدارة الشاملة.",
@@ -121,7 +121,6 @@ export default function AuthCardsSection() {
                       <Button
                         key={action.href}
                         asChild
-                        variant="ghost" // Use ghost to remove default button styling
                         className={cn(
                           "w-full justify-between py-5 px-4 rounded-lg font-semibold transition-colors duration-200 border",
                           action.buttonClass

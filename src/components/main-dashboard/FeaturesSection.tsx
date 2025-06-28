@@ -1,10 +1,8 @@
-
 "use client";
 
 import FeatureCard from './FeatureCard';
 import { Button } from '@/components/ui/button';
 import { Zap, ShieldCheck, Smartphone, Quote } from 'lucide-react';
-// import Link from 'next/link'; // Link is no longer needed for this button
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const features = [
@@ -63,9 +61,19 @@ const FeaturesSection = () => {
   };
 
   return (
-    <section className="py-16 md:py-20 bg-gray-100">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-app-red">
+    <section 
+      className="relative py-16 md:py-20"
+      style={{
+        backgroundImage: `url('https://i.imgur.com/IUkLfXD.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+      data-ai-hint="construction site crane"
+    >
+      <div className="absolute inset-0 bg-black/60 z-0"></div>
+      <div className="relative z-10 container mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
           لماذا تختار موقعنا؟
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
@@ -77,6 +85,7 @@ const FeaturesSection = () => {
               description={feature.description}
               iconBgColor={feature.iconBgColor}
               dataAiHint={feature.dataAiHint}
+              className="bg-white/95"
             />
           ))}
         </div>
@@ -89,15 +98,14 @@ const FeaturesSection = () => {
           </Button>
         </div>
 
-        {/* User Testimonials Section */}
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-app-red">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
           ماذا يقول المستخدمون عنا؟
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {testimonials.map((testimonial, index) => (
             <Card 
               key={index} 
-              className="bg-white shadow-lg rounded-xl p-6 text-right flex flex-col transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1"
+              className="bg-white/95 shadow-lg rounded-xl p-6 text-right flex flex-col transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1"
               data-ai-hint={testimonial.dataAiHint}
             >
               <CardHeader className="p-0 mb-2 text-right">

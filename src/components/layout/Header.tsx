@@ -26,15 +26,20 @@ function UserNav() {
   const router = useRouter();
 
   useEffect(() => {
-    setUserRole(localStorage.getItem('userRole'));
-    setUserName(localStorage.getItem('userName'));
+    // This effect runs on the client-side, where localStorage is available.
+    if (typeof window !== 'undefined') {
+      setUserRole(localStorage.getItem('userRole'));
+      setUserName(localStorage.getItem('userName'));
+    }
   }, []);
 
   const handleLogout = () => {
-    localStorage.clear();
-    setUserRole(null);
-    setUserName(null);
-    router.push('/login');
+    if (typeof window !== 'undefined') {
+      localStorage.clear();
+      setUserRole(null);
+      setUserName(null);
+      router.push('/login');
+    }
   };
 
   const getDashboardLink = () => {

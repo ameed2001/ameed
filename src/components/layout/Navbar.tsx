@@ -16,6 +16,9 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
 
+  // The sticky top position should be equal to the height of the Header component.
+  // Header has InfoBar (py-1.5 = 12px) + Main Header (h-20 = 80px) + borders.
+  // Let's approximate and use a value like 108px for sticky positioning.
   return (
     <nav className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-[108px] z-40">
       <div className="container mx-auto">

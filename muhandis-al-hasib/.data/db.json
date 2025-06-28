@@ -112,6 +112,14 @@
       "message": "Project fetch attempt with unknown identifier: ameed2001@admin.com",
       "timestamp": "2025-06-28T22:15:02.179Z",
       "user": "System"
+    },
+    {
+      "id": "log-1751150170450-dwf0y",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown identifier: admin-hardcoded-001",
+      "timestamp": "2025-06-28T22:36:10.451Z",
+      "user": "System"
     }
   ],
   "roles": [

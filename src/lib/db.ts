@@ -347,6 +347,14 @@ export interface GetProjectsResult {
 export async function getProjects(userId: string): Promise<GetProjectsResult> {
     try {
         const db = await readDb();
+        
+        // Special case for hardcoded admin to see all projects
+        if (userId === 'admin-hardcoded-001') {
+            const allProjects = db.projects || [];
+            const sortedProjects = allProjects.sort((a: Project, b: Project) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+            return { success: true, projects: sortedProjects };
+        }
+        
         // User could be identified by ID (from localStorage) or email (from owner linking)
         const user = db.users.find((u: UserDocument) => u.id === userId || u.email === userId);
 
@@ -358,6 +366,7 @@ export async function getProjects(userId: string): Promise<GetProjectsResult> {
         let userProjects: Project[] = [];
         switch (user.role) {
             case 'ADMIN':
+                // This case is for DB admins, the hardcoded one is handled above
                 userProjects = db.projects;
                 break;
             case 'OWNER':

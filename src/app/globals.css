@@ -77,9 +77,11 @@
     --modal-content-gradient-mid: #D32F2F;
     --modal-content-gradient-end: #044A5F;
   }
-}
 
-@layer base {
+  html {
+    overflow-y: scroll; /* Prevent layout shift when modals/dropdowns open */
+  }
+
   * {
     @apply border-border;
     margin: 0;
@@ -90,7 +92,6 @@
     @apply bg-background text-foreground;
     font-family: 'Tajawal', sans-serif;
     direction: rtl;
-    text-align: center;
     min-height: 100vh;
   }
 }
@@ -220,187 +221,4 @@
 
 .card-flipper:hover .card-icon {
   transform: scale(1.1) rotate(5deg);
-}
-
-/* Styles for the new Admin Login Page Design */
-.admin-login-page-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: #1f293a;
-  direction: ltr; /* This design is LTR */
-}
-
-.admin-login-page-wrapper .container {
-  position: relative;
-  width: 400px;
-  height: 400px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.admin-login-page-wrapper .container span {
-  position: absolute;
-  left: 0;
-  width: 32px;
-  height: 6px;
-  background: #2c4766;
-  border-radius: 80px;
-  transform-origin: 200px;
-  transform: rotate(calc(var(--i) * (360deg / 50)));
-  animation: admin-login-blink 3s linear infinite;
-  animation-delay: calc(var(--i) * (3s / 50));
-}
-
-@keyframes admin-login-blink {
-  0% {
-    background: hsl(var(--accent));
-  }
-  25% {
-    background: #2c4766;
-  }
-}
-
-.admin-login-page-wrapper .login-box {
-  position: absolute;
-  width: 85%;
-  max-width: 340px;
-  z-index: 1;
-  padding: 20px;
-  border-radius: 20px;
-}
-
-.admin-login-page-wrapper .login-box form {
-  width: 100%;
-  padding: 0 10px;
-}
-
-.admin-login-page-wrapper .login-box h2 {
-  font-size: 2em;
-  color: hsl(var(--primary));
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.admin-login-page-wrapper .input-box {
-  position: relative;
-  margin: 25px 0;
-}
-
-/* Using data-filled for React compatibility */
-.admin-login-page-wrapper .input-box input:focus ~ label,
-.admin-login-page-wrapper .input-box input[data-filled="true"] ~ label {
-  top: -12px;
-  font-size: 0.8em;
-  background: #1f293a;
-  padding: 0 6px;
-  color: hsl(var(--primary));
-  left: 15px;
-}
-
-.admin-login-page-wrapper .input-box label {
-  position: absolute;
-  top: 50%;
-  left: 20px;
-  transform: translateY(-50%);
-  font-size: 1em;
-  pointer-events: none;
-  transition: 0.5s ease;
-  color: #fff;
-}
-
-.admin-login-page-wrapper .input-box input {
-  width: 100%;
-  height: 50px;
-  background: transparent;
-  border: 2px solid #2c4766;
-  outline: none;
-  border-radius: 40px;
-  font-size: 1em;
-  color: #fff;
-  padding: 0 20px;
-  transition: 0.5s ease;
-}
-
-.admin-login-page-wrapper .input-box input:focus {
-  border-color: hsl(var(--primary));
-}
-
-.admin-login-page-wrapper .forgot-pass {
-  margin: -15px 0 15px;
-  text-align: center;
-}
-
-.admin-login-page-wrapper .forgot-pass a {
-  font-size: 0.85em;
-  color: hsl(var(--muted-foreground));
-  text-decoration: none;
-}
-
-.admin-login-page-wrapper .forgot-pass a:hover {
-  text-decoration: underline;
-  color: hsl(var(--primary));
-}
-
-.admin-login-page-wrapper .btn {
-  width: 100%;
-  height: 45px;
-  background: hsl(var(--accent));
-  border: none;
-  outline: none;
-  border-radius: 40px;
-  cursor: pointer;
-  font-size: 1em;
-  color: hsl(var(--accent-foreground));
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.admin-login-page-wrapper .btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.admin-login-page-wrapper .signup-link {
-  margin: 20px 0 10px;
-  text-align: center;
-}
-
-.admin-login-page-wrapper .signup-link a {
-  font-size: 1em;
-  color: hsl(var(--primary));
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.admin-login-page-wrapper .signup-link a:hover {
-  text-decoration: underline;
-}
-
-@keyframes float {
-  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-}
-
-@keyframes appear {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes slideInFromLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
 }

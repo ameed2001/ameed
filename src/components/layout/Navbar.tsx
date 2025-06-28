@@ -20,7 +20,7 @@ export default function Navbar() {
             <ul className="flex justify-center items-center h-14">
                 {navLinks.map((link) => (
                     <li key={link.href}>
-                        <Link href={link.href} className={cn("flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-md transition-colors", pathname === link.href && "text-app-gold bg-gray-700/80")}>
+                        <Link href={link.href} className={cn("flex items-center gap-2 px-4 py-2 text-base font-semibold text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-md transition-colors", pathname === link.href && "text-app-gold bg-gray-700/80")}>
                             <link.icon className="h-4 w-4" />
                             {link.label}
                         </Link>

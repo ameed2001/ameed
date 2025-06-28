@@ -90,7 +90,6 @@ export function ProfilePageContent() {
             phone: userProfile.phone || '',
           });
         } else {
-          // Handle case where user is not found in DB but has localStorage items
           localStorage.clear();
           router.push('/login');
         }
@@ -165,7 +164,6 @@ export function ProfilePageContent() {
           description: "تم حذف حسابك بنجاح. نأسف لمغادرتك.",
         });
         setIsDeleteDialogOpen(false);
-        // Logout user
         localStorage.clear();
         router.push('/');
       }, 2000);
@@ -175,7 +173,6 @@ export function ProfilePageContent() {
         description: result.message || "حدث خطأ ما.",
         variant: "destructive",
       });
-      // Reset dialog state on failure
       setDeleteStep('confirm');
       setIsDeleteDialogOpen(false);
     }
@@ -199,21 +196,16 @@ export function ProfilePageContent() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 p-4 md:p-6 text-right">
-      <div className="flex justify-center items-center gap-3 mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">الملف الشخصي</h1>
-        <UserCircle className="h-10 w-10 text-app-red" />
-      </div>
-      
+    <div className="max-w-4xl mx-auto space-y-8 p-4 md:p-6 text-right">
+      <h1 className="text-3xl md:text-4xl font-bold text-center text-gray-800">الملف الشخصي</h1>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        {/* Change Password Card (Left) */}
         <Card className="bg-white/95 shadow-md border-gray-200/80">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-800">
               <KeyRound className="h-6 w-6 text-app-gold"/>
               تغيير كلمة المرور
             </CardTitle>
-            <CardDescription>قم بتحديث كلمة مرورك لضمان أمان حسابك.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
@@ -240,14 +232,12 @@ export function ProfilePageContent() {
           </CardContent>
         </Card>
 
-        {/* Profile Info Card (Right) */}
         <Card className="bg-white/95 shadow-md border-gray-200/80">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-800">
               <UserCircle className="h-6 w-6 text-app-gold"/>
               المعلومات الشخصية
             </CardTitle>
-            <CardDescription>قم بتحديث معلوماتك الشخصية والمهنية.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmitProfile(onProfileSubmit)} className="space-y-4">
@@ -266,7 +256,7 @@ export function ProfilePageContent() {
                 <Input id="profileRole" readOnly value={displayRole(currentUser.role)} className="bg-gray-100 cursor-not-allowed" />
               </div>
               <div>
-                <Label htmlFor="profilePhone">رقم الهاتف</Label>
+                <Label htmlFor="profilePhone">رقم الهاتف (اختياري)</Label>
                 <Input id="profilePhone" {...registerProfile("phone")} placeholder="أدخل رقم هاتفك" />
                 {profileErrors.phone && <p className="text-red-500 text-sm mt-1">{profileErrors.phone.message}</p>}
               </div>
@@ -361,3 +351,4 @@ export default function ProfilePage() {
     </OwnerAppLayout>
   );
 }
+

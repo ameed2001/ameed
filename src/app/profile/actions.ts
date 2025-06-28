@@ -64,10 +64,11 @@ export async function deleteUserAccountAction(userId: string): Promise<{ success
   const result = await dbDeleteUser(userId);
 
   if (result.success) {
-    await logAction('USER_DELETE_SUCCESS_BY_SELF', 'WARNING', `User ID ${userId} deleted their own account.`);
+    await logAction('USER_DELETE_SUCCESS_BY_SELF', 'WARNING', `User ID ${userId} deleted their own account.`, userId);
   } else {
-    await logAction('USER_DELETE_FAILURE_BY_SELF', 'ERROR', `Failed self-deletion for user ID ${userId}: ${result.message}`);
+    await logAction('USER_DELETE_FAILURE_BY_SELF', 'ERROR', `Failed self-deletion for user ID ${userId}: ${result.message}`, userId);
   }
 
   return result;
 }
+

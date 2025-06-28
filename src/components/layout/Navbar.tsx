@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Info, Phone, HelpCircle } from "lucide-react";
+import { Home, Info, Phone, HelpCircle, LayoutDashboard } from "lucide-react";
+import { useState, useEffect } from "react";
 
-const navLinks = [
+const staticNavLinks = [
   { href: '/', label: 'الرئيسية', icon: Home },
   { href: '/about', label: 'عن الموقع', icon: Info },
   { href: '/help', label: 'الأسئلة الشائعة', icon: HelpCircle },
@@ -13,14 +14,47 @@ const navLinks = [
 
 export default function Navbar() {
   const pathname = usePathname();
-  // Removed sticky classes to make navbar scroll with the page
+  const [dashboardUrl, setDashboardUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userRole = localStorage.getItem('userRole');
+      if (userRole) {
+        switch (userRole) {
+          case 'ADMIN':
+            setDashboardUrl('/admin');
+            break;
+          case 'ENGINEER':
+            setDashboardUrl('/engineer/dashboard');
+            break;
+          case 'OWNER':
+            setDashboardUrl('/owner/dashboard');
+            break;
+          default:
+            setDashboardUrl(null);
+        }
+      } else {
+        setDashboardUrl(null);
+      }
+    }
+  }, [pathname]);
+
+  const allLinks = [...staticNavLinks];
+  if (dashboardUrl) {
+    // Add dashboard link at the beginning
+    allLinks.splice(1, 0, { href: dashboardUrl, label: 'لوحة التحكم', icon: LayoutDashboard });
+  }
+
   return (
     <nav className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-lg"> 
         <div className="container mx-auto px-4">
             <ul className="flex justify-center items-center h-14">
-                {navLinks.map((link) => (
+                {allLinks.map((link) => (
                     <li key={link.href}>
-                        <Link href={link.href} className={cn("flex items-center gap-2 px-3 py-2 text-base font-semibold text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-md transition-colors", pathname === link.href && "text-app-gold bg-gray-700/80")}>
+                        <Link href={link.href} className={cn(
+                            "flex items-center gap-2 px-3 py-2 text-base font-semibold text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-md transition-colors", 
+                            pathname === link.href && "text-app-gold bg-gray-700/80"
+                        )}>
                             <link.icon className="h-4 w-4" />
                             {link.label}
                         </Link>

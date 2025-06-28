@@ -96,6 +96,22 @@
       "message": "Project fetch attempt with unknown identifier: admin-hardcoded-001",
       "timestamp": "2025-06-28T22:11:59.167Z",
       "user": "System"
+    },
+    {
+      "id": "log-1751148900941-578kh",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown identifier: ameed2001@admin.com",
+      "timestamp": "2025-06-28T22:15:00.941Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751148902179-dsbwx",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown identifier: ameed2001@admin.com",
+      "timestamp": "2025-06-28T22:15:02.179Z",
+      "user": "System"
     }
   ],
   "roles": [

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -22,7 +21,7 @@ const authCardsData = [
     iconWrapperClass: "bg-red-100",
     title: "إنشاء حساب جديد",
     description: "انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
-    backCustomClass: "bg-gradient-to-br from-red-900 via-red-800 to-red-900",
+    backCustomClass: "bg-gradient-to-br from-red-600 to-red-800",
     back: {
       title: "خيارات التسجيل",
       description: "اختر نوع الحساب الذي يناسبك.",
@@ -31,13 +30,13 @@ const authCardsData = [
           label: "إنشاء حساب مهندس",
           href: "/signup",
           icon: <HardHat className="h-5 w-5" />,
-          buttonClass: "bg-white/95 text-red-800 hover:bg-white",
+          buttonClass: "bg-white/10 hover:bg-white/20 text-white",
         },
         {
           label: "إنشاء حساب مالك",
           href: "/owner-signup",
           icon: <HomeIcon className="h-5 w-5" />,
-          buttonClass: "bg-white/95 text-red-800 hover:bg-white",
+          buttonClass: "bg-white/10 hover:bg-white/20 text-white",
         },
       ],
     },
@@ -48,7 +47,7 @@ const authCardsData = [
     iconWrapperClass: "bg-blue-100",
     title: "تسجيل الدخول",
     description: "لديك حساب مهندس أو مالك؟ قم بالدخول لمتابعة أعمالك.",
-    backCustomClass: "bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900",
+    backCustomClass: "bg-gradient-to-br from-blue-600 to-blue-800",
     back: {
       title: "خيارات الدخول",
       description: "اختر بوابة الدخول المناسبة لحسابك.",
@@ -57,13 +56,13 @@ const authCardsData = [
           label: "دخول كمهندس",
           href: "/login",
           icon: <HardHat className="h-5 w-5" />,
-          buttonClass: "bg-white/95 text-blue-800 hover:bg-white",
+          buttonClass: "bg-white/10 hover:bg-white/20 text-white",
         },
         {
           label: "دخول كمالك",
           href: "/owner-login",
           icon: <HomeIcon className="h-5 w-5" />,
-          buttonClass: "bg-white/95 text-blue-800 hover:bg-white",
+          buttonClass: "bg-white/10 hover:bg-white/20 text-white",
         },
       ],
     },
@@ -74,7 +73,7 @@ const authCardsData = [
     iconWrapperClass: "bg-green-100",
     title: "دخول المسؤول",
     description: "هذا القسم مخصص لإدارة النظام والمستخدمين.",
-    backCustomClass: "bg-gradient-to-br from-green-900 via-green-800 to-green-900",
+    backCustomClass: "bg-gradient-to-br from-green-600 to-green-800",
     back: {
       title: "لوحة تحكم المسؤول",
       description: "الوصول إلى أدوات الإدارة الشاملة.",
@@ -83,7 +82,7 @@ const authCardsData = [
           label: "دخول كمسؤول",
           href: "/admin-login",
           icon: <ShieldCheck className="h-5 w-5" />,
-          buttonClass: "bg-white/95 text-green-800 hover:bg-white",
+          buttonClass: "bg-white/10 hover:bg-white/20 text-white",
         },
       ],
     },
@@ -117,9 +116,8 @@ export default function AuthCardsSection() {
                       <Button
                         key={action.href}
                         asChild
-                        variant="ghost"
                         className={cn(
-                          "w-full justify-between py-5 px-4 rounded-lg font-semibold",
+                          "w-full justify-between py-5 px-4 rounded-lg font-semibold transition-colors duration-200",
                           action.buttonClass
                         )}
                       >

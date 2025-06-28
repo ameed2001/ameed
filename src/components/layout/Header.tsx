@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -16,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+import Navbar from './Navbar';
 
 // --- UserNav Component ---
 function UserNav() {
@@ -120,6 +121,7 @@ export default function Header() {
   const [isClient, setIsClient] = useState(false);
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -135,47 +137,59 @@ export default function Header() {
 
   return (
     <>
-      <div className="bg-slate-800 text-white text-sm py-1.5 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
+      <header className="sticky top-0 z-40 w-full shadow-lg bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="container mx-auto flex h-16 items-center justify-between">
+          <div className="flex items-center gap-4">
+            {isClient && <UserNav />}
+          </div>
+
+          <div className="flex items-center gap-4">
             {isClient && (
-                <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-app-gold" />
-                    <span>{time} | {date}</span>
-                </div>
+              <div className="hidden md:flex items-center gap-2 text-sm">
+                  <Clock className="w-4 h-4 text-app-gold" />
+                  <span>{time}</span>
+              </div>
             )}
-            <div className="font-semibold text-base text-app-gold">بِسْمِ اللهِ الرَّحْمنِ الرَّحِيم</div>
-            <div className="flex items-center gap-2">
-                <a href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] h-6 w-6 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
-                    <WhatsAppIcon className="w-4 h-4" />
+            <div className="hidden md:flex items-center gap-2">
+                <a href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="bg-slate-700 h-7 w-7 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
+                    <WhatsAppIcon className="w-4 h-4 text-green-400" />
                 </a>
-                <a href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-purple-500 to-pink-500 h-6 w-6 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
-                    <Instagram className="w-4 h-4" />
+                <a href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="bg-slate-700 h-7 w-7 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
+                    <Instagram className="w-4 h-4 text-pink-400" />
                 </a>
-                <a href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="bg-[#1877F2] h-6 w-6 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
-                    <Facebook className="w-4 h-4" />
+                <a href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="bg-slate-700 h-7 w-7 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
+                    <Facebook className="w-4 h-4 text-blue-400" />
                 </a>
             </div>
-        </div>
-      </div>
-      <header className="sticky top-0 z-40 w-full shadow-md bg-white text-slate-900">
-          <div className="container mx-auto flex h-20 items-center justify-between">
-              {isClient && <UserNav />}
-              <Link href="/" className="flex items-center gap-3 text-right">
-                  <div>
-                      <h1 className="text-app-red text-xl font-bold leading-tight">المحترف لحساب الكميات</h1>
-                      <p className="text-app-gold text-xs font-medium">للحديد والباطون والابنية الانشائية</p>
-                  </div>
-                  <Image
-                      src="https://i.imgur.com/79bO3U2.jpg"
-                      alt="شعار الموقع"
-                      width={56}
-                      height={56}
-                      className="rounded-full border-2 border-app-gold shadow-md"
-                      data-ai-hint="logo construction"
-                  />
-              </Link>
           </div>
+          
+          <Link href="/" className="flex items-center gap-3 text-right">
+              <div>
+                  <h1 className="text-app-red text-xl font-bold leading-tight">المحترف لحساب الكميات</h1>
+                  <p className="text-app-gold text-xs font-medium">للحديد والباطون والابنية الانشائية</p>
+              </div>
+              <Image
+                  src="https://i.imgur.com/79bO3U2.jpg"
+                  alt="شعار الموقع"
+                  width={50}
+                  height={50}
+                  className="rounded-full border-2 border-app-gold shadow-md"
+                  data-ai-hint="logo construction"
+              />
+          </Link>
+          <div className="md:hidden">
+              <Button variant="ghost" onClick={() => setIsNavOpen(!isNavOpen)}>
+                <Menu />
+              </Button>
+          </div>
+        </div>
       </header>
+       <div className={cn(
+        "sticky top-16 z-30 w-full transition-all duration-300 ease-in-out md:block",
+        isNavOpen ? "block" : "hidden"
+      )}>
+        <Navbar />
+      </div>
     </>
   );
 }

@@ -157,7 +157,7 @@ export default function EngineerSignupPage() {
                 {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
               </div>
 
-              <Button type="submit" className="w-full bg-app-red hover:bg-red-700 font-bold py-3 text-lg" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg" disabled={isLoading}>
                 {isLoading ? <Loader2 className="animate-spin" /> : "إنشاء حساب مهندس"}
               </Button>
             </form>

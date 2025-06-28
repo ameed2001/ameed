@@ -14,7 +14,7 @@ const HeroSection = () => {
     <section 
       className="relative w-full py-12 md:py-16 lg:py-20 text-white text-center"
       style={{
-        backgroundImage: `url('https://i.imgur.com/IUkLfXD.jpg')`,
+        backgroundImage: `url('https://i.imgur.com/9YdRlNn.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
         backgroundAttachment: 'fixed'

@@ -51,15 +51,10 @@ const MainDashboardClient = () => {
   return (
     <>
       <section 
-        className="relative py-16 text-center bg-cover bg-center bg-fixed"
-        style={{
-          backgroundImage: `url('https://i.imgur.com/IUkLfXD.jpg')`
-        }}
-        data-ai-hint="construction site crane"
+        className="py-16 text-center bg-white"
       >
-        <div className="absolute inset-0 bg-black/60 z-0"></div>
-        <div className="relative z-10 container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">أدواتك الأساسية للحسابات</h2>
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12">أدواتك الأساسية للحسابات</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
             {dashboardCards.map(card => (
               <InfoCard 

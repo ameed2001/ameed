@@ -96,17 +96,10 @@ export default function AuthCardsSection() {
   return (
     <section 
       id="auth-cards-section" 
-      className="relative py-16"
-      style={{
-        backgroundImage: `url('https://i.imgur.com/IUkLfXD.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-      }}
+      className="py-16 bg-gray-50"
     >
-      <div className="absolute inset-0 bg-black/60 z-0"></div>
-      <div className="relative z-10 container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">
           ابدأ رحلتك معنا
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

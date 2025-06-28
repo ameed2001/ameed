@@ -19,6 +19,7 @@ interface InfoCardProps {
   cardHeightClass?: string; 
   applyFlipEffect?: boolean; 
   backCustomContent?: ReactNode;
+  backCustomClass?: string;
 }
 
 const InfoCard = (props: InfoCardProps) => {
@@ -35,6 +36,7 @@ const InfoCard = (props: InfoCardProps) => {
     cardHeightClass = "h-72",
     applyFlipEffect = false,
     backCustomContent,
+    backCustomClass,
   } = props;
 
   const isInteractive = !!href || !!onClick;
@@ -60,7 +62,8 @@ const InfoCard = (props: InfoCardProps) => {
   const BackContent = () => (
      <div className={cn(
         "card-flipper-back p-5 flex flex-col justify-center items-center text-center",
-        cardHeightClass
+        cardHeightClass,
+        backCustomClass
       )}>
         {backCustomContent}
     </div>

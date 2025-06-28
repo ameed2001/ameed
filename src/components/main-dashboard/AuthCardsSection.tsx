@@ -13,14 +13,16 @@ import {
 } from "lucide-react";
 import InfoCard from "@/components/ui/InfoCard";
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 const authCardsData = [
   {
     id: "signup",
-    icon: <UserPlus className="h-8 w-8 text-blue-500" />,
-    iconWrapperClass: "bg-blue-100",
+    icon: <UserPlus className="h-8 w-8 text-red-500" />,
+    iconWrapperClass: "bg-red-100",
     title: "إنشاء حساب جديد",
     description: "انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
+    backCustomClass: "bg-gradient-to-br from-red-900 via-red-800 to-red-900",
     back: {
       title: "خيارات التسجيل",
       description: "اختر نوع الحساب الذي يناسبك.",
@@ -29,21 +31,24 @@ const authCardsData = [
           label: "إنشاء حساب مهندس",
           href: "/signup",
           icon: <HardHat className="h-5 w-5" />,
+          buttonClass: "bg-white/95 text-red-800 hover:bg-white",
         },
         {
           label: "إنشاء حساب مالك",
           href: "/owner-signup",
           icon: <HomeIcon className="h-5 w-5" />,
+          buttonClass: "bg-white/95 text-red-800 hover:bg-white",
         },
       ],
     },
   },
   {
     id: "user-login",
-    icon: <LogIn className="h-8 w-8 text-green-500" />,
-    iconWrapperClass: "bg-green-100",
+    icon: <LogIn className="h-8 w-8 text-blue-500" />,
+    iconWrapperClass: "bg-blue-100",
     title: "تسجيل الدخول",
     description: "لديك حساب مهندس أو مالك؟ قم بالدخول لمتابعة أعمالك.",
+    backCustomClass: "bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900",
     back: {
       title: "خيارات الدخول",
       description: "اختر بوابة الدخول المناسبة لحسابك.",
@@ -52,21 +57,24 @@ const authCardsData = [
           label: "دخول كمهندس",
           href: "/login",
           icon: <HardHat className="h-5 w-5" />,
+          buttonClass: "bg-white/95 text-blue-800 hover:bg-white",
         },
         {
           label: "دخول كمالك",
           href: "/owner-login",
           icon: <HomeIcon className="h-5 w-5" />,
+          buttonClass: "bg-white/95 text-blue-800 hover:bg-white",
         },
       ],
     },
   },
   {
     id: "admin-login",
-    icon: <ShieldCheck className="h-8 w-8 text-app-red" />,
-    iconWrapperClass: "bg-red-100",
+    icon: <ShieldCheck className="h-8 w-8 text-green-500" />,
+    iconWrapperClass: "bg-green-100",
     title: "دخول المسؤول",
     description: "هذا القسم مخصص لإدارة النظام والمستخدمين.",
+    backCustomClass: "bg-gradient-to-br from-green-900 via-green-800 to-green-900",
     back: {
       title: "لوحة تحكم المسؤول",
       description: "الوصول إلى أدوات الإدارة الشاملة.",
@@ -75,6 +83,7 @@ const authCardsData = [
           label: "دخول كمسؤول",
           href: "/admin-login",
           icon: <ShieldCheck className="h-5 w-5" />,
+          buttonClass: "bg-white/95 text-green-800 hover:bg-white",
         },
       ],
     },
@@ -98,6 +107,7 @@ export default function AuthCardsSection() {
               icon={card.icon}
               iconWrapperClass={card.iconWrapperClass}
               dataAiHint={card.id}
+              backCustomClass={card.backCustomClass}
               backCustomContent={
                 <div className="flex flex-col justify-center items-center h-full text-white">
                   <h3 className="text-2xl font-bold mb-2">{card.back.title}</h3>
@@ -108,7 +118,10 @@ export default function AuthCardsSection() {
                         key={action.href}
                         asChild
                         variant="ghost"
-                        className="w-full justify-between py-5 px-4 rounded-lg font-semibold border-white/20 border bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                        className={cn(
+                          "w-full justify-between py-5 px-4 rounded-lg font-semibold",
+                          action.buttonClass
+                        )}
                       >
                         <Link href={action.href}>
                           <span className="flex items-center gap-2">

@@ -182,7 +182,7 @@ export default function EngineerSignupPage() {
           <div className="hidden lg:flex relative items-center justify-center p-12 bg-slate-900 text-white">
             <div className="absolute inset-0">
                 <Image
-                    src="https://i.imgur.com/vnuNKhf.jpg"
+                    src="https://i.imgur.com/pAQ7w0g.jpg"
                     alt="خلفية هندسية"
                     layout="fill"
                     objectFit="cover"

@@ -53,16 +53,7 @@ function UserNav() {
   };
 
   if (!userRole) {
-    return (
-      <div className="flex items-center gap-2">
-        <Button asChild size="sm" className="font-semibold bg-app-gold hover:bg-yellow-500 text-gray-900 rounded-full">
-          <Link href="/login">تسجيل الدخول</Link>
-        </Button>
-        <Button asChild size="sm" variant="outline" className="text-gray-200 border-gray-500 hover:bg-gray-700 hover:text-white rounded-full">
-          <Link href="/signup">إنشاء حساب</Link>
-        </Button>
-      </div>
-    );
+    return null; // Don't show login/signup buttons in the header
   }
 
   return (

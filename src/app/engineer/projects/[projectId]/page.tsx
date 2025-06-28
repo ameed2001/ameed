@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useParams } from 'next/navigation';
@@ -21,6 +22,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@
 import { X } from 'lucide-react';
 import { findProjectById, updateProject as dbUpdateProject, getCostReportsForProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask, type CostReport } from '@/lib/db';
 import Link from 'next/link';
+import EditProjectDialog from '@/components/engineer/EditProjectDialog';
 
 export default function EngineerProjectDetailPage() {
   const params = useParams();
@@ -36,6 +38,7 @@ export default function EngineerProjectDetailPage() {
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isContactEngineerModalOpen, setIsContactEngineerModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [engineerMessage, setEngineerMessage] = useState('');
 
   const isOwnerView = false; // This is the Engineer's view
@@ -106,7 +109,6 @@ export default function EngineerProjectDetailPage() {
       quantitySummary: (project.quantitySummary || '') + (progressUpdate.notes ? `\n(ملاحظة تقدم: ${progressUpdate.notes})` : '')
     };
   
-    // Automatically update status based on progress
     if (newProgress > 0 && project.status === 'مخطط له') {
       updates.status = 'قيد التنفيذ';
     } else if (newProgress === 100 && project.status !== 'مكتمل') {
@@ -230,7 +232,7 @@ export default function EngineerProjectDetailPage() {
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2">
                   {!isOwnerView && (
-                      <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل بيانات المشروع")}>
+                      <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => setIsEditModalOpen(true)}>
                           <FileEdit size={18} className="ms-1.5" /> تعديل بيانات المشروع
                       </Button>
                   )}
@@ -542,6 +544,13 @@ export default function EngineerProjectDetailPage() {
           </DialogClose>
         </DialogContent>
       </Dialog>
+      
+      <EditProjectDialog
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onProjectUpdated={refreshProjectData}
+        project={project}
+      />
     </>
   );
 }

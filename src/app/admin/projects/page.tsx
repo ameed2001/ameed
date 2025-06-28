@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Search, Eye, Trash2, AlertTriangle, Loader2, Check } from 'lucide-react';
+import { Search, Trash2, AlertTriangle, Loader2, Check, ArchiveRestore } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   type Project,
@@ -29,9 +29,11 @@ export default function AdminProjectsPage() {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteStep, setDeleteStep] = useState<'confirm' | 'loading' | 'success'>('confirm');
+  
+  const [projectToRestore, setProjectToRestore] = useState<Project | null>(null);
+  const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false);
 
   useEffect(() => {
-    // On component mount, get the user ID from localStorage
     const id = localStorage.getItem('userId');
     setCurrentUserId(id);
   }, []);
@@ -51,8 +53,6 @@ export default function AdminProjectsPage() {
   
   async function loadProjects() {
     if (!currentUserId) {
-      // Don't attempt to load if there's no user ID
-      // Optionally show a toast or message
       return;
     }
     const result = await getProjects(currentUserId);
@@ -73,6 +73,11 @@ export default function AdminProjectsPage() {
     setDeleteStep('confirm');
     setIsDeleteDialogOpen(true);
   };
+  
+  const handleOpenRestoreDialog = (project: Project) => {
+    setProjectToRestore(project);
+    setIsRestoreDialogOpen(true);
+  };
 
   async function handleDeleteProject() {
     if (!projectToDelete) return;
@@ -89,6 +94,18 @@ export default function AdminProjectsPage() {
       toast({ title: "خطأ", description: result.message, variant: "destructive" });
       setIsDeleteDialogOpen(false);
     }
+  }
+  
+  async function handleRestoreProject() {
+    if (!projectToRestore) return;
+    const result = await updateProject(projectToRestore.id.toString(), { status: 'قيد التنفيذ' });
+    if (result.success) {
+      toast({ title: "نجاح", description: "تم استعادة المشروع بنجاح.", variant: "default" });
+      loadProjects();
+    } else {
+      toast({ title: "خطأ", description: result.message, variant: "destructive" });
+    }
+    setIsRestoreDialogOpen(false);
   }
 
   async function handleUpdateProjectStatus(projectId: number, newStatus: ProjectStatusType) {
@@ -164,11 +181,11 @@ export default function AdminProjectsPage() {
                     </span>
                   </TableCell>
                   <TableCell className="text-center space-x-1 space-x-reverse">
-                    <Button asChild variant="ghost" size="icon" className="text-blue-600 hover:text-blue-800 hover:bg-blue-100">
-                      <Link href={`/engineer/projects/${project.id}`}>
-                        <Eye className="h-5 w-5" /><span className="sr-only">عرض التفاصيل</span>
-                      </Link>
-                    </Button>
+                    {project.status === 'مؤرشف' && (
+                       <Button variant="ghost" size="icon" className="text-green-600 hover:text-green-800 hover:bg-green-100" onClick={() => handleOpenRestoreDialog(project)}>
+                        <ArchiveRestore className="h-5 w-5" /><span className="sr-only">استعادة</span>
+                      </Button>
+                    )}
                     <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-100" onClick={() => handleOpenDeleteDialog(project)}>
                         <Trash2 className="h-5 w-5" /><span className="sr-only">حذف</span>
                     </Button>
@@ -190,6 +207,7 @@ export default function AdminProjectsPage() {
       </CardContent>
     </Card>
 
+    {/* Delete Confirmation Dialog */}
     <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent dir="rtl" className="sm:max-w-md">
             {deleteStep === 'confirm' && projectToDelete && (
@@ -219,12 +237,9 @@ export default function AdminProjectsPage() {
             )}
             {deleteStep === 'loading' && (
                 <div className="flex flex-col items-center justify-center space-y-6 p-8 text-center">
-                    <div className="w-24 h-24 bg-amber-100 rounded-full animate-pulse"></div>
-                    <h2 className="text-3xl font-bold text-amber-700">جاري الحذف...</h2>
+                    <Loader2 className="h-12 w-12 animate-spin text-amber-700" />
+                    <h2 className="text-2xl font-bold text-amber-700">جاري الحذف...</h2>
                     <p className="text-lg text-gray-500">يتم حذف المشروع الآن...</p>
-                    <div className="w-full h-2 bg-amber-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-amber-400 w-full animate-pulse"></div>
-                    </div>
                 </div>
             )}
             {deleteStep === 'success' && (
@@ -236,6 +251,26 @@ export default function AdminProjectsPage() {
                     <p className="text-lg text-gray-500">تم حذف المشروع بنجاح من النظام.</p>
                 </div>
             )}
+        </AlertDialogContent>
+    </AlertDialog>
+    
+    {/* Restore Confirmation Dialog */}
+    <AlertDialog open={isRestoreDialogOpen} onOpenChange={setIsRestoreDialogOpen}>
+        <AlertDialogContent dir="rtl" className="sm:max-w-md">
+           {projectToRestore && (
+             <>
+              <AlertDialogHeader>
+                <AlertDialogTitle>تأكيد استعادة المشروع</AlertDialogTitle>
+                <AlertDialogDescription>
+                  هل أنت متأكد أنك تريد استعادة المشروع "{projectToRestore.name}"؟ سيتم تغيير حالته إلى "قيد التنفيذ" وسيظهر مجدداً لدى المهندس.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                <AlertDialogAction onClick={handleRestoreProject} className="bg-green-600 hover:bg-green-700">نعم، قم بالاستعادة</AlertDialogAction>
+              </AlertDialogFooter>
+             </>
+           )}
         </AlertDialogContent>
     </AlertDialog>
     </>

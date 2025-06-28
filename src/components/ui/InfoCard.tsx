@@ -5,7 +5,6 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import type { ReactNode } from 'react';
-import { ArrowLeft } from 'lucide-react';
 
 interface InfoCardProps {
   title: string;
@@ -18,10 +17,6 @@ interface InfoCardProps {
   iconColorClass?: string;
   dataAiHint?: string;
   cardHeightClass?: string; 
-  backTitle?: string; 
-  backDescription?: string; 
-  backCtaText?: string; 
-  backCtaIcon?: ReactNode; 
   applyFlipEffect?: boolean; 
   backCustomContent?: ReactNode;
 }
@@ -30,7 +25,7 @@ const InfoCard = (props: InfoCardProps) => {
   const {
     title,
     description,
-    onClick: onClickProp,
+    onClick,
     href,
     className,
     icon,
@@ -38,34 +33,20 @@ const InfoCard = (props: InfoCardProps) => {
     iconColorClass,
     dataAiHint,
     cardHeightClass = "h-72",
-    backTitle,
-    backDescription,
-    backCtaText = "اضغط للدخول",
-    backCtaIcon,
     applyFlipEffect = false,
     backCustomContent,
   } = props;
 
-  const isInteractive = !!href || !!onClickProp || !!backCustomContent;
+  const isInteractive = !!href || !!onClick;
 
-  const baseCardContainerClasses = cn(
-    "w-full rounded-xl",
-    cardHeightClass,
-    isInteractive && applyFlipEffect && "card-container-3d",
-    isInteractive && "group/card",
-    isInteractive && !applyFlipEffect && "hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out",
-    applyFlipEffect && "group-hover/card:translate-y-[-10px] group-hover/card:shadow-2xl transition-transform duration-600 ease-card-container",
-    className
-  );
-
-  const frontFaceContent = (
+  const FrontContent = () => (
     <div className={cn(
-      "card-face card-front-3d bg-card text-card-foreground p-6 sm:p-8 flex flex-col justify-center items-center text-center border border-border shadow-lg",
+      "card-flipper-front bg-card text-card-foreground p-6 sm:p-8 flex flex-col justify-center items-center text-center",
       cardHeightClass
     )}>
       {icon && (
         <div className={cn(
-          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 card-icon",
+          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 card-icon", // card-icon for animation from user's code
           iconWrapperClass
         )}>
           {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:w-8", iconColorClass) }) : icon}
@@ -76,65 +57,57 @@ const InfoCard = (props: InfoCardProps) => {
     </div>
   );
 
-  const backFaceContent = (
-    <div className={cn(
-        "card-face card-back-3d p-5 flex flex-col justify-center items-center text-center",
+  const BackContent = () => (
+     <div className={cn(
+        "card-flipper-back p-5 flex flex-col justify-center items-center text-center",
         cardHeightClass
       )}>
-        {backCustomContent ? (
-          <div className="w-full h-full flex flex-col justify-center items-center">{backCustomContent}</div>
-        ) : (
-          <>
-            <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-white">{backTitle || title}</h3>
-            {backDescription && <p className="text-sm sm:text-base mb-3 sm:mb-4 text-white/90 flex-grow">{backDescription}</p>}
-            
-            {(href || onClickProp) && backCtaText && (
-              <div className="mt-auto bg-white/20 hover:bg-white/30 py-2 px-4 rounded-lg inline-flex items-center gap-2 transition-colors text-white">
-                {backCtaIcon || <ArrowLeft className="h-4 w-4" />}
-                <span className="font-semibold">{backCtaText}</span>
-              </div>
-            )}
-          </>
-        )}
+        {backCustomContent}
     </div>
   );
 
-  const cardStructure = applyFlipEffect ? (
-    <div className={cn("card-inner-3d transition-transform duration-800 ease-card-flip", cardHeightClass)} data-ai-hint={dataAiHint}>
-      {frontFaceContent}
-      {backFaceContent}
-    </div>
-  ) : (
-    <div className={cn("relative w-full h-full bg-card rounded-xl", cardHeightClass, !applyFlipEffect && "border border-border shadow-lg")} data-ai-hint={dataAiHint}>
-     {frontFaceContent}
-    </div>
-  );
-
-  if (href && !applyFlipEffect) {
+  if (applyFlipEffect) {
+    // This is the structure for the flipping cards.
     return (
-      <Link
-        href={href}
-        className={cn("outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl block", baseCardContainerClasses)}
+      <div 
+        className={cn("card-flipper", cardHeightClass, className)} 
+        data-ai-hint={dataAiHint}
       >
-        {cardStructure}
-      </Link>
+        <div className="card-flipper-inner">
+          <FrontContent />
+          <BackContent />
+        </div>
+      </div>
     );
   }
-  
+
+  // This is the fallback for non-flipping cards.
+  const Tag = isInteractive && href ? Link : 'div';
+  const interactiveProps = isInteractive && href ? { href } : { onClick };
+
   return (
-    <div
+    <Tag
+      {...interactiveProps}
       className={cn(
-        "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl block", 
-        baseCardContainerClasses,
-        (onClickProp || applyFlipEffect) && "cursor-pointer" 
+        "bg-card text-card-foreground p-6 sm:p-8 flex flex-col justify-center items-center text-center border border-border shadow-lg rounded-xl",
+        "transition-all duration-300 ease-in-out",
+        isInteractive && "hover:shadow-xl hover:-translate-y-2 cursor-pointer",
+        cardHeightClass,
+        className
       )}
-      onClick={onClickProp} 
-      role={(onClickProp || applyFlipEffect) ? "button" : undefined}
-      tabIndex={(onClickProp || applyFlipEffect) ? 0 : undefined}
-      onKeyDown={(onClickProp || applyFlipEffect) ? (e) => (e.key === 'Enter' || e.key === ' ') && onClickProp?.() : undefined}
+      data-ai-hint={dataAiHint}
     >
-      {cardStructure}
-    </div>
+      {icon && (
+        <div className={cn(
+          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0",
+          iconWrapperClass
+        )}>
+          {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:w-8", iconColorClass) }) : icon}
+        </div>
+      )}
+      <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">{title}</h3>
+      {description && <p className="text-sm sm:text-base text-muted-foreground flex-grow">{description}</p>}
+    </Tag>
   );
 };
 

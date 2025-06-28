@@ -167,45 +167,57 @@
   display: none;
 }
 
-/* 3D Flip Card Styles */
-.card-container-3d {
+/* 3D Flip Card Styles - Based on User Example */
+.card-flipper {
   perspective: 1500px;
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-.card-inner-3d {
+
+.card-flipper:hover {
+  transform: translateY(-10px);
+}
+
+.card-flipper-inner {
   position: relative;
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.card-face {
+
+.card-flipper:hover .card-flipper-inner {
+  transform: rotateY(180deg);
+}
+
+.card-flipper-front,
+.card-flipper-back {
   position: absolute;
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden; /* Safari */
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   border-radius: 0.75rem; /* rounded-xl */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
 }
-.card-front-3d {
-  /* No special styles needed, it's the default face */
+
+.card-flipper-front {
+   border: 1px solid rgba(0,0,0,0.05);
 }
-.card-back-3d {
+
+.card-flipper-back {
   transform: rotateY(180deg);
   background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 100%);
+  color: white;
 }
-.group:hover .card-inner-3d {
-  transform: rotateY(180deg);
-}
-.ease-card-flip {
-  transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.ease-card-container {
-  transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
-}
+
 .card-icon {
-    transition: all 0.5s ease;
-    transform: scale(1);
+  transition: all 0.5s ease;
+  transform: scale(1);
 }
-.group:hover .card-icon {
-    transform: scale(1.1) rotate(5deg);
+
+.card-flipper:hover .card-icon {
+  transform: scale(1.1) rotate(5deg);
 }

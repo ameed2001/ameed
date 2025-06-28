@@ -12,7 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Save, X } from 'lucide-react';
-import { updateProjectAction, updateProjectSchema, type UpdateProjectFormValues } from '@/app/engineer/projects/actions';
+import { updateProjectAction } from '@/app/engineer/projects/actions';
+import { updateProjectSchema, type UpdateProjectFormValues } from '@/app/engineer/projects/schemas';
 import type { Project, ProjectStatusType } from '@/lib/db';
 import { cn } from '@/lib/utils';
 

@@ -66,45 +66,19 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
-        // Custom colors based on user's CSS & HSL variables
         'app-red': '#B40404', 
         'app-gold': '#f1c40f', 
-        'gradient-pink': '#ff007f',
-        'gradient-orange': '#ff7f00',
-        'gradient-purple': '#ff00ff',
-        'card-content-bg': 'rgba(var(--card-content-bg-rgb), 0.9)',
-        'card-content-bg-hover': 'rgba(var(--card-content-bg-rgb), 0.95)',
-        'card-content-fg': 'hsl(var(--card-content-fg-hsl))',
-        'card-content-hover-fg': 'hsl(var(--card-content-hover-fg-hsl))',
-        'currency-jod': '#2ecc71', 
-        'currency-eur': '#3498db', 
-        'currency-usd': '#B40404', 
-        'social-whatsapp': '#25D366',
-        'social-instagram': '#E4405F', 
-        'social-facebook': '#1877F2',
-        'header-info-bg': '#3b3e51', 
-        'primary-color-flip': 'hsl(var(--accent))',
-        'primary-dark-flip': 'color-mix(in srgb, hsl(var(--accent)) 70%, black)',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
-        xl: 'calc(var(--radius) + 4px)', // Added for FeatureCard
       },
       boxShadow: {
         'header-footer': '0 2px 8px rgba(0, 0, 0, 0.25)', 
         'nav': '0 2px 6px rgba(0, 0, 0, 0.2)', 
         'message': '0 4px 8px rgba(0, 0, 0, 0.2)',
         'form-container': '0 10px 25px rgba(0, 0, 0, 0.2)',
-      },
-      transitionTimingFunction: {
-        'card-flip': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-        'card-container': 'cubic-bezier(0.165, 0.84, 0.44, 1)',
-      },
-      transitionDuration: {
-        '800': '800ms',
-        '600': '600ms',
       },
       keyframes: {
         'accordion-down': {
@@ -125,32 +99,9 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'modal-fade-in': 'modalFadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
       },
-      rotate: {
-        'y-180': 'rotateY(180deg)',
-      },
-      transformStyle: {
-        'preserve-3d': 'preserve-3d',
-      },
     },
   },
   plugins: [
     require('tailwindcss-animate'),
-    function ({ addUtilities }: { addUtilities: any}) {
-      addUtilities({
-        '.transform-style-preserve-3d': {
-          'transform-style': 'preserve-3d',
-        },
-        '.perspective-1500': {
-          'perspective': '1500px',
-        },
-        '.backface-hidden': {
-          'backface-visibility': 'hidden',
-          '-webkit-backface-visibility': 'hidden',
-        },
-        '.rotate-y-180': {
-          'transform': 'rotateY(180deg)',
-        }
-      })
-    }
   ],
 } satisfies Config;

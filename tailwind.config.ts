@@ -92,12 +92,23 @@ export default {
         modalFadeIn: { 
           'from': { opacity: '0', transform: 'translateY(-70px) scale(0.9)' },
           'to': { opacity: '1', transform: 'translateY(0) scale(1)' },
-        }
+        },
+        orbit: {
+          '0%': { transform: 'rotate(0deg) scale(1)', opacity: '1' },
+          '50%': { transform: 'rotate(180deg) scale(1.1)', opacity: '0.5' },
+          '100%': { transform: 'rotate(360deg) scale(1)', opacity: '1' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { opacity: '0.3', transform: 'scale(1)' },
+          '50%': { opacity: '0.6', transform: 'scale(1.1)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'modal-fade-in': 'modalFadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        'orbit': 'orbit 6s linear infinite',
+        'pulse-glow': 'pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
     },
   },

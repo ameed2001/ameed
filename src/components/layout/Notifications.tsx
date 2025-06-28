@@ -1,6 +1,7 @@
+
 "use client";
 
-import { Bell, MessageSquare, UserCheck, Clock, Check, Info } from "lucide-react";
+import { Bell, MessageSquare, UserCheck, Clock, Check, Info, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 // The structure for a real notification
 interface Notification {
@@ -20,12 +22,44 @@ interface Notification {
   time: string;
 }
 
+// Mock notifications for demonstration purposes.
+// This can be replaced with a real data fetch later.
+const initialNotifications: Notification[] = [
+  {
+    id: '1',
+    icon: <MessageSquare className="h-4 w-4 text-blue-500" />,
+    title: 'لديك رسالة جديدة من م. أحمد خالد',
+    time: 'منذ 5 دقائق',
+  },
+  {
+    id: '2',
+    icon: <UserCheck className="h-4 w-4 text-green-500" />,
+    title: 'تمت الموافقة على طلب انضمامك لمشروع "فيلا السعادة"',
+    time: 'منذ 2 ساعة',
+  },
+  {
+    id: '3',
+    icon: <Clock className="h-4 w-4 text-orange-500" />,
+    title: 'تذكير: موعد تسليم مرحلة الأساسات بعد 3 أيام',
+    time: 'أمس',
+  },
+];
 
 export default function Notifications() {
-  // Use state to hold notifications. For now, it's empty.
-  // This can be populated via API call in a useEffect hook in the future.
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+  const { toast } = useToast();
   const hasNotifications = notifications.length > 0;
+
+  const handleMarkAllAsRead = () => {
+    // In a real app, this would update the state of notifications.
+    // For now, we just show a toast.
+    toast({ title: "تم تحديد الكل كمقروء", description: "تم تحديث حالة جميع إشعاراتك." });
+  };
+
+  const handleDeleteAll = () => {
+    setNotifications([]);
+    toast({ title: "تم حذف الإشعارات", description: "تم مسح جميع الإشعارات بنجاح." });
+  };
 
   return (
     <DropdownMenu dir="rtl">
@@ -67,11 +101,27 @@ export default function Notifications() {
         {hasNotifications && (
             <>
                 <DropdownMenuSeparator />
-                <div className="p-1">
-                    <Button variant="ghost" className="w-full text-center text-sm justify-center">
-                        <Check className="h-4 w-4 ml-2" />
-                        وضع علامة "مقروء" على الكل
+                <div className="p-1 space-y-1">
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-transparent p-0">
+                    <Button
+                      onClick={handleMarkAllAsRead}
+                      variant="ghost"
+                      className="w-full justify-start h-auto px-2 py-1.5 text-sm font-normal"
+                    >
+                      <Check className="ml-2 h-4 w-4" />
+                      وضع علامة "مقروء" على الكل
                     </Button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-transparent p-0">
+                    <Button
+                      onClick={handleDeleteAll}
+                      variant="ghost"
+                      className="w-full justify-start h-auto px-2 py-1.5 text-sm font-normal text-red-600 hover:bg-red-50 hover:text-red-700"
+                    >
+                      <Trash2 className="ml-2 h-4 w-4" />
+                      حذف جميع الإشعارات
+                    </Button>
+                  </DropdownMenuItem>
                 </div>
             </>
         )}

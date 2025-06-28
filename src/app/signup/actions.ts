@@ -149,4 +149,3 @@ export async function engineerSignupUserAction(
     redirectTo: registrationResult.isPendingApproval ? undefined : "/login" // Redirect to engineer login if not pending
   };
 }
-

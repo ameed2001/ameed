@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -7,16 +6,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import AppLayout from "@/components/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserPlus, Home, Eye, EyeOff } from 'lucide-react'; // Changed icon to Home for Owner
-import { ownerSignupUserAction, type SignupActionResponse } from '../signup/actions'; // Uses ownerSignupUserAction
+import { Loader2, Home, Eye, EyeOff, User, Mail, CheckCircle, ArrowLeft } from 'lucide-react';
+import { ownerSignupUserAction, type SignupActionResponse } from '../signup/actions';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
-// Schema for owner signup (remains the same)
 const ownerSignupSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
@@ -42,7 +40,7 @@ export default function OwnerSignupPage() {
 
   const onSubmit: SubmitHandler<OwnerSignupFormValues> = async (data) => {
     setIsLoading(true);
-    const result: SignupActionResponse = await ownerSignupUserAction(data); // Calling owner specific action
+    const result: SignupActionResponse = await ownerSignupUserAction(data);
     setIsLoading(false);
 
     if (result.success) {
@@ -55,7 +53,7 @@ export default function OwnerSignupPage() {
       if (result.redirectTo) {
         router.push(result.redirectTo);
       } else {
-        router.push('/login'); // Redirect to login after owner signup
+        router.push('/owner-login');
       }
     } else {
       toast({
@@ -76,102 +74,123 @@ export default function OwnerSignupPage() {
     }
   };
 
+  const ownerBenefits = [
+    { text: "متابعة لحظية لتقدم مشروعك.", icon: CheckCircle },
+    { text: "اطلاع دائم على الصور والتقارير.", icon: CheckCircle },
+    { text: "شفافية كاملة في التكاليف والكميات.", icon: CheckCircle },
+    { text: "تواصل مباشر وسهل مع المهندس المسؤول.", icon: CheckCircle },
+  ];
+
   return (
     <AppLayout>
-      <div className="container mx-auto py-8 px-4">
-        <Card className="max-w-lg mx-auto bg-white/95 shadow-xl">
-          <CardHeader className="text-center">
-            <Home className="mx-auto h-12 w-12 text-app-gold mb-3" /> {/* Icon for Owner */}
-            <CardTitle className="text-3xl font-bold text-app-red">إنشاء حساب مالك مشروع جديد</CardTitle>
-            <CardDescription className="text-gray-600 mt-1">
-              انضم إلينا كمالك مشروع للاستفادة من ميزات تتبع مشاريعك.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 text-right">
-              <div>
-                <Label htmlFor="name" className="block mb-1.5 font-semibold text-gray-700">الاسم الكامل</Label>
-                <Input id="name" type="text" {...register("name")} className="bg-white focus:border-app-gold" placeholder="مثال: أحمد عبدالله" />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
-              </div>
+      <div className="min-h-[calc(100vh-250px)] flex items-center justify-center p-4">
+        <div className="w-full max-w-6xl mx-auto rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+          
+          {/* Right side - The Form */}
+          <div className="bg-white p-8 md:p-12 text-right">
+            <div className="text-center mb-8">
+              <Home className="mx-auto h-12 w-12 text-app-gold mb-3" />
+              <h1 className="text-3xl font-bold text-app-red">إنشاء حساب مالك مشروع</h1>
+              <p className="text-gray-600 mt-2">انضم إلينا لمتابعة مشروعك بكل سهولة وشفافية.</p>
+            </div>
 
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div>
-                <Label htmlFor="email" className="block mb-1.5 font-semibold text-gray-700">البريد الإلكتروني</Label>
-                <Input id="email" type="email" {...register("email")} className="bg-white focus:border-app-gold" placeholder="owner@example.com" />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="password" className="block mb-1.5 font-semibold text-gray-700">كلمة المرور</Label>
-                 <div className="relative">
-                    <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        {...register("password")}
-                        className="bg-white focus:border-app-gold pl-10"
-                        placeholder="********"
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
-                        aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
-                    >
-                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
+                <Label htmlFor="name">الاسم الكامل</Label>
+                <div className="relative mt-1">
+                  <User className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input id="name" {...register("name")} className="pr-10" placeholder="مثال: أحمد عبدالله" />
                 </div>
-                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
               </div>
 
               <div>
-                <Label htmlFor="confirmPassword" className="block mb-1.5 font-semibold text-gray-700">تأكيد كلمة المرور</Label>
-                 <div className="relative">
-                    <Input
-                        id="confirmPassword"
-                        type={showConfirmPassword ? "text" : "password"}
-                        {...register("confirmPassword")}
-                        className="bg-white focus:border-app-gold pl-10"
-                        placeholder="********"
-                    />
-                     <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
-                        aria-label={showConfirmPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
-                    >
-                        {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
+                <Label htmlFor="email">البريد الإلكتروني</Label>
+                <div className="relative mt-1">
+                  <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input id="email" type="email" {...register("email")} className="pr-10" placeholder="owner@example.com" />
                 </div>
-                {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>}
+                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
               </div>
 
-              <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="ms-2 h-5 w-5 animate-spin" />
-                    جاري الإنشاء...
-                  </>
-                ) : (
-                  "إنشاء حساب المالك"
-                )}
+              <div>
+                <Label htmlFor="password">كلمة المرور</Label>
+                <div className="relative mt-1">
+                  <Input id="password" type={showPassword ? "text" : "password"} {...register("password")} className="pl-10" placeholder="********" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+              </div>
+
+              <div>
+                <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
+                <div className="relative mt-1">
+                  <Input id="confirmPassword" type={showConfirmPassword ? "text" : "password"} {...register("confirmPassword")} className="pl-10" placeholder="********" />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
+                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+              </div>
+
+              <Button type="submit" className="w-full bg-app-red hover:bg-red-700 font-bold py-3 text-lg" disabled={isLoading}>
+                {isLoading ? <Loader2 className="animate-spin" /> : "إنشاء حساب مالك"}
               </Button>
             </form>
-          </CardContent>
-          <CardFooter className="flex flex-col items-center mt-4 space-y-2">
-            <p className="text-sm text-gray-600">
-              لديك حساب بالفعل؟{' '}
-              <Link href="/login" className="font-semibold text-app-gold hover:underline">
-                تسجيل الدخول
-              </Link>
-            </p>
-            <p className="text-sm text-gray-600">
-              هل أنت مهندس؟{' '}
-              <Link href="/signup" className="font-semibold text-blue-600 hover:underline">
-                إنشاء حساب مهندس
-              </Link>
-            </p>
-          </CardFooter>
-        </Card>
+            
+            <div className="text-center text-sm text-gray-600 mt-6 space-y-2">
+              <p>
+                لديك حساب بالفعل؟{' '}
+                <Link href="/owner-login" className="font-semibold text-app-gold hover:underline">
+                  تسجيل الدخول
+                </Link>
+              </p>
+              <p>
+                هل أنت مهندس؟{' '}
+                <Link href="/signup" className="font-semibold text-blue-600 hover:underline">
+                  إنشاء حساب مهندس
+                </Link>
+              </p>
+            </div>
+          </div>
+          
+          {/* Left side - The branding */}
+          <div className="hidden lg:flex relative items-center justify-center p-12 bg-slate-900 text-white">
+            <div className="absolute inset-0">
+                <Image
+                    src="https://placehold.co/800x1000.png"
+                    alt="خلفية معمارية"
+                    layout="fill"
+                    objectFit="cover"
+                    className="opacity-10"
+                    data-ai-hint="modern architecture house"
+                />
+            </div>
+            <div className="relative z-10 text-right">
+              <h2 className="text-4xl font-bold mb-4">متابعة مشروعك أصبحت أسهل</h2>
+              <p className="text-gray-300 mb-8 max-w-md">
+                امتلك رؤية كاملة وشفافية تامة على كل تفاصيل مشروعك الإنشائي من خلال منصتنا، المصممة خصيصًا لك.
+              </p>
+              <ul className="space-y-4">
+                {ownerBenefits.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <item.icon className="h-6 w-6 text-app-gold mt-1 flex-shrink-0" />
+                    <span className="text-lg">{item.text}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button variant="outline" asChild className="mt-10 bg-transparent border-app-gold text-app-gold hover:bg-app-gold hover:text-slate-900">
+                  <Link href="/">
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      العودة إلى الرئيسية
+                  </Link>
+              </Button>
+            </div>
+          </div>
+
+        </div>
       </div>
     </AppLayout>
   );

@@ -160,7 +160,7 @@ export default function OwnerSignupPage() {
           <div className="hidden lg:flex relative items-center justify-center p-12 bg-slate-900 text-white">
             <div className="absolute inset-0">
                 <Image
-                    src="https://placehold.co/800x1000.png"
+                    src="https://i.imgur.com/v0tPitY.jpg"
                     alt="خلفية معمارية"
                     layout="fill"
                     objectFit="cover"

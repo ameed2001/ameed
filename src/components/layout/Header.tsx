@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -57,7 +58,7 @@ function UserNav() {
         <Button asChild size="sm" className="font-semibold bg-app-gold hover:bg-yellow-500 text-gray-900 rounded-full">
           <Link href="/login">تسجيل الدخول</Link>
         </Button>
-        <Button asChild size="sm" variant="outline" className="text-gray-800 border-gray-400 hover:bg-gray-100 hover:text-gray-900 rounded-full">
+        <Button asChild size="sm" variant="outline" className="text-gray-200 border-gray-500 hover:bg-gray-700 hover:text-white rounded-full">
           <Link href="/signup">إنشاء حساب</Link>
         </Button>
       </div>
@@ -130,7 +131,7 @@ const SocialAndClock = () => {
   }, []);
 
   return (
-    <div className="bg-gray-800 text-white text-sm py-2">
+    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-sm py-2">
         <div className="container mx-auto flex justify-between items-center px-4">
             {/* Social Icons */}
             <div className="flex items-center gap-4">
@@ -162,7 +163,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 shadow-md">
         <SocialAndClock />
-        <div className="bg-white/95 text-gray-800 backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
                 {/* Left Side: User Nav */}
                 <div className="flex items-center gap-2">
@@ -173,7 +174,7 @@ export default function Header() {
                 <Link href="/" className="flex items-center gap-4 text-right">
                     <div>
                         <h1 className="text-2xl font-extrabold text-app-red">المحترف لحساب الكميات</h1>
-                        <p className="hidden sm:block text-sm text-gray-500">للحديد والباطون والابنية الانشائية</p>
+                        <p className="hidden sm:block text-sm text-gray-400">للحديد والباطون والابنية الانشائية</p>
                     </div>
                     <div className="relative">
                         <Image src="https://i.imgur.com/79bO3U2.jpg" alt="شعار الموقع" width={56} height={56} className="rounded-full border-2 border-app-gold" data-ai-hint="logo construction"/>

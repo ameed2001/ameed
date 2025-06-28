@@ -52,7 +52,7 @@ export default function AboutPage() {
                   <h4 className="text-xl font-bold text-blue-600 mb-3 flex items-center justify-end gap-2">
                     <HardHat /> للمهندسين
                   </h4>
-                  <ul className="list-disc list-outside space-y-2 pr-6 text-right">
+                  <ul className="list-disc list-inside space-y-2 text-right">
                     <li><strong>إدارة شاملة للمشاريع:</strong> إنشاء ومتابعة وتحديث حالة المشاريع من لوحة تحكم مركزية.</li>
                     <li><strong>حساب دقيق للتكاليف:</strong> أدوات متقدمة لتقدير تكاليف المواد وربط التقارير بالمشاريع والمالكين.</li>
                     <li><strong>توثيق التقدم:</strong> رفع صور وملاحظات من موقع العمل لمشاركتها مع المالك.</li>
@@ -64,7 +64,7 @@ export default function AboutPage() {
                   <h4 className="text-xl font-bold text-green-600 mb-3 flex items-center justify-end gap-2">
                     <Home /> للمالكين
                   </h4>
-                   <ul className="list-disc list-outside space-y-2 pr-6 text-right">
+                   <ul className="list-disc list-inside space-y-2 text-right">
                     <li><strong>متابعة حية للمشاريع:</strong> عرض تفصيلي لتقدم المشاريع ونسبة الإنجاز والجداول الزمنية.</li>
                     <li><strong>شفافية كاملة:</strong> الاطلاع على تقارير التكاليف والصور التي يرفعها المهندس.</li>
                     <li><strong>تواصل مباشر:</strong> إضافة تعليقات واستفسارات على صفحة المشروع للتواصل الفعال مع المهندس.</li>
@@ -76,7 +76,7 @@ export default function AboutPage() {
                   <h4 className="text-xl font-bold text-purple-600 mb-3 flex items-center justify-end gap-2">
                     <Shield /> للمسؤولين
                   </h4>
-                   <ul className="list-disc list-outside space-y-2 pr-6 text-right">
+                   <ul className="list-disc list-inside space-y-2 text-right">
                     <li><strong>تحكم كامل بالنظام:</strong> لوحة تحكم لإدارة جميع المستخدمين والمشاريع والإعدادات.</li>
                     <li><strong>مراقبة النشاط:</strong> مراجعة سجلات النظام لمتابعة جميع الأنشطة والأحداث الهامة.</li>
                     <li><strong>إدارة الصلاحيات:</strong> الموافقة على حسابات المهندسين، تعليق الحسابات، وإعادة تعيين كلمات المرور.</li>

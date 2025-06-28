@@ -16,9 +16,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
-import type { ReactNode } from 'react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 // --- UserNav Component ---
 function UserNav() {
@@ -122,60 +119,63 @@ const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export default function Header() {
   const [isClient, setIsClient] = useState(false);
   const [time, setTime] = useState('');
+  const [date, setDate] = useState('');
 
   useEffect(() => {
     setIsClient(true);
     
     const timerId = setInterval(() => {
-        setTime(new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }));
+        const now = new Date();
+        setTime(now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }));
+        setDate(now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
     }, 1000);
 
     return () => clearInterval(timerId);
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full shadow-md bg-slate-900 text-white">
-        <div className="container mx-auto flex h-20 items-center justify-between">
-            {/* Left Side: Social Icons & Time */}
-            <div className="flex items-center gap-4">
+    <>
+      <div className="bg-slate-800 text-white text-sm py-1.5 shadow-md">
+        <div className="container mx-auto flex justify-between items-center">
+            {isClient && (
                 <div className="flex items-center gap-2">
-                    <a href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] h-8 w-8 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
-                        <WhatsAppIcon className="w-5 h-5" />
-                    </a>
-                    <a href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-purple-500 to-pink-500 h-8 w-8 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
-                        <Instagram className="w-5 h-5" />
-                    </a>
-                    <a href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="bg-[#1877F2] h-8 w-8 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
-                        <Facebook className="w-5 h-5" />
-                    </a>
+                    <Clock className="w-4 h-4 text-app-gold" />
+                    <span>{time} | {date}</span>
                 </div>
-                {isClient && (
-                    <div className="bg-slate-700/50 rounded-full px-4 py-1.5 flex items-center gap-2 text-sm font-medium">
-                        <Clock className="w-4 h-4 text-app-gold" />
-                        <span>{time}</span>
-                    </div>
-                )}
-            </div>
-
-            {/* Right Side: Logo & Title */}
-            <div className="flex items-center gap-4">
-                 {isClient && <UserNav />}
-                 <Link href="/" className="flex items-center gap-3 text-right">
-                    <div>
-                        <h1 className="text-app-red text-xl font-bold leading-tight">المحترف لحساب الكميات</h1>
-                        <p className="text-app-gold text-xs font-medium">للحديد والباطون والابنية الانشائية</p>
-                    </div>
-                    <Image
-                        src="https://i.imgur.com/79bO3U2.jpg"
-                        alt="شعار الموقع"
-                        width={56}
-                        height={56}
-                        className="rounded-full border-2 border-app-gold shadow-md"
-                        data-ai-hint="logo construction"
-                    />
-                </Link>
+            )}
+            <div className="font-semibold text-base text-app-gold">بِسْمِ اللهِ الرَّحْمنِ الرَّحِيم</div>
+            <div className="flex items-center gap-2">
+                <a href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] h-6 w-6 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
+                    <WhatsAppIcon className="w-4 h-4" />
+                </a>
+                <a href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-br from-purple-500 to-pink-500 h-6 w-6 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
+                    <Instagram className="w-4 h-4" />
+                </a>
+                <a href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="bg-[#1877F2] h-6 w-6 rounded-full flex items-center justify-center text-white transition-transform hover:scale-110">
+                    <Facebook className="w-4 h-4" />
+                </a>
             </div>
         </div>
-    </header>
+      </div>
+      <header className="sticky top-0 z-40 w-full shadow-md bg-white text-slate-900">
+          <div className="container mx-auto flex h-20 items-center justify-between">
+              {isClient && <UserNav />}
+              <Link href="/" className="flex items-center gap-3 text-right">
+                  <div>
+                      <h1 className="text-app-red text-xl font-bold leading-tight">المحترف لحساب الكميات</h1>
+                      <p className="text-app-gold text-xs font-medium">للحديد والباطون والابنية الانشائية</p>
+                  </div>
+                  <Image
+                      src="https://i.imgur.com/79bO3U2.jpg"
+                      alt="شعار الموقع"
+                      width={56}
+                      height={56}
+                      className="rounded-full border-2 border-app-gold shadow-md"
+                      data-ai-hint="logo construction"
+                  />
+              </Link>
+          </div>
+      </header>
+    </>
   );
 }

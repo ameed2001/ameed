@@ -1,4 +1,3 @@
-
 "use client";
 import Link from 'next/link';
 import Image from 'next/image';
@@ -85,9 +84,18 @@ const Footer = () => {
 
 
   return (
-    <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white mt-auto relative overflow-hidden" dir="rtl">
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.02%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] opacity-50"></div>
-
+    <footer className="bg-slate-900 text-white mt-auto relative overflow-hidden" dir="rtl">
+        <Image
+            src="https://i.imgur.com/CqHksgC.jpg"
+            alt="خلفية تذييل معمارية"
+            layout="fill"
+            objectFit="cover"
+            quality={75}
+            className="absolute inset-0 z-0 opacity-5"
+            data-ai-hint="architecture blueprint"
+        />
+        <div className="absolute inset-0 bg-slate-900/80 z-0" />
+      
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-app-gold via-app-red to-app-gold"></div>
 
       <div className="container mx-auto px-6 py-8 relative z-10">

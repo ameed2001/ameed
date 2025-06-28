@@ -22,7 +22,7 @@ const authCardsData = [
     iconWrapperClass: "bg-red-100",
     title: "إنشاء حساب جديد",
     description: "انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
-    backCustomClass: "bg-gradient-to-br from-red-600 to-red-800",
+    backCustomClass: "bg-gradient-to-br from-red-800 to-red-600",
     back: {
       title: "خيارات التسجيل",
       description: "اختر نوع الحساب الذي يناسبك.",
@@ -48,7 +48,7 @@ const authCardsData = [
     iconWrapperClass: "bg-blue-100",
     title: "تسجيل الدخول",
     description: "لديك حساب مهندس أو مالك؟ قم بالدخول لمتابعة أعمالك.",
-    backCustomClass: "bg-gradient-to-br from-blue-600 to-blue-800",
+    backCustomClass: "bg-gradient-to-br from-blue-800 to-blue-600",
     back: {
       title: "خيارات الدخول",
       description: "اختر بوابة الدخول المناسبة لحسابك.",
@@ -74,7 +74,7 @@ const authCardsData = [
     iconWrapperClass: "bg-green-100",
     title: "دخول المسؤول",
     description: "هذا القسم مخصص لإدارة النظام والمستخدمين.",
-    backCustomClass: "bg-gradient-to-br from-green-600 to-green-800",
+    backCustomClass: "bg-gradient-to-br from-green-800 to-green-600",
     back: {
       title: "لوحة تحكم المسؤول",
       description: "الوصول إلى أدوات الإدارة الشاملة.",
@@ -118,7 +118,7 @@ export default function AuthCardsSection() {
                         key={action.href}
                         asChild
                         className={cn(
-                          "w-full justify-between py-5 px-4 rounded-lg font-semibold transition-colors duration-200",
+                          "w-full justify-between py-5 px-4 rounded-lg font-semibold transition-colors duration-200 border border-white/20",
                           action.buttonClass
                         )}
                       >

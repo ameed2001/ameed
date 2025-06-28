@@ -48,7 +48,7 @@ const InfoCard = (props: InfoCardProps) => {
     )}>
       {icon && (
         <div className={cn(
-          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 card-icon", // card-icon for animation from user's code
+          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 card-icon",
           iconWrapperClass
         )}>
           {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:w-8", iconColorClass) }) : icon}
@@ -61,7 +61,7 @@ const InfoCard = (props: InfoCardProps) => {
 
   const BackContent = () => (
      <div className={cn(
-        "card-flipper-back",
+        "card-flipper-back p-4",
         cardHeightClass,
         backCustomClass
       )}>
@@ -70,7 +70,6 @@ const InfoCard = (props: InfoCardProps) => {
   );
 
   if (applyFlipEffect) {
-    // This is the structure for the flipping cards.
     return (
       <div 
         className={cn("card-flipper", cardHeightClass, className)} 
@@ -84,7 +83,7 @@ const InfoCard = (props: InfoCardProps) => {
     );
   }
 
-  // This is the fallback for non-flipping cards.
+  // Fallback for non-flipping cards
   const Tag = isInteractive && href ? Link : 'div';
   const interactiveProps = isInteractive && href ? { href } : { onClick };
 

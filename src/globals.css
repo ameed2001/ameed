@@ -209,7 +209,7 @@
 
 .card-flipper-back {
   transform: rotateY(180deg);
-  /* background removed, will be applied by class */
+  /* background will be applied via a class */
   color: white;
 }
 

@@ -12,6 +12,7 @@ import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { adminLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
+import AppLayout from '@/components/AppLayout';
 
 const adminLoginSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
@@ -104,11 +105,13 @@ export default function AdminLoginPage() {
   };
 
   return (
-     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 text-right">
+    <AppLayout>
+      <div className="min-h-[calc(100vh-250px)] flex items-center justify-center p-4 text-right">
         <div
-            className="max-w-md w-full bg-gradient-to-r from-blue-800 to-purple-600 rounded-xl shadow-2xl overflow-hidden p-8 space-y-8 animate-slide-in-from-left"
+            style={{animation: "slideInFromLeft 1s ease-out"}}
+            className="max-w-md w-full bg-gradient-to-r from-blue-800 to-purple-600 rounded-xl shadow-2xl overflow-hidden p-8 space-y-8"
         >
-            <div className="text-center animate-appear-slow">
+            <div className="text-center" style={{animation: "appear 2s ease-out"}}>
                 <h2 className="text-4xl font-extrabold text-white">
                     مرحباً بالمسؤول
                 </h2>
@@ -178,5 +181,6 @@ export default function AdminLoginPage() {
             </div>
         </div>
     </div>
+    </AppLayout>
   );
 }

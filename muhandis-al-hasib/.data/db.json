@@ -1520,6 +1520,22 @@
       "message": "User logged in: malik@gmail.com",
       "timestamp": "2025-06-28T20:32:20.630Z",
       "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1751144761040-a4rsp",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown identifier: admin-id",
+      "timestamp": "2025-06-28T21:06:01.040Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751144761503-zoyhs",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown identifier: admin-id",
+      "timestamp": "2025-06-28T21:06:01.503Z",
+      "user": "System"
     }
   ],
   "roles": [

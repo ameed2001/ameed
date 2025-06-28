@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
-import { Loader2, HardHat, ShieldCheck, Home as HomeIcon, Eye, EyeOff } from 'lucide-react';
+import { Loader2, HardHat, ShieldCheck, Home as HomeIcon, Eye, EyeOff, UserPlus, ArrowLeft } from 'lucide-react';
 import { loginUserAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 
@@ -125,8 +125,8 @@ export default function LoginPage() {
       <div className="container mx-auto py-12 px-4" dir="rtl">
         <Card className="max-w-md mx-auto bg-white/95 shadow-xl">
           <CardHeader className="text-center">
-            <HardHat className="mx-auto h-12 w-12 text-yellow-600 mb-3" />
-            <CardTitle className="text-3xl font-bold text-red-700">تسجيل دخول المهندس</CardTitle>
+            <HardHat className="mx-auto h-12 w-12 text-app-gold mb-3" />
+            <CardTitle className="text-3xl font-bold text-app-red">تسجيل دخول المهندس</CardTitle>
             <CardDescription className="text-gray-600 mt-1">
               أدخل بيانات حساب المهندس للمتابعة.
             </CardDescription>
@@ -140,7 +140,7 @@ export default function LoginPage() {
                   id="email"
                   type="email"
                   {...register("email")}
-                  className="bg-white focus:border-yellow-500"
+                  className="bg-white focus:border-app-gold"
                   placeholder="engineer@example.com"
                 />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
@@ -153,7 +153,7 @@ export default function LoginPage() {
                     id="password_input"
                     type={showPassword ? "text" : "password"}
                     {...register("password_input")}
-                    className="bg-white focus:border-yellow-500 pl-10"
+                    className="bg-white focus:border-app-gold pl-10"
                     placeholder="********"
                     />
                     <button
@@ -176,7 +176,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 text-lg"
+                className="w-full bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -191,22 +191,40 @@ export default function LoginPage() {
             </form>
           </CardContent>
 
-          <CardFooter className="flex flex-col items-center mt-4 space-y-3">
-            <p className="text-sm text-gray-600">
-              ليس لديك حساب مهندس؟{" "}
-              <Link href="/signup" className="font-semibold text-blue-700 underline hover:text-blue-800">
-                إنشاء حساب
-              </Link>
-            </p>
-
-            <Link href="/owner-login" className="text-sm font-medium text-purple-700 hover:text-purple-800 hover:underline flex items-center gap-1">
-              <HomeIcon className="h-4 w-4" />
-              تسجيل الدخول كمالك
+          <CardFooter className="flex flex-col items-center mt-4 space-y-3 w-full text-sm text-center">
+            <Link
+                href="/signup"
+                className="text-blue-700 hover:text-blue-800 hover:underline flex items-center justify-center gap-1 font-semibold"
+            >
+                <UserPlus className="h-5 w-5" />
+                إنشاء حساب مهندس جديد
             </Link>
 
-            <Link href="/admin-login" className="text-sm font-medium text-red-700 hover:text-red-800 hover:underline flex items-center gap-1">
-              <ShieldCheck className="h-4 w-4" />
-              تسجيل الدخول كمسؤول
+            <div className="text-gray-700">
+                تسجيل الدخول كـ:
+                <Link
+                href="/owner-login"
+                className="text-purple-700 hover:text-purple-800 hover:underline mx-2 inline-flex items-center gap-1 font-semibold"
+                >
+                <HomeIcon className="h-4 w-4" />
+                مالك
+                </Link>
+                أو
+                <Link
+                href="/admin-login"
+                className="text-red-700 hover:text-red-800 hover:underline mx-2 inline-flex items-center gap-1 font-semibold"
+                >
+                <ShieldCheck className="h-4 w-4" />
+                مسؤول
+                </Link>
+            </div>
+
+            <Link
+                href="/"
+                className="text-green-800 hover:text-green-700 hover:underline flex items-center justify-center gap-1 font-semibold mt-2"
+            >
+                <ArrowLeft className="h-4 w-4" />
+                العودة إلى الصفحة الرئيسية
             </Link>
           </CardFooter>
         </Card>

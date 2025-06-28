@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -95,9 +94,17 @@ const authCardsData = [
 
 export default function AuthCardsSection() {
   return (
-    <section id="auth-cards-section" className="py-16 bg-gray-100 dark:bg-gray-900">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-app-red">
+    <section 
+      id="auth-cards-section" 
+      className="relative py-16 bg-cover bg-center bg-fixed"
+      style={{
+        backgroundImage: `url('https://i.imgur.com/aBtAitZ.jpg')`
+      }}
+      data-ai-hint="construction tools background"
+    >
+      <div className="absolute inset-0 bg-black/70 z-0"></div>
+      <div className="relative z-10 container mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
           ابدأ رحلتك معنا
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -121,7 +121,7 @@ const SocialAndClock = () => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-sm py-2">
+    <div className="bg-slate-800 text-white text-sm py-2">
       <div className="container mx-auto flex justify-between items-center px-4">
         {/* Left Side: Social Icons */}
         <div className="flex-1 flex justify-start">
@@ -163,7 +163,7 @@ const SocialAndClock = () => {
 
         {/* Right Side: Time and Date */}
         <div className="flex-1 flex justify-end">
-          <div className="border border-app-gold/50 rounded-lg px-3 py-1.5">
+          <div className="bg-slate-800/70 rounded-lg px-4 py-2">
             <div className="flex items-center gap-4 text-gray-300 font-mono" style={{ direction: 'ltr' }}>
                 <span>{time}</span>
                 <span>-</span>
@@ -183,9 +183,9 @@ export default function Header() {
   useEffect(() => setIsClient(true), []);
 
   return (
-    <header className="shadow-md border-b-2 border-app-gold">
+    <header className="shadow-md">
         <SocialAndClock />
-        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white backdrop-blur-sm">
+        <div className="bg-slate-800 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
                 {/* Left Side: User Nav */}
                 <div className="flex-1 flex justify-start">
@@ -198,7 +198,7 @@ export default function Header() {
                          <Image src="https://i.imgur.com/79bO3U2.jpg" alt="شعار الموقع" width={56} height={56} className="rounded-full border-2 border-app-gold" data-ai-hint="logo construction"/>
                         <div>
                             <h1 className="text-3xl font-extrabold text-app-red">المحترف لحساب الكميات</h1>
-                            <p className="hidden sm:block text-base text-gray-400">للحديد والباطون والابنية الانشائية</p>
+                            <p className="text-base text-gray-400">للحديد والباطون والابنية الانشائية</p>
                         </div>
                     </Link>
                 </div>
@@ -209,6 +209,7 @@ export default function Header() {
                 </div>
             </div>
         </div>
+        <div className="h-0.5 bg-app-gold" />
     </header>
   );
 }

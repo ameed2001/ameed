@@ -1,8 +1,9 @@
+
 "use client";
 
 import type { ReactNode } from 'react';
 import Header from '@/components/layout/Header';
-import Navbar from '@/components/layout/Navbar';
+import Navbar from '@/components/layout/Navbar'; 
 import Footer from '@/components/layout/Footer';
 
 export default function AppLayout({ children }: { children: ReactNode }) {

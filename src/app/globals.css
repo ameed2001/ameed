@@ -79,7 +79,7 @@
   }
 
   html {
-    overflow-y: scroll; /* Prevent layout shift when modals/dropdowns open */
+    scrollbar-gutter: stable; /* Prevent layout shift when modals/dropdowns open */
   }
 
   * {

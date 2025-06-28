@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, HardHat, Info, Eye, EyeOff, User, Mail, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, HardHat, Info, Eye, EyeOff, User, Mail, CheckCircle, ArrowLeft, UserPlus } from 'lucide-react';
 import { engineerSignupUserAction, type SignupActionResponse } from './actions';
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -158,7 +158,7 @@ export default function EngineerSignupPage() {
               </div>
 
               <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg" disabled={isLoading}>
-                {isLoading ? <Loader2 className="animate-spin" /> : "إنشاء حساب مهندس"}
+                {isLoading ? <Loader2 className="animate-spin" /> : <><UserPlus className="ml-2 h-5 w-5" />إنشاء حساب مهندس</>}
               </Button>
             </form>
             

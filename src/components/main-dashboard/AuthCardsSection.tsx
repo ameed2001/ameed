@@ -21,7 +21,7 @@ const authCardsData = [
     iconWrapperClass: "bg-red-100",
     title: "إنشاء حساب جديد",
     description: "انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
-    frontCustomClass: "bg-white",
+    frontCustomClass: "bg-white/95",
     backCustomClass: "bg-gradient-to-br from-red-700 to-red-900",
     back: {
       title: "خيارات التسجيل",
@@ -48,7 +48,7 @@ const authCardsData = [
     iconWrapperClass: "bg-blue-100",
     title: "تسجيل الدخول",
     description: "لديك حساب مهندس أو مالك؟ قم بالدخول لمتابعة أعمالك.",
-    frontCustomClass: "bg-white",
+    frontCustomClass: "bg-white/95",
     backCustomClass: "bg-gradient-to-br from-blue-700 to-blue-900",
     back: {
       title: "خيارات الدخول",
@@ -75,7 +75,7 @@ const authCardsData = [
     iconWrapperClass: "bg-green-100",
     title: "دخول المسؤول",
     description: "هذا القسم مخصص لإدارة النظام والمستخدمين.",
-    frontCustomClass: "bg-white",
+    frontCustomClass: "bg-white/95",
     backCustomClass: "bg-gradient-to-br from-green-700 to-green-900",
     back: {
       title: "لوحة تحكم المسؤول",
@@ -96,10 +96,17 @@ export default function AuthCardsSection() {
   return (
     <section 
       id="auth-cards-section" 
-      className="py-16 bg-gray-50"
+      className="relative py-16"
+      style={{
+        backgroundImage: `url('https://i.imgur.com/IUkLfXD.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
     >
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-app-red">
+      <div className="absolute inset-0 bg-black/60 z-0"></div>
+      <div className="relative z-10 container mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
           ابدأ رحلتك معنا
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

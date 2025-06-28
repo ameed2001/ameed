@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -15,12 +14,12 @@ const HeroSection = () => {
     <section 
       className="relative w-full py-12 md:py-16 lg:py-20 text-white text-center"
       style={{
-        backgroundImage: `url('https://i.imgur.com/9YdRlNn.jpg')`,
+        backgroundImage: `url('https://i.imgur.com/IUkLfXD.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
         backgroundAttachment: 'fixed'
       }}
-      data-ai-hint="construction site background"
+      data-ai-hint="construction site crane"
     >
       <div className="absolute inset-0 bg-black/60 z-0"></div>
       <div className="relative z-10 container mx-auto px-4 md:px-6">

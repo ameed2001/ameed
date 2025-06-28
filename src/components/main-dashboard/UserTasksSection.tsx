@@ -25,16 +25,24 @@ const UserTasksSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-16 md:py-20 bg-gray-100">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-app-red">
+    <section className="relative py-16 md:py-20"
+      style={{
+        backgroundImage: `url('https://i.imgur.com/IUkLfXD.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      <div className="absolute inset-0 bg-black/60 z-0"></div>
+      <div className="relative z-10 container mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
           مهام المستخدمين
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {userTasks.map((task, index) => (
             <Card
               key={index}
-              className="bg-white shadow-lg rounded-xl p-6 text-center flex flex-col transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1"
+              className="bg-white/95 shadow-lg rounded-xl p-6 text-center flex flex-col transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1"
             >
               <CardHeader className="p-0 mb-4 flex justify-center items-center">
                 <div

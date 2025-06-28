@@ -178,7 +178,7 @@ export default function OwnerLoginPage() {
           <div className="hidden lg:flex relative items-center justify-center p-12 bg-slate-900 text-white">
             <div className="absolute inset-0">
                 <Image
-                    src="https://i.imgur.com/v0tPitY.jpg"
+                    src="https://i.imgur.com/bap5nHz.jpg"
                     alt="خلفية معمارية"
                     layout="fill"
                     objectFit="cover"

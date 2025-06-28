@@ -11,10 +11,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, UserCircle, KeyRound, Save } from 'lucide-react';
+import { Loader2, UserCircle, KeyRound, Save, Trash2, AlertTriangle, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { updateProfileAction, changePasswordAction, getUserProfile } from './actions';
+import { updateProfileAction, changePasswordAction, getUserProfile, deleteUserAccountAction } from './actions';
 import type { UserDocument, ChangePasswordResult } from '@/lib/db';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 const profileSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
@@ -41,6 +53,9 @@ export function ProfilePageContent() {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<UserProfileData | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<'confirm' | 'loading' | 'success'>('confirm');
+
 
   const {
     register: registerProfile,
@@ -135,6 +150,34 @@ export function ProfilePageContent() {
       if (result.errorType === 'invalid_current_password') {
         setPasswordError('currentPassword', { type: 'server', message: result.message });
       }
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!currentUser) return;
+    setDeleteStep('loading');
+    const result = await deleteUserAccountAction(currentUser.id);
+    if (result.success) {
+      setDeleteStep('success');
+      setTimeout(() => {
+        toast({
+          title: "تم حذف الحساب",
+          description: "تم حذف حسابك بنجاح. نأسف لمغادرتك.",
+        });
+        setIsDeleteDialogOpen(false);
+        // Logout user
+        localStorage.clear();
+        router.push('/');
+      }, 2000);
+    } else {
+      toast({
+        title: "فشل حذف الحساب",
+        description: result.message || "حدث خطأ ما.",
+        variant: "destructive",
+      });
+      // Reset dialog state on failure
+      setDeleteStep('confirm');
+      setIsDeleteDialogOpen(false);
     }
   };
 
@@ -235,6 +278,78 @@ export function ProfilePageContent() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800/50 mt-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3 text-red-700 dark:text-red-400">
+            <AlertTriangle className="h-6 w-6"/>
+            منطقة الخطر
+          </CardTitle>
+          <CardDescription className="text-red-600 dark:text-red-500">
+            الإجراءات التالية لا يمكن التراجع عنها. يرجى المتابعة بحذر.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex justify-between items-center">
+          <div>
+            <p className="font-semibold text-gray-800 dark:text-gray-200">حذف الحساب بشكل دائم</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">سيتم حذف جميع بياناتك ومشاريعك المرتبطة بك نهائياً.</p>
+          </div>
+          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">
+                <Trash2 className="ml-2 h-4 w-4"/>
+                حذف الحساب
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent dir="rtl" className="sm:max-w-md">
+                {deleteStep === 'confirm' && currentUser && (
+                    <>
+                        <AlertDialogHeader className="text-center items-center space-y-4">
+                            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                                <Trash2 className="h-8 w-8 text-red-600" />
+                            </div>
+                            <AlertDialogTitle className="text-2xl font-bold text-gray-800">تأكيد حذف الحساب</AlertDialogTitle>
+                        </AlertDialogHeader>
+                        <AlertDialogDescription asChild>
+                            <div className="text-center text-base text-gray-600 space-y-4">
+                                <p>هل أنت متأكد تمامًا؟ هذا الإجراء لا يمكن التراجع عنه.</p>
+                                <div className="bg-red-50 border border-red-200 text-red-700 rounded-md p-3 text-sm">
+                                    سيتم حذف حسابك: <span className="font-bold">"{currentUser.name}"</span> وكل البيانات المرتبطة به.
+                                </div>
+                                <p className="text-xs text-gray-500">لا يمكن استعادة الحساب بعد الحذف.</p>
+                            </div>
+                        </AlertDialogDescription>
+                        <AlertDialogFooter className="flex-col sm:flex-row sm:justify-center gap-4 pt-4">
+                            <Button onClick={handleDeleteAccount} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg">
+                                نعم، أحذف حسابي
+                            </Button>
+                            <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
+                        </AlertDialogFooter>
+                    </>
+                )}
+                {deleteStep === 'loading' && (
+                    <div className="flex flex-col items-center justify-center space-y-6 p-8 text-center">
+                        <div className="w-24 h-24 bg-amber-100 rounded-full animate-pulse"></div>
+                        <h2 className="text-3xl font-bold text-amber-700">جاري الحذف...</h2>
+                        <p className="text-lg text-gray-500">يتم حذف حسابك وبياناتك الآن...</p>
+                        <div className="w-full h-2 bg-amber-200 rounded-full overflow-hidden">
+                            <div className="h-full bg-amber-400 w-full animate-pulse"></div>
+                        </div>
+                    </div>
+                )}
+                {deleteStep === 'success' && (
+                    <div className="flex flex-col items-center justify-center space-y-4 p-8 text-center">
+                        <div className="h-24 w-24 bg-green-100 rounded-full flex items-center justify-center ring-4 ring-green-200">
+                            <Check className="h-12 w-12 text-green-600" />
+                        </div>
+                        <h2 className="text-3xl font-bold text-green-700">تم الحذف بنجاح</h2>
+                        <p className="text-lg text-gray-500">تم حذف حسابك بنجاح. سيتم توجيهك الآن.</p>
+                    </div>
+                )}
+            </AlertDialogContent>
+          </AlertDialog>
+        </CardContent>
+      </Card>
     </div>
   );
 }

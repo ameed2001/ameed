@@ -1,8 +1,8 @@
 
-'use server';
+"use server";
 
 import { z } from 'zod';
-import { updateUser as dbUpdateUser, changeUserPassword as dbChangeUserPassword, findUserById as dbFindUserById, type UserDocument } from '@/lib/db';
+import { updateUser as dbUpdateUser, changeUserPassword as dbChangeUserPassword, findUserById as dbFindUserById, deleteUser as dbDeleteUser, logAction, type UserDocument } from '@/lib/db';
 import type { AdminUserUpdateResult, ChangePasswordResult } from '@/lib/db';
 
 const profileUpdateSchema = z.object({
@@ -52,4 +52,22 @@ export async function getUserProfile(userId: string): Promise<Omit<UserDocument,
     console.log(`[GetUserProfile] Fetching profile for user ${userId}`);
     const user = await dbFindUserById(userId);
     return user;
+}
+
+export async function deleteUserAccountAction(userId: string): Promise<{ success: boolean, message?: string }> {
+  console.log(`[DeleteUserAccountAction] User ${userId} attempting to delete own account.`);
+  
+  if (!userId) {
+    return { success: false, message: "معرف المستخدم غير موجود." };
+  }
+
+  const result = await dbDeleteUser(userId);
+
+  if (result.success) {
+    await logAction('USER_DELETE_SUCCESS_BY_SELF', 'WARNING', `User ID ${userId} deleted their own account.`);
+  } else {
+    await logAction('USER_DELETE_FAILURE_BY_SELF', 'ERROR', `Failed self-deletion for user ID ${userId}: ${result.message}`);
+  }
+
+  return result;
 }

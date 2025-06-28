@@ -21,19 +21,18 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     "اكتمل التحميل!"
   ];
 
+  // Effect to run the timers
   useEffect(() => {
-    // تحديث النسبة المئوية بشكل تدريجي
     const progressTimer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(progressTimer);
           return 100;
         }
-        return prev + 2; // زيادة 2% كل 36ms
+        return prev + 2;
       });
-    }, 36); // سرعة تحديث النسبة
+    }, 36);
 
-    // تحديث خطوات التحميل
     const stepTimer = setInterval(() => {
       setCurrentStep((prev) => {
         if (prev >= loadingSteps.length - 1) {
@@ -42,19 +41,23 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
         }
         return prev + 1;
       });
-    }, 400); // تغيير الخطوة كل 400ms
-
-    // إخفاء اللودر بعد اكتمال التحميل
-    const hideTimer = setTimeout(() => {
-      setShowLoader(false);
-    }, 2200);
+    }, 400);
 
     return () => {
       clearInterval(progressTimer);
       clearInterval(stepTimer);
-      clearTimeout(hideTimer);
     };
   }, [loadingSteps.length]);
+
+  // Effect to hide the loader once progress is 100%
+  useEffect(() => {
+    if (progress >= 100) {
+      const hideTimer = setTimeout(() => {
+        setShowLoader(false);
+      }, 400); // Wait a moment after 100% before hiding
+      return () => clearTimeout(hideTimer);
+    }
+  }, [progress]);
 
   if (!showLoader) {
     return <>{children}</>;

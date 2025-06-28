@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -22,7 +23,7 @@ interface InfoCardProps {
   backCtaText?: string; 
   backCtaIcon?: ReactNode; 
   applyFlipEffect?: boolean; 
-  backCustomContent?: ReactNode; // New prop for custom back content
+  backCustomContent?: ReactNode;
 }
 
 const InfoCard = (props: InfoCardProps) => {
@@ -42,13 +43,13 @@ const InfoCard = (props: InfoCardProps) => {
     backCtaText = "اضغط للدخول",
     backCtaIcon,
     applyFlipEffect = false,
-    backCustomContent, // Destructure new prop
+    backCustomContent,
   } = props;
 
   const isInteractive = !!href || !!onClickProp || !!backCustomContent;
 
   const baseCardContainerClasses = cn(
-    "w-full rounded-lg",
+    "w-full rounded-xl",
     cardHeightClass,
     isInteractive && applyFlipEffect && "card-container-3d",
     isInteractive && "group/card",
@@ -59,15 +60,13 @@ const InfoCard = (props: InfoCardProps) => {
 
   const frontFaceContent = (
     <div className={cn(
-      "card-face card-front-3d bg-card text-card-foreground p-6 sm:p-8 flex flex-col justify-center items-center text-center border border-border",
-      cardHeightClass,
-      !applyFlipEffect && "shadow-lg"
+      "card-face card-front-3d bg-card text-card-foreground p-6 sm:p-8 flex flex-col justify-center items-center text-center border border-border shadow-lg",
+      cardHeightClass
     )}>
       {icon && (
         <div className={cn(
-          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 transition-transform duration-500 ease-card-flip card-icon",
-          iconWrapperClass,
-          (isInteractive) && "group-hover/card:scale-110 group-hover/card:rotate-[5deg]"
+          "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 card-icon",
+          iconWrapperClass
         )}>
           {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:w-8", iconColorClass) }) : icon}
         </div>
@@ -79,20 +78,24 @@ const InfoCard = (props: InfoCardProps) => {
 
   const backFaceContent = (
     <div className={cn(
-        "card-face card-back-3d p-5 flex flex-col justify-center items-center text-center border border-primary-dark-flip",
+        "card-face card-back-3d p-5 flex flex-col justify-center items-center text-center",
         cardHeightClass
       )}>
-      <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-white">{backTitle || title}</h3>
-      {backDescription && <p className="text-sm sm:text-base mb-3 sm:mb-4 text-white/90 flex-grow">{backDescription}</p>}
-      
-      {backCustomContent ? ( // Render custom back content if provided
-        <div className="mt-auto w-full">{backCustomContent}</div>
-      ) : (href || onClickProp) && backCtaText ? ( // Else, render default CTA button
-        <div className="mt-auto bg-white/20 hover:bg-white/30 py-2 px-4 rounded-lg inline-flex items-center gap-2 transition-colors">
-          {backCtaIcon || <ArrowLeft className="h-4 w-4" />}
-          <span className="font-semibold">{backCtaText}</span>
-        </div>
-      ) : null}
+        {backCustomContent ? (
+          <div className="w-full h-full flex flex-col justify-center items-center">{backCustomContent}</div>
+        ) : (
+          <>
+            <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-white">{backTitle || title}</h3>
+            {backDescription && <p className="text-sm sm:text-base mb-3 sm:mb-4 text-white/90 flex-grow">{backDescription}</p>}
+            
+            {(href || onClickProp) && backCtaText && (
+              <div className="mt-auto bg-white/20 hover:bg-white/30 py-2 px-4 rounded-lg inline-flex items-center gap-2 transition-colors text-white">
+                {backCtaIcon || <ArrowLeft className="h-4 w-4" />}
+                <span className="font-semibold">{backCtaText}</span>
+              </div>
+            )}
+          </>
+        )}
     </div>
   );
 
@@ -102,16 +105,16 @@ const InfoCard = (props: InfoCardProps) => {
       {backFaceContent}
     </div>
   ) : (
-    <div className={cn("relative w-full h-full bg-card rounded-lg", cardHeightClass, !applyFlipEffect && "border border-border shadow-lg")} data-ai-hint={dataAiHint}>
+    <div className={cn("relative w-full h-full bg-card rounded-xl", cardHeightClass, !applyFlipEffect && "border border-border shadow-lg")} data-ai-hint={dataAiHint}>
      {frontFaceContent}
     </div>
   );
 
-  if (href && !onClickProp && !backCustomContent) {
+  if (href && !applyFlipEffect) {
     return (
       <Link
         href={href}
-        className={cn("outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg block", baseCardContainerClasses)}
+        className={cn("outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl block", baseCardContainerClasses)}
       >
         {cardStructure}
       </Link>
@@ -121,14 +124,14 @@ const InfoCard = (props: InfoCardProps) => {
   return (
     <div
       className={cn(
-        "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-lg block", 
+        "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-xl block", 
         baseCardContainerClasses,
-        (onClickProp || (applyFlipEffect && backCustomContent)) && "cursor-pointer" 
+        (onClickProp || applyFlipEffect) && "cursor-pointer" 
       )}
       onClick={onClickProp} 
-      role={(onClickProp || (applyFlipEffect && backCustomContent)) ? "button" : undefined}
-      tabIndex={(onClickProp || (applyFlipEffect && backCustomContent)) ? 0 : undefined}
-      onKeyDown={(onClickProp || (applyFlipEffect && backCustomContent)) ? (e) => (e.key === 'Enter' || e.key === ' ') && onClickProp?.() : undefined}
+      role={(onClickProp || applyFlipEffect) ? "button" : undefined}
+      tabIndex={(onClickProp || applyFlipEffect) ? 0 : undefined}
+      onKeyDown={(onClickProp || applyFlipEffect) ? (e) => (e.key === 'Enter' || e.key === ' ') && onClickProp?.() : undefined}
     >
       {cardStructure}
     </div>

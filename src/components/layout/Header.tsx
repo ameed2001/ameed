@@ -125,10 +125,34 @@ const SocialAndClock = () => {
       <div className="container mx-auto flex justify-between items-center px-4">
         {/* Left Side: Social Icons */}
         <div className="flex-1 flex justify-start">
-          <div className="flex items-center gap-4">
-              <a href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><WhatsAppIcon className="h-5 w-5" /></a>
-              <a href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><Instagram className="h-5 w-5" /></a>
-              <a href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><Facebook className="h-5 w-5" /></a>
+          <div className="flex items-center gap-3">
+              <a 
+                href="https://wa.me/972594371424" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group bg-slate-800/70 hover:bg-green-600 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
+                title="تواصل عبر واتساب"
+              >
+                <WhatsAppIcon className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+              </a>
+              <a 
+                href="https://www.instagram.com/a.w.samarah3/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group bg-slate-800/70 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
+                title="تابعنا على إنستغرام"
+              >
+                <Instagram className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+              </a>
+              <a 
+                href="https://www.facebook.com/a.w.samarah4" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group bg-slate-800/70 hover:bg-blue-600 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
+                title="تابعنا على فيسبوك"
+              >
+                <Facebook className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+              </a>
           </div>
         </div>
 

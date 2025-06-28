@@ -46,7 +46,7 @@ export default function AboutPage() {
 
             <section className="mb-6">
               <h3 className="text-2xl font-semibold text-app-red mb-4 text-center border-t pt-6">ماذا تقدم المنصة؟</h3>
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-8">
                 
                 <div data-ai-hint="engineer features">
                   <h4 className="text-xl font-bold text-blue-600 mb-3 flex items-center justify-start gap-2">

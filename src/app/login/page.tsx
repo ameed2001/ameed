@@ -6,15 +6,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 import AppLayout from "@/components/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
-import { Loader2, HardHat, ShieldCheck, Home as HomeIcon, Eye, EyeOff, UserPlus, ArrowLeft } from 'lucide-react';
+import { Loader2, HardHat, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { loginUserAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 
@@ -80,7 +80,6 @@ export default function LoginPage() {
           localStorage.setItem('userRole', result.user.role);
           localStorage.setItem('userEmail', result.user.email);
           localStorage.setItem('userId', result.user.id);
-          console.log('Login Page: User Role set in localStorage:', result.user.role);
         }
         
         setTimeout(() => {
@@ -122,112 +121,90 @@ export default function LoginPage() {
 
   return (
     <AppLayout>
-      <div className="container mx-auto py-12 px-4" dir="rtl">
-        <Card className="max-w-md mx-auto bg-white/95 shadow-xl">
-          <CardHeader className="text-center">
-            <HardHat className="mx-auto h-12 w-12 text-app-gold mb-3" />
-            <CardTitle className="text-3xl font-bold text-app-red">تسجيل دخول المهندس</CardTitle>
-            <CardDescription className="text-gray-600 mt-1">
-              أدخل بيانات حساب المهندس للمتابعة.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 text-right">
-              <div>
-                <Label htmlFor="email" className="block mb-1.5 font-semibold text-gray-700">البريد الإلكتروني</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register("email")}
-                  className="bg-white focus:border-app-gold"
-                  placeholder="engineer@example.com"
-                />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+      <div className="min-h-[calc(100vh-250px)] flex items-center justify-center p-4">
+        <div className="w-full max-w-6xl mx-auto rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 bg-white">
+          
+          {/* Right side - The Form */}
+          <div className="p-8 md:p-12 text-right flex flex-col justify-center">
+            <div className="max-w-md mx-auto w-full">
+              <div className="text-center mb-8">
+                <HardHat className="mx-auto h-12 w-12 text-app-gold mb-3" />
+                <h1 className="text-3xl font-bold text-app-red">تسجيل دخول المهندس</h1>
+                <p className="text-gray-600 mt-1">أدخل بياناتك للوصول إلى أدواتك الهندسية.</p>
               </div>
 
-              <div>
-                <Label htmlFor="password_input" className="block mb-1.5 font-semibold text-gray-700">كلمة المرور</Label>
-                <div className="relative">
-                    <Input
-                    id="password_input"
-                    type={showPassword ? "text" : "password"}
-                    {...register("password_input")}
-                    className="bg-white focus:border-app-gold pl-10"
-                    placeholder="********"
-                    />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
-                        aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
-                    >
-                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <div>
+                  <Label htmlFor="email">البريد الإلكتروني</Label>
+                  <Input id="email" type="email" {...register("email")} placeholder="engineer@example.com" />
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                 </div>
-                {errors.password_input && <p className="text-red-500 text-sm mt-1">{errors.password_input.message}</p>}
+
+                <div>
+                  <div className="flex justify-between items-center">
+                    <Label htmlFor="password_input">كلمة المرور</Label>
+                    <Link href="/forgot-password" className="text-xs font-medium text-blue-600 hover:underline">
+                      هل نسيت كلمة المرور؟
+                    </Link>
+                  </div>
+                  <div className="relative mt-1">
+                      <Input id="password_input" type={showPassword ? "text" : "password"} {...register("password_input")} placeholder="********" />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
+                          {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </button>
+                  </div>
+                  {errors.password_input && <p className="text-red-500 text-xs mt-1">{errors.password_input.message}</p>}
+                </div>
+
+                <Button type="submit" className="w-full bg-app-red hover:bg-red-700 font-bold py-3 text-lg" disabled={isLoading}>
+                  {isLoading ? <Loader2 className="animate-spin" /> : "تسجيل الدخول"}
+                </Button>
+              </form>
+              
+              <div className="text-center text-sm text-gray-600 mt-6 space-y-2">
+                <p>
+                  ليس لديك حساب؟{' '}
+                  <Link href="/signup" className="font-semibold text-app-gold hover:underline">
+                    إنشاء حساب مهندس
+                  </Link>
+                </p>
+                <p>
+                  هل أنت مالك مشروع؟{' '}
+                  <Link href="/owner-login" className="font-semibold text-blue-600 hover:underline">
+                    تسجيل الدخول كمالك
+                  </Link>
+                </p>
               </div>
-
-              <div className="text-sm text-left">
-                <Link href="/forgot-password" className="font-medium text-blue-700 hover:text-blue-800 hover:underline">
-                  هل نسيت كلمة المرور؟
-                </Link>
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="ms-2 h-5 w-5 animate-spin" />
-                    جاري تسجيل الدخول...
-                  </>
-                ) : (
-                  "تسجيل دخول المهندس"
-                )}
-              </Button>
-            </form>
-          </CardContent>
-
-          <CardFooter className="flex flex-col items-center mt-4 space-y-3 w-full text-sm text-center">
-            <Link
-                href="/signup"
-                className="text-blue-700 hover:text-blue-800 hover:underline flex items-center justify-center gap-1 font-semibold"
-            >
-                <UserPlus className="h-5 w-5" />
-                إنشاء حساب مهندس جديد
-            </Link>
-
-            <div className="text-gray-700">
-                تسجيل الدخول كـ:
-                <Link
-                href="/owner-login"
-                className="text-purple-700 hover:text-purple-800 hover:underline mx-2 inline-flex items-center gap-1 font-semibold"
-                >
-                <HomeIcon className="h-4 w-4" />
-                مالك
-                </Link>
-                أو
-                <Link
-                href="/admin-login"
-                className="text-red-700 hover:text-red-800 hover:underline mx-2 inline-flex items-center gap-1 font-semibold"
-                >
-                <ShieldCheck className="h-4 w-4" />
-                مسؤول
-                </Link>
             </div>
+          </div>
+          
+          {/* Left side - The branding */}
+          <div className="hidden lg:flex relative items-center justify-center p-12 bg-slate-900 text-white">
+            <div className="absolute inset-0">
+                <Image
+                    src="https://i.imgur.com/vnuNKhf.jpg"
+                    alt="خلفية هندسية"
+                    layout="fill"
+                    objectFit="cover"
+                    className="opacity-10"
+                    data-ai-hint="engineering blueprint"
+                />
+            </div>
+            <div className="relative z-10 text-right">
+              <h2 className="text-4xl font-bold mb-4">أدواتك الهندسية في مكان واحد</h2>
+              <p className="text-gray-300 mb-8 max-w-md">
+                قم بإدارة مشاريعك، وحساب الكميات بدقة، والتواصل مع المالكين بكل سهولة من خلال لوحة تحكم متكاملة.
+              </p>
+              <Button variant="outline" asChild className="bg-transparent border-app-gold text-app-gold hover:bg-app-gold hover:text-slate-900">
+                  <Link href="/">
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      العودة إلى الرئيسية
+                  </Link>
+              </Button>
+            </div>
+          </div>
 
-            <Link
-                href="/"
-                className="text-green-800 hover:text-green-700 hover:underline flex items-center justify-center gap-1 font-semibold mt-2"
-            >
-                <ArrowLeft className="h-4 w-4" />
-                العودة إلى الصفحة الرئيسية
-            </Link>
-          </CardFooter>
-        </Card>
+        </div>
       </div>
     </AppLayout>
   );

@@ -1,3 +1,4 @@
+"use client";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -8,70 +9,79 @@ import {
   Home as HomeIcon,
   ShieldCheck,
   ArrowLeft,
+  ChevronsLeft,
+  LogIn as LogInIcon,
+  UserPlus as UserPlusIcon
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import React from "react";
 
 const authCardsData = [
-    {
-        id: "signup",
-        title: "إنشاء حساب جديد",
-        description: "انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
-        icon: <UserPlus className="h-10 w-10 text-blue-500" />,
-        backTitle: "خيارات التسجيل",
-        backDescription: "اختر نوع الحساب الذي يناسبك.",
-        backBg: "bg-gradient-to-br from-blue-700 to-blue-900",
-        actions: [
-            {
-                label: "إنشاء حساب مهندس",
-                href: "/signup",
-                icon: <HardHat className="h-5 w-5" />,
-            },
-            {
-                label: "إنشاء حساب مالك",
-                href: "/owner-signup",
-                icon: <HomeIcon className="h-5 w-5" />,
-            },
-        ],
-    },
-    {
-        id: "user-login",
-        title: "تسجيل الدخول",
-        description: "لديك حساب مهندس أو مالك؟ قم بالدخول لمتابعة أعمالك.",
-        icon: <LogIn className="h-10 w-10 text-app-gold" />,
-        backTitle: "خيارات الدخول",
-        backDescription: "اختر بوابة الدخول المناسبة لحسابك.",
-        backBg: "bg-gradient-to-br from-slate-700 to-slate-900",
-        actions: [
-            {
-                label: "دخول كمهندس",
-                href: "/login",
-                icon: <HardHat className="h-5 w-5" />,
-            },
-            {
-                label: "دخول كمالك",
-                href: "/owner-login",
-                icon: <HomeIcon className="h-5 w-5" />,
-            },
-        ],
-    },
-    {
-        id: "admin-login",
-        title: "دخول المسؤول",
-        description: "هذا القسم مخصص لإدارة النظام والمستخدمين.",
-        icon: <ShieldCheck className="h-10 w-10 text-app-red" />,
-        backTitle: "لوحة تحكم المسؤول",
-        backDescription: "الوصول إلى أدوات الإدارة الشاملة.",
-        backBg: "bg-gradient-to-br from-red-700 to-red-900",
-        actions: [
-            {
-                label: "دخول كمسؤول",
-                href: "/admin-login",
-                icon: <ShieldCheck className="h-5 w-5" />,
-            },
-        ],
-    },
+  {
+    id: "signup",
+    icon: <UserPlus className="h-6 w-6 text-blue-500" />,
+    title: "إنشاء حساب جديد",
+    description: "انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
+    bgColor: "bg-blue-600",
+    hoverBgColor: "hover:bg-blue-700",
+    buttonBgColor: "bg-blue-500 hover:bg-blue-600",
+    bottomTitle: "خيارات التسجيل",
+    bottomDescription: "اختر نوع الحساب الذي يناسبك.",
+    actions: [
+      {
+        label: "إنشاء حساب مهندس",
+        href: "/signup",
+        icon: <HardHat className="h-5 w-5" />,
+      },
+      {
+        label: "إنشاء حساب مالك",
+        href: "/owner-signup",
+        icon: <HomeIcon className="h-5 w-5" />,
+      },
+    ],
+  },
+  {
+    id: "user-login",
+    icon: <LogInIcon className="h-6 w-6 text-yellow-500" />,
+    title: "تسجيل الدخول",
+    description: "لديك حساب مهندس أو مالك؟ قم بالدخول لمتابعة أعمالك.",
+    bgColor: "bg-slate-800",
+    hoverBgColor: "hover:bg-slate-900",
+    buttonBgColor: "bg-slate-700 hover:bg-slate-600",
+    bottomTitle: "خيارات الدخول",
+    bottomDescription: "اختر بوابة الدخول المناسبة لحسابك.",
+    actions: [
+      {
+        label: "دخول كمهندس",
+        href: "/login",
+        icon: <HardHat className="h-5 w-5" />,
+      },
+      {
+        label: "دخول كمالك",
+        href: "/owner-login",
+        icon: <HomeIcon className="h-5 w-5" />,
+      },
+    ],
+  },
+  {
+    id: "admin-login",
+    icon: <ShieldCheck className="h-6 w-6 text-red-500" />,
+    title: "دخول المسؤول",
+    description: "هذا القسم مخصص لإدارة النظام والمستخدمين.",
+    bgColor: "bg-app-red",
+    hoverBgColor: "hover:bg-red-700",
+    buttonBgColor: "bg-red-700 hover:bg-red-800",
+    bottomTitle: "لوحة تحكم المسؤول",
+    bottomDescription: "الوصول إلى أدوات الإدارة الشاملة.",
+    actions: [
+      {
+        label: "دخول كمسؤول",
+        href: "/admin-login",
+        icon: <ShieldCheck className="h-5 w-5" />,
+      },
+    ],
+  },
 ];
 
 export default function AuthCardsSection() {
@@ -83,36 +93,37 @@ export default function AuthCardsSection() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {authCardsData.map((card) => (
-            <div key={card.id} className="card-container-3d h-80 transition-transform duration-500 hover:-translate-y-2">
-              <div className="card-inner-3d">
-                {/* Front Face */}
-                <div className="card-face card-front-3d bg-white rounded-xl shadow-lg border border-gray-100">
-                  <div className="mb-4">{card.icon}</div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">{card.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{card.description}</p>
+            <div key={card.id} className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-transform duration-300 hover:-translate-y-2">
+              {/* Top white part */}
+              <div className="p-8 relative text-right">
+                <div className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-inner">
+                    {card.icon}
                 </div>
-                {/* Back Face */}
-                <div className={cn("card-face card-back-3d text-white p-6 space-y-4", card.backBg)}>
-                  <h3 className="text-2xl font-bold">{card.backTitle}</h3>
-                  <p className="text-white/80 text-sm">{card.backDescription}</p>
-                  <div className="w-full space-y-3 pt-2">
-                    {card.actions.map((action) => (
-                      <Button
-                        key={action.href}
-                        asChild
-                        variant="outline"
-                        className="w-full justify-between py-5 rounded-lg font-semibold border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
-                      >
-                        <Link href={action.href}>
-                          <span className="flex items-center gap-2">
-                            {action.icon}
-                            {action.label}
-                          </span>
-                          <ArrowLeft className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                    ))}
-                  </div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2 mt-8">{card.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed h-12">{card.description}</p>
+              </div>
+
+              {/* Bottom colored part */}
+              <div className={cn("p-8 text-white flex-grow flex flex-col text-right", card.bgColor)}>
+                <h3 className="text-2xl font-bold mb-2">{card.bottomTitle}</h3>
+                <p className="text-white/80 text-sm mb-6 flex-grow">{card.bottomDescription}</p>
+                <div className="w-full space-y-3">
+                  {card.actions.map((action) => (
+                    <Button
+                      key={action.href}
+                      asChild
+                      variant="ghost"
+                      className={cn("w-full justify-between py-5 px-4 rounded-lg font-semibold border-white/20 border bg-white/10 text-white hover:bg-white/20 hover:text-white")}
+                    >
+                      <Link href={action.href}>
+                        <span className="flex items-center gap-2">
+                          {action.icon}
+                          {action.label}
+                        </span>
+                        <ArrowLeft className="h-4 w-4" />
+                      </Link>
+                    </Button>
+                  ))}
                 </div>
               </div>
             </div>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -7,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
   Instagram, Facebook, UserCircle, LogOut, Settings as SettingsIcon, LayoutDashboard, 
-  Menu, X, Home, Info, Phone, HelpCircle, GanttChartSquare, FolderArchive, FilePenLine
+  Phone
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from '@/lib/utils';
 
 // --- UserNav Component (for user actions) ---
@@ -59,7 +57,7 @@ function UserNav() {
         <Button asChild size="sm" className="font-semibold bg-app-gold hover:bg-yellow-500 text-gray-900 rounded-full">
           <Link href="/login">تسجيل الدخول</Link>
         </Button>
-        <Button asChild size="sm" variant="outline" className="text-white border-white/50 hover:bg-white/20 hover:text-white rounded-full">
+        <Button asChild size="sm" variant="outline" className="text-gray-800 border-gray-400 hover:bg-gray-100 hover:text-gray-900 rounded-full">
           <Link href="/signup">إنشاء حساب</Link>
         </Button>
       </div>
@@ -110,94 +108,79 @@ function UserNav() {
   );
 }
 
-// --- Social & Clock Component ---
+
+// Social & Clock Component
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.33 3.43 16.79L2.05 22L7.31 20.62C8.72 21.33 10.33 21.72 12.04 21.72C17.5 21.72 21.95 17.27 21.95 11.81C21.95 6.35 17.5 2 12.04 2M12.04 3.64C16.57 3.64 20.27 7.34 20.27 11.81C20.27 16.28 16.57 19.98 12.04 19.98C10.53 19.98 9.11 19.59 7.89 18.9L7.47 18.67L4.8 19.44L5.58 16.87L5.32 16.41C4.56 15.04 4.14 13.48 4.14 11.91C4.14 7.44 7.84 3.74 12.04 3.64M17.46 14.85C17.18 15.28 16.17 15.89 15.68 15.98C15.19 16.07 14.69 16.16 12.91 15.46C10.77 14.63 9.23 12.76 9.03 12.5C8.82 12.24 7.94 11.03 7.94 10.04C7.94 9.06 8.38 8.66 8.6 8.44C8.82 8.22 9.14 8.15 9.36 8.15C9.54 8.15 9.71 8.15 9.85 8.16C10.03 8.17 10.17 8.18 10.34 8.49C10.58 8.91 11.06 10.11 11.15 10.25C11.24 10.39 11.29 10.58 11.15 10.76C11.01 10.94 10.92 11.03 10.74 11.25C10.56 11.47 10.38 11.61 10.25 11.75C10.11 11.89 9.95 12.09 10.14 12.41C10.32 12.73 11.08 13.62 11.96 14.36C13.08 15.29 13.94 15.52 14.21 15.52C14.48 15.52 14.98 15.47 15.21 15.2C15.49 14.88 15.83 14.44 16.01 14.21C16.19 13.98 16.41 13.94 16.64 14.03C16.86 14.12 17.84 14.63 18.12 14.77C18.4 14.91 18.54 15 18.63 15.1C18.72 15.19 18.45 15.57 17.46 14.85Z" /></svg>
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.33 3.43 16.79L2.05 22L7.31 20.62C8.72 21.33 10.33 21.72 12.04 21.72C17.5 21.72 21.95 17.27 21.95 11.81C21.95 6.35 17.5 2 12.04 2M12.04 3.64C16.57 3.64 20.27 7.34 20.27 11.81C20.27 16.28 16.57 19.98 12.04 19.98C10.53 19.98 9.11 19.59 7.89 18.9L7.47 18.67L4.8 19.44L5.58 16.87L5.32 16.41C4.56 15.04 4.14 13.48 4.14 11.91C4.14 7.44 7.84 3.74 12.04 3.64M17.46 14.85C17.18 15.28 16.17 15.89 15.68 15.98C15.19 16.07 14.69 16.16 12.91 15.46C10.77 14.63 9.23 12.76 9.03 12.5C8.82 12.24 7.94 11.03 7.94 10.04C7.94 9.06 8.38 8.66 8.6 8.44C8.82 8.22 9.14 8.15 9.36 8.15C9.54 8.15 9.71 8.15 9.85 8.16C10.03 8.17 10.17 8.18 10.34 8.49C10.58 8.91 11.06 10.11 11.15 10.25C11.24 10.39 11.29 10.58 11.15 10.76C11.01 10.94 10.92 11.03 10.74 11.25C10.56 11.47 10.38 11.61 10.25 11.75C10.11 11.89 9.95 12.09 10.14 12.41C10.32 12.73 11.08 13.62 11.96 14.36C13.08 15.29 13.94 15.52 14.21 15.52C14.48 15.52 14.98 15.47 15.21 15.2C15.49 14.88 15.83 14.44 16.01 14.21C16.19 13.98 16.41 13.94 16.64 14.03C16.86 14.12 17.84 14.63 18.12 14.77C18.4 14.91 18.54 15 18.63 15.1C18.72 15.19 18.45 15.57 17.46 14.85Z" /></svg>
 );
 
-const navLinks = [
-  { href: '/', label: 'الرئيسية', icon: Home },
-  { href: '/about', label: 'عن الموقع', icon: Info },
-  { href: '/documents', label: 'إدارة المستندات', icon: FolderArchive },
-  { href: '/timeline', label: 'الجداول الزمنية', icon: GanttChartSquare },
-  { href: '/ai-report-generator', label: 'مولد التقارير الذكي', icon: FilePenLine },
-  { href: '/help', label: 'الأسئلة الشائعة', icon: HelpCircle },
-  { href: '/contact', label: 'تواصل معنا', icon: Phone },
-];
+const SocialAndClock = () => {
+  const [time, setTime] = useState('');
+  const [date, setDate] = useState('');
 
-// --- Main Header Component ---
+  useEffect(() => {
+    const updateDateTime = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setDate(now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+    };
+    updateDateTime();
+    const timerId = setInterval(updateDateTime, 1000);
+    return () => clearInterval(timerId);
+  }, []);
+
+  return (
+    <div className="bg-gray-800 text-white text-sm py-2">
+        <div className="container mx-auto flex justify-between items-center px-4">
+            {/* Social Icons */}
+            <div className="flex items-center gap-4">
+                <a href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><WhatsAppIcon className="h-5 w-5" /></a>
+                <a href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><Instagram className="h-5 w-5" /></a>
+                <a href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><Facebook className="h-5 w-5" /></a>
+            </div>
+            {/* Bismillah */}
+            <div className="text-lg font-semibold text-app-gold tracking-wider">
+                بِسْمِ اللهِ الرَّحْمنِ الرَّحِيم
+            </div>
+            {/* Time and Date */}
+            <div className="flex items-center gap-4 text-gray-300">
+                <span>{time}</span>
+                <span>-</span>
+                <span>{date}</span>
+            </div>
+        </div>
+    </div>
+  );
+};
+
+
+// Main Header Component
 export default function Header() {
   const [isClient, setIsClient] = useState(false);
-  const [isNavOpen, setIsNavOpen] = useState(false);
-  const pathname = usePathname();
-
   useEffect(() => setIsClient(true), []);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-slate-900/95 text-white shadow-lg backdrop-blur-sm">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4">
-        
-        {/* Left Side: User Nav & Mobile Menu Trigger */}
-        <div className="flex items-center gap-2">
-          {isClient && <UserNav />}
-          <Sheet open={isNavOpen} onOpenChange={setIsNavOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">فتح القائمة</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="bg-slate-900 text-white border-l-slate-700 p-4">
-              <nav className="flex flex-col space-y-3 pt-8">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsNavOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium transition-colors",
-                      pathname === link.href 
-                        ? "bg-app-red text-white" 
-                        : "hover:bg-slate-800"
-                    )}
-                  >
-                    <link.icon className="h-5 w-5" />
-                    {link.label}
-                  </Link>
-                ))}
-              </nav>
-            </SheetContent>
-          </Sheet>
+    <header className="sticky top-0 z-50 shadow-md">
+        <SocialAndClock />
+        <div className="bg-white/95 text-gray-800 backdrop-blur-sm">
+            <div className="container mx-auto flex h-20 items-center justify-between px-4">
+                {/* Left Side: User Nav */}
+                <div className="flex items-center gap-2">
+                    {isClient && <UserNav />}
+                </div>
+
+                {/* Right Side: Logo & Title */}
+                <Link href="/" className="flex items-center gap-4 text-right">
+                    <div>
+                        <h1 className="text-2xl font-extrabold text-app-red">المحترف لحساب الكميات</h1>
+                        <p className="hidden sm:block text-sm text-gray-500">للحديد والباطون والابنية الانشائية</p>
+                    </div>
+                    <div className="relative">
+                        <Image src="https://i.imgur.com/79bO3U2.jpg" alt="شعار الموقع" width={56} height={56} className="rounded-full border-2 border-app-gold" data-ai-hint="logo construction"/>
+                    </div>
+                </Link>
+            </div>
         </div>
-
-        {/* Center: Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
-          {navLinks.map(link => (
-            <Link key={link.href} href={link.href} className={cn("nav-link-underline px-3 py-2 text-sm font-semibold text-gray-200 hover:text-white transition-colors", pathname === link.href && "active text-app-gold")}>
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        
-        {/* Right Side: Logo & Title */}
-        <Link href="/" className="flex items-center gap-3 text-right">
-          <div>
-            <h1 className="text-xl font-extrabold animated-gradient-text">المحترف لحساب الكميات</h1>
-            <p className="hidden sm:block text-xs text-app-gold/80">للحديد والباطون والابنية الانشائية</p>
-          </div>
-          <div className="relative p-1 bg-gradient-to-tr from-app-gold to-app-red rounded-full">
-            <Image
-              src="https://i.imgur.com/79bO3U2.jpg"
-              alt="شعار الموقع"
-              width={48}
-              height={48}
-              className="rounded-full border-2 border-slate-800"
-              data-ai-hint="logo construction"
-            />
-          </div>
-        </Link>
-
-      </div>
     </header>
   );
 }

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -96,7 +97,7 @@ export default function AuthCardsSection() {
   return (
     <section 
       id="auth-cards-section" 
-      className="py-16 bg-gray-50"
+      className="py-16 bg-gradient-to-br from-blue-50 to-indigo-100"
     >
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">

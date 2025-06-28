@@ -1,3 +1,4 @@
+
 "use client";
 
 import FeatureCard from './FeatureCard';
@@ -62,7 +63,7 @@ const FeaturesSection = () => {
 
   return (
     <section 
-      className="py-16 md:py-20 bg-gray-50"
+      className="py-16 md:py-20 bg-gradient-to-br from-purple-50 to-pink-100"
       data-ai-hint="construction site crane"
     >
       <div className="container mx-auto px-4">

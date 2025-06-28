@@ -1,3 +1,4 @@
+
 "use client";
 
 import InfoCard from '@/components/ui/InfoCard';
@@ -51,7 +52,7 @@ const MainDashboardClient = () => {
   return (
     <>
       <section 
-        className="py-16 text-center bg-white"
+        className="py-16 text-center bg-gradient-to-br from-green-50 to-teal-100"
       >
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-12">أدواتك الأساسية للحسابات</h2>

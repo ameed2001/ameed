@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useParams } from 'next/navigation';
@@ -18,7 +17,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
 import { findProjectById, updateProject as dbUpdateProject, getCostReportsForProject, type Project, type ProjectComment, type ProjectPhoto, type TimelineTask, type CostReport } from '@/lib/db';
 import Link from 'next/link';
@@ -35,6 +34,7 @@ export default function EngineerProjectDetailPage() {
   const [linkedOwnerEmailInput, setLinkedOwnerEmailInput] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isContactEngineerModalOpen, setIsContactEngineerModalOpen] = useState(false);
   const [engineerMessage, setEngineerMessage] = useState('');
 
@@ -174,6 +174,7 @@ export default function EngineerProjectDetailPage() {
         const fileInput = document.getElementById('projectFileUpload') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
         toast({ title: "تم رفع الملف بنجاح", description: `${selectedFile.name} جاهز الآن.` });
+        setIsUploadModalOpen(false); // Close modal on success
     } else {
         toast({ title: "خطأ", description: "فشل رفع الملف.", variant: "destructive" });
     }
@@ -218,309 +219,308 @@ export default function EngineerProjectDetailPage() {
   };
   
   return (
-      <Dialog>
-        <div className="container mx-auto py-8 px-4 text-right">
-          <Card className="bg-white/95 shadow-xl mb-8">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                  <div>
-                      <CardTitle className="text-3xl font-bold text-app-red">{project.name}</CardTitle>
-                      <CardDescription className="text-gray-700 mt-1">{project.description}</CardDescription>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    {!isOwnerView && (
-                        <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل بيانات المشروع")}>
-                            <FileEdit size={18} className="ms-1.5" /> تعديل بيانات المشروع
-                        </Button>
-                    )}
-                  </div>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-sm text-gray-600 mt-3">
-                  <span><strong>الموقع:</strong> {project.location || 'غير محدد'}</span>
-                  <span><strong>المهندس المسؤول:</strong> {project.engineer || 'غير محدد'}</span>
-                  <span><strong>العميل:</strong> {project.clientName || 'غير محدد'}</span>
-                  <span><strong>الميزانية التقديرية:</strong> {project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</span>
-                  <span><strong>تاريخ البدء:</strong> {project.startDate}</span>
-                  <span><strong>التسليم المتوقع:</strong> {project.endDate}</span>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <Label className="text-base font-semibold text-gray-800">التقدم العام للمشروع:</Label>
-                <div className="flex items-center gap-3 mt-1.5">
-                  <Progress value={project.overallProgress} className="h-4 flex-grow" />
-                  <span className="font-bold text-app-gold text-lg">{project.overallProgress}%</span>
+    <>
+      <div className="container mx-auto py-8 px-4 text-right">
+        <Card className="bg-white/95 shadow-xl mb-8">
+          <CardHeader>
+            <div className="flex justify-between items-start">
+                <div>
+                    <CardTitle className="text-3xl font-bold text-app-red">{project.name}</CardTitle>
+                    <CardDescription className="text-gray-700 mt-1">{project.description}</CardDescription>
                 </div>
-                <p className={`text-sm font-semibold mt-1.5 ${
-                      project.status === 'مكتمل' ? 'text-green-600' :
-                      project.status === 'قيد التنفيذ' ? 'text-yellow-600' :
-                      'text-blue-600' 
-                    }`}>
-                      الحالة الحالية: {project.status}
-                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {!isOwnerView && (
+                      <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل بيانات المشروع")}>
+                          <FileEdit size={18} className="ms-1.5" /> تعديل بيانات المشروع
+                      </Button>
+                  )}
+                </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-2 text-sm text-gray-600 mt-3">
+                <span><strong>الموقع:</strong> {project.location || 'غير محدد'}</span>
+                <span><strong>المهندس المسؤول:</strong> {project.engineer || 'غير محدد'}</span>
+                <span><strong>العميل:</strong> {project.clientName || 'غير محدد'}</span>
+                <span><strong>الميزانية التقديرية:</strong> {project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</span>
+                <span><strong>تاريخ البدء:</strong> {project.startDate}</span>
+                <span><strong>التسليم المتوقع:</strong> {project.endDate}</span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4">
+              <Label className="text-base font-semibold text-gray-800">التقدم العام للمشروع:</Label>
+              <div className="flex items-center gap-3 mt-1.5">
+                <Progress value={project.overallProgress} className="h-4 flex-grow" />
+                <span className="font-bold text-app-gold text-lg">{project.overallProgress}%</span>
               </div>
+              <p className={`text-sm font-semibold mt-1.5 ${
+                    project.status === 'مكتمل' ? 'text-green-600' :
+                    project.status === 'قيد التنفيذ' ? 'text-yellow-600' :
+                    'text-blue-600' 
+                  }`}>
+                    الحالة الحالية: {project.status}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {!isOwnerView && (
+          <Card className="bg-white/95 shadow-lg mb-8">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                <Wrench size={28}/> أدوات إدارة المشروع
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج إدخال تفاصيل العناصر الإنشائية")}>
+                  <ListChecks size={18} className="ms-2"/> إدخال تفاصيل العناصر
+              </Button>
+               <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الباطون لهذا المشروع")}>
+                  <HardHat size={18} className="ms-2"/> حساب كميات الباطون
+              </Button>
+              <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الحديد لهذا المشروع")}>
+                  <BarChart3 size={18} className="ms-2"/> حساب كميات الحديد
+              </Button>
+               <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => setIsUploadModalOpen(true)}>
+                  <UploadCloud size={18} className="ms-2"/> رفع صور/فيديو للمشروع
+              </Button>
+                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("إدارة مراحل المشروع (تحديد/تعديل)")}>
+                    <GanttChartSquare size={18} className="ms-2"/> تحديد/إدارة المراحل
+                </Button>
+                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقارير الكميات والتقدم")}>
+                    <Download size={18} className="ms-2"/> توليد/تصدير التقارير
+                </Button>
             </CardContent>
           </Card>
+        )}
 
-          {!isOwnerView && (
-            <Card className="bg-white/95 shadow-lg mb-8">
-              <CardHeader>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <Card className="bg-white/95 shadow-lg">
+              <CardHeader className="flex flex-row justify-between items-center">
                 <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                  <Wrench size={28}/> أدوات إدارة المشروع
+                  <GanttChartSquare size={28} /> الجدول الزمني للمشروع
                 </CardTitle>
+                {!isOwnerView && (
+                  <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل مراحل الإنشاء في الجدول")}>
+                      <CalendarDays size={18} className="ms-1.5" /> تعديل مهام الجدول
+                  </Button>
+                )}
               </CardHeader>
-              <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج إدخال تفاصيل العناصر الإنشائية")}>
-                    <ListChecks size={18} className="ms-2"/> إدخال تفاصيل العناصر
-                </Button>
-                 <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الباطون لهذا المشروع")}>
-                    <HardHat size={18} className="ms-2"/> حساب كميات الباطون
-                </Button>
-                <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("فتح نموذج حساب الحديد لهذا المشروع")}>
-                    <BarChart3 size={18} className="ms-2"/> حساب كميات الحديد
-                </Button>
-                 <DialogTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10">
-                        <UploadCloud size={18} className="ms-2"/> رفع صور/فيديو للمشروع
-                    </Button>
-                  </DialogTrigger>
-                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("إدارة مراحل المشروع (تحديد/تعديل)")}>
-                      <GanttChartSquare size={18} className="ms-2"/> تحديد/إدارة المراحل
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تصدير تقارير الكميات والتقدم")}>
-                      <Download size={18} className="ms-2"/> توليد/تصدير التقارير
-                  </Button>
-              </CardContent>
-            </Card>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              <Card className="bg-white/95 shadow-lg">
-                <CardHeader className="flex flex-row justify-between items-center">
-                  <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                    <GanttChartSquare size={28} /> الجدول الزمني للمشروع
-                  </CardTitle>
-                  {!isOwnerView && (
-                    <Button variant="outline" size="sm" className="border-app-gold text-app-gold hover:bg-app-gold/10" onClick={() => simulateAction("تعديل مراحل الإنشاء في الجدول")}>
-                        <CalendarDays size={18} className="ms-1.5" /> تعديل مهام الجدول
-                    </Button>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  {project.timelineTasks && project.timelineTasks.length > 0 ? (
-                    <div className="space-y-5 relative overflow-x-auto p-1 pb-4 min-h-[200px] bg-gray-50 rounded-lg shadow-inner">
-                       <div className="absolute inset-0 grid grid-cols-6 gap-0 pointer-events-none opacity-20">
-                          {Array.from({ length: 6 }).map((_, i) => (
-                          <div key={`month-grid-detail-${i}`} className={cn("border-r border-gray-300", i === 5 && "border-r-0")}>
-                              <span className="block p-1 text-xs text-gray-400 text-center">
-                              {new Date(projectStartDate.getFullYear(), projectStartDate.getMonth() + Math.floor(i * totalProjectDurationDays / 6 / 30)).toLocaleString('ar', { month: 'short' })}
-                              </span>
-                          </div>
-                          ))}
-                      </div>
-                      {project.timelineTasks.map((task, index) => {
-                        const { left, width } = getTaskPositionAndWidth(task);
-                        return (
-                          <div key={task.id} className="relative h-12 flex items-center text-right pr-3 group" style={{ zIndex: index + 1 }}>
-                            <div 
-                              className={cn(
-                                "absolute h-8 rounded-md shadow-sm flex items-center justify-between px-2.5 text-white transition-all duration-300 ease-in-out hover:opacity-90 text-xs",
-                                !isOwnerView && "cursor-pointer group-hover:ring-2 group-hover:ring-app-gold",
-                                task.color
-                              )}
-                              style={{ left, width, right: 'auto' }}
-                              title={`${task.name} (من ${task.startDate} إلى ${task.endDate}) - ${task.status} ${task.progress !== undefined ? task.progress + '%' : ''}`}
-                              onClick={!isOwnerView ? () => simulateAction(`تعديل مهمة: ${task.name}`) : undefined}
-                            >
-                              <span className="font-medium truncate">{task.name}</span>
-                              {task.status === 'مكتمل' && <CheckCircle2 size={14} className="text-white/90 shrink-0 ml-1.5"/>}
-                              {task.status === 'قيد التنفيذ' && <div className="h-2.5 w-2.5 rounded-full bg-white/80 animate-pulse shrink-0 ml-1.5"></div>}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">لا يوجد جدول زمني محدد لهذا المشروع بعد.</p>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/95 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                    <ImageIcon size={28} /> صور تقدم المشروع
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {project.photos && project.photos.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      {project.photos.map((photo) => (
-                        <div key={photo.id} className="group relative rounded-lg overflow-hidden shadow-md">
-                          <Image 
-                              src={photo.src} alt={photo.alt} width={600} height={400} 
-                              className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
-                              data-ai-hint={photo.dataAiHint} 
-                          />
-                          {photo.caption && (
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                  {photo.caption}
-                              </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-gray-500">لا توجد صور مرفوعة لهذا المشروع حالياً.</p>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="space-y-8">
-              {!isOwnerView && (
-                <>
-                  <Card className="bg-white/95 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                        <Percent size={28} /> تحديث تقدم الإنشاء
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <form onSubmit={handleProgressSubmit} className="space-y-4">
-                        <div>
-                          <Label htmlFor="progressPercentage" className="font-semibold text-gray-700">نسبة التقدم الإجمالية (%):</Label>
-                          <Input 
-                            id="progressPercentage" type="number" min="0" max="100"
-                            value={progressUpdate.percentage}
-                            onChange={(e) => setProgressUpdate({...progressUpdate, percentage: e.target.value})}
-                            className="mt-1 bg-white focus:border-app-gold" placeholder="مثال: 75"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="progressNotes" className="font-semibold text-gray-700">ملاحظات التقدم:</Label>
-                          <Textarea 
-                            id="progressNotes" rows={3}
-                            value={progressUpdate.notes}
-                            onChange={(e) => setProgressUpdate({...progressUpdate, notes: e.target.value})}
-                            className="mt-1 bg-white focus:border-app-gold" placeholder="أضف ملاحظات حول التقدم المحرز..."
-                          />
-                        </div>
-                        <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-semibold">
-                          <Send size={18} className="ms-2"/> إرسال تحديث التقدم
-                        </Button>
-                      </form>
-                    </CardContent>
-                  </Card>
-                
-                  <Card className="bg-white/95 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                        <Users size={28} /> ربط المالك بالمشروع
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <form onSubmit={handleLinkOwnerSubmit} className="space-y-4">
-                        <div>
-                          <Label htmlFor="ownerEmail" className="font-semibold text-gray-700">البريد الإلكتروني للمالك:</Label>
-                          <Input 
-                            id="ownerEmail" type="email"
-                            value={linkedOwnerEmailInput}
-                            onChange={(e) => setLinkedOwnerEmailInput(e.target.value)}
-                            className="mt-1 bg-white focus:border-app-gold" placeholder="owner@example.com"
-                          />
-                        </div>
-                        <Button type="submit" className="w-full bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold">
-                          <Link2 size={18} className="ms-2"/> {project.linkedOwnerEmail ? "تحديث ربط المالك" : "ربط المالك"}
-                        </Button>
-                      </form>
-                    </CardContent>
-                  </Card>
-                </>
-              )}
-              
-              <Card className="bg-white/95 shadow-lg">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                        <Wallet size={28}/> تقارير التكاليف
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                {costReports.length > 0 ? (
-                    <div className="space-y-3">
-                        {costReports.map(report => (
-                        <div key={report.id} className="flex justify-between items-center p-2 bg-gray-50 rounded-md border">
-                            <div>
-                            <p className="font-medium text-sm text-gray-700">{report.reportName}</p>
-                            <p className="text-xs text-gray-500">{new Date(report.createdAt).toLocaleDateString('ar-EG')}</p>
-                            </div>
-                            <p className="font-semibold text-base text-green-700">{report.totalCost_ILS.toLocaleString()} شيكل</p>
+              <CardContent>
+                {project.timelineTasks && project.timelineTasks.length > 0 ? (
+                  <div className="space-y-5 relative overflow-x-auto p-1 pb-4 min-h-[200px] bg-gray-50 rounded-lg shadow-inner">
+                     <div className="absolute inset-0 grid grid-cols-6 gap-0 pointer-events-none opacity-20">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={`month-grid-detail-${i}`} className={cn("border-r border-gray-300", i === 5 && "border-r-0")}>
+                            <span className="block p-1 text-xs text-gray-400 text-center">
+                            {new Date(projectStartDate.getFullYear(), projectStartDate.getMonth() + Math.floor(i * totalProjectDurationDays / 6 / 30)).toLocaleString('ar', { month: 'short' })}
+                            </span>
                         </div>
                         ))}
-                        <Separator />
-                        <div className="flex justify-between items-center pt-2">
-                        <p className="font-bold text-base text-app-red">الإجمالي الكلي:</p>
-                        <p className="font-bold text-lg text-app-red">
-                            {costReports.reduce((acc, r) => acc + r.totalCost_ILS, 0).toLocaleString()} شيكل
-                        </p>
-                        </div>
                     </div>
-                    ) : (
-                    <p className="text-gray-500 text-sm">لا توجد تقارير تكاليف محفوظة لهذا المشروع بعد.</p>
-                    )}
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/95 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
-                    <MessageSquare size={28} /> التعليقات والاستفسارات
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleCommentSubmit} className="space-y-4 mb-6">
-                    <div>
-                      <Label htmlFor="newComment" className="font-semibold text-gray-700">أضف تعليقاً أو استفساراً:</Label>
-                      <Textarea
-                        id="newComment" value={newComment} onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="اكتب تعليقك هنا..." rows={3} className="mt-1 bg-white focus:border-app-gold"
-                      />
-                    </div>
-                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" disabled={isSubmittingComment || !newComment.trim()}>
-                      {isSubmittingComment ? <LoaderIcon className="h-5 w-5 animate-spin" /> : <Send size={18} />}
-                      إرسال التعليق
-                    </Button>
-                  </form>
-                  <Separator className="my-6" />
-                  <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
-                    {project.comments && project.comments.length > 0 ? (
-                      project.comments.slice().reverse().map((comment) => (
-                        <div key={comment.id} className={cn(
-                          "p-3 rounded-lg border shadow-sm",
-                          comment.user === "المالك" ? "bg-yellow-50 border-app-gold" : "bg-gray-50 border-gray-200"
-                        )}>
-                          <div className="flex items-start gap-3">
-                             {comment.avatar && <Image src={comment.avatar} alt={comment.user} width={40} height={40} className="rounded-full" data-ai-hint={comment.dataAiHintAvatar || "avatar person"} />}
-                             {!comment.avatar && <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">{comment.user.substring(0,1)}</div>}
-                             <div className="flex-grow">
-                                  <p className="font-semibold text-gray-800">{comment.user}</p>
-                                  <p className="text-xs text-gray-500">{new Date(comment.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                             </div>
+                    {project.timelineTasks.map((task, index) => {
+                      const { left, width } = getTaskPositionAndWidth(task);
+                      return (
+                        <div key={task.id} className="relative h-12 flex items-center text-right pr-3 group" style={{ zIndex: index + 1 }}>
+                          <div 
+                            className={cn(
+                              "absolute h-8 rounded-md shadow-sm flex items-center justify-between px-2.5 text-white transition-all duration-300 ease-in-out hover:opacity-90 text-xs",
+                              !isOwnerView && "cursor-pointer group-hover:ring-2 group-hover:ring-app-gold",
+                              task.color
+                            )}
+                            style={{ left, width, right: 'auto' }}
+                            title={`${task.name} (من ${task.startDate} إلى ${task.endDate}) - ${task.status} ${task.progress !== undefined ? task.progress + '%' : ''}`}
+                            onClick={!isOwnerView ? () => simulateAction(`تعديل مهمة: ${task.name}`) : undefined}
+                          >
+                            <span className="font-medium truncate">{task.name}</span>
+                            {task.status === 'مكتمل' && <CheckCircle2 size={14} className="text-white/90 shrink-0 ml-1.5"/>}
+                            {task.status === 'قيد التنفيذ' && <div className="h-2.5 w-2.5 rounded-full bg-white/80 animate-pulse shrink-0 ml-1.5"></div>}
                           </div>
-                          <p className="text-gray-700 mt-2 ps-12">{comment.text}</p>
                         </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-500 text-center py-4">لا توجد تعليقات حتى الآن. كن أول من يعلق!</p>
-                    )}
+                      );
+                    })}
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                ) : (
+                  <p className="text-gray-500">لا يوجد جدول زمني محدد لهذا المشروع بعد.</p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/95 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                  <ImageIcon size={28} /> صور تقدم المشروع
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {project.photos && project.photos.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {project.photos.map((photo) => (
+                      <div key={photo.id} className="group relative rounded-lg overflow-hidden shadow-md">
+                        <Image 
+                            src={photo.src} alt={photo.alt} width={600} height={400} 
+                            className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                            data-ai-hint={photo.dataAiHint} 
+                        />
+                        {photo.caption && (
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white p-2 text-xs text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                {photo.caption}
+                            </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">لا توجد صور مرفوعة لهذا المشروع حالياً.</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="space-y-8">
+            {!isOwnerView && (
+              <>
+                <Card className="bg-white/95 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                      <Percent size={28} /> تحديث تقدم الإنشاء
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleProgressSubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="progressPercentage" className="font-semibold text-gray-700">نسبة التقدم الإجمالية (%):</Label>
+                        <Input 
+                          id="progressPercentage" type="number" min="0" max="100"
+                          value={progressUpdate.percentage}
+                          onChange={(e) => setProgressUpdate({...progressUpdate, percentage: e.target.value})}
+                          className="mt-1 bg-white focus:border-app-gold" placeholder="مثال: 75"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="progressNotes" className="font-semibold text-gray-700">ملاحظات التقدم:</Label>
+                        <Textarea 
+                          id="progressNotes" rows={3}
+                          value={progressUpdate.notes}
+                          onChange={(e) => setProgressUpdate({...progressUpdate, notes: e.target.value})}
+                          className="mt-1 bg-white focus:border-app-gold" placeholder="أضف ملاحظات حول التقدم المحرز..."
+                        />
+                      </div>
+                      <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-semibold">
+                        <Send size={18} className="ms-2"/> إرسال تحديث التقدم
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              
+                <Card className="bg-white/95 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                      <Users size={28} /> ربط المالك بالمشروع
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={handleLinkOwnerSubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="ownerEmail" className="font-semibold text-gray-700">البريد الإلكتروني للمالك:</Label>
+                        <Input 
+                          id="ownerEmail" type="email"
+                          value={linkedOwnerEmailInput}
+                          onChange={(e) => setLinkedOwnerEmailInput(e.target.value)}
+                          className="mt-1 bg-white focus:border-app-gold" placeholder="owner@example.com"
+                        />
+                      </div>
+                      <Button type="submit" className="w-full bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold">
+                        <Link2 size={18} className="ms-2"/> {project.linkedOwnerEmail ? "تحديث ربط المالك" : "ربط المالك"}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+            
+            <Card className="bg-white/95 shadow-lg">
+              <CardHeader>
+                  <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                      <Wallet size={28}/> تقارير التكاليف
+                  </CardTitle>
+              </CardHeader>
+              <CardContent>
+              {costReports.length > 0 ? (
+                  <div className="space-y-3">
+                      {costReports.map(report => (
+                      <div key={report.id} className="flex justify-between items-center p-2 bg-gray-50 rounded-md border">
+                          <div>
+                          <p className="font-medium text-sm text-gray-700">{report.reportName}</p>
+                          <p className="text-xs text-gray-500">{new Date(report.createdAt).toLocaleDateString('ar-EG')}</p>
+                          </div>
+                          <p className="font-semibold text-base text-green-700">{report.totalCost_ILS.toLocaleString()} شيكل</p>
+                      </div>
+                      ))}
+                      <Separator />
+                      <div className="flex justify-between items-center pt-2">
+                      <p className="font-bold text-base text-app-red">الإجمالي الكلي:</p>
+                      <p className="font-bold text-lg text-app-red">
+                          {costReports.reduce((acc, r) => acc + r.totalCost_ILS, 0).toLocaleString()} شيكل
+                      </p>
+                      </div>
+                  </div>
+                  ) : (
+                  <p className="text-gray-500 text-sm">لا توجد تقارير تكاليف محفوظة لهذا المشروع بعد.</p>
+                  )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/95 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-app-red flex items-center gap-2">
+                  <MessageSquare size={28} /> التعليقات والاستفسارات
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleCommentSubmit} className="space-y-4 mb-6">
+                  <div>
+                    <Label htmlFor="newComment" className="font-semibold text-gray-700">أضف تعليقاً أو استفساراً:</Label>
+                    <Textarea
+                      id="newComment" value={newComment} onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="اكتب تعليقك هنا..." rows={3} className="mt-1 bg-white focus:border-app-gold"
+                    />
+                  </div>
+                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold" disabled={isSubmittingComment || !newComment.trim()}>
+                    {isSubmittingComment ? <LoaderIcon className="h-5 w-5 animate-spin" /> : <Send size={18} />}
+                    إرسال التعليق
+                  </Button>
+                </form>
+                <Separator className="my-6" />
+                <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
+                  {project.comments && project.comments.length > 0 ? (
+                    project.comments.slice().reverse().map((comment) => (
+                      <div key={comment.id} className={cn(
+                        "p-3 rounded-lg border shadow-sm",
+                        comment.user === "المالك" ? "bg-yellow-50 border-app-gold" : "bg-gray-50 border-gray-200"
+                      )}>
+                        <div className="flex items-start gap-3">
+                           {comment.avatar && <Image src={comment.avatar} alt={comment.user} width={40} height={40} className="rounded-full" data-ai-hint={comment.dataAiHintAvatar || "avatar person"} />}
+                           {!comment.avatar && <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">{comment.user.substring(0,1)}</div>}
+                           <div className="flex-grow">
+                                <p className="font-semibold text-gray-800">{comment.user}</p>
+                                <p className="text-xs text-gray-500">{new Date(comment.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                           </div>
+                        </div>
+                        <p className="text-gray-700 mt-2 ps-12">{comment.text}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500 text-center py-4">لا توجد تعليقات حتى الآن. كن أول من يعلق!</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
 
+      <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
         <DialogContent className="sm:max-w-[425px] bg-white/95 custom-dialog-overlay">
           <DialogHeader>
             <DialogTitle className="text-app-red text-right">رفع ملف جديد</DialogTitle>

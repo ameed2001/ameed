@@ -113,8 +113,8 @@ const SocialAndClock = () => {
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
-      setTime(now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-      setDate(now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+      setTime(now.toLocaleTimeString('ar-EG-u-nu-latn', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      setDate(now.toLocaleDateString('ar-EG-u-nu-latn', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
     };
     updateDateTime();
     const timerId = setInterval(updateDateTime, 1000);
@@ -123,24 +123,30 @@ const SocialAndClock = () => {
 
   return (
     <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white text-sm py-2">
-        <div className="container mx-auto flex justify-between items-center px-4">
-            {/* Social Icons */}
-            <div className="flex items-center gap-4">
-                <a href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><WhatsAppIcon className="h-5 w-5" /></a>
-                <a href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><Instagram className="h-5 w-5" /></a>
-                <a href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><Facebook className="h-5 w-5" /></a>
-            </div>
-            {/* Bismillah */}
-            <div className="text-lg font-semibold text-app-gold tracking-wider">
-                بِسْمِ اللهِ الرَّحْمنِ الرَّحِيم
-            </div>
-            {/* Time and Date */}
-            <div className="flex items-center gap-4 text-gray-300">
-                <span>{time}</span>
-                <span>-</span>
-                <span>{date}</span>
-            </div>
+      <div className="container mx-auto flex justify-between items-center px-4">
+        {/* Left Side: Social Icons */}
+        <div className="flex-1 flex justify-start">
+          <div className="flex items-center gap-4">
+              <a href="https://wa.me/972594371424" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><WhatsAppIcon className="h-5 w-5" /></a>
+              <a href="https://www.instagram.com/a.w.samarah3/" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><Instagram className="h-5 w-5" /></a>
+              <a href="https://www.facebook.com/a.w.samarah4" target="_blank" rel="noopener noreferrer" className="hover:text-app-gold transition-colors"><Facebook className="h-5 w-5" /></a>
+          </div>
         </div>
+
+        {/* Center: Bismillah */}
+        <div className="flex-shrink-0 text-lg font-semibold text-app-gold tracking-wider">
+            بِسْمِ اللهِ الرَّحْمنِ الرَّحِيم
+        </div>
+
+        {/* Right Side: Time and Date */}
+        <div className="flex-1 flex justify-end">
+          <div className="flex items-center gap-4 text-gray-300 font-mono" style={{ direction: 'ltr' }}>
+              <span>{time}</span>
+              <span>-</span>
+              <span>{date}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

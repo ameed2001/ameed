@@ -1536,6 +1536,22 @@
       "message": "Project fetch attempt with unknown identifier: admin-id",
       "timestamp": "2025-06-28T21:06:01.503Z",
       "user": "System"
+    },
+    {
+      "id": "log-1751145261490-6pysb",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown identifier: admin-id",
+      "timestamp": "2025-06-28T21:14:21.490Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751145262048-5t4t7",
+      "action": "PROJECT_FETCH_FAILURE",
+      "level": "WARNING",
+      "message": "Project fetch attempt with unknown identifier: admin-id",
+      "timestamp": "2025-06-28T21:14:22.048Z",
+      "user": "System"
     }
   ],
   "roles": [

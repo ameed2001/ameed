@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldCheck } from 'lucide-react';
 import { adminLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
@@ -99,7 +99,10 @@ export default function AdminLoginPage() {
     <div className="admin-login-page-wrapper">
         <div className="container">
             <div className="login-box">
-                <h2>دخول المسؤول</h2>
+                <div className="text-center mb-4">
+                  <ShieldCheck className="mx-auto h-16 w-16 text-app-gold" />
+                </div>
+                <h2>دخول لوحة التحكم</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="input-box">
                         <input

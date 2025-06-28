@@ -328,6 +328,15 @@ export async function loginUser(email: string, password_input: string): Promise<
   }
 }
 
+export async function findUserById(userId: string): Promise<Omit<UserDocument, 'password_hash'> | null> {
+    const db = await readDb();
+    const userDoc = db.users.find((u: UserDocument) => u.id === userId);
+    if (!userDoc) {
+        return null;
+    }
+    const { password_hash, ...user } = userDoc;
+    return user;
+}
 
 export interface GetProjectsResult {
   success: boolean;

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -7,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  Home, Info, Phone, HelpCircle, UserCircle, Briefcase, ShieldCheck, LogOut, Menu, User, Settings
+  Home, Info, Phone, HelpCircle, UserCircle, Briefcase, ShieldCheck, LogOut, Menu, User, Settings, LayoutDashboard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';

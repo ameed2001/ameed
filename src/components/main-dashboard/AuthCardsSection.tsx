@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -108,10 +109,10 @@ export default function AuthCardsSection() {
               dataAiHint={card.id}
               backCustomClass={card.backCustomClass}
               backCustomContent={
-                <div className="flex flex-col justify-center items-center h-full text-white">
+                <div className="flex flex-col justify-center items-center h-full text-white p-4">
                   <h3 className="text-2xl font-bold mb-2">{card.back.title}</h3>
                   <p className="text-white/80 text-sm mb-6 flex-grow">{card.back.description}</p>
-                  <div className="w-full space-y-3 px-4">
+                  <div className="w-full space-y-3">
                     {card.back.actions.map((action) => (
                       <Button
                         key={action.href}

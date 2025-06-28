@@ -61,7 +61,7 @@ const InfoCard = (props: InfoCardProps) => {
 
   const BackContent = () => (
      <div className={cn(
-        "card-flipper-back p-5 flex flex-col justify-center items-center text-center",
+        "card-flipper-back",
         cardHeightClass,
         backCustomClass
       )}>

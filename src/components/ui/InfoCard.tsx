@@ -45,7 +45,7 @@ const InfoCard = (props: InfoCardProps) => {
 
   const FrontContent = () => (
     <div className={cn(
-      "card-front p-6 sm:p-8 flex flex-col justify-center items-center text-center",
+      "card-flipper-front p-6 sm:p-8 flex flex-col justify-center items-center text-center",
       frontCustomClass
     )}>
       {icon && (
@@ -53,17 +53,17 @@ const InfoCard = (props: InfoCardProps) => {
           "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0 card-icon",
           iconWrapperClass
         )}>
-          {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:h-8", iconColorClass) }) : icon}
+          {icon}
         </div>
       )}
-      <h3 className="text-xl sm:text-2xl font-bold mb-2">{title}</h3>
-      {description && <p className="text-sm sm:text-base flex-grow">{description}</p>}
+      <h3 className="text-xl sm:text-2xl font-bold mb-2 text-app-red">{title}</h3>
+      {description && <p className="text-sm sm:text-base flex-grow text-gray-600">{description}</p>}
     </div>
   );
 
   const BackContent = () => (
      <div className={cn(
-        "card-back p-4",
+        "card-flipper-back p-4",
         backCustomClass
       )}>
         {backCustomContent}
@@ -73,10 +73,10 @@ const InfoCard = (props: InfoCardProps) => {
   if (applyFlipEffect) {
     return (
       <div 
-        className={cn("card", cardHeightClass, className)} 
+        className={cn("card-flipper", cardHeightClass, className)} 
         data-ai-hint={dataAiHint}
       >
-        <div className="card-inner h-full">
+        <div className="card-flipper-inner h-full">
           <FrontContent />
           <BackContent />
         </div>
@@ -96,7 +96,8 @@ const InfoCard = (props: InfoCardProps) => {
         "transition-all duration-300 ease-in-out",
         isInteractive && "hover:shadow-xl hover:-translate-y-2 cursor-pointer",
         cardHeightClass,
-        className
+        className,
+        frontCustomClass // Apply front class even to non-flipping cards
       )}
       data-ai-hint={dataAiHint}
     >
@@ -105,11 +106,11 @@ const InfoCard = (props: InfoCardProps) => {
           "mx-auto flex h-16 w-16 items-center justify-center rounded-full mb-5 sm:mb-6 shrink-0",
           iconWrapperClass
         )}>
-          {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement, { className: cn("h-7 w-7 sm:h-8 sm:h-8", iconColorClass) }) : icon}
+           {icon}
         </div>
       )}
-      <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">{title}</h3>
-      {description && <p className="text-sm sm:text-base text-muted-foreground flex-grow">{description}</p>}
+      <h3 className="text-xl sm:text-2xl font-bold text-app-red mb-2">{title}</h3>
+      {description && <p className="text-sm sm:text-base text-gray-600 flex-grow">{description}</p>}
     </Tag>
   );
 };

@@ -17,35 +17,35 @@ const MainDashboardClient = () => {
     {
       title: "حساب كميات الباطون",
       description: "حساب الكميات الدقيقة للخرسانة لمختلف العناصر الإنشائية.",
-      icon: <Box />, 
-      iconWrapperClass: "bg-red-100 dark:bg-red-900",
-      iconColorClass: "text-red-500 dark:text-red-400",
+      icon: <Box className="h-8 w-8 text-red-600"/>, 
+      iconWrapperClass: "bg-red-100",
       onClick: handleFeatureClick,
       dataAiHint: "concrete calculation",
       cardHeightClass: "h-72",
       applyFlipEffect: false,
+      frontCustomClass: "bg-white",
     },
     {
       title: "حساب كميات الحديد",
       description: "تقدير كميات حديد التسليح المطلوبة لمشروعك.",
-      icon: <BarChart3 />,
-      iconWrapperClass: "bg-blue-100 dark:bg-blue-900",
-      iconColorClass: "text-blue-500 dark:text-blue-400",
+      icon: <BarChart3 className="h-8 w-8 text-blue-600"/>,
+      iconWrapperClass: "bg-blue-100",
       onClick: handleFeatureClick,
       dataAiHint: "steel calculation",
       cardHeightClass: "h-72",
       applyFlipEffect: false,
+      frontCustomClass: "bg-white",
     },
     {
       title: "حساب الأسعار",
       description: "تقدير التكلفة الإجمالية لمواد البناء المختلفة لمشروعك.",
-      icon: <Calculator />, // Using Calculator icon
-      iconWrapperClass: "bg-green-100 dark:bg-green-900", // Different color for distinction
-      iconColorClass: "text-green-500 dark:text-green-400",
+      icon: <Calculator className="h-8 w-8 text-green-600"/>, // Using Calculator icon
+      iconWrapperClass: "bg-green-100", // Different color for distinction
       onClick: handleFeatureClick,
       dataAiHint: "price calculation",
       cardHeightClass: "h-72",
       applyFlipEffect: false,
+      frontCustomClass: "bg-white",
     },
   ];
 

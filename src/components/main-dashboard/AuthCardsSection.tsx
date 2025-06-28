@@ -16,13 +16,13 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 const authCardsData = [
- {
+  {
     id: "signup",
     icon: <UserPlus className="h-8 w-8 text-red-600" />,
     iconWrapperClass: "bg-red-100",
     title: "إنشاء حساب جديد",
     description: "انضم إلينا الآن وابدأ في إدارة مشاريعك بكفاءة.",
-    frontCustomClass: "bg-white [&>h3]:text-app-red [&>p]:text-gray-600",
+    frontCustomClass: "bg-white",
     backCustomClass: "bg-gradient-to-br from-red-700 to-red-900",
     back: {
       title: "خيارات التسجيل",
@@ -49,7 +49,7 @@ const authCardsData = [
     iconWrapperClass: "bg-blue-100",
     title: "تسجيل الدخول",
     description: "لديك حساب مهندس أو مالك؟ قم بالدخول لمتابعة أعمالك.",
-    frontCustomClass: "bg-white [&>h3]:text-app-red [&>p]:text-gray-600",
+    frontCustomClass: "bg-white",
     backCustomClass: "bg-gradient-to-br from-blue-700 to-blue-900",
     back: {
       title: "خيارات الدخول",
@@ -76,7 +76,7 @@ const authCardsData = [
     iconWrapperClass: "bg-green-100",
     title: "دخول المسؤول",
     description: "هذا القسم مخصص لإدارة النظام والمستخدمين.",
-    frontCustomClass: "bg-white [&>h3]:text-app-red [&>p]:text-gray-600",
+    frontCustomClass: "bg-white",
     backCustomClass: "bg-gradient-to-br from-green-700 to-green-900",
     back: {
       title: "لوحة تحكم المسؤول",
@@ -125,6 +125,7 @@ export default function AuthCardsSection() {
                           "w-full justify-between py-5 px-4 rounded-lg font-semibold transition-colors duration-200 border",
                           action.buttonClass
                         )}
+                        variant="ghost" // Use ghost to prevent default button styles from interfering
                       >
                         <Link href={action.href}>
                           <span className="flex items-center gap-2">

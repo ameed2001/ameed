@@ -107,12 +107,14 @@ export default function Navbar() {
                             <span>لوحة التحكم</span>
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/profile">
-                            <User className="ml-2 h-4 w-4" />
-                            <span>الملف الشخصي</span>
-                          </Link>
-                        </DropdownMenuItem>
+                        {userRole !== 'ADMIN' && (
+                          <DropdownMenuItem asChild>
+                            <Link href="/profile">
+                              <User className="ml-2 h-4 w-4" />
+                              <span>الملف الشخصي</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:bg-red-50 focus:text-red-700">
                           <LogOut className="ml-2 h-4 w-4" />

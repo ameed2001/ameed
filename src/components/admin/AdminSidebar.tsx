@@ -121,27 +121,6 @@ export default function AdminSidebar({ isOpen, onToggle }: AdminSidebarProps) {
         <div className="p-4 mt-auto border-t space-y-2">
             <Tooltip>
                 <TooltipTrigger asChild>
-                <Link
-                    href="/profile"
-                    className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full",
-                    "bg-muted/50 text-foreground/80 hover:bg-muted/100 hover:text-foreground",
-                    isOpen ? "justify-start text-left" : "justify-center"
-                    )}
-                >
-                    <UserCircle size={isOpen ? 20 : 24} className="flex-shrink-0"/>
-                    {isOpen && <span className="truncate">الملف الشخصي</span>}
-                </Link>
-                </TooltipTrigger>
-                {!isOpen && (
-                    <TooltipContent side="left" align="center">
-                        <p>الملف الشخصي</p>
-                    </TooltipContent>
-                )}
-            </Tooltip>
-
-            <Tooltip>
-                <TooltipTrigger asChild>
                 <button
                     onClick={handleLogout}
                     className={cn(

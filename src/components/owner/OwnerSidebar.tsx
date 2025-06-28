@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -47,7 +46,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { getProjects, type Project } from '@/lib/db';
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
+import Notifications from "@/components/layout/Notifications";
 
 const mainLinks = [
     { href: '/', label: 'الرئيسية للموقع', icon: Home },
@@ -163,8 +162,9 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         isOpen ? "w-72" : "w-20"
       )}>
         <div className="p-4 flex items-center border-b h-[70px] flex-shrink-0">
+          <Notifications />
           {isOpen && (
-            <div className="text-center flex-grow overflow-hidden">
+            <div className="text-center flex-grow overflow-hidden px-2">
                 <h2 className="text-xl font-bold text-app-red truncate">لوحة تحكم المالك</h2>
                 <p className="text-sm text-muted-foreground truncate">مرحباً، {ownerName}</p>
             </div>

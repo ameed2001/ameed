@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation';
 import { 
   Instagram, Facebook
 } from 'lucide-react';
-import Notifications from './Notifications'; // Import the new component
 
 // Social & Clock Component
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -110,9 +109,9 @@ export default function Header() {
         <SocialAndClock />
         <div className="bg-slate-800 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
-                {/* Left Side: Notifications for logged-in users */}
+                {/* Left Side: Spacer */}
                 <div className="flex-1 flex justify-start">
-                    {isLoggedIn && (userRole === 'ENGINEER' || userRole === 'OWNER') && <Notifications />}
+                    {/* This is a spacer to balance the layout */}
                 </div>
                 
                 {/* Center: Logo & Title */}

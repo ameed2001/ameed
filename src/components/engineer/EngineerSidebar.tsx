@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -50,6 +49,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
+import Notifications from "@/components/layout/Notifications";
 
 const mainLinks = [
     { href: '/', label: 'الرئيسية للموقع', icon: Home },
@@ -150,8 +150,9 @@ export default function EngineerSidebar({ isOpen, onToggle }: EngineerSidebarPro
         isOpen ? "w-72" : "w-20"
       )}>
         <div className="p-4 flex items-center border-b h-[70px] flex-shrink-0">
+          <Notifications />
           {isOpen && (
-            <div className="text-center flex-grow overflow-hidden">
+            <div className="text-center flex-grow overflow-hidden px-2">
                 <h2 className="text-xl font-bold text-app-red truncate">لوحة تحكم المهندس</h2>
                 <p className="text-sm text-muted-foreground truncate">مرحباً، {engineerName}</p>
             </div>

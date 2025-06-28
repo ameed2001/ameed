@@ -30,7 +30,7 @@ export default function Notifications() {
   return (
     <DropdownMenu dir="rtl">
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative text-white hover:bg-slate-700/80">
+        <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:bg-muted">
           <Bell className="h-6 w-6" />
           {hasNotifications && (
             <span className="absolute top-1 right-1 flex h-3 w-3">

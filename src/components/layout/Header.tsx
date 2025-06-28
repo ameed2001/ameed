@@ -156,27 +156,27 @@ export default function Header() {
         <SocialAndClock />
         <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
-                {/* Right Side: Spacer */}
+                {/* Left Side: User Nav */}
                 <div className="flex-1 flex justify-start">
-                    {/* This is a spacer, it will be empty. */}
+                    {isClient && <UserNav />}
                 </div>
                 
                 {/* Center: Logo & Title */}
                 <div className="flex-shrink-0">
                     <Link href="/" className="flex items-center gap-4 text-right">
+                        <div className="relative">
+                            <Image src="https://i.imgur.com/79bO3U2.jpg" alt="شعار الموقع" width={56} height={56} className="rounded-full border-2 border-app-gold" data-ai-hint="logo construction"/>
+                        </div>
                         <div>
                             <h1 className="text-2xl font-extrabold text-app-red">المحترف لحساب الكميات</h1>
                             <p className="hidden sm:block text-sm text-gray-400">للحديد والباطون والابنية الانشائية</p>
                         </div>
-                        <div className="relative">
-                            <Image src="https://i.imgur.com/79bO3U2.jpg" alt="شعار الموقع" width={56} height={56} className="rounded-full border-2 border-app-gold" data-ai-hint="logo construction"/>
-                        </div>
                     </Link>
                 </div>
 
-                {/* Left Side: User Nav */}
+                {/* Right Side: Spacer */}
                 <div className="flex-1 flex justify-end">
-                    {isClient && <UserNav />}
+                    {/* This is a spacer, it will be empty. */}
                 </div>
             </div>
         </div>

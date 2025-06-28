@@ -1,200 +1,167 @@
-
 "use client";
 
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import {
-    Users, Briefcase, Settings, ScrollText, LayoutDashboard, LogOut, Home,
-    UserCheck, Shield, AlertTriangle, HardHat, ChevronLeft, Menu as MenuIcon
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
-import { useEffect, useState } from 'react';
-import { getUsers as dbGetUsers, getProjects as dbGetProjects, getLogs as dbGetLogs } from '@/lib/db';
+    LayoutDashboard,
+    Users,
+    Settings,
+    ScrollText,
+    LogOut,
+    Home,
+    Menu as MenuIcon,
+    ChevronLeft,
+    UserCircle,
+    Briefcase,
+} from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 const adminNavItems = [
-  { href: '/', label: 'الرئيسية للموقع', icon: Home },
-  { href: '/admin', label: 'لوحة المسؤول', icon: LayoutDashboard },
-  { href: '/admin/users', label: 'إدارة المستخدمين', icon: Users },
-  { href: '/admin/projects', label: 'إدارة المشاريع', icon: Briefcase },
-  { href: '/admin/settings', label: 'إعدادات النظام', icon: Settings },
-  { href: '/admin/logs', label: 'سجلات النظام', icon: ScrollText },
+    { href: '/', label: 'الرئيسية للموقع', icon: Home },
+    { href: '/admin', label: 'لوحة التحكم', icon: LayoutDashboard },
+    { href: '/admin/users', label: 'إدارة المستخدمين', icon: Users },
+    { href: '/admin/projects', label: 'إدارة المشاريع', icon: Briefcase },
+    { href: '/admin/settings', label: 'إعدادات النظام', icon: Settings },
+    { href: '/admin/logs', label: 'سجلات النظام', icon: ScrollText },
 ];
 
-const iconMap: { [key: string]: React.ElementType } = {
-    Users: Users,
-    Briefcase: Briefcase,
-    Settings: Settings,
-    ScrollText: ScrollText,
-    LayoutDashboard: LayoutDashboard,
-    LogOut: LogOut,
-    Home: Home,
-    UserCheck: UserCheck,
-    Shield: Shield,
-    AlertTriangle: AlertTriangle,
-    HardHat: HardHat,
-};
-
-interface AdminStat {
-    label: string;
-    value: number | string;
-    color: string;
-    dataAiHint: string;
-    description?: string; 
+interface AdminSidebarProps {
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ isOpen, onToggle }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { toast } = useToast();
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  const [adminName, setAdminName] = useState("المسؤول");
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedState = localStorage.getItem('adminSidebarState');
-      if (savedState) {
-        setIsSidebarOpen(savedState === 'open');
-      }
-    }
+    const name = localStorage.getItem("userName");
+    if (name) setAdminName(name);
   }, []);
 
-  const toggleSidebar = () => {
-    const newState = !isSidebarOpen;
-    setIsSidebarOpen(newState);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('adminSidebarState', newState ? 'open' : 'closed');
-    }
-  };
-
- // Default state for adminStats and loading, expecting props to override
- const [adminStats, setAdminStats] = useState<AdminStat[]>([]);
- const [isLoadingStats, setIsLoadingStats] = useState<boolean>(true);
-
   const handleLogout = () => {
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userId");
+    localStorage.removeItem('adminSidebarState');
     toast({
       title: "تم تسجيل الخروج",
-      description: "تم تسجيل خروجك من لوحة تحكم المسؤول بنجاح.",
-      variant: "default",
+      description: "تم تسجيل خروجك بنجاح.",
     });
-    if (typeof window !== 'undefined') {
-        localStorage.removeItem('adminToken'); 
-        localStorage.removeItem('userName');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('userEmail');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('adminSidebarState');
-    }
-    router.push('/admin-login'); 
+    router.push("/admin-login");
   };
 
   return (
-    <aside className={cn(
-        "bg-card text-foreground p-4 shadow-lg flex-shrink-0 flex flex-col border-r transition-all duration-300 ease-in-out h-full",
-        isSidebarOpen ? "w-72" : "w-20"
+    <TooltipProvider delayDuration={0}>
+      <aside className={cn(
+        "bg-card text-card-foreground flex flex-col h-screen sticky top-0 shadow-lg border-l transition-all duration-300 ease-in-out",
+        isOpen ? "w-72" : "w-20"
       )}>
-        <div className={cn(
-            "flex items-center border-b border-app-gold/70 pb-2 mb-4",
-            isSidebarOpen ? "justify-between" : "justify-center"
-        )}>
-            {isSidebarOpen && (
-                 <Link href="/admin" className="flex items-center gap-2 text-app-red hover:text-red-700">
-                    <LayoutDashboard size={28} />
-                    <h2 className="text-2xl font-bold">
-                    لوحة التحكم
-                    </h2>
-                 </Link>
-            )}
-            <button 
-                onClick={toggleSidebar} 
-                className="p-1.5 text-muted-foreground hover:text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-app-gold"
-                aria-label={isSidebarOpen ? "طي الشريط الجانبي" : "فتح الشريط الجانبي"}
-            >
-                {isSidebarOpen ? <ChevronLeft size={24} /> : <MenuIcon size={24} />}
-            </button>
-        </div>
-        
-        {isSidebarOpen && (
-            <div className="mb-6 p-3 border border-border rounded-lg bg-background/50 overflow-y-auto">
-                <h3 className="text-sm font-semibold text-foreground mb-3 text-right">لوحة المعلومات</h3>
-                <div className="space-y-3">
-                {adminStats.map(stat => {
-                    const IconComponent = iconMap[stat.icon as string]; // Get the icon component from the map
-                    return (
-                    <div key={stat.label} className="bg-muted/40 p-3 rounded-md shadow-sm flex items-start gap-3" data-ai-hint={stat.dataAiHint}>
-                        <IconComponent className={cn("h-8 w-8 mt-1 flex-shrink-0", stat.color)} />
-                        <div className="flex-grow text-right">
-                            <div className="text-base font-bold text-foreground">
-                                {isLoadingStats ? "..." : stat.value} <span className="text-sm font-medium text-muted-foreground">{stat.label}</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground/80 leading-tight mt-0.5">{stat.description}</p>
-                        </div>
-                    </div>
-                    );
-                })}
-                </div>
+        <div className="p-4 flex items-center border-b h-[70px] flex-shrink-0">
+          {isOpen && (
+            <div className="text-center flex-grow overflow-hidden">
+                <h2 className="text-xl font-bold text-app-red truncate">لوحة تحكم المسؤول</h2>
+                <p className="text-sm text-muted-foreground truncate">مرحباً، {adminName}</p>
             </div>
-        )}
-
-      <nav className="flex-grow overflow-y-auto">
-        <ul className="space-y-1.5">
-          {adminNavItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/' && item.href !== '/admin' && pathname.startsWith(item.href));
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors duration-150 ease-in-out",
-                    !isSidebarOpen && "justify-center py-3",
-                    isActive 
-                      ? "bg-primary text-primary-foreground shadow-md" 
-                      : "text-foreground/80 hover:bg-primary hover:text-primary-foreground" 
-                  )}
-                  title={!isSidebarOpen ? item.label : undefined}
-                >
-                  <item.icon size={isSidebarOpen ? 20 : 24} className="flex-shrink-0" />
-                  {isSidebarOpen && <span className="truncate">{item.label}</span>}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-      <div className="mt-auto pt-4 border-t border-border/60"> 
-        <button
-          onClick={handleLogout}
-          className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out w-full text-left",
-            "bg-red-700/60 text-red-100 hover:bg-red-600/80 hover:text-white",
-            !isSidebarOpen && "justify-center py-3"
           )}
-          title={!isSidebarOpen ? "تسجيل الخروج" : undefined}
-        >
-          <LogOut size={isSidebarOpen ? 20 : 24}  className="flex-shrink-0"/>
-          {isSidebarOpen && <span className="truncate">تسجيل الخروج</span>}
-        </button>
-      </div>
-    </aside>
+          <Button 
+              variant="ghost"
+              onClick={onToggle} 
+              className="p-1.5 text-muted-foreground hover:text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-app-gold"
+              aria-label={isOpen ? "طي الشريط الجانبي" : "فتح الشريط الجانبي"}
+          >
+              {isOpen ? <ChevronLeft size={24} /> : <MenuIcon size={24} />}
+          </Button>
+        </div>
+
+        <nav className="flex-grow overflow-y-auto px-2 py-4">
+          <ul className="space-y-1.5">
+            {adminNavItems.map((item) => {
+                const isActive = pathname === item.href || (item.href !== '/' && item.href !== '/admin' && pathname.startsWith(item.href));
+                return (
+                    <li key={item.href}>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Link href={item.href}
+                                    className={cn(
+                                        "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+                                        !isOpen && "justify-center",
+                                        isActive
+                                        ? "bg-primary text-primary-foreground"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                                    )}>
+                                    <item.icon className="h-5 w-5 flex-shrink-0" />
+                                    {isOpen && <span>{item.label}</span>}
+                                </Link>
+                            </TooltipTrigger>
+                            {!isOpen && (
+                                <TooltipContent side="left" align="center">
+                                <p>{item.label}</p>
+                                </TooltipContent>
+                            )}
+                        </Tooltip>
+                    </li>
+                );
+            })}
+          </ul>
+        </nav>
+
+        <div className="p-4 mt-auto border-t space-y-2">
+            <Tooltip>
+                <TooltipTrigger asChild>
+                <Link
+                    href="/profile"
+                    className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full",
+                    "bg-muted/50 text-foreground/80 hover:bg-muted/100 hover:text-foreground",
+                    isOpen ? "justify-start text-left" : "justify-center"
+                    )}
+                >
+                    <UserCircle size={isOpen ? 20 : 24} className="flex-shrink-0"/>
+                    {isOpen && <span className="truncate">الملف الشخصي</span>}
+                </Link>
+                </TooltipTrigger>
+                {!isOpen && (
+                    <TooltipContent side="left" align="center">
+                        <p>الملف الشخصي</p>
+                    </TooltipContent>
+                )}
+            </Tooltip>
+
+            <Tooltip>
+                <TooltipTrigger asChild>
+                <button
+                    onClick={handleLogout}
+                    className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full text-left",
+                    "bg-red-700/10 text-red-600 hover:bg-red-700/20",
+                    isOpen ? "justify-start text-left" : "justify-center"
+                    )}
+                >
+                    <LogOut size={isOpen ? 20 : 24} className="flex-shrink-0"/>
+                    {isOpen && <span className="truncate">تسجيل الخروج</span>}
+                </button>
+                </TooltipTrigger>
+                {!isOpen && (
+                    <TooltipContent side="left" align="center">
+                        <p>تسجيل الخروج</p>
+                    </TooltipContent>
+                )}
+            </Tooltip>
+        </div>
+      </aside>
+    </TooltipProvider>
   );
 }
-
-
-// Define a default structure for adminStats if needed for initial render,
-// though it's better to pass actual data as props from a parent component
-// that fetches it. For now, commenting out the old state and useEffect.
-
-// Restored the initial state structure but without the fetching logic
-const initialAdminStats: AdminStat[] = [
-    { label: "عدد المستخدمين الكلي للموقع", value: "...", icon: Users, color: "text-blue-500", dataAiHint: "total users", description: "إحصائية شاملة لجميع أنواع الحسابات المسجلة في النظام." },
-    { label: "عدد المشاريع المدرجة من قِبل المهندسين", value: "...", icon: Briefcase, color: "text-amber-500", dataAiHint: "total projects", description: "إجمالي عدد المشاريع المسجلة في حسابات المهندسين." },
-    { label: "عدد حسابات المالكين", value: "...", icon: UserCheck, color: "text-green-500", dataAiHint: "owner accounts", description: "يوضح عدد المستخدمين المسجلين كمالكين للمشاريع." },
-    { label: "عدد حسابات المهندسين", value: "...", icon: HardHat, color: "text-cyan-500", dataAiHint: "engineer accounts", description: "يوضح عدد المستخدمين المسجلين كمهندسين في النظام." },
-    { label: "عدد حسابات المشرفين (الإداريين)", value: "...", icon: Shield, color: "text-red-500", dataAiHint: "admin accounts", description: "عدد حسابات المشرفين (Admins) في النظام." },
-    { label: "عدد التحذيرات والأخطاء في سجلات النظام", value: "...", icon: AlertTriangle, color: "text-orange-500", dataAiHint: "system warnings errors", description: "إحصائية توضح عدد الرسائل المُسجلة في سجل النظام من نوع تحذير أو خطأ، لمتابعة الأداء والصيانة." },
-];
-
-
-
-// The component should now accept adminStats as props:
-// export default function AdminSidebar({ adminStats, isLoadingStats }: { adminStats: AdminStat[], isLoadingStats: boolean }) {
-

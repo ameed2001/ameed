@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { 
-  Instagram, Facebook, Phone
+  Instagram, Facebook
 } from 'lucide-react';
+import Notifications from './Notifications'; // Import the new component
 
 // Social & Clock Component
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -86,15 +88,31 @@ const SocialAndClock = () => {
 
 // Main Header Component
 export default function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const role = localStorage.getItem('userRole');
+      if (role) {
+        setIsLoggedIn(true);
+        setUserRole(role);
+      } else {
+        setIsLoggedIn(false);
+        setUserRole(null);
+      }
+    }
+  }, [pathname]); // Re-check on path change to update the header
 
   return (
     <header className="shadow-md">
         <SocialAndClock />
         <div className="bg-slate-800 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
-                {/* Left Side: Empty Spacer now */}
+                {/* Left Side: Notifications for logged-in users */}
                 <div className="flex-1 flex justify-start">
-                    {/* UserNav was here. Now it's empty. */}
+                    {isLoggedIn && (userRole === 'ENGINEER' || userRole === 'OWNER') && <Notifications />}
                 </div>
                 
                 {/* Center: Logo & Title */}
@@ -110,7 +128,7 @@ export default function Header() {
 
                 {/* Right Side: Spacer */}
                 <div className="flex-1 flex justify-end">
-                    {/* This is a spacer, it will be empty. */}
+                    {/* This is a spacer to balance the layout */}
                 </div>
             </div>
         </div>

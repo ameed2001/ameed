@@ -120,6 +120,14 @@
       "message": "Project fetch attempt with unknown identifier: admin-hardcoded-001",
       "timestamp": "2025-06-28T22:36:10.451Z",
       "user": "System"
+    },
+    {
+      "id": "log-1751151644854-bf4g4",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: ameed2001@mohandis.com",
+      "timestamp": "2025-06-28T23:00:44.854Z",
+      "user": "user-1750945851175-hajdn"
     }
   ],
   "roles": [

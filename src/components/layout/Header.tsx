@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { 
   Instagram, Facebook
 } from 'lucide-react';
+import Notifications from './Notifications';
 
 // Social & Clock Component
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -87,31 +88,26 @@ const SocialAndClock = () => {
 
 // Main Header Component
 export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const role = localStorage.getItem('userRole');
-      if (role) {
-        setIsLoggedIn(true);
-        setUserRole(role);
-      } else {
-        setIsLoggedIn(false);
-        setUserRole(null);
-      }
+      setUserRole(role);
     }
-  }, [pathname]); // Re-check on path change to update the header
+  }, [pathname]);
+
+  const showNotifications = userRole === 'ENGINEER' || userRole === 'OWNER';
 
   return (
     <header className="shadow-md">
         <SocialAndClock />
         <div className="bg-slate-800 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
-                {/* Left Side: Spacer */}
+                {/* Left Side: Notifications */}
                 <div className="flex-1 flex justify-start">
-                    {/* This is a spacer to balance the layout */}
+                    {showNotifications && <Notifications />}
                 </div>
                 
                 {/* Center: Logo & Title */}

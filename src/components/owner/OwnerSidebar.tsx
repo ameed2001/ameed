@@ -46,7 +46,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { getProjects, type Project } from '@/lib/db';
 import { Skeleton } from "@/components/ui/skeleton";
-import Notifications from "@/components/layout/Notifications";
 
 const mainLinks = [
     { href: '/', label: 'الرئيسية للموقع', icon: Home },
@@ -162,7 +161,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
         isOpen ? "w-72" : "w-20"
       )}>
         <div className="p-4 flex items-center border-b h-[70px] flex-shrink-0">
-          <Notifications />
+          
           {isOpen && (
             <div className="text-center flex-grow overflow-hidden px-2">
                 <h2 className="text-xl font-bold text-app-red truncate">لوحة تحكم المالك</h2>

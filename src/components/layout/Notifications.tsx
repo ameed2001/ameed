@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Bell, MessageSquare, UserCheck, Clock, Check, Info, Trash2 } from "lucide-react";
@@ -22,31 +21,8 @@ interface Notification {
   time: string;
 }
 
-// Mock notifications for demonstration purposes.
-// This can be replaced with a real data fetch later.
-const initialNotifications: Notification[] = [
-  {
-    id: '1',
-    icon: <MessageSquare className="h-4 w-4 text-blue-500" />,
-    title: 'لديك رسالة جديدة من م. أحمد خالد',
-    time: 'منذ 5 دقائق',
-  },
-  {
-    id: '2',
-    icon: <UserCheck className="h-4 w-4 text-green-500" />,
-    title: 'تمت الموافقة على طلب انضمامك لمشروع "فيلا السعادة"',
-    time: 'منذ 2 ساعة',
-  },
-  {
-    id: '3',
-    icon: <Clock className="h-4 w-4 text-orange-500" />,
-    title: 'تذكير: موعد تسليم مرحلة الأساسات بعد 3 أيام',
-    time: 'أمس',
-  },
-];
-
 export default function Notifications() {
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const { toast } = useToast();
   const hasNotifications = notifications.length > 0;
 

@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
-import { Loader2, HardHat, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Loader2, HardHat, Eye, EyeOff, ArrowLeft, LogIn } from 'lucide-react';
 import { loginUserAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 
@@ -156,8 +156,9 @@ export default function LoginPage() {
                   {errors.password_input && <p className="text-red-500 text-xs mt-1">{errors.password_input.message}</p>}
                 </div>
 
-                <Button type="submit" className="w-full bg-app-red hover:bg-red-700 font-bold py-3 text-lg" disabled={isLoading}>
-                  {isLoading ? <Loader2 className="animate-spin" /> : "تسجيل الدخول"}
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 text-lg" disabled={isLoading}>
+                  {isLoading ? <Loader2 className="animate-spin" /> : <LogIn className="ml-2 h-5 w-5"/>}
+                  {isLoading ? "جاري التحقق..." : "تسجيل الدخول"}
                 </Button>
               </form>
               

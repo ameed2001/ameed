@@ -36,13 +36,6 @@
     --ring: 45 100% 51%; /* Golden yellow for focus */
     
     --radius: 0.5rem; /* Tailwind's default is 0.5rem for rounded-lg */
-
-    /* Custom variables from user's HTML/CSS for header, nav */
-    --header-bg-rgb: 38, 40, 51; /* New dark blue/purple for header/nav e.g. #262833 */
-    --header-fg-hsl: 0 0% 100%; /* #fff */
-    --nav-link-hsl: 0 0% 100%; /* White for nav links */
-    --nav-link-hover-hsl: 0 0% 85%; /* Lighter gray for nav link hover */
-    --nav-link-border-hsl: 46 100% 51%; /* #ffc506 - not actively used for nav items in new design */
     
     --card-content-bg-rgb: 5, 6, 45; /* For card content background from user CSS */
     --card-content-fg-hsl: 0 0% 100%; /* White text on card content */
@@ -84,16 +77,10 @@
     --destructive: 0 72.2% 50.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5% 28%;
+    --border: 240 5% 18%;
     --input: 240 5% 28%;
     --ring: 45 100% 51%;
-
-    --header-bg-rgb: 30, 30, 30; 
-    --header-fg-hsl: 0 0% 100%;
-    --nav-link-hsl: 0 0% 100%;
-    --nav-link-hover-hsl: 0 0% 85%;
-    --nav-link-border-hsl: 46 100% 51%;
-
+    
     --card-content-bg-rgb: 10, 12, 50;
     --card-content-fg-hsl: 0 0% 100%;
     --card-content-hover-fg-hsl: 45 92% 55%;

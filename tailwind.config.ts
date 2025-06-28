@@ -67,11 +67,6 @@ export default {
           ring: 'hsl(var(--sidebar-ring))',
         },
         // Custom colors based on user's CSS & HSL variables
-        'header-bg': 'rgba(var(--header-bg-rgb), 0.95)', 
-        'header-fg': 'hsl(var(--header-fg-hsl))',
-        'nav-link': 'hsl(var(--nav-link-hsl))', 
-        'nav-link-hover': 'hsl(var(--nav-link-hover-hsl))', 
-        'nav-link-border': 'hsl(var(--nav-link-border-hsl))',
         'app-red': '#B40404', 
         'app-gold': '#f1c40f', 
         'gradient-pink': '#ff007f',

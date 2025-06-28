@@ -1,18 +1,14 @@
 
 "use client";
 
-import { useState, useEffect } from 'react'; // Added useEffect
+import { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
-import AppLayout from "@/components/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ShieldCheck, ArrowLeft, HardHat, Home as HomeIcon, Eye, EyeOff } from 'lucide-react';
+import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { adminLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
@@ -33,18 +29,11 @@ export default function AdminLoginPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const userRole = localStorage.getItem('userRole');
-      const userName = localStorage.getItem('userName'); 
-      
       if (userRole === 'ADMIN') {
-        toast({
-          title: "تم تسجيل الدخول بالفعل",
-          description: `مرحباً ${userName || 'أيها المسؤول'}! أنت مسجل الدخول حالياً وجاري توجيهك للوحة التحكم...`,
-          variant: "default",
-        });
         router.push('/admin');
       }
     }
-  }, [router, toast]);
+  }, [router]);
 
   const {
     register,
@@ -115,80 +104,79 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="container mx-auto py-12 px-4">
-        <Card className="max-w-md mx-auto bg-white/95 shadow-xl border-2 border-app-gold">
-          <CardHeader className="text-center">
-            <ShieldCheck className="mx-auto h-12 w-12 text-app-gold mb-3" />
-            <CardTitle className="text-3xl font-bold text-app-red">تسجيل دخول المسؤول</CardTitle>
-            <CardDescription className="text-gray-600 mt-1">
-              الوصول الخاص بمدير النظام.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 text-right">
-              <div>
-                <Label htmlFor="email" className="block mb-1.5 font-semibold text-gray-700">البريد الإلكتروني للمسؤول</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register("email")}
-                  className="bg-white focus:border-app-gold"
-                  placeholder="admin@example.com"
-                />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="password_input" className="block mb-1.5 font-semibold text-gray-700">كلمة المرور</Label>
+     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 text-right">
+        <div
+            className="max-w-md w-full bg-gradient-to-r from-blue-800 to-purple-600 rounded-xl shadow-2xl overflow-hidden p-8 space-y-8 animate-slide-in-from-left"
+        >
+            <div className="text-center animate-appear-slow">
+                <h2 className="text-4xl font-extrabold text-white">
+                    مرحباً بالمسؤول
+                </h2>
+                <p className="mt-2 text-gray-200">
+                    سجل دخولك للوصول إلى لوحة التحكم
+                </p>
+            </div>
+            
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="relative">
-                    <Input
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder=" "
+                        className="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
+                        {...register("email")}
+                    />
+                    <label
+                        htmlFor="email"
+                        className="absolute right-0 -top-3.5 text-gray-300 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-400 peer-focus:text-sm"
+                    >
+                        البريد الإلكتروني
+                    </label>
+                    {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>}
+                </div>
+                
+                <div className="relative">
+                    <input
                         id="password_input"
                         type={showPassword ? "text" : "password"}
+                        placeholder=" "
+                        className="peer h-10 w-full border-b-2 border-gray-300 text-white bg-transparent placeholder-transparent focus:outline-none focus:border-purple-500"
                         {...register("password_input")}
-                        className="bg-white focus:border-app-gold pl-10"
-                        placeholder="********"
                     />
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 left-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
-                        aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+                    <label
+                        htmlFor="password_input"
+                        className="absolute right-0 -top-3.5 text-gray-300 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-400 peer-focus:text-sm"
                     >
-                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        كلمة المرور
+                    </label>
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-0 top-2 text-gray-400 hover:text-white">
+                        {showPassword ? <EyeOff /> : <Eye />}
                     </button>
+                    {errors.password_input && <p className="text-red-400 text-sm mt-1">{errors.password_input.message}</p>}
                 </div>
-                {errors.password_input && <p className="text-red-500 text-sm mt-1">{errors.password_input.message}</p>}
-              </div>
-
-              <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="ms-2 h-5 w-5 animate-spin" />
-                    جاري التحقق...
-                  </>
-                ) : (
-                  "دخول المسؤول"
-                )}
-              </Button>
+                
+                <div className="text-left">
+                    <Link href="/forgot-password" className="text-sm text-purple-200 hover:underline">
+                        هل نسيت كلمة المرور؟
+                    </Link>
+                </div>
+                
+                <Button
+                    type="submit"
+                    className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 rounded-md shadow-lg text-white font-semibold transition duration-200"
+                    disabled={isLoading}
+                >
+                    {isLoading ? <Loader2 className="animate-spin" /> : 'تسجيل الدخول'}
+                </Button>
             </form>
-          </CardContent>
-          <CardFooter className="flex flex-col items-center mt-4 pt-2 pb-6 space-y-3">
-            <Link href="/login" className="text-sm font-medium text-green-700 hover:text-green-800 hover:underline flex items-center gap-1">
-              <HardHat className="h-4 w-4" />
-              تسجيل الدخول كمهندس
-            </Link>
-            <Link href="/owner-login" className="text-sm font-medium text-purple-700 hover:text-purple-800 hover:underline flex items-center gap-1">
-              <HomeIcon className="h-4 w-4" />
-              تسجيل الدخول كمالك
-            </Link>
-            <Link href="/" className="text-sm font-semibold text-green-800 hover:text-green-700 hover:underline flex items-center gap-1">
-              <ArrowLeft className="h-4 w-4" />
-              العودة إلى الصفحة الرئيسية
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
-    </AppLayout>
+
+            <div className="text-center text-gray-300 text-sm">
+                <Link href="/" className="text-purple-300 hover:underline flex items-center justify-center gap-1">
+                    <ArrowLeft size={16}/>
+                    العودة إلى الرئيسية
+                </Link>
+            </div>
+        </div>
+    </div>
   );
 }

@@ -102,6 +102,14 @@ export default {
           '0%, 100%': { opacity: '0.3', transform: 'scale(1)' },
           '50%': { opacity: '0.6', transform: 'scale(1.1)' },
         },
+        slideInFromLeft: {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        appear: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -109,6 +117,9 @@ export default {
         'modal-fade-in': 'modalFadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
         'orbit': 'orbit 6s linear infinite',
         'pulse-glow': 'pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'slide-in-from-left': 'slideInFromLeft 1s ease-out forwards',
+        'appear-slow': 'appear 2s ease-out forwards',
+        'appear-slower': 'appear 3s ease-out forwards',
       },
     },
   },

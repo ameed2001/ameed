@@ -169,7 +169,7 @@ export default function AdminLogsPage() {
                         <AlertDialogAction onClick={async (e) => { e.preventDefault(); await handleDeleteAllLogs(); }} className="w-full sm:w-auto bg-red-600 text-white hover:bg-red-700 font-bold py-2.5 px-6 rounded-lg" disabled={isDeleting}>
                             {isDeleting ? <Loader2 className="ms-2 h-4 w-4 animate-spin" /> : "حذف نهائي"}
                         </AlertDialogAction>
-                        <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
+                        <AlertDialogCancel className="w-full sm:w-auto mt-0 bg-gray-100 hover:bg-gray-200 text-gray-800 hover:text-gray-800 border-none font-bold py-2.5 px-6 rounded-lg">إلغاء</AlertDialogCancel>
                         </AlertDialogFooter>
                     </>
                 )}

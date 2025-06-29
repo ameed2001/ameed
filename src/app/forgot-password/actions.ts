@@ -36,7 +36,7 @@ export async function forgotPasswordAction(
   if (tokenResult.success && tokenResult.token && tokenResult.userId) {
     const resetLink = `${process.env.BASE_URL || 'http://localhost:3000'}/reset-password?token=${tokenResult.token}`;
 
-    const requiredEnvVars = ['EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_USER', 'EMAIL_PASS', 'EMAIL_FROM_ADDRESS'];
+    const requiredEnvVars = ['EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_USER', 'EMAIL_PASS'];
     const missingVars = requiredEnvVars.filter(v => !process.env[v]);
 
     // Step 2: Check for mailer configuration.
@@ -58,7 +58,7 @@ export async function forgotPasswordAction(
             await transporter.verify();
             
             await transporter.sendMail({
-                from: `"${process.env.EMAIL_FROM_NAME || 'المحترف لحساب الكميات'}" <${process.env.EMAIL_FROM_ADDRESS!}>`,
+                from: `"${process.env.EMAIL_FROM_NAME || 'المحترف لحساب الكميات'}" <${process.env.EMAIL_FROM_ADDRESS || process.env.EMAIL_USER!}>`,
                 to: email,
                 subject: 'إعادة تعيين كلمة المرور - المحترف لحساب الكميات',
                 html: `

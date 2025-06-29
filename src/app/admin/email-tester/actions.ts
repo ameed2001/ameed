@@ -9,7 +9,7 @@ export interface EmailTestResult {
   missingVars: string[];
 }
 
-const requiredEnvVars = ['EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_USER', 'EMAIL_PASS', 'EMAIL_FROM_ADDRESS'];
+const requiredEnvVars = ['EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_USER', 'EMAIL_PASS'];
 
 export async function testEmailSettingsAction(): Promise<EmailTestResult> {
   const configuredVars: string[] = [];
@@ -21,6 +21,11 @@ export async function testEmailSettingsAction(): Promise<EmailTestResult> {
     } else {
       missingVars.push(v);
     }
+  }
+
+  // Also check for EMAIL_FROM_ADDRESS but don't require it
+  if (process.env.EMAIL_FROM_ADDRESS) {
+    configuredVars.push('EMAIL_FROM_ADDRESS');
   }
 
   if (missingVars.length > 0) {

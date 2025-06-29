@@ -1,2 +1,0 @@
-# This file is no longer needed as the project is moving to MongoDB (potentially hosted).
-# If local MongoDB development is desired, a new docker-compose.yml for MongoDB can be created.

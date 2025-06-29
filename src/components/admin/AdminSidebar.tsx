@@ -14,6 +14,7 @@ import {
     ChevronLeft,
     UserCircle,
     Briefcase,
+    MailCheck,
 } from "lucide-react";
 import {
   Tooltip,
@@ -32,6 +33,7 @@ const adminNavItems = [
     { href: '/admin/projects', label: 'إدارة المشاريع', icon: Briefcase },
     { href: '/admin/settings', label: 'إعدادات النظام', icon: Settings },
     { href: '/admin/logs', label: 'سجلات النظام', icon: ScrollText },
+    { href: '/admin/email-tester', label: 'فحص إعدادات البريد', icon: MailCheck },
 ];
 
 interface AdminSidebarProps {

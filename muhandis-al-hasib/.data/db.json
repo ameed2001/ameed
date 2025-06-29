@@ -43,8 +43,8 @@
       "profileImage": "https://placehold.co/100x100.png?text=عم",
       "createdAt": "2025-06-29T15:32:31.299Z",
       "updatedAt": "2025-06-29T15:34:18.524Z",
-      "resetToken": "c412d51469adb0505e9b035a59471b3b313ae27f7c39fd9cdb2c4f499a94f0ad",
-      "resetTokenExpiry": "2025-06-29T20:41:50.966Z"
+      "resetToken": "211755ccd23d6eb7ef02fac92873b7c05c1c7d1585dc378f7d17a9c59498fc6e",
+      "resetTokenExpiry": "2025-06-29T20:57:32.106Z"
     }
   ],
   "projects": [
@@ -324,6 +324,22 @@
       "level": "ERROR",
       "message": "Missing email configuration in .env.local. Please set: EMAIL_FROM_ADDRESS",
       "timestamp": "2025-06-29T19:41:50.975Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751227052109-egv6d",
+      "action": "PASSWORD_RESET_TOKEN_CREATED",
+      "level": "INFO",
+      "message": "Password reset token created for mediaplus64@gmail.com.",
+      "timestamp": "2025-06-29T19:57:32.109Z",
+      "user": "user-1751211151299-tcc40"
+    },
+    {
+      "id": "log-1751227052112-5g1sk",
+      "action": "EMAIL_CONFIG_MISSING",
+      "level": "ERROR",
+      "message": "Missing email configuration in .env.local. Please set: EMAIL_FROM_ADDRESS",
+      "timestamp": "2025-06-29T19:57:32.112Z",
       "user": "System"
     }
   ],

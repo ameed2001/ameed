@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -13,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, KeyRound, Mail } from 'lucide-react';
+import { forgotPasswordAction } from './actions';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
@@ -30,18 +30,15 @@ export default function ForgotPasswordPage() {
 
   const onSubmit: SubmitHandler<ForgotPasswordFormValues> = async (data) => {
     setIsLoading(true);
-    console.log("Forgot password email:", data.email); // Simulate API call
-
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const result = await forgotPasswordAction(data);
+    setIsLoading(false);
 
     toast({
       title: "تم إرسال التعليمات",
-      description: `إذا كان البريد الإلكتروني ${data.email} مسجلاً، ستصلك رسالة لإعادة تعيين كلمة المرور.`,
+      description: result.message,
       variant: "default",
     });
     reset();
-    setIsLoading(false);
   };
 
   return (

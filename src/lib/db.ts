@@ -338,6 +338,12 @@ export async function findUserById(userId: string): Promise<Omit<UserDocument, '
     return user;
 }
 
+export async function findUserByEmail(email: string): Promise<UserDocument | null> {
+    const db = await readDb();
+    const userDoc = db.users.find((u: UserDocument) => u.email.toLowerCase() === email.toLowerCase());
+    return userDoc || null;
+}
+
 export interface GetProjectsResult {
   success: boolean;
   projects?: Project[];

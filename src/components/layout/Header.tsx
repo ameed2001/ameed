@@ -105,9 +105,9 @@ export default function Header() {
         <SocialAndClock />
         <div className="bg-slate-800 text-white backdrop-blur-sm">
             <div className="container mx-auto flex h-20 items-center justify-between px-4">
-                {/* Left Side: Notifications */}
+                {/* Right Side: Spacer */}
                 <div className="flex-1 flex justify-start">
-                    {showNotifications && <Notifications />}
+                    {/* This is a spacer to balance the layout */}
                 </div>
                 
                 {/* Center: Logo & Title */}
@@ -121,9 +121,9 @@ export default function Header() {
                     </Link>
                 </div>
 
-                {/* Right Side: Spacer */}
+                {/* Left Side: Notifications */}
                 <div className="flex-1 flex justify-end">
-                    {/* This is a spacer to balance the layout */}
+                    {showNotifications && <Notifications />}
                 </div>
             </div>
         </div>

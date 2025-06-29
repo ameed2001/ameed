@@ -115,7 +115,6 @@ export interface SystemSettingsDocument {
   maintenanceMode: boolean;
   maxUploadSizeMB: number;
   emailNotificationsEnabled: boolean;
-  engineerApprovalRequired: boolean;
 }
 
 // ---- DATABASE I/O HELPERS ----
@@ -212,7 +211,6 @@ export async function getSystemSettings(): Promise<SystemSettingsDocument> {
     maintenanceMode: false,
     maxUploadSizeMB: 25,
     emailNotificationsEnabled: true,
-    engineerApprovalRequired: true,
   };
 }
 
@@ -254,8 +252,8 @@ export async function registerUser(userData: {
       return { success: false, message: "البريد الإلكتروني مسجل بالفعل.", errorType: 'email_exists' };
     }
     
-    const settings = await getSystemSettings();
-    const initialStatus: UserStatus = status || (role === 'ENGINEER' && settings.engineerApprovalRequired ? 'PENDING_APPROVAL' : 'ACTIVE');
+    // The logic for PENDING_APPROVAL has been removed as per user request to activate engineers immediately.
+    const initialStatus: UserStatus = status || 'ACTIVE';
 
     const hashedPassword = await bcrypt.hash(password_input, 10);
     const now = new Date().toISOString();

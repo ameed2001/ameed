@@ -152,17 +152,6 @@ export default function AdminSettingsPage() {
             />
           </div>
           
-           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md border">
-            <Label htmlFor="engineerApprovalRequired" className="font-semibold text-gray-700">تفعيل موافقة المهندس</Label>
-            <Switch
-              id="engineerApprovalRequired"
-              checked={settings.engineerApprovalRequired}
-              onCheckedChange={(checked) => handleChange('engineerApprovalRequired', checked)}
-              dir="rtl"
-            />
-          </div>
-
-
           <Button type="submit" className="w-full bg-app-red hover:bg-red-700 text-white font-bold py-3 text-lg" disabled={isLoading}>
             {isLoading ? (
                 <>

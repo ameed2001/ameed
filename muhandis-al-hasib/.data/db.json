@@ -32,6 +32,17 @@
       "createdAt": "2025-06-26T17:37:04.628Z",
       "updatedAt": "2025-06-26T17:37:04.628Z",
       "profileImage": "https://placehold.co/100x100.png?text=عم"
+    },
+    {
+      "id": "user-1751211151299-tcc40",
+      "name": "عميد سماره",
+      "email": "mediaplus64@gmail.com",
+      "password_hash": "$2a$10$lJDTHGm0vdtmfdpAD/KRVe3sTZN2sZTOTSvSjQnEXBH747AEFA1d.",
+      "role": "ENGINEER",
+      "status": "ACTIVE",
+      "profileImage": "https://placehold.co/100x100.png?text=عم",
+      "createdAt": "2025-06-29T15:32:31.299Z",
+      "updatedAt": "2025-06-29T15:34:18.524Z"
     }
   ],
   "projects": [
@@ -128,6 +139,62 @@
       "message": "User logged in: ameed2001@mohandis.com",
       "timestamp": "2025-06-28T23:00:44.854Z",
       "user": "user-1750945851175-hajdn"
+    },
+    {
+      "id": "log-1751211093337-ymcz6",
+      "action": "PASSWORD_RESET_REQUEST_NOT_FOUND",
+      "level": "INFO",
+      "message": "Password reset requested for non-existent email: mediaplus64@gmail.com",
+      "timestamp": "2025-06-29T15:31:33.337Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751211151301-h2e4k",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User mediaplus64@gmail.com registered. Role: ENGINEER, Status: PENDING_APPROVAL.",
+      "timestamp": "2025-06-29T15:32:31.301Z",
+      "user": "user-1751211151299-tcc40"
+    },
+    {
+      "id": "log-1751211222402-e7gu8",
+      "action": "USER_UPDATE_SUCCESS_BY_ADMIN",
+      "level": "INFO",
+      "message": "Admin updated user ID user-1751211151299-tcc40.",
+      "timestamp": "2025-06-29T15:33:42.402Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751211222405-y10a9",
+      "action": "ENGINEER_APPROVAL_SUCCESS",
+      "level": "INFO",
+      "message": "Admin admin-hardcoded-001 approved engineer user-1751211151299-tcc40.",
+      "timestamp": "2025-06-29T15:33:42.405Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751211237832-4hq40",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: mediaplus64@gmail.com",
+      "timestamp": "2025-06-29T15:33:57.832Z",
+      "user": "user-1751211151299-tcc40"
+    },
+    {
+      "id": "log-1751211258527-eoanf",
+      "action": "USER_PASSWORD_RESET_SUCCESS",
+      "level": "INFO",
+      "message": "Password reset successful for user mediaplus64@gmail.com.",
+      "timestamp": "2025-06-29T15:34:18.527Z",
+      "user": "user-1751211151299-tcc40"
+    },
+    {
+      "id": "log-1751211258564-lnpmq",
+      "action": "PASSWORD_RESET_EMAIL_FAILURE",
+      "level": "ERROR",
+      "message": "Failed to send password reset email to: mediaplus64@gmail.com",
+      "timestamp": "2025-06-29T15:34:18.564Z",
+      "user": "user-1751211151299-tcc40"
     }
   ],
   "roles": [

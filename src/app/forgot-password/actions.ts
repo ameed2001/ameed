@@ -1,4 +1,3 @@
-
 'use server';
 
 import { z } from 'zod';
@@ -45,6 +44,26 @@ export async function forgotPasswordAction(
                 pass: process.env.EMAIL_PASS,
             },
         });
+
+        // --- NEW: Verify connection configuration ---
+        try {
+          await transporter.verify();
+          await logAction('EMAIL_VERIFY_SUCCESS', 'INFO', 'Nodemailer connection verified successfully.');
+        } catch (verifyError: any) {
+          const errorMessage = verifyError instanceof Error ? `${verifyError.name}: ${verifyError.message}` : JSON.stringify(verifyError);
+          console.error("[ForgotPasswordAction] Nodemailer verification error:", errorMessage);
+          await logAction(
+              'EMAIL_VERIFY_FAILURE', 
+              'ERROR', 
+              `Nodemailer connection verification failed. Error: ${errorMessage}`
+          );
+          // Still return a generic success message to the user for security.
+          return {
+            success: true,
+            message: `إذا كان بريدك الإلكتروني مسجلاً، فستتلقى رسالة تحتوي على رابط لإعادة تعيين كلمة المرور قريبًا.`,
+          };
+        }
+        // --- END NEW ---
         
         await transporter.sendMail({
             from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_ADDRESS}>`,
@@ -69,8 +88,8 @@ export async function forgotPasswordAction(
 
         await logAction('PASSWORD_RESET_EMAIL_SENT', 'INFO', `Password reset link sent successfully to: ${email}`);
     } catch (error: any) {
-        const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
-        console.error("[ForgotPasswordAction] Nodemailer error:", errorMessage);
+        const errorMessage = error instanceof Error ? `${error.name}: ${error.message}` : JSON.stringify(error);
+        console.error("[ForgotPasswordAction] Nodemailer sendMail error:", errorMessage);
         await logAction(
             'PASSWORD_RESET_EMAIL_FAILURE', 
             'ERROR', 

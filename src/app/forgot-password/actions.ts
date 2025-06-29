@@ -68,9 +68,14 @@ export async function forgotPasswordAction(
         });
 
         await logAction('PASSWORD_RESET_EMAIL_SENT', 'INFO', `Password reset link sent successfully to: ${email}`);
-    } catch (error) {
-        console.error("[ForgotPasswordAction] Failed to send email:", error);
-        await logAction('PASSWORD_RESET_EMAIL_FAILURE', 'ERROR', `Failed to send password reset link to: ${email}`);
+    } catch (error: any) {
+        const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
+        console.error("[ForgotPasswordAction] Nodemailer error:", errorMessage);
+        await logAction(
+            'PASSWORD_RESET_EMAIL_FAILURE', 
+            'ERROR', 
+            `Failed to send password reset link to: ${email}. Error: ${errorMessage}`
+        );
     }
   } else {
     await logAction('PASSWORD_RESET_REQUEST_NOT_FOUND', 'INFO', `Password reset requested for non-existent or error-prone email: ${email}`);

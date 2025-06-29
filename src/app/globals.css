@@ -101,6 +101,18 @@
   backdrop-filter: blur(5px);
 }
 
+@keyframes float {
+  0% {
+    transform: translateY(0px) translateX(0px);
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+}
+
 @keyframes modalFadeIn {
   from { opacity: 0; transform: translateY(-70px) scale(0.9); }
   to { opacity: 1; transform: translateY(0) scale(1); }

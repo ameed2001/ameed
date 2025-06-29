@@ -42,7 +42,9 @@
       "status": "ACTIVE",
       "profileImage": "https://placehold.co/100x100.png?text=عم",
       "createdAt": "2025-06-29T15:32:31.299Z",
-      "updatedAt": "2025-06-29T15:34:18.524Z"
+      "updatedAt": "2025-06-29T15:34:18.524Z",
+      "resetToken": "ebb092cacbe2bbcfb466c2a6d3d6b030855e6336da45d6a6c36b41ef4e28dda0",
+      "resetTokenExpiry": "2025-06-29T17:08:18.631Z"
     }
   ],
   "projects": [
@@ -195,6 +197,54 @@
       "message": "Failed to send password reset email to: mediaplus64@gmail.com",
       "timestamp": "2025-06-29T15:34:18.564Z",
       "user": "user-1751211151299-tcc40"
+    },
+    {
+      "id": "log-1751212708646-no3c2",
+      "action": "PASSWORD_RESET_TOKEN_CREATED",
+      "level": "INFO",
+      "message": "Password reset token created for mediaplus64@gmail.com.",
+      "timestamp": "2025-06-29T15:58:28.646Z",
+      "user": "user-1751211151299-tcc40"
+    },
+    {
+      "id": "log-1751212708683-gjwtz",
+      "action": "PASSWORD_RESET_EMAIL_FAILURE",
+      "level": "ERROR",
+      "message": "Failed to send password reset link to: mediaplus64@gmail.com",
+      "timestamp": "2025-06-29T15:58:28.683Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751212740218-sfag5",
+      "action": "PASSWORD_RESET_TOKEN_CREATED",
+      "level": "INFO",
+      "message": "Password reset token created for mediaplus64@gmail.com.",
+      "timestamp": "2025-06-29T15:59:00.218Z",
+      "user": "user-1751211151299-tcc40"
+    },
+    {
+      "id": "log-1751212740232-df2er",
+      "action": "PASSWORD_RESET_EMAIL_FAILURE",
+      "level": "ERROR",
+      "message": "Failed to send password reset link to: mediaplus64@gmail.com",
+      "timestamp": "2025-06-29T15:59:00.232Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751213298637-bnqeq",
+      "action": "PASSWORD_RESET_TOKEN_CREATED",
+      "level": "INFO",
+      "message": "Password reset token created for mediaplus64@gmail.com.",
+      "timestamp": "2025-06-29T16:08:18.637Z",
+      "user": "user-1751211151299-tcc40"
+    },
+    {
+      "id": "log-1751213298673-tiecu",
+      "action": "PASSWORD_RESET_EMAIL_FAILURE",
+      "level": "ERROR",
+      "message": "Failed to send password reset link to: mediaplus64@gmail.com",
+      "timestamp": "2025-06-29T16:08:18.673Z",
+      "user": "System"
     }
   ],
   "roles": [

@@ -623,3 +623,18 @@ export async function deleteAllLogs(adminUserId: string): Promise<{ success: boo
         return { success: false, message: "فشل حذف السجلات بسبب خطأ في الخادم." };
     }
 }
+
+export async function resetPasswordForUser(email: string, newPassword_input: string): Promise<{ success: boolean, message?: string }> {
+    const db = await readDb();
+    const userIndex = db.users.findIndex((u: UserDocument) => u.email.toLowerCase() === email.toLowerCase());
+    if (userIndex === -1) {
+        return { success: false, message: "المستخدم غير موجود." };
+    }
+    const newPasswordHash = await bcrypt.hash(newPassword_input, 10);
+    db.users[userIndex].password_hash = newPasswordHash;
+    db.users[userIndex].updatedAt = new Date().toISOString();
+    await writeDb(db);
+    
+    await logAction('USER_PASSWORD_RESET_SUCCESS', 'INFO', `Password reset successful for user ${email}.`, db.users[userIndex].id);
+    return { success: true, message: "تم إعادة تعيين كلمة المرور بنجاح." };
+}

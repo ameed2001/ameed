@@ -6,10 +6,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ShieldCheck } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { adminLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
+
+const ShieldIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+    </svg>
+);
+
 
 const adminLoginSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
@@ -31,7 +38,7 @@ export default function AdminLoginPage() {
       height: `${Math.random() * 100 + 50}px`,
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
-      animation: `float ${Math.random() * 10 + 10}s linear infinite`,
+      animationDuration: `${Math.random() * 10 + 10}s`,
       animationDelay: `${Math.random() * 5}s`
     }));
     setBgElements(elements);
@@ -43,7 +50,6 @@ export default function AdminLoginPage() {
     formState: { errors },
     reset,
     setError,
-    watch
   } = useForm<AdminLoginFormValues>({
     resolver: zodResolver(adminLoginSchema),
     defaultValues: {
@@ -51,9 +57,6 @@ export default function AdminLoginPage() {
       password_input: "",
     }
   });
-
-  const emailValue = watch("email");
-  const passwordValue = watch("password_input");
 
   const onSubmit: SubmitHandler<AdminLoginFormValues> = async (data) => {
     setIsLoading(true);
@@ -115,7 +118,7 @@ export default function AdminLoginPage() {
       {bgElements.map((style, i) => (
         <div 
           key={i} 
-          className="absolute rounded-full bg-app-gold/10"
+          className="float-element"
           style={style}
         />
       ))}
@@ -123,8 +126,8 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md relative z-10">
         <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl shadow-2xl overflow-hidden p-8">
           <div className="text-center mb-8">
-            <div className="mx-auto w-fit p-4 bg-app-gold/10 rounded-full">
-              <ShieldCheck className="h-12 w-12 text-app-gold" />
+            <div className="mx-auto w-fit p-4 bg-app-gold/10 rounded-full text-app-gold">
+              <ShieldIcon />
             </div>
             <h1 className="text-2xl font-bold text-white mt-4">دخول لوحة التحكم</h1>
             <p className="text-gray-400 mt-2">الرجاء إدخال بيانات الاعتماد الخاصة بك</p>
@@ -138,11 +141,11 @@ export default function AdminLoginPage() {
                     {...register("email")}
                     type="email"
                     id="email"
-                    className={`w-full px-4 py-3 bg-white/5 border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-app-gold focus:border-transparent peer`}
+                    className={`w-full px-4 py-3 bg-white/5 border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-lg text-white input-field`}
                     required
                     placeholder=" "
                   />
-                  <label htmlFor="email" className={`absolute right-3 -top-2.5 bg-gray-800 px-1 text-sm text-gray-400 transition-all duration-200 pointer-events-none peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-app-gold peer-focus:bg-gray-800`}>
+                  <label htmlFor="email" className="absolute right-3 top-3 text-gray-400 transition-all duration-200 pointer-events-none input-label">
                     البريد الإلكتروني
                   </label>
                 </div>
@@ -159,11 +162,11 @@ export default function AdminLoginPage() {
                     {...register("password_input")}
                     id="password_input"
                     type="password"
-                    className={`w-full px-4 py-3 bg-white/5 border ${errors.password_input ? 'border-red-500' : 'border-white/10'} rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-app-gold focus:border-transparent peer`}
+                    className={`w-full px-4 py-3 bg-white/5 border ${errors.password_input ? 'border-red-500' : 'border-white/10'} rounded-lg text-white input-field`}
                     required
                     placeholder=" "
                   />
-                  <label htmlFor="password_input" className={`absolute right-3 -top-2.5 bg-gray-800 px-1 text-sm text-gray-400 transition-all duration-200 pointer-events-none peer-placeholder-shown:text-base peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-app-gold peer-focus:bg-gray-800`}>
+                   <label htmlFor="password_input" className="absolute right-3 top-3 text-gray-400 transition-all duration-200 pointer-events-none input-label">
                     كلمة المرور
                   </label>
                 </div>

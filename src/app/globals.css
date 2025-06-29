@@ -102,16 +102,39 @@
 }
 
 @keyframes float {
-  0% {
-    transform: translateY(0px) translateX(0px);
-  }
-  50% {
-    transform: translateY(-20px) translateX(10px);
-  }
-  100% {
-    transform: translateY(0px) translateX(0px);
-  }
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
 }
+
+.float-element {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(212, 175, 55, 0.1);
+    animation: float linear infinite;
+}
+
+.input-field:focus + .input-label,
+.input-field:not(:placeholder-shown) + .input-label {
+    top: -0.5rem;
+    right: 0.75rem;
+    font-size: 0.75rem;
+    background-color: #1f2937;
+    color: hsl(var(--primary));
+    padding: 0 0.25rem;
+}
+
+.input-field:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--primary));
+    border-color: transparent;
+}
+
 
 @keyframes modalFadeIn {
   from { opacity: 0; transform: translateY(-70px) scale(0.9); }

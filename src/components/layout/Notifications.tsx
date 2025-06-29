@@ -24,22 +24,7 @@ interface Notification {
   read: boolean;
 }
 
-const DUMMY_NOTIFICATIONS: Notification[] = [
-    {
-      id: '1',
-      title: 'تمت الموافقة على مشروعك',
-      subtitle: 'مشروع "فيلا الياسمين" جاهز للبدء.',
-      time: 'قبل دقيقتين',
-      read: false,
-    },
-    {
-      id: '2',
-      title: 'تعليق جديد من المالك',
-      subtitle: 'بخصوص "تعديلات الواجهة الأمامية"',
-      time: 'قبل 14 دقيقة',
-      read: false,
-    },
-  ];
+const DUMMY_NOTIFICATIONS: Notification[] = [];
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>(DUMMY_NOTIFICATIONS);

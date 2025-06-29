@@ -35,9 +35,9 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           return 100;
         }
         // Adjusted speed to better match the number of steps
-        return prev + 1;
+        return prev + 2; // Increased speed
       });
-    }, 35); // Runs every 35ms
+    }, 25); // Faster interval
 
     // Controls which loading text is shown
     const stepTimer = setInterval(() => {
@@ -48,7 +48,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
         }
         return prev + 1;
       });
-    }, 400); // Change text every 400ms
+    }, 250); // Faster text change
 
     return () => {
       clearInterval(progressTimer);
@@ -61,7 +61,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     if (progress >= 100) {
       const hideTimer = setTimeout(() => {
         setShowLoader(false);
-      }, 500); // Wait a moment after 100% before hiding
+      }, 300); // Shorter wait time
       return () => clearTimeout(hideTimer);
     }
   }, [progress]);

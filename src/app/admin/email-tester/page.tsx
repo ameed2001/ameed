@@ -73,20 +73,20 @@ export default function AdminEmailTesterPage() {
             
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="p-3 bg-gray-50 rounded-md border">
-                <h5 className="font-semibold mb-2">المتغيرات الموجودة:</h5>
+                <h5 className="font-semibold mb-2 text-right">المتغيرات الموجودة:</h5>
                 {testResult.configuredVars.length > 0 ? (
-                  <ul className="space-y-1">
-                    {testResult.configuredVars.map(v => <li key={v} className="flex items-center gap-2 text-green-700"><CheckCircle size={16} /> <code>{v}</code></li>)}
+                  <ul className="flex flex-col items-start gap-1">
+                    {testResult.configuredVars.map(v => <li key={v} className="flex items-center gap-2 text-green-700"><code>{v}</code><CheckCircle size={16} /></li>)}
                   </ul>
-                ) : <p className="text-gray-500">لا توجد.</p>}
+                ) : <p className="text-gray-500 text-right">لا توجد.</p>}
               </div>
               <div className="p-3 bg-gray-50 rounded-md border">
-                <h5 className="font-semibold mb-2">المتغيرات المفقودة:</h5>
+                <h5 className="font-semibold mb-2 text-right">المتغيرات المفقودة:</h5>
                  {testResult.missingVars.length > 0 ? (
-                  <ul className="space-y-1">
-                    {testResult.missingVars.map(v => <li key={v} className="flex items-center gap-2 text-red-700"><MailWarning size={16} /> <code>{v}</code></li>)}
+                  <ul className="flex flex-col items-start gap-1">
+                    {testResult.missingVars.map(v => <li key={v} className="flex items-center gap-2 text-red-700"><code>{v}</code><MailWarning size={16} /></li>)}
                   </ul>
-                ) : <p className="text-gray-500">لا يوجد نقص.</p>}
+                ) : <p className="text-gray-500 text-right">لا يوجد نقص.</p>}
               </div>
             </div>
              {!testResult.success && testResult.message.includes('getaddrinfo ENOTFOUND') && (

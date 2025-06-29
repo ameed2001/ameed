@@ -164,33 +164,39 @@ const Footer = () => {
               تابعنا
               <span className="block absolute bottom-0 right-0 w-10 h-0.5 bg-app-gold"></span>
             </h4>
-            <div className="flex justify-center lg:justify-start gap-3">
+            <div className="flex justify-center lg:justify-start gap-4">
               <Link
-                href="https://wa.me/972595528080"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group bg-slate-800/70 hover:bg-green-600 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
-                title="تواصل عبر واتساب"
+                  href="https://wa.me/972595528080"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
-                <WhatsAppIcon className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+                  <WhatsAppIcon className="h-6 w-6" />
+                  <span className="absolute bottom-full mb-2 w-max whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      WhatsApp
+                  </span>
               </Link>
               <Link
-                href="https://www.instagram.com/a.w.samarah3/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group bg-slate-800/70 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
-                title="تابعنا على إنستغرام"
+                  href="https://www.instagram.com/a.w.samarah3/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-[#E1306C] text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
-                <Instagram className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+                  <Instagram className="h-6 w-6" />
+                  <span className="absolute bottom-full mb-2 w-max whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      Instagram
+                  </span>
               </Link>
               <Link
-                href="https://www.facebook.com/a.w.samarah4"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group bg-slate-800/70 hover:bg-blue-600 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
-                title="تابعنا على فيسبوك"
+                  href="https://www.facebook.com/a.w.samarah4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-[#316FF6] text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
-                <Facebook className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+                  <Facebook className="h-6 w-6" />
+                  <span className="absolute bottom-full mb-2 w-max whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      Facebook
+                  </span>
               </Link>
             </div>
           </div>

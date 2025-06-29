@@ -4,6 +4,9 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scrollbar-gutter: stable;
+  }
   :root {
     --background: 0 0% 96%; /* Light gray #F5F5F5 (PRD) */
     --foreground: 0 0% 13%;    /* Dark Black #222222 for text on light background */
@@ -90,7 +93,6 @@
     font-family: 'Tajawal', sans-serif;
     direction: rtl;
     min-height: 100vh;
-    overflow-y: scroll; /* Force scrollbar to prevent layout shift */
   }
 }
 

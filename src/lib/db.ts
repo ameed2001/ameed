@@ -4,6 +4,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 // ---- TYPE DEFINITIONS (Matching JSON structure) ----
 
@@ -22,6 +23,8 @@ export interface UserDocument {
   profileImage?: string;
   createdAt: string; // ISO string
   updatedAt: string; // ISO string
+  resetToken?: string | null;
+  resetTokenExpiry?: string | null;
 }
 
 export type LogLevel = 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
@@ -252,7 +255,6 @@ export async function registerUser(userData: {
       return { success: false, message: "البريد الإلكتروني مسجل بالفعل.", errorType: 'email_exists' };
     }
     
-    // The logic for PENDING_APPROVAL has been removed as per user request to activate engineers immediately.
     const initialStatus: UserStatus = status || 'ACTIVE';
 
     const hashedPassword = await bcrypt.hash(password_input, 10);
@@ -352,14 +354,12 @@ export async function getProjects(userId: string): Promise<GetProjectsResult> {
     try {
         const db = await readDb();
         
-        // Special case for hardcoded admin to see all projects
         if (userId === 'admin-hardcoded-001') {
             const allProjects = db.projects || [];
             const sortedProjects = allProjects.sort((a: Project, b: Project) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
             return { success: true, projects: sortedProjects };
         }
         
-        // User could be identified by ID (from localStorage) or email (from owner linking)
         const user = db.users.find((u: UserDocument) => u.id === userId || u.email === userId);
 
         if (!user) {
@@ -370,7 +370,6 @@ export async function getProjects(userId: string): Promise<GetProjectsResult> {
         let userProjects: Project[] = [];
         switch (user.role) {
             case 'ADMIN':
-                // This case is for DB admins, the hardcoded one is handled above
                 userProjects = db.projects;
                 break;
             case 'OWNER':
@@ -394,7 +393,6 @@ export async function getProjects(userId: string): Promise<GetProjectsResult> {
 
 export async function findProjectById(projectId: string): Promise<Project | null> {
     const db = await readDb();
-    // projectId in JSON file is a number
     const project = db.projects.find((p: Project) => p.id.toString() === projectId);
     return project || null;
 }
@@ -600,7 +598,6 @@ export async function deleteAllLogs(adminUserId: string): Promise<{ success: boo
             return { success: true, message: "لا توجد سجلات لحذفها." };
         }
         
-        // Create a log entry for the deletion action itself
         const newLog: LogEntry = {
             id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
             action: 'ADMIN_DELETE_ALL_LOGS',
@@ -610,7 +607,6 @@ export async function deleteAllLogs(adminUserId: string): Promise<{ success: boo
             user: adminUserId,
         };
         
-        // Replace all logs with just the new deletion log
         db.logs = [newLog];
         
         await writeDb(db);
@@ -622,17 +618,63 @@ export async function deleteAllLogs(adminUserId: string): Promise<{ success: boo
     }
 }
 
-export async function resetPasswordForUser(email: string, newPassword_input: string): Promise<{ success: boolean, message?: string }> {
-    const db = await readDb();
-    const userIndex = db.users.findIndex((u: UserDocument) => u.email.toLowerCase() === email.toLowerCase());
-    if (userIndex === -1) {
-        return { success: false, message: "المستخدم غير موجود." };
+export async function createPasswordResetToken(email: string): Promise<{ success: boolean; token?: string; message?: string }> {
+    try {
+        const db = await readDb();
+        const userIndex = db.users.findIndex((u: UserDocument) => u.email.toLowerCase() === email.toLowerCase());
+        
+        if (userIndex === -1) {
+            return { success: false, message: "User not found" }; 
+        }
+
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const tokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+        db.users[userIndex].resetToken = resetToken;
+        db.users[userIndex].resetTokenExpiry = tokenExpiry.toISOString();
+        
+        await writeDb(db);
+
+        await logAction('PASSWORD_RESET_TOKEN_CREATED', 'INFO', `Password reset token created for ${email}.`, db.users[userIndex].id);
+
+        return { success: true, token: resetToken };
+    } catch (error: any) {
+        await logAction('DB_ERROR', 'ERROR', `Error creating password reset token for ${email}: ${error.message}`);
+        return { success: false, message: "Database error." };
     }
-    const newPasswordHash = await bcrypt.hash(newPassword_input, 10);
-    db.users[userIndex].password_hash = newPasswordHash;
-    db.users[userIndex].updatedAt = new Date().toISOString();
-    await writeDb(db);
-    
-    await logAction('USER_PASSWORD_RESET_SUCCESS', 'INFO', `Password reset successful for user ${email}.`, db.users[userIndex].id);
-    return { success: true, message: "تم إعادة تعيين كلمة المرور بنجاح." };
+}
+
+export async function resetPasswordWithToken(token: string, newPassword_input: string): Promise<{ success: boolean; message: string }> {
+    try {
+        const db = await readDb();
+        const userIndex = db.users.findIndex((u: UserDocument) => u.resetToken === token);
+
+        if (userIndex === -1) {
+            return { success: false, message: "رابط إعادة التعيين غير صالح." };
+        }
+
+        const user = db.users[userIndex];
+
+        if (!user.resetTokenExpiry || new Date(user.resetTokenExpiry) < new Date()) {
+            db.users[userIndex].resetToken = null;
+            db.users[userIndex].resetTokenExpiry = null;
+            await writeDb(db);
+            return { success: false, message: "رابط إعادة التعيين منتهي الصلاحية. يرجى طلب رابط جديد." };
+        }
+
+        const newPasswordHash = await bcrypt.hash(newPassword_input, 10);
+        db.users[userIndex].password_hash = newPasswordHash;
+        db.users[userIndex].resetToken = null;
+        db.users[userIndex].resetTokenExpiry = null;
+        db.users[userIndex].updatedAt = new Date().toISOString();
+        
+        await writeDb(db);
+        
+        await logAction('USER_PASSWORD_RESET_SUCCESS', 'INFO', `Password reset successful for user ${user.email} using token.`, user.id);
+        return { success: true, message: "تم إعادة تعيين كلمة المرور بنجاح." };
+
+    } catch (error: any) {
+        await logAction('DB_ERROR', 'ERROR', `Error resetting password with token: ${error.message}`);
+        return { success: false, message: "حدث خطأ في الخادم." };
+    }
 }

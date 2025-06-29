@@ -231,7 +231,8 @@ export function ProfilePageContent() {
                     </div>
                     <div>
                         <Label htmlFor="profilePhone">رقم الهاتف (اختياري)</Label>
-                        <Input id="profilePhone" {...registerProfile("phone")} placeholder="أدخل رقم هاتفك" className="bg-gray-50"/>
+                        <Input id="profilePhone" {...registerProfile("phone")} placeholder="أدخل رقم هاتفك مع المقدمة الدولية" className="bg-gray-50"/>
+                        <p className="text-xs text-gray-500 mt-1">يُستخدم هذا الرقم لإعادة تعيين كلمة المرور.</p>
                         {profileErrors.phone && <p className="text-red-500 text-sm mt-1">{profileErrors.phone.message}</p>}
                     </div>
                     <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5" disabled={isProfileLoading}>

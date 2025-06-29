@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Separator } from '@/components/ui/separator';
 
 
 const profileSchema = z.object({
@@ -206,75 +207,75 @@ export function ProfilePageContent() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Main column */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Personal Info Section */}
-          <Card className="bg-white/95 shadow-md border-gray-200/80">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-800">
-                <UserCircle className="h-7 w-7 text-app-gold"/>
-                المعلومات الشخصية
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmitProfile(onProfileSubmit)} className="space-y-4">
-                <div>
-                  <Label htmlFor="profileName">الاسم الكامل</Label>
-                  <Input id="profileName" {...registerProfile("name")} className="bg-gray-50"/>
-                  {profileErrors.name && <p className="text-red-500 text-sm mt-1">{profileErrors.name.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="profileEmail">البريد الإلكتروني</Label>
-                  <Input id="profileEmail" type="email" {...registerProfile("email")} className="bg-gray-50" />
-                  {profileErrors.email && <p className="text-red-500 text-sm mt-1">{profileErrors.email.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="profileRole">الدور الوظيفي</Label>
-                  <Input id="profileRole" readOnly value={displayRole(currentUser.role)} className="bg-gray-200 cursor-not-allowed text-gray-600" />
-                </div>
-                <div>
-                  <Label htmlFor="profilePhone">رقم الهاتف (اختياري)</Label>
-                  <Input id="profilePhone" {...registerProfile("phone")} placeholder="أدخل رقم هاتفك" className="bg-gray-50"/>
-                  {profileErrors.phone && <p className="text-red-500 text-sm mt-1">{profileErrors.phone.message}</p>}
-                </div>
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5" disabled={isProfileLoading}>
-                  {isProfileLoading ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <Save className="ms-2 h-5 w-5" />}
-                  حفظ التغييرات
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+            <Card className="bg-white/95 shadow-md border-gray-200/80">
+                {/* Personal Info Section */}
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-800">
+                        <UserCircle className="h-7 w-7 text-app-gold"/>
+                        المعلومات الشخصية
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmitProfile(onProfileSubmit)} className="space-y-4">
+                        <div>
+                            <Label htmlFor="profileName">الاسم الكامل</Label>
+                            <Input id="profileName" {...registerProfile("name")} className="bg-gray-50"/>
+                            {profileErrors.name && <p className="text-red-500 text-sm mt-1">{profileErrors.name.message}</p>}
+                        </div>
+                        <div>
+                            <Label htmlFor="profileEmail">البريد الإلكتروني</Label>
+                            <Input id="profileEmail" type="email" {...registerProfile("email")} className="bg-gray-50" />
+                            {profileErrors.email && <p className="text-red-500 text-sm mt-1">{profileErrors.email.message}</p>}
+                        </div>
+                        <div>
+                            <Label htmlFor="profileRole">الدور الوظيفي</Label>
+                            <Input id="profileRole" readOnly value={displayRole(currentUser.role)} className="bg-gray-200 cursor-not-allowed text-gray-600" />
+                        </div>
+                        <div>
+                            <Label htmlFor="profilePhone">رقم الهاتف (اختياري)</Label>
+                            <Input id="profilePhone" {...registerProfile("phone")} placeholder="أدخل رقم هاتفك" className="bg-gray-50"/>
+                            {profileErrors.phone && <p className="text-red-500 text-sm mt-1">{profileErrors.phone.message}</p>}
+                        </div>
+                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5" disabled={isProfileLoading}>
+                            {isProfileLoading ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <Save className="ms-2 h-5 w-5" />}
+                            حفظ التغييرات
+                        </Button>
+                    </form>
+                </CardContent>
 
-          {/* Change Password Section */}
-          <Card className="bg-white/95 shadow-md border-gray-200/80">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-800">
-                <KeyRound className="h-7 w-7 text-app-gold"/>
-                تغيير كلمة المرور
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
-                <div>
-                  <Label htmlFor="currentPassword">كلمة المرور الحالية</Label>
-                  <Input id="currentPassword" type="password" {...registerPassword("currentPassword")} className="bg-gray-50"/>
-                  {passwordErrors.currentPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.currentPassword.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="newPassword">كلمة المرور الجديدة</Label>
-                  <Input id="newPassword" type="password" {...registerPassword("newPassword")} className="bg-gray-50"/>
-                  {passwordErrors.newPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.newPassword.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="confirmNewPassword">تأكيد كلمة المرور</Label>
-                  <Input id="confirmNewPassword" type="password" {...registerPassword("confirmNewPassword")} className="bg-gray-50"/>
-                  {passwordErrors.confirmNewPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.confirmNewPassword.message}</p>}
-                </div>
-                <Button type="submit" className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5" disabled={isPasswordLoading}>
-                  {isPasswordLoading ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <KeyRound className="ms-2 h-5 w-5" />}
-                  تغيير كلمة المرور
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                <Separator className="my-6" />
+
+                {/* Change Password Section */}
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3 text-2xl font-bold text-gray-800">
+                        <KeyRound className="h-7 w-7 text-app-gold"/>
+                        تغيير كلمة المرور
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
+                        <div>
+                            <Label htmlFor="currentPassword">كلمة المرور الحالية</Label>
+                            <Input id="currentPassword" type="password" {...registerPassword("currentPassword")} className="bg-gray-50"/>
+                            {passwordErrors.currentPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.currentPassword.message}</p>}
+                        </div>
+                        <div>
+                            <Label htmlFor="newPassword">كلمة المرور الجديدة</Label>
+                            <Input id="newPassword" type="password" {...registerPassword("newPassword")} className="bg-gray-50"/>
+                            {passwordErrors.newPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.newPassword.message}</p>}
+                        </div>
+                        <div>
+                            <Label htmlFor="confirmNewPassword">تأكيد كلمة المرور</Label>
+                            <Input id="confirmNewPassword" type="password" {...registerPassword("confirmNewPassword")} className="bg-gray-50"/>
+                            {passwordErrors.confirmNewPassword && <p className="text-red-500 text-sm mt-1">{passwordErrors.confirmNewPassword.message}</p>}
+                        </div>
+                        <Button type="submit" className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5" disabled={isPasswordLoading}>
+                            {isPasswordLoading ? <Loader2 className="ms-2 h-5 w-5 animate-spin" /> : <KeyRound className="ms-2 h-5 w-5" />}
+                            تغيير كلمة المرور
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
         
         {/* Sidebar column */}

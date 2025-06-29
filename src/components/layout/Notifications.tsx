@@ -75,7 +75,7 @@ export default function Notifications() {
               <div className="flex items-center gap-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-green-600 hover:bg-green-100" onClick={handleMarkAllRead}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-green-600 hover:bg-green-600 hover:text-white transition-colors" onClick={handleMarkAllRead}>
                       <Check className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
@@ -85,7 +85,7 @@ export default function Notifications() {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-red-600 hover:bg-red-100" onClick={handleDeleteAll}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-red-600 hover:bg-red-600 hover:text-white transition-colors" onClick={handleDeleteAll}>
                       <X className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>

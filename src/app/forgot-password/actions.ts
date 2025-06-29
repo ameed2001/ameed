@@ -3,7 +3,6 @@
 import { z } from 'zod';
 import { logAction, createPasswordResetToken } from '@/lib/db';
 import nodemailer from 'nodemailer';
-import 'dotenv/config';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
@@ -33,11 +32,24 @@ export async function forgotPasswordAction(
 
   if (tokenResult.success && tokenResult.token) {
     const resetLink = `${process.env.BASE_URL || 'http://localhost:3000'}/reset-password?token=${tokenResult.token}`;
+
+    const requiredEnvVars = ['EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_USER', 'EMAIL_PASS', 'EMAIL_FROM_ADDRESS'];
+    const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+
+    if (missingVars.length > 0) {
+        const errorMsg = `Missing email configuration in .env.local. Please set: ${missingVars.join(', ')}`;
+        console.error(errorMsg);
+        await logAction('EMAIL_CONFIG_MISSING', 'ERROR', errorMsg);
+        return {
+            success: false,
+            message: "حدث خطأ في إعدادات الخادم. يرجى التواصل مع الدعم الفني.",
+        };
+    }
     
     try {
         const transporter = nodemailer.createTransport({
             host: process.env.EMAIL_HOST,
-            port: Number(process.env.EMAIL_PORT || 587),
+            port: Number(process.env.EMAIL_PORT),
             secure: (process.env.EMAIL_PORT === '465'),
             auth: {
                 user: process.env.EMAIL_USER,
@@ -45,28 +57,10 @@ export async function forgotPasswordAction(
             },
         });
 
-        // --- NEW: Verify connection configuration ---
-        try {
-          await transporter.verify();
-          await logAction('EMAIL_VERIFY_SUCCESS', 'INFO', 'Nodemailer connection verified successfully.');
-        } catch (verifyError: any) {
-          const errorMessage = verifyError instanceof Error ? `${verifyError.name}: ${verifyError.message}` : JSON.stringify(verifyError);
-          console.error("[ForgotPasswordAction] Nodemailer verification error:", errorMessage);
-          await logAction(
-              'EMAIL_VERIFY_FAILURE', 
-              'ERROR', 
-              `Nodemailer connection verification failed. Error: ${errorMessage}`
-          );
-          // Still return a generic success message to the user for security.
-          return {
-            success: true,
-            message: `إذا كان بريدك الإلكتروني مسجلاً، فستتلقى رسالة تحتوي على رابط لإعادة تعيين كلمة المرور قريبًا.`,
-          };
-        }
-        // --- END NEW ---
+        await transporter.verify();
         
         await transporter.sendMail({
-            from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_ADDRESS}>`,
+            from: `"${process.env.EMAIL_FROM_NAME || 'المحترف لحساب الكميات'}" <${process.env.EMAIL_FROM_ADDRESS!}>`,
             to: email,
             subject: 'إعادة تعيين كلمة المرور - المحترف لحساب الكميات',
             html: `
@@ -89,7 +83,7 @@ export async function forgotPasswordAction(
         await logAction('PASSWORD_RESET_EMAIL_SENT', 'INFO', `Password reset link sent successfully to: ${email}`);
     } catch (error: any) {
         const errorMessage = error instanceof Error ? `${error.name}: ${error.message}` : JSON.stringify(error);
-        console.error("[ForgotPasswordAction] Nodemailer sendMail error:", errorMessage);
+        console.error("[ForgotPasswordAction] Email sending/verification error:", errorMessage);
         await logAction(
             'PASSWORD_RESET_EMAIL_FAILURE', 
             'ERROR', 

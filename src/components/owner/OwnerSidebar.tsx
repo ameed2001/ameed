@@ -273,7 +273,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
           ) : (
             <div className="space-y-2 mt-2 border-t pt-2">
               {accordionItems.map((item) => (
-                <DropdownMenu key={item.value}>
+                <DropdownMenu modal={false} key={item.value}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <DropdownMenuTrigger asChild>

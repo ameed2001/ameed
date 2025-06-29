@@ -25,6 +25,7 @@ export default function AdminLoginPage() {
   const [bgElements, setBgElements] = useState<React.CSSProperties[]>([]);
 
   useEffect(() => {
+    // Generate styles only on the client-side to avoid hydration errors
     const elements = Array.from({ length: 20 }).map(() => ({
       width: `${Math.random() * 100 + 50}px`,
       height: `${Math.random() * 100 + 50}px`,

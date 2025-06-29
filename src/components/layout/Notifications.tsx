@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 
 interface Notification {
@@ -20,6 +21,7 @@ interface Notification {
   title: string;
   subtitle?: string;
   time: string;
+  read: boolean;
 }
 
 const DUMMY_NOTIFICATIONS: Notification[] = [
@@ -28,24 +30,26 @@ const DUMMY_NOTIFICATIONS: Notification[] = [
       title: 'تمت الموافقة على مشروعك',
       subtitle: 'مشروع "فيلا الياسمين" جاهز للبدء.',
       time: 'قبل دقيقتين',
+      read: false,
     },
     {
       id: '2',
       title: 'تعليق جديد من المالك',
       subtitle: 'بخصوص "تعديلات الواجهة الأمامية"',
       time: 'قبل 14 دقيقة',
+      read: false,
     },
   ];
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>(DUMMY_NOTIFICATIONS);
   const hasNotifications = notifications.length > 0;
+  const hasUnreadNotifications = notifications.some(n => !n.read);
 
   const handleMarkAllRead = () => {
     // In a real app, this would call an API
     console.log("Marking all notifications as read");
-    // For now, we'll just clear them for visual feedback
-    setNotifications([]);
+    setNotifications(notifications.map(n => ({ ...n, read: true })));
   };
 
   const handleDeleteAll = () => {
@@ -59,7 +63,7 @@ export default function Notifications() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 p-0">
           <Bell className="h-6 w-6 text-white" />
-          {hasNotifications && (
+          {hasUnreadNotifications && (
             <span className="absolute top-1 right-1 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
@@ -102,8 +106,14 @@ export default function Notifications() {
           {hasNotifications ? (
             <ul className="divide-y divide-gray-100 dark:divide-gray-700">
               {notifications.map((notification) => (
-                <li key={notification.id} className="p-3 hover:bg-muted/50 text-right">
-                  <Link href="#" className="block">
+                <li
+                  key={notification.id}
+                  className={cn(
+                    "p-3 text-right transition-colors",
+                    notification.read ? "bg-gray-50 dark:bg-gray-800/20" : "hover:bg-muted/50"
+                  )}
+                >
+                  <Link href="#" className={cn("block", notification.read && "opacity-70")}>
                     <div className="flex items-center justify-between">
                       <p className="font-medium text-sm text-foreground truncate">{notification.title}</p>
                       <p className="text-xs text-muted-foreground shrink-0 pl-2">{notification.time}</p>

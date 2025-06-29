@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,6 +22,19 @@ export default function AdminLoginPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [bgElements, setBgElements] = useState<React.CSSProperties[]>([]);
+
+  useEffect(() => {
+    const elements = Array.from({ length: 20 }).map(() => ({
+      width: `${Math.random() * 100 + 50}px`,
+      height: `${Math.random() * 100 + 50}px`,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      animation: `float ${Math.random() * 10 + 10}s linear infinite`,
+      animationDelay: `${Math.random() * 5}s`
+    }));
+    setBgElements(elements);
+  }, []);
 
   const {
     register,
@@ -98,18 +111,11 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated background elements */}
-      {Array.from({ length: 20 }).map((_, i) => (
+      {bgElements.map((style, i) => (
         <div 
           key={i} 
           className="absolute rounded-full bg-app-gold/10"
-          style={{
-            width: `${Math.random() * 100 + 50}px`,
-            height: `${Math.random() * 100 + 50}px`,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            animation: `float ${Math.random() * 10 + 10}s linear infinite`,
-            animationDelay: `${Math.random() * 5}s`
-          }}
+          style={style}
         />
       ))}
       

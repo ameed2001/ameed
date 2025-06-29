@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Bell, BellOff } from "lucide-react";
@@ -13,6 +14,7 @@ import {
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import usePreventLayoutShift from "@/hooks/use-prevent-layout-shift"; // Import the hook
 
 interface Notification {
   id: string;
@@ -44,13 +46,15 @@ const DUMMY_NOTIFICATIONS: Notification[] = [
 ];
 
 export default function Notifications() {
-  // We use dummy data for now, but this can be replaced with real data fetching.
   const [notifications, setNotifications] = useState<Notification[]>(DUMMY_NOTIFICATIONS);
   const { toast } = useToast();
   const hasNotifications = notifications.length > 0;
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  usePreventLayoutShift(isDropdownOpen); // Apply the hook
+
   return (
-    <DropdownMenu dir="rtl">
+    <DropdownMenu dir="rtl" onOpenChange={setIsDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <button className="group relative flex cursor-pointer items-center gap-2.5 rounded-lg bg-slate-700/50 p-2 text-left text-purple-200 transition-all hover:bg-slate-700 active:scale-95">
           <div className="rounded-lg border-2 border-purple-400/50 bg-purple-300/20 p-1.5">

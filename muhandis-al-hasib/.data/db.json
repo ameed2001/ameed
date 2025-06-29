@@ -43,8 +43,8 @@
       "profileImage": "https://placehold.co/100x100.png?text=عم",
       "createdAt": "2025-06-29T15:32:31.299Z",
       "updatedAt": "2025-06-29T15:34:18.524Z",
-      "resetToken": "8f7ded9299de97b4f9f60d7663c01fec307e637bb8e3e10201180a87dacd7016",
-      "resetTokenExpiry": "2025-06-29T18:36:27.410Z"
+      "resetToken": "8437448cf184a0180d3ff449fe4bb2a8555a96d78d4f266581a40eac06defca3",
+      "resetTokenExpiry": "2025-06-29T19:11:50.745Z"
     }
   ],
   "projects": [
@@ -292,6 +292,22 @@
       "level": "ERROR",
       "message": "Nodemailer connection verification failed. Error: Error: getaddrinfo ENOTFOUND your_smtp_server",
       "timestamp": "2025-06-29T17:36:27.454Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751220710747-mohk3",
+      "action": "PASSWORD_RESET_TOKEN_CREATED",
+      "level": "INFO",
+      "message": "Password reset token created for mediaplus64@gmail.com.",
+      "timestamp": "2025-06-29T18:11:50.747Z",
+      "user": "user-1751211151299-tcc40"
+    },
+    {
+      "id": "log-1751220710753-pg1vu",
+      "action": "EMAIL_CONFIG_MISSING",
+      "level": "ERROR",
+      "message": "Missing email configuration in .env.local. Please set: EMAIL_FROM_ADDRESS",
+      "timestamp": "2025-06-29T18:11:50.753Z",
       "user": "System"
     }
   ],

@@ -33,12 +33,20 @@ export default function ForgotPasswordPage() {
     const result = await forgotPasswordAction(data);
     setIsLoading(false);
 
-    toast({
-      title: "تم إرسال التعليمات",
-      description: result.message,
-      variant: "default",
-    });
-    reset();
+    if (result.success) {
+      toast({
+        title: "تم إرسال التعليمات",
+        description: result.message,
+        variant: "default",
+      });
+      reset();
+    } else {
+      toast({
+        title: "خطأ في الإرسال",
+        description: result.message,
+        variant: "destructive",
+      });
+    }
   };
 
   return (

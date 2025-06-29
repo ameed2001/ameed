@@ -1,6 +1,7 @@
+
 "use client";
 
-import { Bell, MessageSquare, UserCheck, Clock, Check, Info, Trash2 } from "lucide-react";
+import { Clock, Check, Info, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,15 +41,16 @@ export default function Notifications() {
   return (
     <DropdownMenu dir="rtl">
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:bg-muted">
-          <Bell className="h-6 w-6" />
-          {hasNotifications && (
-            <span className="absolute top-1 right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-app-red opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-app-red"></span>
-            </span>
-          )}
-        </Button>
+        <button className="button">
+          <svg className="bell" viewBox="0 0 448 512">
+            <path
+              d="M224 0c-17.7 0-32 14.3-32 32V49.9C119.5 61.4 64 124.2 64 200v33.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V200c0-75.8-55.5-138.6-128-150.1V32c0-17.7-14.3-32-32-32zm0 96h8c57.4 0 104 46.6 104 104v33.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V200c0-57.4 46.6-104 104-104h8zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z"
+            ></path>
+          </svg>
+          الإشعارات
+          <div className="arrow">›</div>
+          {hasNotifications && <div className="dot"></div>}
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 mt-2" align="end">
         <DropdownMenuLabel className="font-semibold">الإشعارات</DropdownMenuLabel>

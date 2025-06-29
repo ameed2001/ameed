@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Bell, BellOff } from "lucide-react";
+import { Bell, BellOff, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 interface Notification {
   id: string;
@@ -21,31 +23,37 @@ interface Notification {
   time: string;
 }
 
-// Example notifications to showcase the design
 const DUMMY_NOTIFICATIONS: Notification[] = [
-  {
-    id: '1',
-    title: 'تمت الموافقة على مشروعك',
-    subtitle: 'مشروع "فيلا الياسمين" جاهز للبدء.',
-    time: 'قبل دقيقتين',
-  },
-  {
-    id: '2',
-    title: 'تعليق جديد من المالك',
-    subtitle: 'بخصوص "تعديلات الواجهة الأمامية"',
-    time: 'قبل 14 دقيقة',
-  },
-  {
-    id: '3',
-    title: 'تذكير: تسليم تقرير التكلفة',
-    subtitle: 'لمشروع "برج المملكة"',
-    time: 'قبل ساعة',
-  },
-];
+    {
+      id: '1',
+      title: 'تمت الموافقة على مشروعك',
+      subtitle: 'مشروع "فيلا الياسمين" جاهز للبدء.',
+      time: 'قبل دقيقتين',
+    },
+    {
+      id: '2',
+      title: 'تعليق جديد من المالك',
+      subtitle: 'بخصوص "تعديلات الواجهة الأمامية"',
+      time: 'قبل 14 دقيقة',
+    },
+  ];
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>(DUMMY_NOTIFICATIONS);
   const hasNotifications = notifications.length > 0;
+
+  const handleMarkAllRead = () => {
+    // In a real app, this would call an API
+    console.log("Marking all notifications as read");
+    // For now, we'll just clear them for visual feedback
+    setNotifications([]);
+  };
+
+  const handleDeleteAll = () => {
+    // In a real app, this would call an API
+    console.log("Deleting all notifications");
+    setNotifications([]);
+  };
 
   return (
     <DropdownMenu dir="rtl" modal={false}>
@@ -61,7 +69,35 @@ export default function Notifications() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 mt-2 p-0" align="end">
-        <DropdownMenuLabel className="p-3 font-semibold text-right">الإشعارات</DropdownMenuLabel>
+        <DropdownMenuLabel className="p-3 font-semibold text-right flex justify-between items-center">
+          <span>الإشعارات</span>
+          {hasNotifications && (
+            <TooltipProvider>
+              <div className="flex items-center gap-1">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-green-600 hover:bg-green-100" onClick={handleMarkAllRead}>
+                      <Check className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>وضع علامة "مقروء" على الكل</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-red-600 hover:bg-red-100" onClick={handleDeleteAll}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>حذف كل الإشعارات</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
+          )}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="max-h-80 overflow-y-auto">
           {hasNotifications ? (

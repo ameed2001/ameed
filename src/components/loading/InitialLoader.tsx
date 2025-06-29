@@ -14,25 +14,32 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const loadingSteps = [
-    "تهيئة النظام...",
-    "تحميل الأدوات الهندسية...",
-    "إعداد الحاسبات...",
-    "تجهيز الواجهة...",
-    "اكتمل التحميل!"
+    "جاري تهيئة النظام...",
+    "تحميل المكتبات الهندسية...",
+    "معايرة أدوات الحساب...",
+    "بناء الواجهات التفاعلية...",
+    "التحقق من معايير البناء...",
+    "إعداد بيئة العمل...",
+    "اللمسات النهائية...",
+    "أوشكنا على الانتهاء!",
+    "مرحباً بك!"
   ];
 
   // Effect to run the timers
   useEffect(() => {
+    // Controls the progress bar percentage
     const progressTimer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(progressTimer);
           return 100;
         }
-        return prev + 2;
+        // Adjusted speed to better match the number of steps
+        return prev + 1;
       });
-    }, 36);
+    }, 35); // Runs every 35ms
 
+    // Controls which loading text is shown
     const stepTimer = setInterval(() => {
       setCurrentStep((prev) => {
         if (prev >= loadingSteps.length - 1) {
@@ -41,7 +48,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
         }
         return prev + 1;
       });
-    }, 400);
+    }, 400); // Change text every 400ms
 
     return () => {
       clearInterval(progressTimer);
@@ -54,7 +61,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     if (progress >= 100) {
       const hideTimer = setTimeout(() => {
         setShowLoader(false);
-      }, 400); // Wait a moment after 100% before hiding
+      }, 500); // Wait a moment after 100% before hiding
       return () => clearTimeout(hideTimer);
     }
   }, [progress]);
@@ -144,7 +151,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
       {/* معلومات التحميل */}
       <div className="text-center space-y-4 max-w-md mx-auto px-4">
         {/* العنوان */}
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-app-gold to-app-red bg-clip-text text-transparent animate-pulse-custom">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-app-gold to-app-red bg-clip-text text-transparent title-glowing">
           المحترف لحساب الكميات
         </h1>
         
@@ -152,7 +159,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
         <div className="relative">
           <div className="text-6xl font-bold text-white mb-2 font-mono tracking-wider">
             <span className="bg-gradient-to-r from-app-gold to-app-red bg-clip-text text-transparent">
-              {progress}%
+              {Math.round(progress)}%
             </span>
           </div>
           
@@ -200,17 +207,26 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           0%, 100% { opacity: 0.5; transform: scale(1); }
           50% { opacity: 1; transform: scale(1.05); }
         }
+
+        @keyframes title-glow {
+          0%, 100% { text-shadow: 0 0 8px hsla(var(--primary), 0.5), 0 0 16px hsla(var(--primary), 0.3); }
+          50% { text-shadow: 0 0 16px hsla(var(--primary), 0.8), 0 0 32px hsla(var(--primary), 0.5); }
+        }
         
         .animate-spin-slow {
-          animation: spin-slow 3s linear infinite;
+          animation: spin-slow 8s linear infinite;
         }
         
         .animate-spin-reverse {
-          animation: spin-reverse 4s linear infinite;
+          animation: spin-reverse 10s linear infinite;
         }
         
         .animate-pulse-custom {
-          animation: pulse-custom 2s ease-in-out infinite;
+          animation: pulse-custom 2.5s ease-in-out infinite;
+        }
+
+        .title-glowing {
+          animation: title-glow 3s ease-in-out infinite;
         }
       `}</style>
     </div>

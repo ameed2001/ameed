@@ -12,9 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import usePreventLayoutShift from "@/hooks/use-prevent-layout-shift"; // Import the hook
 
 interface Notification {
   id: string;
@@ -47,40 +45,36 @@ const DUMMY_NOTIFICATIONS: Notification[] = [
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>(DUMMY_NOTIFICATIONS);
-  const { toast } = useToast();
   const hasNotifications = notifications.length > 0;
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  usePreventLayoutShift(isDropdownOpen); // Apply the hook
-
   return (
-    <DropdownMenu dir="rtl" onOpenChange={setIsDropdownOpen}>
+    <DropdownMenu dir="rtl" modal={false}>
       <DropdownMenuTrigger asChild>
-        <button className="group relative flex cursor-pointer items-center gap-2.5 rounded-lg bg-slate-700/50 p-2 text-left text-purple-200 transition-all hover:bg-slate-700 active:scale-95">
-          <div className="rounded-lg border-2 border-purple-400/50 bg-purple-300/20 p-1.5">
-              <Bell className="size-6 text-purple-300" />
-          </div>
-          <div className="font-semibold text-gray-200 hidden sm:block">الإشعارات</div>
-           {hasNotifications && (
-            <div className="absolute left-1 top-1 h-3 w-3 rounded-full bg-red-500 border-2 border-slate-800"></div>
+        <Button variant="ghost" className="relative h-10 w-10 p-0">
+          <Bell className="h-6 w-6 text-white" />
+          {hasNotifications && (
+            <span className="absolute top-1 right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
           )}
-        </button>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-80 mt-2 p-0" align="end">
-        <DropdownMenuLabel className="p-4 font-bold text-lg text-foreground">الإشعارات</DropdownMenuLabel>
+        <DropdownMenuLabel className="p-3 font-semibold text-right">الإشعارات</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="max-h-80 overflow-y-auto">
           {hasNotifications ? (
             <ul className="divide-y divide-gray-100 dark:divide-gray-700">
               {notifications.map((notification) => (
-                <li key={notification.id} className="p-3 hover:bg-muted/50">
-                  <div className="flex items-center justify-between">
-                    <button className="cursor-pointer text-right font-semibold text-sm text-foreground hover:text-blue-600">
-                      {notification.title}
-                    </button>
-                    <div className="text-xs text-muted-foreground shrink-0 pl-2">{notification.time}</div>
-                  </div>
-                  {notification.subtitle && <div className="text-xs text-muted-foreground mt-0.5">{notification.subtitle}</div>}
+                <li key={notification.id} className="p-3 hover:bg-muted/50 text-right">
+                  <Link href="#" className="block">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium text-sm text-foreground truncate">{notification.title}</p>
+                      <p className="text-xs text-muted-foreground shrink-0 pl-2">{notification.time}</p>
+                    </div>
+                    {notification.subtitle && <p className="text-xs text-muted-foreground mt-0.5">{notification.subtitle}</p>}
+                  </Link>
                 </li>
               ))}
             </ul>

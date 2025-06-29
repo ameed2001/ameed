@@ -29,10 +29,10 @@ export default function OwnerAppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <div className="flex flex-grow">
+      <div className="flex flex-grow" dir="rtl">
         <OwnerSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <main className={cn(
-          "flex-grow container mx-auto py-6 px-4 overflow-y-auto w-full transition-all duration-300 ease-in-out"
+          "flex-grow p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900/50 overflow-y-scroll transition-all duration-300 ease-in-out"
         )}>
           {children}
         </main>

@@ -96,11 +96,6 @@
   }
 }
 
-/* لمنع تحريك المحتوى عند فتح القوائم */
-.no-scroll {
-  overflow: hidden !important;
-}
-
 /* For Dialog overlay backdrop blur */
 .custom-dialog-overlay {
   backdrop-filter: blur(5px);

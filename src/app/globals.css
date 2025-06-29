@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
 @tailwind base;
 @tailwind components;
@@ -86,14 +85,12 @@
     padding: 0;
     box-sizing: border-box;
   }
-  html {
-    scrollbar-gutter: stable;
-  }
   body {
     @apply bg-background text-foreground;
     font-family: 'Tajawal', sans-serif;
     direction: rtl;
     min-height: 100vh;
+    overflow-y: scroll; /* Force scrollbar to prevent layout shift */
   }
 }
 

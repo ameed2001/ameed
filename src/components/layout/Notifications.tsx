@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Bell, BellOff } from "lucide-react";
@@ -21,30 +20,8 @@ interface Notification {
   time: string;
 }
 
-// Example notifications to showcase the design
-const DUMMY_NOTIFICATIONS: Notification[] = [
-  {
-    id: '1',
-    title: 'تمت الموافقة على مشروعك',
-    subtitle: 'مشروع "فيلا الياسمين" جاهز للبدء.',
-    time: 'قبل دقيقتين',
-  },
-  {
-    id: '2',
-    title: 'تعليق جديد من المالك',
-    subtitle: 'بخصوص "تعديلات الواجهة الأمامية"',
-    time: 'قبل 14 دقيقة',
-  },
-  {
-    id: '3',
-    title: 'تذكير: تسليم تقرير التكلفة',
-    subtitle: 'لمشروع "برج المملكة"',
-    time: 'قبل ساعة',
-  },
-];
-
 export default function Notifications() {
-  const [notifications, setNotifications] = useState<Notification[]>(DUMMY_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const hasNotifications = notifications.length > 0;
 
   return (

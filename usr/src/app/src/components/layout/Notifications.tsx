@@ -1,105 +1,100 @@
 "use client";
 
-import { Bell, MessageSquare, UserCheck, Clock, Check, Info, Trash2 } from "lucide-react";
+import { Bell, BellOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
+  DropdownMenuFooter,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
-// The structure for a real notification
 interface Notification {
   id: string;
-  icon: React.ReactNode;
   title: string;
+  subtitle?: string;
   time: string;
 }
 
+// Example notifications to showcase the design
+const DUMMY_NOTIFICATIONS: Notification[] = [
+  {
+    id: '1',
+    title: 'تمت الموافقة على مشروعك',
+    subtitle: 'مشروع "فيلا الياسمين" جاهز للبدء.',
+    time: 'قبل دقيقتين',
+  },
+  {
+    id: '2',
+    title: 'تعليق جديد من المالك',
+    subtitle: 'بخصوص "تعديلات الواجهة الأمامية"',
+    time: 'قبل 14 دقيقة',
+  },
+  {
+    id: '3',
+    title: 'تذكير: تسليم تقرير التكلفة',
+    subtitle: 'لمشروع "برج المملكة"',
+    time: 'قبل ساعة',
+  },
+];
+
 export default function Notifications() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>(DUMMY_NOTIFICATIONS);
   const { toast } = useToast();
   const hasNotifications = notifications.length > 0;
 
-  const handleMarkAllAsRead = () => {
-    // In a real app, this would update the state of notifications.
-    // For now, we just show a toast.
-    toast({ title: "تم تحديد الكل كمقروء", description: "تم تحديث حالة جميع إشعاراتك." });
-  };
-
-  const handleDeleteAll = () => {
-    setNotifications([]);
-    toast({ title: "تم حذف الإشعارات", description: "تم مسح جميع الإشعارات بنجاح." });
-  };
-
   return (
-    <DropdownMenu dir="rtl">
+    <DropdownMenu dir="rtl" modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:bg-muted">
-          <Bell className="h-6 w-6" />
-          {hasNotifications && (
-            <span className="absolute top-1 right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-app-red opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-app-red"></span>
-            </span>
+        <button className="group relative flex cursor-pointer items-center gap-2.5 rounded-lg bg-slate-700/50 p-2 text-left text-purple-200 transition-all hover:bg-slate-700 active:scale-95">
+          <div className="rounded-lg border-2 border-purple-400/50 bg-purple-300/20 p-1.5">
+              <Bell className="size-6 text-purple-300" />
+          </div>
+          <div className="font-semibold text-gray-200 hidden sm:block">الإشعارات</div>
+           {hasNotifications && (
+            <div className="absolute left-1 top-1 h-3 w-3 rounded-full bg-red-500 border-2 border-slate-800"></div>
           )}
-        </Button>
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80 mt-2" align="end">
-        <DropdownMenuLabel className="font-semibold">الإشعارات</DropdownMenuLabel>
+      <DropdownMenuContent className="w-80 mt-2 p-0" align="end">
+        <DropdownMenuLabel className="p-4 font-bold text-lg text-foreground">الإشعارات</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <div className="max-h-80 overflow-y-auto">
           {hasNotifications ? (
-            notifications.map((notification) => (
-              <DropdownMenuItem key={notification.id} className="flex items-start gap-3 p-3">
-                <div className="flex-shrink-0 mt-1">{notification.icon}</div>
-                <div className="flex-grow">
-                  <p className="text-sm font-medium text-gray-800">{notification.title}</p>
-                  <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
-                    <Clock className="h-3 w-3" />
-                    <span>{notification.time}</span>
+            <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+              {notifications.map((notification) => (
+                <li key={notification.id} className="p-3 hover:bg-muted/50">
+                  <div className="flex items-center justify-between">
+                    <button className="cursor-pointer text-right font-semibold text-sm text-foreground hover:text-blue-600">
+                      {notification.title}
+                    </button>
+                    <div className="text-xs text-muted-foreground shrink-0 pl-2">{notification.time}</div>
                   </div>
-                </div>
-              </DropdownMenuItem>
-            ))
+                  {notification.subtitle && <div className="text-xs text-muted-foreground mt-0.5">{notification.subtitle}</div>}
+                </li>
+              ))}
+            </ul>
           ) : (
-             <div className="text-center text-gray-500 p-6">
-                <Info className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                <p className="text-sm">لا توجد إشعارات جديدة.</p>
+            <div className="text-center text-muted-foreground p-8">
+              <BellOff className="h-10 w-10 mx-auto mb-2 text-gray-400" />
+              <p className="text-sm font-medium">لا توجد إشعارات جديدة.</p>
             </div>
           )}
         </div>
         {hasNotifications && (
-            <>
-                <DropdownMenuSeparator />
-                <div className="p-1 space-y-1">
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-transparent p-0">
-                    <Button
-                      onClick={handleMarkAllAsRead}
-                      variant="ghost"
-                      className="w-full justify-start h-auto px-2 py-1.5 text-sm font-normal"
-                    >
-                      <Check className="ml-2 h-4 w-4" />
-                      وضع علامة "مقروء" على الكل
-                    </Button>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="focus:bg-transparent p-0">
-                    <Button
-                      onClick={handleDeleteAll}
-                      variant="ghost"
-                      className="w-full justify-start h-auto px-2 py-1.5 text-sm font-normal text-red-600 hover:bg-red-50 hover:text-red-700"
-                    >
-                      <Trash2 className="ml-2 h-4 w-4" />
-                      حذف جميع الإشعارات
-                    </Button>
-                  </DropdownMenuItem>
-                </div>
-            </>
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuFooter className="p-1">
+              <Button asChild variant="ghost" className="w-full text-sm">
+                <Link href="#">عرض كل الإشعارات</Link>
+              </Button>
+            </DropdownMenuFooter>
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

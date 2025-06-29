@@ -618,7 +618,7 @@ export async function deleteAllLogs(adminUserId: string): Promise<{ success: boo
     }
 }
 
-export async function createPasswordResetToken(email: string): Promise<{ success: boolean; token?: string; message?: string }> {
+export async function createPasswordResetToken(email: string): Promise<{ success: boolean; token?: string; message?: string; userId?: string }> {
     try {
         const db = await readDb();
         const userIndex = db.users.findIndex((u: UserDocument) => u.email.toLowerCase() === email.toLowerCase());
@@ -627,6 +627,7 @@ export async function createPasswordResetToken(email: string): Promise<{ success
             return { success: false, message: "User not found" }; 
         }
 
+        const user = db.users[userIndex];
         const resetToken = crypto.randomBytes(32).toString('hex');
         const tokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
@@ -635,9 +636,9 @@ export async function createPasswordResetToken(email: string): Promise<{ success
         
         await writeDb(db);
 
-        await logAction('PASSWORD_RESET_TOKEN_CREATED', 'INFO', `Password reset token created for ${email}.`, db.users[userIndex].id);
+        await logAction('PASSWORD_RESET_TOKEN_CREATED', 'INFO', `Password reset token created for ${email}.`, user.id);
 
-        return { success: true, token: resetToken };
+        return { success: true, token: resetToken, userId: user.id };
     } catch (error: any) {
         await logAction('DB_ERROR', 'ERROR', `Error creating password reset token for ${email}: ${error.message}`);
         return { success: false, message: "Database error." };

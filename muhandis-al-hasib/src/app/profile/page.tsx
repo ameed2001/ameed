@@ -230,9 +230,9 @@ export function ProfilePageContent() {
                         <Input id="profileRole" readOnly value={displayRole(currentUser.role)} className="bg-gray-200 cursor-not-allowed text-gray-600" />
                     </div>
                     <div>
-                        <Label htmlFor="profilePhone">رقم الهاتف</Label>
+                        <Label htmlFor="profilePhone">رقم الهاتف (اختياري)</Label>
                         <Input id="profilePhone" {...registerProfile("phone")} placeholder="أدخل رقم هاتفك مع المقدمة الدولية" className="bg-gray-50"/>
-                        <p className="text-xs text-gray-500 mt-1">يُستخدم هذا الرقم لإعادة تعيين كلمة المرور.</p>
+                        <p className="text-xs text-gray-500 mt-1">قد يُستخدم هذا الرقم مستقبلاً لبعض خدمات الحساب.</p>
                         {profileErrors.phone && <p className="text-red-500 text-sm mt-1">{profileErrors.phone.message}</p>}
                     </div>
                     <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5" disabled={isProfileLoading}>

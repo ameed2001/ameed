@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -14,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
-import { Loader2, HardHat, Eye, EyeOff, ArrowLeft, UserPlus, Mail, Phone } from 'lucide-react';
+import { Loader2, HardHat, Eye, EyeOff, ArrowLeft, UserPlus, Mail } from 'lucide-react';
 import { engineerSignupUserAction, type SignupActionResponse } from './actions';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -22,7 +23,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const engineerSignupSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  phone: z.string().min(10, { message: "رقم الهاتف مطلوب (10 أرقام على الأقل)." }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
   confirmPassword: z.string().min(6, { message: "تأكيد كلمة المرور مطلوب." }),
 }).refine(data => data.password === data.confirmPassword, {
@@ -128,15 +128,6 @@ export default function EngineerSignupPage() {
                         <Input id="email" type="email" {...register("email")} className="pr-10" placeholder="engineer@example.com" />
                       </div>
                       {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="phone">رقم الهاتف</Label>
-                      <div className="relative mt-1">
-                        <Phone className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <Input id="phone" type="tel" {...register("phone")} className="pr-10" placeholder="+97059XXXXXXX" />
-                      </div>
-                      {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
                     </div>
 
                     <div>

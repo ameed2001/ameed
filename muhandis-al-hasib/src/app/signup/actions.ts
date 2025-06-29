@@ -17,7 +17,6 @@ export interface SignupActionResponse {
 const ownerSignupFormSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  phone: z.string().min(10, { message: "رقم الهاتف مطلوب (10 أرقام على الأقل)." }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
   confirmPassword: z.string().min(6, { message: "تأكيد كلمة المرور مطلوب." }),
 }).refine(data => data.password === data.confirmPassword, {
@@ -58,7 +57,6 @@ export async function ownerSignupUserAction(
   const registrationResult: RegistrationResult = await registerUser({
       name: data.name,
       email: data.email,
-      phone: data.phone,
       password_input: data.password, 
       role: 'OWNER', // Hardcoded role for this action
   });
@@ -91,7 +89,6 @@ export async function ownerSignupUserAction(
 const engineerSignupFormSchema = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  phone: z.string().min(10, { message: "رقم الهاتف مطلوب (10 أرقام على الأقل)." }),
   password: z.string().min(6, { message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل." }),
   confirmPassword: z.string().min(6, { message: "تأكيد كلمة المرور مطلوب." }),
 }).refine(data => data.password === data.confirmPassword, {
@@ -129,7 +126,6 @@ export async function engineerSignupUserAction(
   const registrationResult: RegistrationResult = await registerUser({
       name: data.name,
       email: data.email,
-      phone: data.phone,
       password_input: data.password, 
       role: 'ENGINEER', // Hardcoded role for this action
   });

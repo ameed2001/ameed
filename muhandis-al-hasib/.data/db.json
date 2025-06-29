@@ -93,6 +93,14 @@
       "message": "Admin deleted all 32 system logs.",
       "timestamp": "2025-06-29T20:05:45.072Z",
       "user": "admin-hardcoded-001"
+    },
+    {
+      "id": "log-1751232064508-lv33r",
+      "action": "PASSWORD_RESET_REQUEST_INVALID",
+      "level": "INFO",
+      "message": "Password reset requested for email: mediaplus64@gmail.com, but user not found or phone number did not match.",
+      "timestamp": "2025-06-29T21:21:04.508Z",
+      "user": "System"
     }
   ],
   "roles": [

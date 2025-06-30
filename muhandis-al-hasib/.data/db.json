@@ -90,6 +90,14 @@
       "message": "User ID user-1750946422820-53jsi deleted by admin.",
       "timestamp": "2025-06-30T12:25:50.243Z",
       "user": "System"
+    },
+    {
+      "id": "log-1751288951313-rb7c8",
+      "action": "SYSTEM_SETTINGS_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "System settings updated.",
+      "timestamp": "2025-06-30T13:09:11.313Z",
+      "user": "System"
     }
   ],
   "roles": [

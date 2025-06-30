@@ -5,7 +5,7 @@
 
 @layer base {
   html {
-    scrollbar-gutter: stable;
+    overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
   }
   :root {
     --background: 0 0% 96%; /* Light gray #F5F5F5 (PRD) */
@@ -399,8 +399,6 @@
 }
 
 /* This rule was causing issues, it's better to handle scrollbar gutter on the html element globally */
-/*
 .radix-dropdown-menu-content, .radix-select-content {
   scrollbar-gutter: stable !important;
 }
-*/

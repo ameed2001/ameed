@@ -1,4 +1,3 @@
-
 "use client"; // This is crucial
 
 import type { ReactNode } from 'react';
@@ -32,7 +31,7 @@ export default function OwnerAppLayout({ children }: { children: ReactNode }) {
       <div className="flex flex-grow" dir="rtl">
         <OwnerSidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
         <main className={cn(
-          "flex-grow p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900/50 overflow-y-scroll transition-all duration-300 ease-in-out"
+          "flex-grow p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900/50 overflow-y-auto transition-all duration-300 ease-in-out"
         )}>
           {children}
         </main>

@@ -1,22 +1,25 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode, useCallback } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 interface InitialLoaderProps {
   children: ReactNode;
+  minDuration?: number;
 }
 
-const InitialLoader = ({ children }: InitialLoaderProps) => {
+const InitialLoader = ({ children, minDuration = 3000 }: InitialLoaderProps) => {
   const [showLoader, setShowLoader] = useState(true);
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
   const startTimeRef = useRef<number | null>(null);
+  const animationFrameRef = useRef<number>();
+  const progressCompleteRef = useRef(false);
 
-  const loadingSteps = [
+  const loadingSteps = useRef([
     { text: "تهيئة النظام الأساسي", detail: "Loading core system architecture...", icon: "⚙️" },
     { text: "تحميل المكتبات الهندسية", detail: "Initializing engineering libraries...", icon: "📐" },
     { text: "إعداد قواعد البيانات", detail: "Connecting to calculation databases...", icon: "🗄️" },
@@ -26,63 +29,76 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     { text: "تحسين الأداء", detail: "Optimizing performance metrics...", icon: "⚡" },
     { text: "اللمسات الأخيرة", detail: "Finalizing system components...", icon: "✨" },
     { text: "مرحباً بك في النظام", detail: "Welcome to professional calculations!", icon: "🚀" },
-  ];
+  ]).current;
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
+  // دالة تحديث التقدم مع استخدام useCallback لمنع إعادة الإنشاء
+  const updateProgress = useCallback(() => {
+    if (progressCompleteRef.current) return;
 
-    if (startTimeRef.current === null) {
-      startTimeRef.current = Date.now();
-    }
-
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        const increment = prev < 20 ? 0.5 : prev < 80 ? 1.2 : 0.8;
-        return Math.min(prev + increment + Math.random() * 0.5, 100);
-      });
-    }, 20);
-
-    const timerInterval = setInterval(() => {
-      if (startTimeRef.current) {
-        setElapsedTime(((Date.now() - startTimeRef.current) / 1000).toFixed(1));
+    setProgress(prev => {
+      if (!startTimeRef.current) startTimeRef.current = Date.now();
+      const elapsed = Date.now() - startTimeRef.current;
+      const minProgress = Math.min((elapsed / minDuration) * 100, 100);
+      
+      if (prev >= 100) {
+        progressCompleteRef.current = true;
+        return 100;
       }
-    }, 100);
+
+      const increment = prev < 20 ? 0.5 : prev < 80 ? 1.2 : 0.8;
+      const newProgress = Math.max(minProgress, Math.min(prev + increment + Math.random() * 0.3, 100));
+      
+      return newProgress;
+    });
+
+    if (!progressCompleteRef.current) {
+      animationFrameRef.current = requestAnimationFrame(updateProgress);
+    }
+  }, [minDuration]);
+
+  // تهيئة المكون وتشغيل التقدم
+  useEffect(() => {
+    setIsClient(true);
+    startTimeRef.current = Date.now();
+    animationFrameRef.current = requestAnimationFrame(updateProgress);
 
     return () => {
-      clearInterval(progressInterval);
-      clearInterval(timerInterval);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
-  }, []);
+  }, [updateProgress]); // التبعية الوحيدة هي الدالة الثابتة
 
+  // تحديث الخطوة الحالية بناءً على التقدم
   useEffect(() => {
     const stepProgress = (progress / 100) * loadingSteps.length;
-    const stepIndex = Math.floor(stepProgress);
-    setCurrentStep(Math.min(stepIndex, loadingSteps.length - 1));
+    setCurrentStep(Math.min(Math.floor(stepProgress), loadingSteps.length - 1));
   }, [progress, loadingSteps.length]);
 
+  // التعامل مع اكتمال التحميل
   useEffect(() => {
-    if (progress >= 100) {
-      setTimeout(() => setFadeOut(true), 800);
-      setTimeout(() => setShowLoader(false), 1800);
+    if (progress >= 100 && !fadeOut) {
+      setFadeOut(true);
+      const timer = setTimeout(() => setShowLoader(false), 1000);
+      return () => clearTimeout(timer);
     }
-  }, [progress]);
+  }, [progress, fadeOut]);
+
+  if (!isClient || !showLoader) {
+    return <>{children}</>;
+  }
 
   const stepProgressFraction = (progress / 100) * loadingSteps.length;
   const stepInnerProgress = (stepProgressFraction % 1) * 100;
-
-  if (!showLoader) return <>{children}</>;
+  const elapsedTime = startTimeRef.current ? ((Date.now() - startTimeRef.current) / 1000).toFixed(1) : '0.0';
 
   return (
     <div className={cn(
       "fixed inset-0 z-50 overflow-hidden transition-all duration-1000 ease-out",
+      "bg-gradient-to-br from-slate-950 via-gray-900 to-slate-900",
       fadeOut ? "opacity-0 scale-105" : "opacity-100 scale-100"
     )}>
-      {/* الخلفية */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-gray-900 to-slate-900">
+       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-gray-900 to-slate-900">
         <div 
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -97,9 +113,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-app-gold/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
-      {/* المحتوى */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
-        {/* الشعار */}
         <div className="relative mb-12 group">
           <div className="absolute -inset-4 bg-gradient-to-r from-app-gold/20 via-app-red/20 to-app-gold/20 rounded-full blur-2xl animate-pulse" />
           <div className="relative">
@@ -115,7 +129,6 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           </div>
         </div>
 
-        {/* العنوان */}
         <div className="text-center mb-8 space-y-3">
           <h1 className="text-5xl font-bold text-white tracking-wide">
             <span className="bg-gradient-to-r from-app-gold via-yellow-400 to-app-red bg-clip-text text-transparent">المحترف</span>
@@ -128,7 +141,6 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           </p>
         </div>
 
-        {/* نسبة التحميل */}
         <div className="w-full max-w-md space-y-6">
           <div className="text-center">
             <div className="text-6xl font-mono font-bold mb-2">
@@ -139,7 +151,6 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
             </div>
           </div>
 
-          {/* شريط التقدم */}
           <div className="relative">
             <div className="h-3 bg-gray-800/80 rounded-full border border-gray-700/50 overflow-hidden backdrop-blur-sm shadow-inner">
               <div 
@@ -164,7 +175,6 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
             </div>
           </div>
 
-          {/* المرحلة الحالية */}
           <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-700/30 rounded-xl p-4 space-y-3">
             <div className="flex items-center space-x-3 rtl:space-x-reverse">
               <span className="text-2xl">{loadingSteps[currentStep]?.icon}</span>
@@ -183,9 +193,8 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
                 style={{ width: `${stepInnerProgress}%` }}
               />
             </div>
-          </div>
+          </div> 
 
-          {/* المعلومات الفرعية */}
           <div className="grid grid-cols-3 gap-4 text-center text-xs text-gray-500 mt-8">
             <div className="space-y-1">
               <div className="text-app-gold font-mono">{Math.round(progress * 0.8)}MB</div>
@@ -196,9 +205,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
               <div>المعالج</div>
             </div>
             <div className="space-y-1">
-              <div className="text-app-gold font-mono">
-                {elapsedTime ? `${elapsedTime}s` : '--'}
-              </div>
+              <div className="text-app-gold font-mono">{elapsedTime}s</div>
               <div>الزمن</div>
             </div>
           </div>
@@ -212,13 +219,11 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           </div>
         </div>
       </div>
-
       <style jsx>{`
         @keyframes shimmer {
           0% { transform: translateX(-100%); }
           100% { transform: translateX(100%); }
         }
-
         .animate-shimmer {
           animation: shimmer 2s infinite;
         }
@@ -226,5 +231,4 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
     </div>
   );
 };
-
 export default InitialLoader;

@@ -7,10 +7,8 @@
 
 @layer base {
   html {
-    /* This modern CSS property reserves space for the scrollbar,
-       preventing layout shift when content causes a scrollbar to appear,
-       or when modals (like those from Radix UI) hide it. */
-    scrollbar-gutter: stable;
+    overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
+    scrollbar-gutter: stable; /* New property to prevent layout shift */
   }
   :root {
     --background: 0 0% 96%; /* Light gray #F5F5F5 (PRD) */
@@ -98,6 +96,9 @@
     font-family: 'Tajawal', sans-serif;
     direction: rtl;
     min-height: 100vh;
+    /* Prevent layout shift by reserving space for scrollbar */
+    width: 100vw;
+    overflow-x: hidden;
   }
   
   /* Prevent layout shift for images */
@@ -111,15 +112,6 @@
 /* For Dialog overlay backdrop blur */
 .custom-dialog-overlay {
   backdrop-filter: blur(5px);
-}
-
-/* Fix for Radix UI scroll lock in RTL layouts.
-   When a modal/dialog/dropdown opens, Radix adds an inline style to the body
-   to hide the scrollbar. It also tries to add padding to compensate, but does
-   so on the wrong side (padding-right) for RTL. This rule corrects it. */
-body[data-radix-scroll-lock] {
-  padding-right: 0 !important;
-  padding-left: var(--removed-body-scroll-bar-size, 0px) !important;
 }
 
 @keyframes float {

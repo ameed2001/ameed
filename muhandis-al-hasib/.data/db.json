@@ -101,6 +101,22 @@
       "message": "Password reset requested for email: mediaplus64@gmail.com, but user not found or phone number did not match.",
       "timestamp": "2025-06-29T21:21:04.508Z",
       "user": "System"
+    },
+    {
+      "id": "log-1751232782802-zl01t",
+      "action": "PASSWORD_RESET_REQUEST_INVALID",
+      "level": "INFO",
+      "message": "Password reset requested for email: mediaplus64@gmail.com, but user not found or phone number did not match.",
+      "timestamp": "2025-06-29T21:33:02.802Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751283957531-1cuib",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: malik@gmail.com",
+      "timestamp": "2025-06-30T11:45:57.531Z",
+      "user": "user-1750959424627-e7rbf"
     }
   ],
   "roles": [

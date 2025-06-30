@@ -181,11 +181,7 @@ export default function AdminSettingsPage() {
                       <SelectTrigger className="w-full bg-white focus:ring-2 focus:ring-app-gold/50 border-gray-300 text-right">
                         <SelectValue placeholder="اختر لغة..." />
                       </SelectTrigger>
-                      <SelectContent 
-                        style={{ overflowY: 'scroll', scrollbarGutter: 'stable both-edges' }}
-                        // Alternatively, if className is preferred and you have a CSS class defined:
-                        // className="overflow-y-scroll scrollbar-gutter-stable-both-edges"
-                      >
+                      <SelectContent>
                         <SelectItem value="ar" className="flex justify-end">العربية</SelectItem>
                         <SelectItem value="en" className="flex justify-end">English</SelectItem>
                       </SelectContent>

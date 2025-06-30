@@ -10,7 +10,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <Navbar /> {/* Add Navbar here */}
-      <main className="flex-grow pt-8">
+      <main className="flex-grow">
         {children}
       </main>
       <Footer />

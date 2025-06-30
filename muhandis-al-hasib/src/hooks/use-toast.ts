@@ -185,10 +185,19 @@ function useToast() {
     }
   }, [])
 
+  // Memoize the actions to ensure they have a stable reference.
+  // This prevents infinite loops in components that depend on these actions in a useEffect.
+  const memoizedActions = React.useMemo(
+    () => ({
+      toast,
+      dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    }),
+    []
+  );
+
   return {
     ...state,
-    toast,
-    dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    ...memoizedActions,
   }
 }
 

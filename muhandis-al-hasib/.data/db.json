@@ -12,17 +12,6 @@
       "createdAt": "2025-06-26T13:50:51.175Z"
     },
     {
-      "id": "user-1750946422820-53jsi",
-      "name": "Ameed Waleed Samara",
-      "email": "ameed2001@mhandis.com",
-      "password_hash": "$2a$10$VSfosgbRYsdBHp8c0MXQOubTcom4g/n.jTHiG6W6C9yT5af48NqW.",
-      "role": "ENGINEER",
-      "status": "ACTIVE",
-      "createdAt": "2025-06-26T14:00:22.821Z",
-      "updatedAt": "2025-06-26T14:00:22.821Z",
-      "profileImage": "https://placehold.co/100x100.png?text=AM"
-    },
-    {
       "id": "user-1750959424627-e7rbf",
       "name": "عميد سماره",
       "email": "malik@gmail.com",
@@ -87,36 +76,20 @@
   },
   "logs": [
     {
-      "id": "log-1751227545072-pu7aq",
+      "id": "log-1751286037448-iuktc",
       "action": "ADMIN_DELETE_ALL_LOGS",
       "level": "WARNING",
-      "message": "Admin deleted all 32 system logs.",
-      "timestamp": "2025-06-29T20:05:45.072Z",
+      "message": "Admin deleted all 4 system logs.",
+      "timestamp": "2025-06-30T12:20:37.448Z",
       "user": "admin-hardcoded-001"
     },
     {
-      "id": "log-1751232064508-lv33r",
-      "action": "PASSWORD_RESET_REQUEST_INVALID",
+      "id": "log-1751286350243-g8h0a",
+      "action": "USER_DELETE_SUCCESS_BY_ADMIN",
       "level": "INFO",
-      "message": "Password reset requested for email: mediaplus64@gmail.com, but user not found or phone number did not match.",
-      "timestamp": "2025-06-29T21:21:04.508Z",
+      "message": "User ID user-1750946422820-53jsi deleted by admin.",
+      "timestamp": "2025-06-30T12:25:50.243Z",
       "user": "System"
-    },
-    {
-      "id": "log-1751232782802-zl01t",
-      "action": "PASSWORD_RESET_REQUEST_INVALID",
-      "level": "INFO",
-      "message": "Password reset requested for email: mediaplus64@gmail.com, but user not found or phone number did not match.",
-      "timestamp": "2025-06-29T21:33:02.802Z",
-      "user": "System"
-    },
-    {
-      "id": "log-1751283957531-1cuib",
-      "action": "USER_LOGIN_SUCCESS",
-      "level": "INFO",
-      "message": "User logged in: malik@gmail.com",
-      "timestamp": "2025-06-30T11:45:57.531Z",
-      "user": "user-1750959424627-e7rbf"
     }
   ],
   "roles": [

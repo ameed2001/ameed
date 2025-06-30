@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,6 +7,7 @@
 @layer base {
   html {
     overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
+    scrollbar-gutter: stable; /* New property to prevent layout shift */
   }
   :root {
     --background: 0 0% 96%; /* Light gray #F5F5F5 (PRD) */
@@ -93,6 +95,16 @@
     font-family: 'Tajawal', sans-serif;
     direction: rtl;
     min-height: 100vh;
+    /* Prevent layout shift by reserving space for scrollbar */
+    width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  /* Prevent layout shift for images */
+  img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
 }
 
@@ -117,6 +129,9 @@
     border-radius: 50%;
     background-color: rgba(212, 175, 55, 0.1);
     animation: float linear infinite;
+    /* Prevent layout shift */
+    pointer-events: none;
+    z-index: -1;
 }
 
 .input-field:focus + .input-label,
@@ -127,6 +142,9 @@
     background-color: #1f2937;
     color: hsl(var(--primary));
     padding: 0 0.25rem;
+    /* Prevent layout shift */
+    position: absolute;
+    transition: all 0.2s ease;
 }
 
 .input-field:focus {
@@ -157,6 +175,12 @@
   padding: 0;
   background: transparent;
   border: none;
+  /* Prevent layout shift */
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .html-modal-close-btn:hover {
@@ -167,6 +191,8 @@
 .modal-option-button {
   @apply flex items-center justify-between w-full p-3 sm:p-4 text-right rounded-lg shadow-sm transition-all duration-200 ease-in-out;
   @apply bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-app-gold focus:ring-opacity-50;
+  /* Prevent layout shift */
+  min-height: 70px;
 }
 
 .modal-option-button-text {
@@ -176,6 +202,8 @@
 .modal-option-button-icon-area {
   @apply flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full ml-3;
   background-color: hsl(var(--accent) / 0.1); 
+  /* Prevent layout shift */
+  flex-shrink: 0;
 }
 
 .modal-option-button-icon {
@@ -186,6 +214,11 @@
 .modal-footer-close-button {
   @apply px-6 py-2 text-sm font-medium rounded-md transition-colors;
   @apply bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400;
+  /* Prevent layout shift */
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .calculation-result-display {
@@ -197,6 +230,11 @@
   color: hsl(var(--accent)); 
   border-right: 4px solid hsl(var(--accent)); 
   text-align: right;
+  /* Prevent layout shift */
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .add-user-dialog-no-x > button.absolute.right-4.top-4 {
@@ -207,6 +245,8 @@
 .card-flipper {
   perspective: 1500px;
   transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  /* Prevent layout shift */
+  min-height: 200px;
 }
 
 .card-flipper:hover {
@@ -219,6 +259,8 @@
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Prevent layout shift */
+  min-height: 200px;
 }
 
 .card-flipper:hover .card-flipper-inner {
@@ -237,6 +279,8 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  /* Prevent layout shift */
+  overflow: hidden;
 }
 
 .card-flipper-front {
@@ -252,6 +296,9 @@
 .card-icon {
   transition: all 0.5s ease;
   transform: scale(1);
+  /* Prevent layout shift */
+  width: 60px;
+  height: 60px;
 }
 
 .card-flipper:hover .card-icon {
@@ -264,6 +311,8 @@
   align-items: center;
   --color: hsl(0, 0%, 87%);
   --animation: 2s ease-in-out infinite;
+  /* Prevent layout shift */
+  min-height: 80px;
 }
 
 .loader .circle {
@@ -278,6 +327,8 @@
   margin: 0 10px;
   background-color: transparent;
   animation: circle-keys var(--animation);
+  /* Prevent layout shift */
+  flex-shrink: 0;
 }
 
 .loader .circle .dot {
@@ -396,4 +447,34 @@
     outline-offset: 20px;
     opacity: 0;
   }
+}
+
+/* Additional fixes to prevent layout shift */
+[data-rk] {
+  /* Fix for wallet connect modal causing layout shift */
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Fix for images without dimensions */
+img:not([width]), img:not([height]) {
+  aspect-ratio: auto;
+}
+
+/* Fix for buttons with dynamic content */
+button {
+  min-height: 44px; /* Minimum touch target size */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Smooth transitions for height changes */
+[class*="transition"] {
+  transition-property: transform, opacity, background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }

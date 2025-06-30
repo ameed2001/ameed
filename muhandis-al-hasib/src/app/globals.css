@@ -397,11 +397,3 @@
     opacity: 0;
   }
 }
-
-/* Prevent layout shift when select dropdown scrollbar appears */
-.radix-dropdown-menu-content, .radix-select-content {
-  scrollbar-gutter: stable !important;
-}
-    
-
-    

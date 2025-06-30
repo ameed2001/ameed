@@ -13,7 +13,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState('0.0');
+  const [elapsedTime, setElapsedTime] = useState<string | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
   const loadingSteps = [
@@ -29,7 +29,8 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
   ];
 
   useEffect(() => {
-    // Set start time on the client
+    if (typeof window === 'undefined') return;
+
     if (startTimeRef.current === null) {
       startTimeRef.current = Date.now();
     }
@@ -80,6 +81,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
       "fixed inset-0 z-50 overflow-hidden transition-all duration-1000 ease-out",
       fadeOut ? "opacity-0 scale-105" : "opacity-100 scale-100"
     )}>
+      {/* الخلفية */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-gray-900 to-slate-900">
         <div 
           className="absolute inset-0 opacity-[0.03]"
@@ -95,29 +97,25 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-app-gold/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
+      {/* المحتوى */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-8">
+        {/* الشعار */}
         <div className="relative mb-12 group">
           <div className="absolute -inset-4 bg-gradient-to-r from-app-gold/20 via-app-red/20 to-app-gold/20 rounded-full blur-2xl animate-pulse" />
           <div className="relative">
-            {/* Outer square with border and blur */}
             <div className="w-24 h-24 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700/50 shadow-2xl backdrop-blur-sm p-1 flex items-center justify-center">
-              {/* Image inside the outer square */}
               <Image
-                src="https://i.imgur.com/79bO3U2.jpg" // Using external URL for the logo
+                src="https://i.imgur.com/79bO3U2.jpg"
                 alt="Professional Logo"
                 width={80}
                 height={80}
-                className="rounded-full border-2 border-app-gold" // Keep border and rounded style
+                className="rounded-full border-2 border-app-gold"
               />
             </div>
-            {/* Corner decorations */}
-            <div className="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-app-gold rounded-tl-lg" />
-            <div className="absolute -top-1 -right-1 w-4 h-4 border-t-2 border-r-2 border-app-gold rounded-tr-lg" />
-            <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b-2 border-l-2 border-app-gold rounded-bl-lg" />
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-app-gold rounded-br-lg" />
           </div>
         </div>
 
+        {/* العنوان */}
         <div className="text-center mb-8 space-y-3">
           <h1 className="text-5xl font-bold text-white tracking-wide">
             <span className="bg-gradient-to-r from-app-gold via-yellow-400 to-app-red bg-clip-text text-transparent">المحترف</span>
@@ -130,6 +128,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           </p>
         </div>
 
+        {/* نسبة التحميل */}
         <div className="w-full max-w-md space-y-6">
           <div className="text-center">
             <div className="text-6xl font-mono font-bold mb-2">
@@ -140,6 +139,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
             </div>
           </div>
 
+          {/* شريط التقدم */}
           <div className="relative">
             <div className="h-3 bg-gray-800/80 rounded-full border border-gray-700/50 overflow-hidden backdrop-blur-sm shadow-inner">
               <div 
@@ -164,6 +164,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
             </div>
           </div>
 
+          {/* المرحلة الحالية */}
           <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-700/30 rounded-xl p-4 space-y-3">
             <div className="flex items-center space-x-3 rtl:space-x-reverse">
               <span className="text-2xl">{loadingSteps[currentStep]?.icon}</span>
@@ -182,8 +183,9 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
                 style={{ width: `${stepInnerProgress}%` }}
               />
             </div>
-          </div> 
+          </div>
 
+          {/* المعلومات الفرعية */}
           <div className="grid grid-cols-3 gap-4 text-center text-xs text-gray-500 mt-8">
             <div className="space-y-1">
               <div className="text-app-gold font-mono">{Math.round(progress * 0.8)}MB</div>
@@ -194,7 +196,9 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
               <div>المعالج</div>
             </div>
             <div className="space-y-1">
-              <div className="text-app-gold font-mono">{elapsedTime}s</div>
+              <div className="text-app-gold font-mono">
+                {elapsedTime ? `${elapsedTime}s` : '--'}
+              </div>
               <div>الزمن</div>
             </div>
           </div>
@@ -217,10 +221,6 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
 
         .animate-shimmer {
           animation: shimmer 2s infinite;
-        }
-
-        .bg-gradient-radial {
-          background: radial-gradient(circle, var(--tw-gradient-stops));
         }
       `}</style>
     </div>

@@ -370,11 +370,11 @@
 
 @keyframes dot-keys {
   0% {
-    transform: scale(1);
+    transform: scale(0);
   }
 
   50% {
-    transform: scale(0);
+    transform: scale(1);
   }
 
   100% {
@@ -396,8 +396,4 @@
     outline-offset: 20px;
     opacity: 0;
   }
-}
-
-.radix-dropdown-menu-content, .radix-select-content {
-  scrollbar-gutter: stable !important;
 }

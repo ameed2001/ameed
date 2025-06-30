@@ -181,7 +181,7 @@ export default function AdminSettingsPage() {
                       <SelectTrigger className="w-full bg-white focus:ring-2 focus:ring-app-gold/50 border-gray-300 text-right">
                         <SelectValue placeholder="اختر لغة..." />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent position="popper">
                         <SelectItem value="ar" className="flex justify-end">العربية</SelectItem>
                         <SelectItem value="en" className="flex justify-end">English</SelectItem>
                       </SelectContent>
@@ -303,7 +303,7 @@ export default function AdminSettingsPage() {
                       <SelectTrigger className="w-full bg-white focus:ring-2 focus:ring-app-gold/50 border-gray-300 text-right">
                         <SelectValue placeholder="اختر التكرار..." />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent position="popper">
                         <SelectItem value="instant" className="flex justify-end">فوري</SelectItem>
                         <SelectItem value="daily" className="flex justify-end">يومي</SelectItem>
                         <SelectItem value="weekly" className="flex justify-end">أسبوعي</SelectItem>
@@ -390,3 +390,4 @@ export default function AdminSettingsPage() {
     </div>
   );
 }
+    

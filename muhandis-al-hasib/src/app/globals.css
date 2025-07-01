@@ -6,8 +6,8 @@
 
 @layer base {
   html {
-    /* This is the key fix: always reserve space for the scrollbar to prevent layout shift. */
-    scrollbar-gutter: stable;
+    overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
+    scrollbar-gutter: stable; /* New property to prevent layout shift */
   }
   :root {
     --background: 0 0% 96%; /* Light gray #F5F5F5 (PRD) */

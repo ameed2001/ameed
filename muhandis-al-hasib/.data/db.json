@@ -19,7 +19,7 @@
       "role": "OWNER",
       "status": "ACTIVE",
       "createdAt": "2025-06-26T17:37:04.628Z",
-      "updatedAt": "2025-06-26T17:37:04.628Z",
+      "updatedAt": "2025-07-01T11:10:04.398Z",
       "profileImage": "https://placehold.co/100x100.png?text=عم"
     },
     {
@@ -97,6 +97,22 @@
       "level": "INFO",
       "message": "System settings updated.",
       "timestamp": "2025-06-30T13:09:11.313Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751368194024-xb1uh",
+      "action": "USER_SUSPEND_SUCCESS",
+      "level": "INFO",
+      "message": "Admin admin-hardcoded-001 suspended user user-1750959424627-e7rbf.",
+      "timestamp": "2025-07-01T11:09:54.024Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751368204402-81srg",
+      "action": "USER_UNSUSPEND_SUCCESS",
+      "level": "INFO",
+      "message": "Admin admin-hardcoded-001 unsuspended user user-1750959424627-e7rbf.",
+      "timestamp": "2025-07-01T11:10:04.402Z",
       "user": "System"
     }
   ],

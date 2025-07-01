@@ -1,9 +1,43 @@
+"use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Users, Briefcase, Settings, ScrollText, ArrowLeft } from "lucide-react"; // Added ArrowLeft
+import { Users, Briefcase, Settings, ScrollText, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+
+// تعريف variants خارج المكون الرئيسي
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { 
+      staggerChildren: 0.15,
+      when: "beforeChildren"
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.5, 
+      ease: "easeOut" 
+    } 
+  },
+  hover: { 
+    scale: 1.04, 
+    boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut"
+    }
+  }
+};
 
 export default function AdminDashboardPage() {
   const overviewCards = [
@@ -12,92 +46,131 @@ export default function AdminDashboardPage() {
       href: "/admin/users", 
       icon: Users, 
       description: "عرض وتعديل وحذف المستخدمين.",
-      iconBgClass: "bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400",
-      bottomBarClass: "bg-gradient-to-r from-blue-400 to-blue-600",
-      buttonClassName: "bg-blue-50 text-blue-700 border-2 border-blue-500 hover:bg-blue-500 hover:text-white dark:bg-blue-700/30 dark:text-blue-300 dark:border-blue-600 dark:hover:bg-blue-600 dark:hover:text-white",
+      iconBgClass: "bg-blue-100 text-blue-700 dark:bg-blue-900/60 dark:text-blue-400",
+      bottomBarClass: "bg-gradient-to-r from-blue-500 to-blue-700",
+      buttonClassName: "bg-blue-50 text-blue-700 border-2 border-blue-600 hover:bg-blue-600 hover:text-white dark:bg-blue-700/40 dark:text-blue-300 dark:border-blue-600 dark:hover:bg-blue-700 dark:hover:text-white",
       buttonText: "إدارة المستخدمين",
-      dataAiHint: "manage users"
+      dataAiHint: "manage-users"
     },
     { 
       title: "إدارة المشاريع", 
       href: "/admin/projects", 
       icon: Briefcase, 
       description: "متابعة وحذف المشاريع القائمة.",
-      iconBgClass: "bg-amber-50 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400",
-      bottomBarClass: "bg-gradient-to-r from-amber-400 to-amber-600",
-      buttonClassName: "bg-amber-50 text-amber-700 border-2 border-amber-500 hover:bg-amber-500 hover:text-white dark:bg-amber-700/30 dark:text-amber-300 dark:border-amber-600 dark:hover:bg-amber-600 dark:hover:text-white",
+      iconBgClass: "bg-amber-100 text-amber-700 dark:bg-amber-900/60 dark:text-amber-400",
+      bottomBarClass: "bg-gradient-to-r from-amber-500 to-amber-700",
+      buttonClassName: "bg-amber-50 text-amber-700 border-2 border-amber-600 hover:bg-amber-600 hover:text-white dark:bg-amber-700/40 dark:text-amber-300 dark:border-amber-600 dark:hover:bg-amber-700 dark:hover:text-white",
       buttonText: "إدارة المشاريع",
-      dataAiHint: "manage projects"
+      dataAiHint: "manage-projects"
     },
     { 
       title: "إعدادات النظام", 
       href: "/admin/settings", 
       icon: Settings, 
       description: "تكوين الإعدادات العامة للنظام.",
-      iconBgClass: "bg-purple-50 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400",
-      bottomBarClass: "bg-gradient-to-r from-purple-400 to-purple-600",
-      buttonClassName: "bg-purple-50 text-purple-700 border-2 border-purple-500 hover:bg-purple-500 hover:text-white dark:bg-purple-700/30 dark:text-purple-300 dark:border-purple-600 dark:hover:bg-purple-600 dark:hover:text-white",
+      iconBgClass: "bg-purple-100 text-purple-700 dark:bg-purple-900/60 dark:text-purple-400",
+      bottomBarClass: "bg-gradient-to-r from-purple-500 to-purple-700",
+      buttonClassName: "bg-purple-50 text-purple-700 border-2 border-purple-600 hover:bg-purple-600 hover:text-white dark:bg-purple-700/40 dark:text-purple-300 dark:border-purple-600 dark:hover:bg-purple-700 dark:hover:text-white",
       buttonText: "تعديل الإعدادات",
-      dataAiHint: "system settings"
+      dataAiHint: "system-settings"
     },
     { 
       title: "سجلات النظام", 
       href: "/admin/logs", 
       icon: ScrollText, 
       description: "مراجعة أنشطة النظام والأحداث.",
-      iconBgClass: "bg-green-50 text-green-600 dark:bg-green-900/50 dark:text-green-400",
-      bottomBarClass: "bg-gradient-to-r from-green-400 to-green-600",
-      buttonClassName: "bg-green-50 text-green-700 border-2 border-green-500 hover:bg-green-500 hover:text-white dark:bg-green-700/30 dark:text-green-300 dark:border-green-600 dark:hover:bg-green-600 dark:hover:text-white",
+      iconBgClass: "bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-400",
+      bottomBarClass: "bg-gradient-to-r from-green-500 to-green-700",
+      buttonClassName: "bg-green-50 text-green-700 border-2 border-green-600 hover:bg-green-600 hover:text-white dark:bg-green-700/40 dark:text-green-300 dark:border-green-600 dark:hover:bg-green-700 dark:hover:text-white",
       buttonText: "عرض السجلات",
-      dataAiHint: "system logs"
+      dataAiHint: "system-logs"
     },
   ];
 
   return (
-    <div className="space-y-8 text-right">
-      <Card className="bg-white/95 dark:bg-card shadow-xl border border-gray-200/80 dark:border-gray-700/60">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl md:text-4xl font-bold text-app-red">لوحة تحكم المسؤول الرئيسية</CardTitle>
+    <div className="space-y-16 text-right px-6 md:px-12 lg:px-24 py-12 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen">
+      {/* Welcome Section */}
+      <Card className="bg-white/95 dark:bg-card shadow-2xl border border-gray-300 dark:border-gray-700 rounded-3xl">
+        <CardHeader>
+          <CardTitle className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-3">
+            مرحباً بك، أيها المسؤول!
+            <motion.span
+              className="inline-block text-green-600 dark:text-green-400"
+              animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              aria-hidden="true"
+            >
+              👋
+            </motion.span>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-lg text-gray-700 dark:text-gray-300 text-center mb-10">
-            مرحباً بك في لوحة تحكم المسؤول. من هنا يمكنك إدارة المستخدمين، المشاريع، إعدادات النظام، ومراجعة السجلات.
+          <p className="text-xl leading-relaxed text-gray-700 dark:text-gray-300 max-w-4xl mx-auto select-text">
+            هذه هي لوحة التحكم الخاصة بك. يمكنك من هنا إدارة المستخدمين، المشاريع، إعدادات النظام، ومراجعة سجلات الأنشطة بسهولة وسرعة.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        </CardContent>
+      </Card>
+
+      {/* Dashboard Cards */}
+      <Card className="bg-white/95 dark:bg-card shadow-2xl border border-gray-300 dark:border-gray-700 rounded-3xl">
+        <CardHeader>
+          <CardTitle className="text-4xl font-extrabold text-app-red text-center mb-12 tracking-wide">
+            لوحة تحكم المسؤول الرئيسية
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-10"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
             {overviewCards.map((card) => {
               const IconComponent = card.icon;
               return (
-                <div
+                <motion.div
                   key={card.title}
-                  className="bg-white dark:bg-card rounded-xl shadow-md overflow-hidden card-hover-effect border border-gray-200 dark:border-gray-700 flex flex-col h-full"
-                  data-ai-hint={card.dataAiHint}
+                  variants={cardVariants}
+                  whileHover="hover"
+                  className="flex flex-col"
                 >
-                  <div className="p-6 pb-4 flex-grow">
-                    <div className="flex items-start justify-between mb-3 text-right">
-                      <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mt-1">{card.title}</h3>
-                      <div className={cn("p-3 rounded-full", card.iconBgClass)}>
-                        <IconComponent className="w-6 h-6" />
+                  <Link
+                    href={card.href}
+                    className={cn(
+                      "flex flex-col rounded-2xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-card shadow-lg cursor-pointer select-none transition-shadow focus:outline-none focus:ring-4 focus:ring-blue-400 dark:focus:ring-blue-600",
+                      "overflow-hidden h-full"
+                    )}
+                    data-ai-hint={card.dataAiHint}
+                    tabIndex={0}
+                    role="link"
+                  >
+                    <div className="p-7 flex justify-between items-center">
+                      <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{card.title}</h3>
+                      <div className={cn("p-5 rounded-full", card.iconBgClass)}>
+                        <IconComponent className="w-8 h-8" />
                       </div>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-5 text-right">{card.description}</p>
-                  </div>
-                  <div className="px-6 pb-6 pt-0 mt-auto">
-                    <Link
-                      href={card.href}
-                      className={cn(
-                        "w-full block py-3 px-4 text-center rounded-lg font-medium transition-colors flex items-center justify-center",
-                        card.buttonClassName
-                      )}
-                    >
-                      <span>{card.buttonText}</span>
-                      <ArrowLeft className="mr-2 w-5 h-5" />
-                    </Link>
-                  </div>
-                  <div className={cn("h-1.5", card.bottomBarClass)}></div>
-                </div>
+                    <p className="px-7 text-gray-600 dark:text-gray-400 text-base mb-10 leading-relaxed">{card.description}</p>
+                    <div className="mt-auto px-7 pb-7">
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-center font-semibold tracking-wide",
+                          card.buttonClassName,
+                          "group-hover:bg-opacity-95 transition-colors duration-300"
+                        )}
+                        aria-label={card.buttonText}
+                      >
+                        <span>{card.buttonText}</span>
+                        <ArrowLeft className="w-6 h-6 mr-3 rtl:mr-0 rtl:ml-3" />
+                      </Button>
+                    </div>
+                    <div className={cn("h-2 rounded-b-2xl", card.bottomBarClass)} />
+                  </Link>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </CardContent>
       </Card>
     </div>

@@ -52,6 +52,10 @@ const nextConfig: NextConfig = {
             key: 'Set-Cookie',
             value: 'SameSite=Strict; Secure',
           },
+          {
+            key: 'Permissions-Policy',
+            value: "usb=(), serial=(), hid=(), autoplay=*, cross-origin-isolated=()",
+          }
         ],
       },
     ];

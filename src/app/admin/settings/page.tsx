@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -27,17 +27,17 @@ export default function AdminSettingsPage() {
         if (fetchedSettings) {
           setSettings(fetchedSettings);
         } else {
-          toast({ 
-            title: "خطأ", 
-            description: "فشل تحميل إعدادات النظام.", 
-            variant: "destructive" 
+          toast({
+            title: "خطأ",
+            description: "فشل تحميل إعدادات النظام.",
+            variant: "destructive"
           });
         }
       } catch (error) {
-        toast({ 
-          title: "خطأ فادح", 
-          description: "حدث خطأ أثناء تحميل الإعدادات.", 
-          variant: "destructive" 
+        toast({
+          title: "خطأ فادح",
+          description: "حدث خطأ أثناء تحميل الإعدادات.",
+          variant: "destructive"
         });
         console.error("Error fetching settings:", error);
       }
@@ -53,17 +53,17 @@ export default function AdminSettingsPage() {
   const handleSaveSettings = async (event: FormEvent) => {
     event.preventDefault();
     if (!settings) {
-      toast({ 
-        title: "خطأ", 
-        description: "لا توجد إعدادات لحفظها.", 
-        variant: "destructive" 
+      toast({
+        title: "خطأ",
+        description: "لا توجد إعدادات لحفظها.",
+        variant: "destructive"
       });
       return;
     }
     setIsLoading(true);
-    
+
     const result = await updateSystemSettings(settings);
-    
+
     if (result.success) {
       toast({
         title: "تم حفظ الإعدادات",
@@ -95,8 +95,8 @@ export default function AdminSettingsPage() {
       <div className="flex flex-col items-center justify-center h-[70vh] gap-4">
         <ShieldAlert className="h-12 w-12 text-red-500" />
         <p className="text-lg font-medium text-red-500">فشل تحميل الإعدادات</p>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={() => window.location.reload()}
           className="mt-4"
         >
@@ -118,40 +118,40 @@ export default function AdminSettingsPage() {
             قم بتكوين الإعدادات الأساسية والمتقدمة للنظام لضمان تجربة مستخدم مثالية
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="pt-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} dir="rtl">
             <TabsList className="grid w-full grid-cols-4 gap-2 mb-6 bg-gray-100 p-2 rounded-lg">
-              <TabsTrigger 
-                value="general" 
+              <TabsTrigger
+                value="general"
                 className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
               >
                 <Globe className="w-4 h-4 ml-2" />
                 عام
               </TabsTrigger>
-              <TabsTrigger 
-                value="security" 
+              <TabsTrigger
+                value="security"
                 className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
               >
                 <ShieldAlert className="w-4 h-4 ml-2" />
                 الأمان
               </TabsTrigger>
-              <TabsTrigger 
-                value="notifications" 
+              <TabsTrigger
+                value="notifications"
                 className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
               >
                 <Bell className="w-4 h-4 ml-2" />
                 الإشعارات
               </TabsTrigger>
-              <TabsTrigger 
-                value="files" 
+              <TabsTrigger
+                value="files"
                 className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
               >
                 <Upload className="w-4 h-4 ml-2" />
                 الملفات
               </TabsTrigger>
             </TabsList>
-            
+
             <form onSubmit={handleSaveSettings}>
               <TabsContent value="general" className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -181,11 +181,7 @@ export default function AdminSettingsPage() {
                       <SelectTrigger className="w-full bg-white focus:ring-2 focus:ring-app-gold/50 border-gray-300 text-right">
                         <SelectValue placeholder="اختر لغة..." />
                       </SelectTrigger>
-                      <SelectContent 
-                        style={{ overflowY: 'scroll', scrollbarGutter: 'stable both-edges' }}
-                        // Alternatively, if className is preferred and you have a CSS class defined:
-                        // className="overflow-y-scroll scrollbar-gutter-stable-both-edges"
-                      >
+                      <SelectContent>
                         <SelectItem value="ar" className="flex justify-end">العربية</SelectItem>
                         <SelectItem value="en" className="flex justify-end">English</SelectItem>
                       </SelectContent>
@@ -195,21 +191,20 @@ export default function AdminSettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div>
-                    <Label htmlFor="maintenanceMode" className="font-medium text-gray-700 flex items-center gap-2">
-                      <ShieldAlert className="w-4 h-4" />
-                      وضع الصيانة
-                    </Label>
-                    <p className="text-sm text-gray-500 mt-1">
-                      عند التفعيل، لن يتمكن المستخدمون من الوصول للموقع
-                    </p>
-                  </div>
-                  <Switch
-                    id="maintenanceMode"
-                    checked={settings.maintenanceMode}
-                    onCheckedChange={(checked) => handleChange('maintenanceMode', checked)}
-                    className="data-[state=checked]:bg-app-red"
-                  />
+                    <div>
+                        <Label htmlFor="maintenanceMode" className="font-medium text-gray-700 flex items-center gap-2">
+                            <ShieldAlert className="w-4 h-4" />
+                            وضع الصيانة
+                        </Label>
+                        <p className="text-sm text-gray-500 mt-1">
+                            عند التفعيل، لن يتمكن المستخدمون من الوصول للموقع
+                        </p>
+                    </div>
+                    <Checkbox
+                        id="maintenanceMode"
+                        checked={settings.maintenanceMode}
+                        onCheckedChange={(checked) => handleChange('maintenanceMode', !!checked)}
+                    />
                 </div>
               </TabsContent>
 
@@ -245,40 +240,38 @@ export default function AdminSettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div>
-                    <Label htmlFor="twoFactorAuth" className="font-medium text-gray-700">
-                      المصادقة الثنائية للمشرفين
-                    </Label>
-                    <p className="text-sm text-gray-500 mt-1">
-                      تتطلب تأكيد الهوية عبر تطبيق المصادقة
-                    </p>
-                  </div>
-                  <Switch
-                    id="twoFactorAuth"
-                    checked={settings.twoFactorAuth || false}
-                    onCheckedChange={(checked) => handleChange('twoFactorAuth', checked)}
-                    className="data-[state=checked]:bg-app-red"
-                  />
+                    <div>
+                        <Label htmlFor="twoFactorAuth" className="font-medium text-gray-700">
+                            المصادقة الثنائية للمشرفين
+                        </Label>
+                        <p className="text-sm text-gray-500 mt-1">
+                            تتطلب تأكيد الهوية عبر تطبيق المصادقة
+                        </p>
+                    </div>
+                    <Checkbox
+                        id="twoFactorAuth"
+                        checked={settings.twoFactorAuth || false}
+                        onCheckedChange={(checked) => handleChange('twoFactorAuth', !!checked)}
+                    />
                 </div>
               </TabsContent>
 
               <TabsContent value="notifications" className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div>
-                    <Label htmlFor="emailNotificationsEnabled" className="font-medium text-gray-700 flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
-                      تفعيل إشعارات البريد الإلكتروني
-                    </Label>
-                    <p className="text-sm text-gray-500 mt-1">
-                      إرسال إشعارات عبر البريد للمستخدمين عند حدوث أنشطة مهمة
-                    </p>
-                  </div>
-                  <Switch
-                    id="emailNotificationsEnabled"
-                    checked={settings.emailNotificationsEnabled}
-                    onCheckedChange={(checked) => handleChange('emailNotificationsEnabled', checked)}
-                    className="data-[state=checked]:bg-app-gold"
-                  />
+                    <div>
+                        <Label htmlFor="emailNotificationsEnabled" className="font-medium text-gray-700 flex items-center gap-2">
+                            <Mail className="w-4 h-4" />
+                            تفعيل إشعارات البريد الإلكتروني
+                        </Label>
+                        <p className="text-sm text-gray-500 mt-1">
+                            إرسال إشعارات عبر البريد للمستخدمين عند حدوث أنشطة مهمة
+                        </p>
+                    </div>
+                    <Checkbox
+                        id="emailNotificationsEnabled"
+                        checked={settings.emailNotificationsEnabled}
+                        onCheckedChange={(checked) => handleChange('emailNotificationsEnabled', !!checked)}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -351,26 +344,25 @@ export default function AdminSettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div>
-                    <Label htmlFor="fileScanning" className="font-medium text-gray-700">
-                      فحص الملفات المضغوطة
-                    </Label>
-                    <p className="text-sm text-gray-500 mt-1">
-                      فحص محتويات الملفات المضغوطة (ZIP, RAR) قبل الرفع
-                    </p>
-                  </div>
-                  <Switch
-                    id="fileScanning"
-                    checked={settings.fileScanning || false}
-                    onCheckedChange={(checked) => handleChange('fileScanning', checked)}
-                    className="data-[state=checked]:bg-app-gold"
-                  />
+                    <div>
+                        <Label htmlFor="fileScanning" className="font-medium text-gray-700">
+                            فحص الملفات المضغوطة
+                        </Label>
+                        <p className="text-sm text-gray-500 mt-1">
+                            فحص محتويات الملفات المضغوطة (ZIP, RAR) قبل الرفع
+                        </p>
+                    </div>
+                    <Checkbox
+                        id="fileScanning"
+                        checked={settings.fileScanning || false}
+                        onCheckedChange={(checked) => handleChange('fileScanning', !!checked)}
+                    />
                 </div>
               </TabsContent>
 
               <div className="mt-8 pt-6 border-t border-gray-200">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full md:w-auto bg-gradient-to-r from-app-red to-app-gold hover:from-red-700 hover:to-amber-600 text-white font-bold py-3 px-8 text-lg shadow-lg transition-all duration-300"
                   disabled={isLoading}
                 >

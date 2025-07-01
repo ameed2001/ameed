@@ -7,7 +7,6 @@ import { LogIn, UserPlus, UserCircle, X, ShieldCheck as AdminIcon } from 'lucide
 import Link from 'next/link';
 import { useEffect, useState } from 'react'; 
 import { useRouter } from 'next/navigation'; 
-import { cn } from '@/lib/utils';
 
 interface AuthRequiredModalProps {
   isOpen: boolean;
@@ -18,24 +17,25 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (isOpen && typeof window !== 'undefined') {
-      const role = localStorage.getItem('userRole');
-      if (role === 'OWNER' || role === 'ENGINEER' || role === 'ADMIN') {
-        setIsLoggedIn(true);
+    if (isOpen) {
+      if (typeof window !== 'undefined') {
+        const role = localStorage.getItem('userRole');
+        const isAuthenticated = !!role;
+        
+        setIsLoggedIn(isAuthenticated);
         setUserRole(role);
         setIsAdmin(role === 'ADMIN');
-      } else {
-        setIsLoggedIn(false);
-        setUserRole(null);
-        setIsAdmin(false);
       }
+      setIsLoading(false);
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
+  if (isLoading) return <div className="hidden">جار التحميل...</div>;
 
   const handleGoToAccount = () => {
     const dashboardPath = userRole === 'OWNER' ? '/owner/dashboard' : '/my-projects';
@@ -50,67 +50,71 @@ const AuthRequiredModal = ({ isOpen, onClose }: AuthRequiredModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-card text-card-foreground sm:max-w-md custom-dialog-overlay animate-modal-fade-in p-6 rounded-lg shadow-xl">
-        <DialogHeader className="relative text-right mb-4">
-          <DialogTitle className="text-app-red text-2xl font-bold text-center pt-8 sm:pt-2">
+      <DialogContent className="bg-white text-gray-800 sm:max-w-md animate-modal-fade-in p-6 rounded-xl border border-gray-200 shadow-2xl">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-center text-2xl font-bold text-red-600 pt-2">
             {isLoggedIn ? "تم تسجيل الدخول" : "يجب عليك تسجيل الدخول"}
           </DialogTitle>
         </DialogHeader>
-        <DialogDescription className="text-gray-700 text-right text-base leading-relaxed mb-6">
+        
+        <DialogDescription className="text-right text-gray-600 text-base leading-relaxed mb-6 px-4">
           {isLoggedIn && isAdmin ? (
-            "انت قد سجلت دخولك سابقا ايها المدير وايضا هذه الكروت مخصصة فقط للمهندس والمالك."
+            "لقد قمت بتسجيل الدخول كمسؤول. للوصول إلى هذه الميزة، يلزمك أن تكون مالكًا أو مهندسًا."
           ) : isLoggedIn ? (
-            "انت قد قمت بتسجيل دخولك مسبقا يرجى النقر على زر حسابي لنقلك لحسابك."
+            "لقد قمت بتسجيل دخولك مسبقًا. يرجى النقر على زر 'حسابي' للانتقال إلى لوحة التحكم الخاصة بك."
           ) : (
-            "لاستخدام هذه الميزة وغيرها من الميزات المتقدمة في منصة \"المحترف لحساب الكميات\"، يرجى تسجيل الدخول إلى حسابك أو إنشاء حساب جديد إذا لم تكن مسجلاً بعد."
+            <span>
+              لاستخدام هذه الميزة وغيرها من الميزات المتقدمة في منصة 
+              <span className="font-semibold text-red-600"> "المحترف لحساب الكميات"</span>، 
+              يرجى تسجيل الدخول إلى حسابك أو إنشاء حساب جديد إذا لم تكن مسجلاً بعد.
+            </span>
           )}
         </DialogDescription>
-        <DialogFooter className="flex flex-col sm:flex-row-reverse gap-3 pt-2">
+        
+        <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-2">
           {isLoggedIn && isAdmin ? (
             <>
-              <Button onClick={handleGoToAdminDashboard} className="w-full sm:flex-1 bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold py-2.5 text-base">
-                <AdminIcon className="ms-2 h-5 w-5" />
+              <Button 
+                onClick={handleGoToAdminDashboard} 
+                className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 text-base flex items-center justify-center"
+              >
+                <AdminIcon className="ml-2 h-5 w-5" />
                 حساب المسؤول
               </Button>
               <Button 
                 onClick={onClose} 
-                variant="secondary" 
-                className="w-full sm:flex-1 bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground font-semibold py-2.5 text-base"
+                variant="outline"
+                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold py-3 text-base"
               >
-                <X className="ms-2 h-5 w-5" />
+                <X className="ml-2 h-5 w-5" />
                 إغلاق
               </Button>
             </>
           ) : isLoggedIn ? (
             <>
-              <Button onClick={handleGoToAccount} className="w-full sm:flex-1 bg-app-gold hover:bg-yellow-600 text-primary-foreground font-semibold py-2.5 text-base">
-                <UserCircle className="ms-2 h-5 w-5" />
+              <Button 
+                onClick={handleGoToAccount} 
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 text-base flex items-center justify-center"
+              >
+                <UserCircle className="ml-2 h-5 w-5" />
                 حسابي
               </Button>
               <Button 
                 onClick={onClose} 
-                variant="secondary" 
-                className="w-full sm:flex-1 bg-gray-200 text-gray-800 hover:bg-destructive hover:text-destructive-foreground font-semibold py-2.5 text-base"
+                variant="outline"
+                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold py-3 text-base"
               >
-                <X className="ms-2 h-5 w-5" />
+                <X className="ml-2 h-5 w-5" />
                 إغلاق
               </Button>
             </>
           ) : (
-            <>
-              <Button asChild className="w-full sm:flex-1 bg-app-red hover:bg-red-700 text-white font-semibold py-2.5 text-base">
-                <Link href="/login" onClick={onClose}>
-                  <LogIn className="ms-2 h-5 w-5" />
-                  تسجيل الدخول
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full sm:flex-1 bg-green-700 hover:bg-green-800 text-white border-green-700 hover:border-green-800 font-semibold py-2.5 text-base">
-                <Link href="/signup" onClick={onClose}>
-                  <UserPlus className="ms-2 h-5 w-5" />
-                  إنشاء حساب جديد
-                </Link>
-              </Button>
-            </>
+            <Button 
+              onClick={onClose} 
+              className="w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-3 text-base"
+            >
+              إغلاق
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>

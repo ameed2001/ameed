@@ -7,25 +7,32 @@
 @layer base {
   html {
     overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
+    overflow-x: hidden; /* Prevent horizontal scrollbar on html */
     scrollbar-gutter: stable; /* New property to prevent layout shift */
-    /* إضافة خصائص جديدة لمنع الإزاحة */
     scroll-behavior: smooth;
   }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  html {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
   
-  /* حل شامل لمنع إزاحة الهيكل عند فتح النوافذ المنبثقة */
   body {
-    /* الحفاظ على العرض الثابت */
-    width: 100vw;
-    overflow-x: hidden;
-    /* منع الإزاحة الأفقية */
+    width: 100%; /* Change from 100vw to 100% to prevent horizontal overflow */
     position: relative;
+    background-color: #0f172a; /* Dark blue background for code effect */
   }
   
   /* عندما يكون الجسم مقفلاً (عند فتح نافذة منبثقة) */
   body.modal-open {
     overflow: hidden;
     padding-right: var(--scrollbar-width, 0px);
-    /* الحفاظ على العرض الأصلي */
     width: calc(100vw - var(--scrollbar-width, 0px));
   }
   
@@ -119,10 +126,13 @@
     direction: rtl;
     min-height: 100vh;
     /* Prevent layout shift by reserving space for scrollbar */
-    width: 100vw;
-    overflow-x: hidden;
+    /* width: 100vw; -- REMOVED */
+    /* overflow-x: hidden; -- MOVED TO HTML */
     /* إضافة انتقال سلس للتغييرات */
     transition: padding-right 0.3s ease, width 0.3s ease;
+    background: linear-gradient(to bottom, #0f172a, #1e293b); /* Gradient background for code effect */
+    position: relative;
+    overflow: hidden; /* Hide overflow for code elements */
   }
   
   /* Prevent layout shift for images */
@@ -132,6 +142,74 @@
     display: block;
   }
 }
+
+/* ================== تأثيرات الخلفية البرمجية ================== */
+.code-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2; /* Behind everything */
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.code-line {
+  position: absolute;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  color: rgba(74, 222, 128, 0.3); /* Green code color */
+  animation: floatCode linear infinite;
+  animation-duration: calc(100s + (var(--i) * 10s));
+  animation-delay: calc(var(--i) * -1s);
+  white-space: nowrap;
+  user-select: none;
+  text-shadow: 0 0 5px rgba(74, 222, 128, 0.2);
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+.code-cursor {
+  position: absolute;
+  width: 2px;
+  height: 24px;
+  background-color: rgba(74, 222, 128, 0.8);
+  animation: cursorBlink 1s infinite;
+  z-index: 10;
+}
+
+@keyframes floatCode {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  95% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes codeFadeIn {
+  from { opacity: 0; }
+  to { opacity: 0.3; }
+}
+
+/* ================== نهاية تأثيرات الخلفية البرمجية ================== */
 
 /* حلول محددة للنوافذ المنبثقة والقوائم المنسدلة */
 
@@ -170,6 +248,8 @@
   overflow-y: auto;
   /* منع تأثر المحتوى بالإزاحة */
   margin: 0 auto;
+  background: rgba(31, 41, 55, 0.9); /* Semi-transparent dark background */
+  backdrop-filter: blur(10px); /* Glass effect */
 }
 
 /* إصلاح القوائم المنسدلة */
@@ -607,4 +687,140 @@ button {
   z-index: 9999;
   pointer-events: none;
   white-space: nowrap;
+}
+
+@keyframes checkAnim {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 10px;
+  }
+}
+
+.animate-checkAnim {
+  animation: checkAnim 0.2s forwards;
+}
+
+/* طبقة التظليل فوق الخلفية البرمجية */
+.overlay-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8));
+  z-index: -1;
+  pointer-events: none;
+}
+/* From Uiverse.io by JaydipPrajapati1910 */ 
+.toggle-button-cover {
+  display: table-cell;
+  position: relative;
+  width: 200px;
+  height: 140px;
+  box-sizing: border-box;
+}
+
+.button-cover {
+  height: 100px;
+  margin: 20px;
+  background-color: #fff;
+  box-shadow: 0 10px 20px -8px #c5d6d6;
+  border-radius: 4px;
+}
+
+.button-cover:before {
+  counter-increment: button-counter;
+  content: counter(button-counter);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  color: #d7e3e3;
+  font-size: 12px;
+  line-height: 1;
+  padding: 5px;
+}
+
+.button-cover,
+.knobs,
+.layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.button {
+  position: relative;
+  top: 50%;
+  width: 74px;
+  height: 36px;
+  margin: -20px auto 0 auto;
+  overflow: hidden;
+}
+
+.checkbox {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.knobs {
+  z-index: 2;
+}
+
+.layer {
+  width: 100%;
+  background-color: #ebf7fc;
+  transition: 0.3s ease all;
+  z-index: 1;
+}
+
+.button.r,
+.button.r .layer {
+  border-radius: 100px;
+}
+
+#button-3 .knobs:before {
+  content: "YES";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 10px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+  padding: 9px 4px;
+  background-color: #03a9f4;
+  border-radius: 50%;
+  transition: 0.3s ease all, left 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15);
+}
+
+#button-3 .checkbox:active + .knobs:before {
+  width: 46px;
+  border-radius: 100px;
+}
+
+#button-3 .checkbox:checked:active + .knobs:before {
+  margin-left: -26px;
+}
+
+#button-3 .checkbox:checked + .knobs:before {
+  content: "NO";
+  left: 42px;
+  background-color: #f44336;
+}
+
+#button-3 .checkbox:checked ~ .layer {
+  background-color: #fcebeb;
 }

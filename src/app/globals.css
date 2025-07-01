@@ -1,11 +1,14 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
+    /* Removed overflow-y: scroll; to let the browser handle the scrollbar naturally. */
+    /* The main fix is the Radix-specific rule at the end of the file. */
   }
   :root {
     --background: 0 0% 96%; /* Light gray #F5F5F5 (PRD) */
@@ -398,7 +401,15 @@
   }
 }
 
-/* This rule was causing issues, it's better to handle scrollbar gutter on the html element globally */
-.radix-dropdown-menu-content, .radix-select-content {
-  scrollbar-gutter: stable !important;
+/* 
+  FIX FOR LAYOUT SHIFT (JANK) on Radix UI Dialog/Dropdown in RTL.
+  When a Radix primitive opens, it adds `overflow: hidden` to the body
+  and compensates for the scrollbar width by adding `padding-right`.
+  In an RTL layout, this should be `padding-left`.
+*/
+body[data-radix-scroll-area-hidden] {
+  padding-left: var(--removed-body-scroll-bar-size) !important;
+  padding-right: 0 !important;
 }
+
+    

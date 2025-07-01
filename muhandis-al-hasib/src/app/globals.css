@@ -8,27 +8,7 @@
   html {
     overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
     scrollbar-gutter: stable; /* New property to prevent layout shift */
-    /* إضافة خصائص جديدة لمنع الإزاحة */
-    scroll-behavior: smooth;
   }
-  
-  /* حل شامل لمنع إزاحة الهيكل عند فتح النوافذ المنبثقة */
-  body {
-    /* الحفاظ على العرض الثابت */
-    width: 100vw;
-    overflow-x: hidden;
-    /* منع الإزاحة الأفقية */
-    position: relative;
-  }
-  
-  /* عندما يكون الجسم مقفلاً (عند فتح نافذة منبثقة) */
-  body.modal-open {
-    overflow: hidden;
-    padding-right: var(--scrollbar-width, 0px);
-    /* الحفاظ على العرض الأصلي */
-    width: calc(100vw - var(--scrollbar-width, 0px));
-  }
-  
   :root {
     --background: 0 0% 96%; /* Light gray #F5F5F5 (PRD) */
     --foreground: 0 0% 13%;    /* Dark Black #222222 for text on light background */
@@ -64,9 +44,6 @@
     --modal-content-gradient-start: #424242;
     --modal-content-gradient-mid: #FE2E2E;
     --modal-content-gradient-end: #086A87;
-    
-    /* متغير لعرض شريط التمرير */
-    --scrollbar-width: 0px;
   }
 
   .dark {
@@ -121,8 +98,6 @@
     /* Prevent layout shift by reserving space for scrollbar */
     width: 100vw;
     overflow-x: hidden;
-    /* إضافة انتقال سلس للتغييرات */
-    transition: padding-right 0.3s ease, width 0.3s ease;
   }
   
   /* Prevent layout shift for images */
@@ -133,61 +108,9 @@
   }
 }
 
-/* حلول محددة للنوافذ المنبثقة والقوائم المنسدلة */
-
 /* For Dialog overlay backdrop blur */
 .custom-dialog-overlay {
   backdrop-filter: blur(5px);
-  /* منع الإزاحة عند ظهور الخلفية الضبابية */
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 50;
-}
-
-/* إصلاح النوافذ المنبثقة */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* منع التمرير في الخلفية */
-  overflow: hidden;
-}
-
-.modal-content {
-  position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
-  /* منع تأثر المحتوى بالإزاحة */
-  margin: 0 auto;
-}
-
-/* إصلاح القوائم المنسدلة */
-.dropdown-menu {
-  position: absolute;
-  z-index: 1000;
-  /* منع الإزاحة عند ظهور القائمة */
-  min-width: max-content;
-  /* ضمان عدم تأثر العرض */
-  white-space: nowrap;
-}
-
-/* إصلاح البوبوفر */
-.popover-content {
-  position: absolute;
-  z-index: 1000;
-  /* منع التأثر بالإزاحة */
-  transform-origin: center;
 }
 
 @keyframes float {
@@ -229,6 +152,7 @@
     box-shadow: 0 0 0 2px hsl(var(--primary));
     border-color: transparent;
 }
+
 
 @keyframes modalFadeIn {
   from { opacity: 0; transform: translateY(-70px) scale(0.9); }
@@ -553,58 +477,4 @@ button {
   transition-property: transform, opacity, background-color, border-color, color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
-}
-
-/* إضافات خاصة لمنع إزاحة الهيكل */
-
-/* منع إزاحة المحتوى عند ظهور scrollbar */
-.no-layout-shift {
-  overflow-y: scroll;
-  scrollbar-gutter: stable;
-}
-
-/* للمتصفحات التي لا تدعم scrollbar-gutter */
-@supports not (scrollbar-gutter: stable) {
-  html {
-    margin-right: calc(-1 * (100vw - 100%));
-  }
-}
-
-/* حل خاص للنوافذ المنبثقة في React/Next.js */
-.modal-open-body-fix {
-  padding-right: 17px; /* عرض شريط التمرير المعياري */
-  overflow: hidden;
-}
-
-/* حل للقوائم المنسدلة في RTL */
-.dropdown-rtl {
-  right: 0;
-  left: auto;
-  transform-origin: top right;
-}
-
-/* إصلاح خاص للـ Select components */
-.select-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 999;
-}
-
-/* منع الحركة الأفقية للمحتوى */
-.prevent-horizontal-shift {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-/* حل خاص للـ tooltips */
-.tooltip-no-shift {
-  position: absolute;
-  z-index: 9999;
-  pointer-events: none;
-  white-space: nowrap;
 }

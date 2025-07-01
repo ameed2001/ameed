@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
 @tailwind base;
@@ -7,9 +6,29 @@
 
 @layer base {
   html {
-    /* Removed overflow-y: scroll; to let the browser handle the scrollbar naturally. */
-    /* The main fix is the Radix-specific rule at the end of the file. */
+    overflow-y: scroll; /* Always show scrollbar to prevent layout shift */
+    scrollbar-gutter: stable; /* New property to prevent layout shift */
+    /* إضافة خصائص جديدة لمنع الإزاحة */
+    scroll-behavior: smooth;
   }
+  
+  /* حل شامل لمنع إزاحة الهيكل عند فتح النوافذ المنبثقة */
+  body {
+    /* الحفاظ على العرض الثابت */
+    width: 100vw;
+    overflow-x: hidden;
+    /* منع الإزاحة الأفقية */
+    position: relative;
+  }
+  
+  /* عندما يكون الجسم مقفلاً (عند فتح نافذة منبثقة) */
+  body.modal-open {
+    overflow: hidden;
+    padding-right: var(--scrollbar-width, 0px);
+    /* الحفاظ على العرض الأصلي */
+    width: calc(100vw - var(--scrollbar-width, 0px));
+  }
+  
   :root {
     --background: 0 0% 96%; /* Light gray #F5F5F5 (PRD) */
     --foreground: 0 0% 13%;    /* Dark Black #222222 for text on light background */
@@ -45,6 +64,9 @@
     --modal-content-gradient-start: #424242;
     --modal-content-gradient-mid: #FE2E2E;
     --modal-content-gradient-end: #086A87;
+    
+    /* متغير لعرض شريط التمرير */
+    --scrollbar-width: 0px;
   }
 
   .dark {
@@ -96,12 +118,76 @@
     font-family: 'Tajawal', sans-serif;
     direction: rtl;
     min-height: 100vh;
+    /* Prevent layout shift by reserving space for scrollbar */
+    width: 100vw;
+    overflow-x: hidden;
+    /* إضافة انتقال سلس للتغييرات */
+    transition: padding-right 0.3s ease, width 0.3s ease;
+  }
+  
+  /* Prevent layout shift for images */
+  img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
 }
+
+/* حلول محددة للنوافذ المنبثقة والقوائم المنسدلة */
 
 /* For Dialog overlay backdrop blur */
 .custom-dialog-overlay {
   backdrop-filter: blur(5px);
+  /* منع الإزاحة عند ظهور الخلفية الضبابية */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+}
+
+/* إصلاح النوافذ المنبثقة */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* منع التمرير في الخلفية */
+  overflow: hidden;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  /* منع تأثر المحتوى بالإزاحة */
+  margin: 0 auto;
+}
+
+/* إصلاح القوائم المنسدلة */
+.dropdown-menu {
+  position: absolute;
+  z-index: 1000;
+  /* منع الإزاحة عند ظهور القائمة */
+  min-width: max-content;
+  /* ضمان عدم تأثر العرض */
+  white-space: nowrap;
+}
+
+/* إصلاح البوبوفر */
+.popover-content {
+  position: absolute;
+  z-index: 1000;
+  /* منع التأثر بالإزاحة */
+  transform-origin: center;
 }
 
 @keyframes float {
@@ -120,6 +206,9 @@
     border-radius: 50%;
     background-color: rgba(212, 175, 55, 0.1);
     animation: float linear infinite;
+    /* Prevent layout shift */
+    pointer-events: none;
+    z-index: -1;
 }
 
 .input-field:focus + .input-label,
@@ -130,6 +219,9 @@
     background-color: #1f2937;
     color: hsl(var(--primary));
     padding: 0 0.25rem;
+    /* Prevent layout shift */
+    position: absolute;
+    transition: all 0.2s ease;
 }
 
 .input-field:focus {
@@ -137,7 +229,6 @@
     box-shadow: 0 0 0 2px hsl(var(--primary));
     border-color: transparent;
 }
-
 
 @keyframes modalFadeIn {
   from { opacity: 0; transform: translateY(-70px) scale(0.9); }
@@ -160,6 +251,12 @@
   padding: 0;
   background: transparent;
   border: none;
+  /* Prevent layout shift */
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .html-modal-close-btn:hover {
@@ -170,6 +267,8 @@
 .modal-option-button {
   @apply flex items-center justify-between w-full p-3 sm:p-4 text-right rounded-lg shadow-sm transition-all duration-200 ease-in-out;
   @apply bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-app-gold focus:ring-opacity-50;
+  /* Prevent layout shift */
+  min-height: 70px;
 }
 
 .modal-option-button-text {
@@ -179,6 +278,8 @@
 .modal-option-button-icon-area {
   @apply flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full ml-3;
   background-color: hsl(var(--accent) / 0.1); 
+  /* Prevent layout shift */
+  flex-shrink: 0;
 }
 
 .modal-option-button-icon {
@@ -189,6 +290,11 @@
 .modal-footer-close-button {
   @apply px-6 py-2 text-sm font-medium rounded-md transition-colors;
   @apply bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400;
+  /* Prevent layout shift */
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .calculation-result-display {
@@ -200,6 +306,11 @@
   color: hsl(var(--accent)); 
   border-right: 4px solid hsl(var(--accent)); 
   text-align: right;
+  /* Prevent layout shift */
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .add-user-dialog-no-x > button.absolute.right-4.top-4 {
@@ -210,6 +321,8 @@
 .card-flipper {
   perspective: 1500px;
   transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  /* Prevent layout shift */
+  min-height: 200px;
 }
 
 .card-flipper:hover {
@@ -222,6 +335,8 @@
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Prevent layout shift */
+  min-height: 200px;
 }
 
 .card-flipper:hover .card-flipper-inner {
@@ -240,6 +355,8 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  /* Prevent layout shift */
+  overflow: hidden;
 }
 
 .card-flipper-front {
@@ -255,6 +372,9 @@
 .card-icon {
   transition: all 0.5s ease;
   transform: scale(1);
+  /* Prevent layout shift */
+  width: 60px;
+  height: 60px;
 }
 
 .card-flipper:hover .card-icon {
@@ -267,6 +387,8 @@
   align-items: center;
   --color: hsl(0, 0%, 87%);
   --animation: 2s ease-in-out infinite;
+  /* Prevent layout shift */
+  min-height: 80px;
 }
 
 .loader .circle {
@@ -281,6 +403,8 @@
   margin: 0 10px;
   background-color: transparent;
   animation: circle-keys var(--animation);
+  /* Prevent layout shift */
+  flex-shrink: 0;
 }
 
 .loader .circle .dot {
@@ -401,15 +525,86 @@
   }
 }
 
-/* 
-  FIX FOR LAYOUT SHIFT (JANK) on Radix UI Dialog/Dropdown in RTL.
-  When a Radix primitive opens, it adds `overflow: hidden` to the body
-  and compensates for the scrollbar width by adding `padding-right`.
-  In an RTL layout, this should be `padding-left`.
-*/
-body[data-radix-scroll-area-hidden] {
-  padding-left: var(--removed-body-scroll-bar-size) !important;
-  padding-right: 0 !important;
+/* Additional fixes to prevent layout shift */
+[data-rk] {
+  /* Fix for wallet connect modal causing layout shift */
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
-    
+/* Fix for images without dimensions */
+img:not([width]), img:not([height]) {
+  aspect-ratio: auto;
+}
+
+/* Fix for buttons with dynamic content */
+button {
+  min-height: 44px; /* Minimum touch target size */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Smooth transitions for height changes */
+[class*="transition"] {
+  transition-property: transform, opacity, background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* إضافات خاصة لمنع إزاحة الهيكل */
+
+/* منع إزاحة المحتوى عند ظهور scrollbar */
+.no-layout-shift {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+/* للمتصفحات التي لا تدعم scrollbar-gutter */
+@supports not (scrollbar-gutter: stable) {
+  html {
+    margin-right: calc(-1 * (100vw - 100%));
+  }
+}
+
+/* حل خاص للنوافذ المنبثقة في React/Next.js */
+.modal-open-body-fix {
+  padding-right: 17px; /* عرض شريط التمرير المعياري */
+  overflow: hidden;
+}
+
+/* حل للقوائم المنسدلة في RTL */
+.dropdown-rtl {
+  right: 0;
+  left: auto;
+  transform-origin: top right;
+}
+
+/* إصلاح خاص للـ Select components */
+.select-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* منع الحركة الأفقية للمحتوى */
+.prevent-horizontal-shift {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* حل خاص للـ tooltips */
+.tooltip-no-shift {
+  position: absolute;
+  z-index: 9999;
+  pointer-events: none;
+  white-space: nowrap;
+}

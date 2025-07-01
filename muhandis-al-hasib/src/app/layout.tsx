@@ -3,7 +3,6 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import AppProviders from '@/components/AppProviders';
 import InitialLoader from '@/components/loading/InitialLoader';
-import LayoutShiftFixer from '@/components/layout/LayoutShiftFixer';
 
 export const metadata: Metadata = {
   title: 'المحترف لحساب الكميات',
@@ -27,7 +26,6 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AppProviders>
-          <LayoutShiftFixer />
           <InitialLoader>{children}</InitialLoader>
           <Toaster />
         </AppProviders>

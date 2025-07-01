@@ -1,9 +1,7 @@
 'use client';
 
-import '@/lib/layout-shift-fix';
-
-// This component's only job is to import and execute the layout shift fix script
-// on the client side. It renders nothing.
+// This component is intentionally left blank to disable the previous JavaScript-based fix.
+// It renders nothing.
 export default function LayoutShiftFixer() {
   return null;
 }

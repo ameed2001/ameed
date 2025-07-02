@@ -5984,6 +5984,11 @@ victory-vendor@^36.6.8:
     d3-time "^3.0.0"
     d3-timer "^3.0.1"
 
+vsda@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/vsda/-/vsda-1.0.0.tgz#07362bd5672bf6a6d2d8d82559e761b2d8487fdc"
+  integrity sha512-/ZLjPZNZ4Q25a825GepUVsp6HpRk5h4ORIR2TsOt4SeSEsuTpLH+VXCfbCXF1eB64eLCDMJVzk5J2rOEx/UDnQ==
+
 wcwidth@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/wcwidth/-/wcwidth-1.0.1.tgz"

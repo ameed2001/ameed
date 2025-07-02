@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -105,7 +106,7 @@ const InitialLoader = ({ children }: InitialLoaderProps) => {
           <div className="relative">
             <div className="w-24 h-24 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl border border-gray-700/50 shadow-2xl backdrop-blur-sm p-1 flex items-center justify-center">
               <Image
-                src="https://i.imgur.com/79bO3U2.jpg"
+                src="https://i.imgur.com/79bO3U2.png"
                 alt="Professional Logo"
                 width={80}
                 height={80}

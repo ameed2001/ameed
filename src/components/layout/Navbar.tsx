@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Info, Phone, HelpCircle, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
+import { Home, Building2, HelpCircle, Mail, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -19,9 +19,9 @@ import { Button } from "@/components/ui/button";
 
 const staticNavLinks = [
   { href: '/', label: 'الرئيسية', icon: Home },
-  { href: '/about', label: 'عن الموقع', icon: Info },
+  { href: '/about', label: 'عن الموقع', icon: Building2 },
   { href: '/help', label: 'الأسئلة الشائعة', icon: HelpCircle },
-  { href: '/contact', label: 'تواصل معنا', icon: Phone },
+  { href: '/contact', label: 'تواصل معنا', icon: Mail },
 ];
 
 export default function Navbar() {
@@ -133,7 +133,7 @@ export default function Navbar() {
                                 "flex items-center gap-2 px-3 py-2 text-base font-semibold text-gray-300 hover:text-white hover:bg-gray-700/50 rounded-md transition-colors", 
                                 pathname === link.href && "text-app-gold bg-gray-700/80"
                             )}>
-                                <link.icon className="h-4 w-4" />
+                                <link.icon className="h-5 w-5" />
                                 {link.label}
                             </Link>
                         </li>

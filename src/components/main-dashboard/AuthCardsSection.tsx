@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -128,7 +127,7 @@ export default function AuthCardsSection() {
                           "w-full justify-between py-5 px-4 rounded-lg font-semibold transition-colors duration-200 border",
                           action.buttonClass
                         )}
-                        variant="ghost" // Use ghost to prevent default button styles from interfering
+                        variant="ghost"
                       >
                         <Link href={action.href}>
                           <span className="flex items-center gap-2">

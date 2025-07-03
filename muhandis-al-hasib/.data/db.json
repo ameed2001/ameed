@@ -66,6 +66,25 @@
       "timelineTasks": [],
       "comments": [],
       "createdAt": "2025-06-26T15:50:50.759Z"
+    },
+    {
+      "id": 4,
+      "name": "منزل متوسط",
+      "location": "بروقين",
+      "description": "",
+      "startDate": "2026-02-25",
+      "endDate": "2027-02-25",
+      "status": "مخطط له",
+      "engineer": "عميد",
+      "clientName": "عميد سماره",
+      "budget": 150000,
+      "linkedOwnerEmail": "malik@gmail.com",
+      "overallProgress": 0,
+      "quantitySummary": "",
+      "photos": [],
+      "timelineTasks": [],
+      "comments": [],
+      "createdAt": "2025-07-03T15:54:10.927Z"
     }
   ],
   "settings": {
@@ -195,6 +214,46 @@
       "level": "INFO",
       "message": "Project ID 3 updated. Fields: comments",
       "timestamp": "2025-07-03T15:20:01.541Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751556793988-c1wko",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: ameed2001@gamil.com",
+      "timestamp": "2025-07-03T15:33:13.988Z",
+      "user": "user-1751555403436-rlq8p"
+    },
+    {
+      "id": "log-1751556793994-keduu",
+      "action": "OWNER_LOGIN_FAILURE_WRONG_ROLE",
+      "level": "WARNING",
+      "message": "Login attempt via owner form by non-owner user: ameed2001@gamil.com",
+      "timestamp": "2025-07-03T15:33:13.994Z",
+      "user": "user-1751555403436-rlq8p"
+    },
+    {
+      "id": "log-1751556871940-7niv6",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: ameed2001@gamil.com",
+      "timestamp": "2025-07-03T15:34:31.940Z",
+      "user": "user-1751555403436-rlq8p"
+    },
+    {
+      "id": "log-1751558050954-apoo9",
+      "action": "PROJECT_ADD_SUCCESS",
+      "level": "INFO",
+      "message": "Project \"منزل متوسط\" (ID: 4) added.",
+      "timestamp": "2025-07-03T15:54:10.954Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751558147768-txmnb",
+      "action": "PROJECT_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 4 updated. Fields: linkedOwnerEmail, clientName",
+      "timestamp": "2025-07-03T15:55:47.768Z",
       "user": "System"
     }
   ],

@@ -20,8 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-
-// WhatsAppIcon component removed
+import WhatsAppIcon from '@/components/icons/WhatsAppIcon';
 
 const contactFormSchemaClient = z.object({
   name: z.string().min(3, { message: "الاسم مطلوب (3 أحرف على الأقل)." }),
@@ -63,7 +62,7 @@ const contactMethods = [
 ];
 
 const socialLinks = [
-  { name: "WhatsApp", icon: Phone, href: "https://wa.me/972594371424", colorClass: "hover:text-green-500", dataAiHint:"whatsapp contact" }, // Changed icon
+  { name: "WhatsApp", icon: WhatsAppIcon, href: "https://wa.me/972594371424", colorClass: "hover:text-green-500", dataAiHint:"whatsapp contact" },
   { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/a.w.samarah3/", colorClass: "hover:text-pink-500", dataAiHint:"instagram profile" },
   { name: "Facebook", icon: Facebook, href: "https://www.facebook.com/a.w.samarah4", colorClass: "hover:text-blue-600", dataAiHint: "facebook page" },
 ];

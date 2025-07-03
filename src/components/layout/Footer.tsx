@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Instagram, Facebook, Phone, Mail, MapPin, ExternalLink, Heart, MessageSquare } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useState, useEffect } from 'react';
+import WhatsAppIcon from '../icons/WhatsAppIcon';
 
 const Footer = () => {
   const siteName = "المحترف لحساب الكميات";
@@ -163,7 +164,7 @@ const Footer = () => {
                   rel="noopener noreferrer"
                   className="group relative flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
-                  <MessageSquare className="h-6 w-6" />
+                  <WhatsAppIcon className="h-6 w-6" />
                   <span className="absolute bottom-full mb-2 w-max whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       WhatsApp
                   </span>

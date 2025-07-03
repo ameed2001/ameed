@@ -6,9 +6,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  Instagram, Facebook, MessageSquare
+  Instagram, Facebook
 } from 'lucide-react';
 import Notifications from './Notifications';
+import WhatsAppIcon from '../icons/WhatsAppIcon';
 
 // Social & Clock Component
 const SocialAndClock = () => {
@@ -39,7 +40,7 @@ const SocialAndClock = () => {
                 className="group bg-slate-800/70 hover:bg-green-600 p-2.5 rounded-lg transition-all duration-300 transform hover:scale-110 hover:shadow-md"
                 title="تواصل عبر واتساب"
               >
-                <MessageSquare className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
+                <WhatsAppIcon className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
               </a>
               <a 
                 href="https://www.instagram.com/a.w.samarah3/" 

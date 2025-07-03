@@ -1,6 +1,7 @@
 "use client";
 
-import { Quote, CheckCircle } from 'lucide-react';
+import { Quote, User } from 'lucide-react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -52,47 +53,33 @@ const TestimonialsSection = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="card-flipper h-80" // Set a fixed height for consistency
+            <Card 
+              key={index} 
+              className={cn(
+                "bg-white dark:bg-gray-800/50 shadow-lg rounded-2xl flex flex-col transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2 border-t-4 border-app-gold/50",
+                "h-full" 
+              )}
               data-ai-hint={testimonial.dataAiHint}
             >
-              <div className="card-flipper-inner">
-                {/* Front of the card */}
-                <div className="card-flipper-front bg-white dark:bg-gray-800/50 p-6 flex flex-col text-right rounded-xl">
-                  <Quote className="h-10 w-10 text-app-gold opacity-30 mb-4 transform scale-x-[-1] self-start" />
-                  <p className="text-base leading-relaxed text-gray-700 dark:text-gray-300 italic flex-grow">
-                    "{testimonial.testimonial}"
-                  </p>
-                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 w-full">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12 border-2 border-app-gold">
-                        <AvatarImage src={`https://placehold.co/100x100.png?text=${testimonial.avatarInitial}`} alt={testimonial.name} />
-                        <AvatarFallback className="bg-app-red text-white">{testimonial.avatarInitial}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-bold text-app-red dark:text-app-gold text-lg">{testimonial.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.role}</p>
-                      </div>
-                    </div>
+              <CardContent className="p-6 text-right flex-grow">
+                <Quote className="h-10 w-10 text-app-gold opacity-30 mb-4 transform scale-x-[-1]" />
+                <p className="text-base leading-relaxed text-gray-700 dark:text-gray-300 italic">
+                  "{testimonial.testimonial}"
+                </p>
+              </CardContent>
+              <CardFooter className="p-6 bg-gray-50 dark:bg-gray-900/50 rounded-b-2xl border-t dark:border-gray-700">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-12 w-12 border-2 border-app-gold">
+                    <AvatarImage src={`https://placehold.co/100x100.png?text=${testimonial.avatarInitial}`} alt={testimonial.name} />
+                    <AvatarFallback className="bg-app-red text-white">{testimonial.avatarInitial}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-bold text-app-red dark:text-app-gold text-lg">{testimonial.name}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.role}</p>
                   </div>
                 </div>
-
-                {/* Back of the card */}
-                <div className="card-flipper-back bg-gradient-to-br from-app-red to-app-gold p-6 flex flex-col justify-center items-center text-center text-white">
-                   <Avatar className="h-20 w-20 border-4 border-white/50 mb-4">
-                      <AvatarImage src={`https://placehold.co/100x100.png?text=${testimonial.avatarInitial}`} alt={testimonial.name} />
-                      <AvatarFallback className="bg-app-red text-white text-3xl">{testimonial.avatarInitial}</AvatarFallback>
-                    </Avatar>
-                    <h4 className="text-2xl font-bold">{testimonial.name}</h4>
-                    <p className="text-white/80 mb-4">{testimonial.role}</p>
-                    <div className="flex items-center gap-2 bg-white/20 px-3 py-1 rounded-full text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-300" />
-                        <span>مستخدم موثوق</span>
-                    </div>
-                </div>
-              </div>
-            </div>
+              </CardFooter>
+            </Card>
           ))}
         </div>
       </div>

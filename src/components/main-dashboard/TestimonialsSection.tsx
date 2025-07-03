@@ -1,8 +1,8 @@
+
 "use client";
 
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from 'lucide-react';
+import { Quote } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 const testimonials = [
   {
@@ -54,45 +54,24 @@ const TestimonialsSection = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="group relative w-full h-80 bg-slate-50 flex flex-col items-center justify-center gap-2 text-center rounded-2xl overflow-hidden shadow-lg"
+              className="group h-64 w-full bg-white m-auto rounded-2xl overflow-hidden relative p-6 z-0 flex flex-col justify-start text-right shadow-lg"
               data-ai-hint={testimonial.dataAiHint}
             >
-              {/* The animated background */}
-              <div className="
-                absolute top-0 left-0 w-full h-24 rounded-t-2xl
-                bg-gradient-to-bl from-amber-300 via-red-400 to-app-red
-                transition-all duration-500
-                group-hover:scale-95 group-hover:h-full group-hover:rounded-b-2xl
-              "></div>
-
-              {/* Avatar */}
-              <div className="
-                relative w-28 h-28 z-10
-                transition-all duration-500
-                group-hover:scale-110 group-hover:-translate-x-14 md:group-hover:-translate-x-16 group-hover:-translate-y-16
-              ">
-                <Avatar className="w-full h-full border-4 border-slate-50">
-                  <AvatarImage src={`https://placehold.co/100x100.png?text=${testimonial.avatarInitial}`} alt={testimonial.name} />
-                  <AvatarFallback className="bg-app-red text-white flex items-center justify-center">
-                    <User className="h-16 w-16" />
-                  </AvatarFallback>
-                </Avatar>
+              <div
+                className="circle absolute h-32 w-32 -top-16 -left-16 rounded-full bg-[#FF5800] group-hover:scale-[10] duration-500 z-[-1] transition-transform"
+              ></div>
+              <div className="z-20">
+                <h3 className="font-bold text-2xl text-gray-800 group-hover:text-white duration-500">
+                  {testimonial.name}
+                </h3>
+                <p className="text-sm text-gray-500 group-hover:text-gray-200 duration-500">
+                  {testimonial.role}
+                </p>
               </div>
-
-              {/* Text Content */}
-              <div className="z-10 transition-all duration-500 group-hover:-translate-y-10 text-gray-800 group-hover:text-white">
-                <span className="text-2xl font-semibold">{testimonial.name}</span>
-                <p className="text-gray-500 group-hover:text-gray-200">{testimonial.role}</p>
-              </div>
-              
-              {/* Testimonial text shown on hover */}
-              <div className="
-                absolute bottom-6 left-0 w-full p-4
-                text-center text-white
-                opacity-0 z-20 transition-opacity duration-300
-                group-hover:opacity-100 group-hover:delay-200
-              ">
-                <p className="italic text-sm">"{testimonial.testimonial}"</p>
+              <div className="mt-auto z-20 opacity-0 group-hover:opacity-100 duration-500 transition-opacity">
+                <p className="text-white text-sm italic">
+                  "{testimonial.testimonial}"
+                </p>
               </div>
             </div>
           ))}

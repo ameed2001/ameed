@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { User } from 'lucide-react';
 
 const testimonials = [
   {
@@ -72,7 +73,9 @@ const TestimonialsSection = () => {
               ">
                 <Avatar className="w-full h-full border-4 border-slate-50">
                   <AvatarImage src={`https://placehold.co/100x100.png?text=${testimonial.avatarInitial}`} alt={testimonial.name} />
-                  <AvatarFallback className="bg-app-red text-white text-3xl">{testimonial.avatarInitial}</AvatarFallback>
+                  <AvatarFallback className="bg-app-red text-white flex items-center justify-center">
+                    <User className="h-16 w-16" />
+                  </AvatarFallback>
                 </Avatar>
               </div>
 

@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Printer, PlusCircle, Trash2, Calculator } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import ShekelIcon from './icons/ShekelIcon';
 
 interface MaterialItem {
   id: string;
@@ -177,8 +176,8 @@ export default function SimpleCostEstimatorForm() {
         <tr>
           <td style="padding: 8px; border: 1px solid #ddd; text-align: right;">${item.name}</td>
           <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.quantity} ${item.unit}</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.pricePerUnit_ILS.toFixed(2)} شيكل</td>
-          <td style="padding: 8px; border: 1px solid #ddd; text-align: left;">${item.totalCost_ILS.toFixed(2)} شيكل</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${item.pricePerUnit_ILS.toFixed(2)} ₪</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: left;">${item.totalCost_ILS.toFixed(2)} ₪</td>
         </tr>
       `).join('');
 
@@ -210,8 +209,8 @@ export default function SimpleCostEstimatorForm() {
                 <tr>
                   <th>المادة</th>
                   <th>الكمية</th>
-                  <th>سعر الوحدة (شيكل)</th>
-                  <th>المجموع (شيكل)</th>
+                  <th>سعر الوحدة (₪)</th>
+                  <th>المجموع (₪)</th>
                 </tr>
               </thead>
               <tbody>
@@ -219,8 +218,8 @@ export default function SimpleCostEstimatorForm() {
               </tbody>
               <tfoot>
                 <tr class="total-row">
-                  <td colspan="3" style="text-align:right; font-weight:bold;">المجموع الكلي (شيكل):</td>
-                  <td style="text-align: left; font-weight:bold;">${overallTotal} شيكل</td>
+                  <td colspan="3" style="text-align:right; font-weight:bold;">المجموع الكلي (₪):</td>
+                  <td style="text-align: left; font-weight:bold;">${overallTotal} ₪</td>
                 </tr>
               </tfoot>
             </table>
@@ -251,9 +250,9 @@ export default function SimpleCostEstimatorForm() {
       <Card className="mb-6 bg-white shadow-md">
         <CardContent className="p-4 text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
-                <ShekelIcon className="text-green-500 h-5 w-5" />
+                <span className="text-green-500 font-bold text-xl">₪</span>
                 <Label className="text-gray-700 font-medium text-lg">العملة المعتمدة: شيكل</Label>
-                <ShekelIcon className="text-green-500 h-5 w-5" />
+                <span className="text-green-500 font-bold text-xl">₪</span>
             </div>
             <p className="text-xs text-gray-500">جميع الأسعار والنتائج ستكون بالشيكل.</p>
         </CardContent>
@@ -367,8 +366,8 @@ export default function SimpleCostEstimatorForm() {
                     <tr>
                       <th className="px-4 py-3 text-right font-medium text-gray-600">المادة</th>
                       <th className="px-4 py-3 text-center font-medium text-gray-600">الكمية</th>
-                      <th className="px-4 py-3 text-center font-medium text-gray-600">سعر الوحدة (شيكل)</th>
-                      <th className="px-4 py-3 text-left font-medium text-gray-600">المجموع (شيكل)</th>
+                      <th className="px-4 py-3 text-center font-medium text-gray-600">سعر الوحدة (₪)</th>
+                      <th className="px-4 py-3 text-left font-medium text-gray-600">المجموع (₪)</th>
                       <th className="px-4 py-3 text-center font-medium text-gray-600 print:hidden">إجراء</th>
                     </tr>
                   </thead>
@@ -395,7 +394,7 @@ export default function SimpleCostEstimatorForm() {
                   </tbody>
                   <tfoot className="bg-gray-100 print:bg-gray-200 font-bold">
                     <tr>
-                      <td colSpan={3} className="px-4 py-3 text-right text-gray-800">المجموع الكلي (شيكل):</td>
+                      <td colSpan={3} className="px-4 py-3 text-right text-gray-800">المجموع الكلي (₪):</td>
                       <td className="px-4 py-3 text-left text-gray-800">
                         {calculateOverallTotal_ILS().toFixed(2)}
                       </td>
@@ -430,7 +429,7 @@ export default function SimpleCostEstimatorForm() {
       <Card className="mt-8 bg-white shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-700">
-            <ShekelIcon className="h-5 w-5" /> كيفية استخدام الحاسبة (بالشيكل)؟
+            <span className="font-bold text-lg">₪</span> كيفية استخدام الحاسبة (بالشيكل)؟
           </CardTitle>
         </CardHeader>
         <CardContent>

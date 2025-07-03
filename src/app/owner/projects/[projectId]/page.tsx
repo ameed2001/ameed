@@ -23,7 +23,6 @@ import { X } from 'lucide-react';
 import { findProjectById, updateProject as dbUpdateProject, getCostReportsForProject, type Project, type ProjectComment, type ProjectPhoto, type CostReport } from '@/lib/db';
 import Link from 'next/link';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import ShekelIcon from '@/components/icons/ShekelIcon';
 
 export default function OwnerProjectDetailPage() {
   const params = useParams();
@@ -209,7 +208,7 @@ export default function OwnerProjectDetailPage() {
                 </div>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
-                <ShekelIcon className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
+                <span className="text-app-red font-bold text-2xl flex-shrink-0 mt-1">₪</span>
                 <div>
                   <p className="text-sm text-gray-500">الميزانية</p>
                   <p className="font-medium text-gray-800">{project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</p>

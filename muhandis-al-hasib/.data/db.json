@@ -34,6 +34,17 @@
       "updatedAt": "2025-06-29T15:34:18.524Z",
       "resetToken": "211755ccd23d6eb7ef02fac92873b7c05c1c7d1585dc378f7d17a9c59498fc6e",
       "resetTokenExpiry": "2025-06-29T20:57:32.106Z"
+    },
+    {
+      "id": "user-1751555403436-rlq8p",
+      "name": "عميد",
+      "email": "ameed2001@gamil.com",
+      "password_hash": "$2a$10$2z7xJWFeTwzeGb014eRjseblIUmTsO44WtISODdorDaSWIOpE96nu",
+      "role": "ENGINEER",
+      "status": "ACTIVE",
+      "profileImage": "https://placehold.co/100x100.png?text=عم",
+      "createdAt": "2025-07-03T15:10:03.436Z",
+      "updatedAt": "2025-07-03T15:10:03.436Z"
     }
   ],
   "projects": [
@@ -53,16 +64,7 @@
       "overallProgress": 0,
       "photos": [],
       "timelineTasks": [],
-      "comments": [
-        {
-          "id": "0cc77ecb-062c-43e1-9494-ebe30378bada",
-          "user": "المالك",
-          "text": "تتت",
-          "date": "2025-06-27T14:30:01.130Z",
-          "avatar": "https://placehold.co/40x40.png?text=OW",
-          "dataAiHintAvatar": "owner avatar"
-        }
-      ],
+      "comments": [],
       "createdAt": "2025-06-26T15:50:50.759Z"
     }
   ],
@@ -154,6 +156,46 @@
       "message": "User logged in: malik@gmail.com",
       "timestamp": "2025-07-03T14:41:43.848Z",
       "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1751555331966-daxfq",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: malik@gmail.com",
+      "timestamp": "2025-07-03T15:08:51.966Z",
+      "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1751555403439-3jiju",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed2001@gamil.com registered. Role: ENGINEER, Status: ACTIVE.",
+      "timestamp": "2025-07-03T15:10:03.439Z",
+      "user": "user-1751555403436-rlq8p"
+    },
+    {
+      "id": "log-1751555410367-jecsk",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: ameed2001@gamil.com",
+      "timestamp": "2025-07-03T15:10:10.367Z",
+      "user": "user-1751555403436-rlq8p"
+    },
+    {
+      "id": "log-1751555950767-q7cwp",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: malik@gmail.com",
+      "timestamp": "2025-07-03T15:19:10.767Z",
+      "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1751556001541-uo6u3",
+      "action": "PROJECT_UPDATE_SUCCESS",
+      "level": "INFO",
+      "message": "Project ID 3 updated. Fields: comments",
+      "timestamp": "2025-07-03T15:20:01.541Z",
+      "user": "System"
     }
   ],
   "roles": [

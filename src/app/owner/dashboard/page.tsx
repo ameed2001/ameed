@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -13,6 +14,7 @@ import { getProjects, type Project } from '@/lib/db';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 export default function OwnerDashboardPage() {
   const { toast } = useToast();
@@ -163,19 +165,27 @@ export default function OwnerDashboardPage() {
   return (
     <div className="space-y-8 text-right">
       {/* Welcome Banner */}
-      <div className="relative rounded-xl overflow-hidden bg-gradient-to-r from-red-600 to-red-800 shadow-lg">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/5 opacity-50"></div>
-        <div className="relative p-6 md:p-8 flex flex-col items-start"> {/* Added flex and items-start for alignment */}
-          <h1 className="text-2xl md:text-3xl font-bold text-white">
-            مرحباً بك، {ownerName || 'أيها المالك'}! 👋 {/* Added emoji */}
-          </h1>
-          {/* Adjusted description to be more specific to the owner dashboard */}
-          <p className="mt-2 text-red-100 max-w-2xl">
+      <Card className="bg-white/95 dark:bg-card shadow-2xl border border-gray-300 dark:border-gray-700 rounded-3xl">
+        <CardHeader>
+          <CardTitle className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight flex items-center gap-3">
+             مرحباً بك، {ownerName || 'أيها المالك'}!
+            <motion.span
+              className="inline-block text-green-600 dark:text-green-400"
+              animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              aria-hidden="true"
+            >
+              👋
+            </motion.span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-xl leading-relaxed text-gray-700 dark:text-gray-300 max-w-4xl mx-auto select-text">
             هذه هي لوحة التحكم الخاصة بك حيث يمكنك متابعة مشاريعك، عرض التقارير التفصيلية، 
             وإدارة جميع جوانب مشاريع البناء الخاصة بك.
           </p>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
       
       {/* Quick Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

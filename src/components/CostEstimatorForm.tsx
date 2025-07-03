@@ -12,7 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import type { UserDocument, Project } from '@/lib/db';
 import { getUsers, addCostReport, getProjects } from '@/lib/db';
 import { cn } from '@/lib/utils';
-import ShekelIcon from '@/components/icons/ShekelIcon';
 
 interface MaterialItem {
   id: string;
@@ -251,8 +250,8 @@ export default function CostEstimatorForm() {
         <tr>
           <td style="padding: 10px; border: 1px solid #ddd; text-align: right;">${item.name}</td>
           <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.quantity} ${item.unit}</td>
-          <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.pricePerUnit_ILS.toFixed(2)} شيكل</td>
-          <td style="padding: 10px; border: 1px solid #ddd; text-align: left; font-weight: 500;">${item.totalCost_ILS.toFixed(2)} شيكل</td>
+          <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${item.pricePerUnit_ILS.toFixed(2)} ₪</td>
+          <td style="padding: 10px; border: 1px solid #ddd; text-align: left; font-weight: 500;">${item.totalCost_ILS.toFixed(2)} ₪</td>
         </tr>
       `).join('');
       const overallTotal = calculateOverallTotal_ILS().toFixed(2);
@@ -280,7 +279,7 @@ export default function CostEstimatorForm() {
               <p>المهندس المسؤول: ${engName}</p>
               <p>المالك/العميل: ${ownerName}</p>
               <p>تاريخ التقرير: ${new Date().toLocaleString('ar-EG')}</p>
-              <p>العملة: شيكل إسرائيلي (ILS)</p>
+              <p>العملة: شيكل (₪)</p>
             </div>
             <table>
               <thead>
@@ -297,7 +296,7 @@ export default function CostEstimatorForm() {
               <tfoot>
                 <tr class="total-row">
                   <td colspan="3" class="total-label">المجموع الكلي:</td>
-                  <td style="text-align: left;">${overallTotal} شيكل</td>
+                  <td style="text-align: left;">${overallTotal} ₪</td>
                 </tr>
               </tfoot>
             </table>
@@ -398,7 +397,7 @@ export default function CostEstimatorForm() {
 
               <div>
                 <Label htmlFor="pricePerUnitILS" className="flex items-center gap-2 mb-2 font-medium text-gray-700">
-                    <ShekelIcon className="h-4 w-4" /> السعر لكل وحدة (شيكل)
+                    <span className="font-bold text-lg">₪</span> السعر لكل وحدة (شيكل)
                 </Label>
                 <Input id="pricePerUnitILS" type="number" value={pricePerUnitILS} onChange={(e) => setPricePerUnitILS(e.target.value)} placeholder="أدخل السعر" className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500" min="0.01" step="0.01"/>
               </div>
@@ -432,7 +431,7 @@ export default function CostEstimatorForm() {
                     </div>
                     <div className="text-right">
                        <div className="text-sm">المجموع الكلي</div>
-                       <div className="text-2xl font-bold">{calculateOverallTotal_ILS().toFixed(2)} شيكل</div>
+                       <div className="text-2xl font-bold">{calculateOverallTotal_ILS().toFixed(2)} ₪</div>
                     </div>
                   </div>
                 </CardHeader>

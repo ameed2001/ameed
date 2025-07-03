@@ -64,8 +64,8 @@ const accordionItems = [
     icon: Blocks,
     color: "text-purple-500",
     links: [
-      { href: "#", label: "إدخال تفاصيل العناصر", icon: PenSquare },
-      { href: "#", label: "التحقق من صحة البيانات", icon: ClipboardCheck },
+      { href: "/engineer/structural-elements/input-details", label: "إدخال تفاصيل العناصر", icon: PenSquare },
+      { href: "/engineer/structural-elements/validate-data", label: "التحقق من صحة البيانات", icon: ClipboardCheck },
     ],
   },
   {
@@ -75,11 +75,11 @@ const accordionItems = [
     color: "text-green-500",
     links: [
       { href: "/engineer/cost-estimator", label: "حاسبة أسعار المواد", icon: Coins },
-      { href: "#", label: "حساب كميات المواد", icon: Calculator },
-      { href: "#", label: "عرض تقارير الكميات", icon: BarChart3 },
-      { href: "#", label: "تخصيص عرض التقارير", icon: Settings2 },
-      { href: "#", label: "تصدير التقارير", icon: Download },
-      { href: "#", label: "توليد بيانات التقرير", icon: FileText },
+      { href: "/engineer/quantity-survey/calculate-materials", label: "حساب كميات المواد", icon: Calculator },
+      { href: "/engineer/quantity-survey/view-reports", label: "عرض تقارير الكميات", icon: BarChart3 },
+      { href: "/engineer/quantity-survey/customize-reports", label: "تخصيص عرض التقارير", icon: Settings2 },
+      { href: "/engineer/quantity-survey/export-reports", label: "تصدير التقارير", icon: Download },
+      { href: "/engineer/quantity-survey/generate-report-data", label: "توليد بيانات التقرير", icon: FileText },
     ],
   },
   {
@@ -89,9 +89,9 @@ const accordionItems = [
     color: "text-orange-500",
     links: [
       { href: "/engineer/update-progress", label: "تحديث التقدم", icon: TrendingUp },
-      { href: "#", label: "ملاحظات التقدم", icon: PenSquare },
-      { href: "#", label: "رفع صور/فيديوهات", icon: Camera },
-      { href: "#", label: "تحديد مراحل المشروع", icon: GanttChartSquare },
+      { href: "/engineer/progress/notes", label: "ملاحظات التقدم", icon: PenSquare },
+      { href: "/engineer/progress/upload-media", label: "رفع صور/فيديوهات", icon: Camera },
+      { href: "/engineer/progress/define-stages", label: "تحديد مراحل المشروع", icon: GanttChartSquare },
     ],
   },
   {

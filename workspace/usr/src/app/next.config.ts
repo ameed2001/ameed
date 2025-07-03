@@ -1,3 +1,2 @@
-
-// This file is intentionally left blank to avoid configuration conflicts.
-// The main configuration is in the root next.config.ts file.
+// This file appears to be a leftover from a previous setup and is unused.
+// It has been emptied to clean up the project and can be safely deleted.

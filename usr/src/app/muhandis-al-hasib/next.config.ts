@@ -1,9 +1,2 @@
-
-import type {NextConfig} from 'next';
-
-const nextConfig: NextConfig = {
-  // This file is intentionally left blank to avoid conflicts.
-  // The main configuration has been moved to the root next.config.ts
-};
-
-export default nextConfig;
+// This file appears to be a leftover from a previous setup and is unused.
+// It has been emptied to clean up the project and can be safely deleted.

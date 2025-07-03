@@ -1,35 +1,30 @@
-
 "use client";
 
 import { Quote } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { cn } from "@/lib/utils";
 
 const testimonials = [
   {
     name: "عميد سماره",
     role: "صاحب مشروع",
-    avatarInitial: "عس",
     testimonial: "الموقع رائع وسهل الاستخدام! ساعدني كثيرًا في تقدير كميات المواد لمشروعي بسرعة ودقة. أنصح به بشدة.",
     dataAiHint: "user testimonial"
   },
   {
     name: "م. أحمد خالد",
     role: "مهندس إنشائي",
-    avatarInitial: "أخ",
-    testimonial: "ك مهندس، أجد هذا الموقع أداة قيمة جدًا. المعادلات دقيقة والواجهة سهلة. يوفر الكثير من الوقت والجهد.",
+    testimonial: "كـ مهندس، أجد هذا الموقع أداة قيمة جدًا. المعادلات دقيقة والواجهة سهلة. يوفر الكثير من الوقت والجهد.",
     dataAiHint: "engineer testimonial"
   },
   {
     name: "سارة عبدالله",
     role: "مستخدم جديد",
-    avatarInitial: "سع",
     testimonial: "أخيرًا موقع عربي متكامل لحساب كميات البناء! تصميم جذاب وأدوات مفيدة للغاية. شكرًا للقائمين عليه.",
     dataAiHint: "user review"
   },
   {
     name: "شركة البناء الحديث",
     role: "مقاولات عامة",
-    avatarInitial: "ش",
     testimonial: "نستخدم الموقع لتقديراتنا الأولية للمشاريع. يساعدنا في تقديم عروض أسعار سريعة لعملائنا. عمل ممتاز!",
     dataAiHint: "company feedback"
   }
@@ -37,10 +32,9 @@ const testimonials = [
 
 const TestimonialsSection = () => {
   return (
-    <section 
-      className="py-16 md:py-20 bg-gray-50 dark:bg-gray-900"
-    >
+    <section className="py-16 md:py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
+        {/* العنوان */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white">
             ماذا يقول المستخدمون عنا؟
@@ -50,29 +44,35 @@ const TestimonialsSection = () => {
           </p>
           <div className="mt-4 w-24 h-1 bg-app-gold mx-auto rounded-full" />
         </div>
+
+        {/* المراجعات */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="group h-64 w-full bg-white m-auto rounded-2xl overflow-hidden relative p-6 z-0 flex flex-col justify-start text-right shadow-lg"
               data-ai-hint={testimonial.dataAiHint}
+              className={cn(
+                "relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-xl p-6 text-right transition-all duration-500 group hover:scale-[1.02]"
+              )}
             >
-              <div
-                className="circle absolute h-32 w-32 -top-16 -left-16 rounded-full bg-[#FF5800] group-hover:scale-[10] duration-500 z-[-1] transition-transform"
-              ></div>
-              <div className="z-20">
-                <h3 className="font-bold text-2xl text-gray-800 group-hover:text-white duration-500">
+              {/* أيقونة الاقتباس */}
+              <Quote className="absolute top-4 left-4 text-app-gold opacity-20 w-12 h-12" />
+
+              {/* المحتوى */}
+              <div className="space-y-3 relative z-10">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white group-hover:text-app-gold transition-colors">
                   {testimonial.name}
                 </h3>
-                <p className="text-sm text-gray-500 group-hover:text-gray-200 duration-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {testimonial.role}
                 </p>
-              </div>
-              <div className="mt-auto z-20 opacity-0 group-hover:opacity-100 duration-500 transition-opacity">
-                <p className="text-white text-sm italic">
+                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed italic">
                   "{testimonial.testimonial}"
                 </p>
               </div>
+
+              {/* زخرفة دائرية خلفية */}
+              <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-app-gold/10 rounded-full blur-2xl z-0"></div>
             </div>
           ))}
         </div>

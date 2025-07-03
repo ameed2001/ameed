@@ -157,7 +157,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
   return (
     <TooltipProvider delayDuration={0}>
       <aside className={cn(
-        "bg-card text-card-foreground flex flex-col h-screen sticky top-0 shadow-lg border-l transition-all duration-300 ease-in-out",
+        "bg-card text-card-foreground flex flex-col shadow-lg border-l transition-all duration-300 ease-in-out",
         isOpen ? "w-72" : "w-20"
       )}>
         <div className="p-4 flex items-center border-b h-[70px] flex-shrink-0">

@@ -64,7 +64,7 @@ export default function AdminSidebar({ isOpen, onToggle }: AdminSidebarProps) {
     <TooltipProvider>
       <aside
         className={cn(
-          "bg-card text-card-foreground flex flex-col h-screen sticky top-0 shadow-lg border-l transition-all duration-300 ease-in-out",
+          "bg-card text-card-foreground flex flex-col shadow-lg border-l transition-all duration-300 ease-in-out",
           isOpen ? "w-72" : "w-20"
         )}
       >

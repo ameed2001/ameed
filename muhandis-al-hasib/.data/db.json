@@ -114,6 +114,46 @@
       "message": "Admin admin-hardcoded-001 unsuspended user user-1750959424627-e7rbf.",
       "timestamp": "2025-07-01T11:10:04.402Z",
       "user": "System"
+    },
+    {
+      "id": "log-1751553665306-rm5x2",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: ameed@malik.com",
+      "timestamp": "2025-07-03T14:41:05.306Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751553674322-i9bhc",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: ameed2001@gamil.com",
+      "timestamp": "2025-07-03T14:41:14.322Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751553681430-lujso",
+      "action": "USER_LOGIN_FAILURE",
+      "level": "WARNING",
+      "message": "Login attempt for non-existent email: ameed@malik.com",
+      "timestamp": "2025-07-03T14:41:21.430Z",
+      "user": "System"
+    },
+    {
+      "id": "log-1751553685400-03ujo",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: malik@gmail.com",
+      "timestamp": "2025-07-03T14:41:25.400Z",
+      "user": "user-1750959424627-e7rbf"
+    },
+    {
+      "id": "log-1751553703848-4l9ax",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: malik@gmail.com",
+      "timestamp": "2025-07-03T14:41:43.848Z",
+      "user": "user-1750959424627-e7rbf"
     }
   ],
   "roles": [

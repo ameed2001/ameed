@@ -54,9 +54,9 @@ const Footer = () => {
   ];
   
   const socialLinks = [
-      { name: "whatsapp", href: "https://api.whatsapp.com/send?phone=+972594371424", svg: <WhatsAppIcon className="w-full h-full" />, bgColor: "bg-[#128c7e]" },
-      { name: "facebook", href: "https://www.facebook.com/a.w.samarah4", svg: <Facebook className="w-full h-full" />, bgColor: "bg-[#3b5998]" },
-      { name: "instagram", href: "https://www.instagram.com/a.w.samarah3/", svg: <Instagram className="w-full h-full" />, bgColor: "bg-gradient-to-r from-[#405de6] via-[#c135b4] to-[#fd1f1f]" },
+    { name: "Instagram", href: "https://www.instagram.com/a.w.samarah3/", icon: Instagram, hoverBg: "hover:bg-[#d62976]" },
+    { name: "Facebook", href: "https://www.facebook.com/a.w.samarah4", icon: Facebook, hoverBg: "hover:bg-[#3b5998]" },
+    { name: "WhatsApp", href: "https://wa.me/972594371424", icon: WhatsAppIcon, hoverBg: "hover:bg-[#128c7e]" },
   ];
 
   return (
@@ -164,32 +164,29 @@ const Footer = () => {
               تابعنا
               <span className="block absolute bottom-0 right-0 w-10 h-0.5 bg-app-gold"></span>
             </h4>
-            <ul className="flex justify-center lg:justify-start items-center">
-                {socialLinks.map((link) => (
-                    <li key={link.name} className="relative mx-2.5 group">
-                        <a
-                            href={link.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={link.name}
-                            className="relative group overflow-hidden flex justify-center items-center w-[50px] h-[50px] rounded-full text-[#4d4d4d] bg-white transition-all duration-300 ease-in-out hover:shadow-lg hover:text-white"
-                        >
-                            <div className={cn(
-                                "absolute bottom-0 left-0 w-full h-0 group-hover:h-full transition-all duration-300 ease-in-out",
-                                link.bgColor
-                            )}></div>
-                            <div className="relative z-10 w-[24px] h-[24px]">
-                                {link.svg}
-                            </div>
-                        </a>
-                        <div className={cn(
-                            "absolute -top-[50px] left-1/2 -translate-x-1/2 text-white px-2.5 py-1.5 rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out text-sm",
-                            link.bgColor
-                        )}>
-                            {link.name.charAt(0).toUpperCase() + link.name.slice(1)}
-                        </div>
-                    </li>
-                ))}
+            <ul className="flex justify-center lg:justify-start items-center gap-4">
+              {socialLinks.map((link) => {
+                  const IconComponent = link.icon;
+                  return (
+                      <li key={link.name}>
+                          <a
+                              href={link.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={link.name}
+                              className={cn(
+                                  "group w-[52px] h-[52px] rounded-full bg-gray-700 flex items-center justify-center overflow-hidden transition-all duration-300",
+                                  link.hoverBg,
+                                  "active:scale-90"
+                              )}
+                          >
+                              <IconComponent
+                                  className="w-6 h-6 text-white transition-transform duration-300 group-hover:animate-slide-in-top"
+                              />
+                          </a>
+                      </li>
+                  );
+              })}
             </ul>
           </div>
         </div>

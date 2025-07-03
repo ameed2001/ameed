@@ -13,27 +13,6 @@ import type { UserDocument, Project } from '@/lib/db';
 import { getUsers, addCostReport, getProjects } from '@/lib/db';
 import { cn } from '@/lib/utils';
 
-const ShekelIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M6 18V6"/>
-    <path d="M18 6v12"/>
-    <path d="M14 6h-4a4 4 0 0 0-4 4v0a4 4 0 0 0 4 4h4"/>
-    <path d="M10 18h4a4 4 0 0 0 4-4v0a4 4 0 0 0-4-4h-4"/>
-  </svg>
-);
-
-
 interface MaterialItem {
   id: string;
   name: string;

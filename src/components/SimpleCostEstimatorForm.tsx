@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,29 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Printer, PlusCircle, Trash2, Calculator, Coins } from 'lucide-react';
+import { Printer, PlusCircle, Trash2, Calculator, Coins, Shekel } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-const ShekelIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M6 18V6"/>
-    <path d="M18 6v12"/>
-    <path d="M14 6h-4a4 4 0 0 0-4 4v0a4 4 0 0 0 4 4h4"/>
-    <path d="M10 18h4a4 4 0 0 0 4-4v0a4 4 0 0 0-4-4h-4"/>
-  </svg>
-);
-
 
 interface MaterialItem {
   id: string;
@@ -272,7 +252,7 @@ export default function SimpleCostEstimatorForm() {
             <div className="flex items-center justify-center gap-2 mb-2">
                 <Coins className="text-green-500 h-5 w-5" />
                 <Label className="text-gray-700 font-medium text-lg">العملة المعتمدة: شيكل</Label>
-                <ShekelIcon className="text-green-500 h-5 w-5" />
+                <Shekel className="text-green-500 h-5 w-5" />
             </div>
             <p className="text-xs text-gray-500">جميع الأسعار والنتائج ستكون بالشيكل.</p>
         </CardContent>
@@ -449,7 +429,7 @@ export default function SimpleCostEstimatorForm() {
       <Card className="mt-8 bg-white shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-700">
-            <ShekelIcon className="h-5 w-5" /> كيفية استخدام الحاسبة (بالشيكل)؟
+            <Shekel className="h-5 w-5" /> كيفية استخدام الحاسبة (بالشيكل)؟
           </CardTitle>
         </CardHeader>
         <CardContent>

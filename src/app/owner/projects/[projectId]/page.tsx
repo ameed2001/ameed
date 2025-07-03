@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2, Send,
-  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, MapPin, AlertTriangle, Check, Wallet
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, MapPin, AlertTriangle, Check, Wallet, Shekel
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -23,26 +23,6 @@ import { X } from 'lucide-react';
 import { findProjectById, updateProject as dbUpdateProject, getCostReportsForProject, type Project, type ProjectComment, type ProjectPhoto, type CostReport } from '@/lib/db';
 import Link from 'next/link';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-
-const ShekelIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M6 18V6"/>
-    <path d="M18 6v12"/>
-    <path d="M14 6h-4a4 4 0 0 0-4 4v0a4 4 0 0 0 4 4h4"/>
-    <path d="M10 18h4a4 4 0 0 0 4-4v0a4 4 0 0 0-4-4h-4"/>
-  </svg>
-);
 
 export default function OwnerProjectDetailPage() {
   const params = useParams();
@@ -228,7 +208,7 @@ export default function OwnerProjectDetailPage() {
                 </div>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
-                <ShekelIcon className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
+                <Shekel className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-sm text-gray-500">الميزانية</p>
                   <p className="font-medium text-gray-800">{project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</p>

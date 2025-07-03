@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -6,16 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from 'lucide-react';
+import { Loader2, Shield, ArrowLeft } from 'lucide-react';
 import { adminLoginAction } from './actions';
 import { type LoginActionResponse } from '@/types/auth';
 import { useRouter } from 'next/navigation';
-
-const ShieldIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-  </svg>
-);
 
 const adminLoginSchema = z.object({
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
@@ -250,7 +245,7 @@ export default function AdminLoginPage() {
           <div className="login-card rounded-2xl overflow-hidden p-8 transition-all duration-500">
             <div className="text-center mb-8">
               <div className="mx-auto w-fit p-4 bg-app-gold/10 rounded-full text-app-gold animate-pulse">
-                <ShieldIcon />
+                <Shield width="48" height="48" />
               </div>
               <h1 className="text-3xl font-bold text-white mt-6">دخول لوحة التحكم</h1>
               <p className="text-gray-400 mt-3">الرجاء إدخال بيانات الاعتماد الخاصة بك</p>
@@ -332,9 +327,7 @@ export default function AdminLoginPage() {
                   href="/" 
                   className="text-sm text-gray-400 hover:text-white transition-colors flex items-center justify-center gap-1"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rtl:rotate-180">
-                    <path d="m15 18-6-6 6-6"/>
-                  </svg>
+                  <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
                   العودة للرئيسية
                 </Link>
               </div>

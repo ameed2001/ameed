@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Printer, PlusCircle, Trash2, Calculator, Coins, Shekel } from 'lucide-react';
+import { Printer, PlusCircle, Trash2, Calculator, Coins, Banknote } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface MaterialItem {
@@ -252,7 +252,7 @@ export default function SimpleCostEstimatorForm() {
             <div className="flex items-center justify-center gap-2 mb-2">
                 <Coins className="text-green-500 h-5 w-5" />
                 <Label className="text-gray-700 font-medium text-lg">العملة المعتمدة: شيكل</Label>
-                <Shekel className="text-green-500 h-5 w-5" />
+                <Banknote className="text-green-500 h-5 w-5" />
             </div>
             <p className="text-xs text-gray-500">جميع الأسعار والنتائج ستكون بالشيكل.</p>
         </CardContent>
@@ -429,7 +429,7 @@ export default function SimpleCostEstimatorForm() {
       <Card className="mt-8 bg-white shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-700">
-            <Shekel className="h-5 w-5" /> كيفية استخدام الحاسبة (بالشيكل)؟
+            <Banknote className="h-5 w-5" /> كيفية استخدام الحاسبة (بالشيكل)؟
           </CardTitle>
         </CardHeader>
         <CardContent>

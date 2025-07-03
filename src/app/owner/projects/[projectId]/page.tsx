@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2, Send,
-  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, MapPin, AlertTriangle, Check, Wallet, Shekel
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, MapPin, AlertTriangle, Check, Wallet, Banknote
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -208,7 +208,7 @@ export default function OwnerProjectDetailPage() {
                 </div>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
-                <Shekel className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
+                <Banknote className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-sm text-gray-500">الميزانية</p>
                   <p className="font-medium text-gray-800">{project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</p>

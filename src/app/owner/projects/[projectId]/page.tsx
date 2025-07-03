@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   CalendarDays, Image as ImageIcon, FileText, MessageSquare, Mail, Edit, Trash2, Send,
-  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, MapPin, AlertTriangle, Check, Wallet, Banknote
+  HardHat, Percent, BarChart3, GanttChartSquare, Loader2 as LoaderIcon, MapPin, AlertTriangle, Check, Wallet
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
@@ -23,6 +23,7 @@ import { X } from 'lucide-react';
 import { findProjectById, updateProject as dbUpdateProject, getCostReportsForProject, type Project, type ProjectComment, type ProjectPhoto, type CostReport } from '@/lib/db';
 import Link from 'next/link';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import ShekelIcon from '@/components/icons/ShekelIcon';
 
 export default function OwnerProjectDetailPage() {
   const params = useParams();
@@ -208,7 +209,7 @@ export default function OwnerProjectDetailPage() {
                 </div>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-start gap-3">
-                <Banknote className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
+                <ShekelIcon className="h-6 w-6 text-app-red flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-sm text-gray-500">الميزانية</p>
                   <p className="font-medium text-gray-800">{project.budget ? `${project.budget.toLocaleString()} شيكل` : 'غير محدد'}</p>

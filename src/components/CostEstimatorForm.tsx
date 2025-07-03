@@ -7,11 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Printer, PlusCircle, Trash2, Calculator, Coins, HardHat, User, Save, Loader2, Blocks, Ruler, Tag, FileText, ShoppingBasket, FileSignature, Briefcase } from 'lucide-react';
+import { Printer, PlusCircle, Trash2, Calculator, HardHat, User, Save, Loader2, Blocks, Ruler, FileText, ShoppingBasket, FileSignature, Briefcase } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { UserDocument, Project } from '@/lib/db';
 import { getUsers, addCostReport, getProjects } from '@/lib/db';
 import { cn } from '@/lib/utils';
+import ShekelIcon from '@/components/icons/ShekelIcon';
 
 interface MaterialItem {
   id: string;
@@ -397,7 +398,7 @@ export default function CostEstimatorForm() {
 
               <div>
                 <Label htmlFor="pricePerUnitILS" className="flex items-center gap-2 mb-2 font-medium text-gray-700">
-                    <Tag size={16} /> السعر لكل وحدة (شيكل)
+                    <ShekelIcon className="h-4 w-4" /> السعر لكل وحدة (شيكل)
                 </Label>
                 <Input id="pricePerUnitILS" type="number" value={pricePerUnitILS} onChange={(e) => setPricePerUnitILS(e.target.value)} placeholder="أدخل السعر" className="bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500" min="0.01" step="0.01"/>
               </div>

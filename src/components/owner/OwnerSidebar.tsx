@@ -105,14 +105,14 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
 
     async function fetchStats() {
       setIsLoadingStats(true);
-      const userEmail = localStorage.getItem('userEmail');
-      if (!userEmail) {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
           setIsLoadingStats(false);
           return;
       }
 
       try {
-          const result = await getProjects(userEmail);
+          const result = await getProjects(userId);
           if (result.success && result.projects) {
               const projects = result.projects;
               const totalProjects = projects.length;
@@ -139,7 +139,7 @@ export default function OwnerSidebar({ isOpen, onToggle }: OwnerSidebarProps) {
     }
 
     fetchStats();
-  }, [pathname]);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("userName");

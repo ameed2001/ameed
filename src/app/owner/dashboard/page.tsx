@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -63,8 +62,10 @@ export default function OwnerDashboardPage() {
       setIsLoading(false);
     }
 
-    fetchOwnerProjects();
-  }, [userId, toast]);
+    if (userId) {
+      fetchOwnerProjects();
+    }
+  }, [userId]);
 
   const totalProjects = projects.length;
   const activeProjects = projects.filter(p => p.status === 'قيد التنفيذ').length;

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -45,7 +44,7 @@ const dashboardCategories = [
       title: "العناصر الإنشائية",
       description: "تحديد وتفصيل العناصر مثل الأعمدة والكمرات.",
       icon: Blocks,
-      href: "#",
+      href: "/engineer/structural-elements/input-details",
       iconColorClass: "text-purple-500",
       buttonClass: "border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white",
     },
@@ -61,7 +60,7 @@ const dashboardCategories = [
       title: "التقارير",
       description: "توليد وعرض التقارير المخصصة للمشاريع والكميات.",
       icon: BarChart3,
-      href: "#",
+      href: "/engineer/quantity-survey/view-reports",
       iconColorClass: "text-cyan-500",
       buttonClass: "border-cyan-500 text-cyan-600 hover:bg-cyan-500 hover:text-white",
     },
@@ -97,7 +96,7 @@ export default function EngineerDashboardPage() {
             });
           }
         }
-    }, [toast]);
+    }, []);
 
     useEffect(() => {
     async function fetchEngineerProjects() {
@@ -122,7 +121,7 @@ export default function EngineerDashboardPage() {
     if (userId) {
         fetchEngineerProjects();
     }
-    }, [userId, toast]);
+    }, [userId]);
 
     const totalProjects = projects.length;
     const activeProjects = projects.filter(p => p.status === 'قيد التنفيذ').length;

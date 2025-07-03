@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Building2, HelpCircle, Mail, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
+import { Home, AlertCircle, HelpCircle, Mail, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 
 const staticNavLinks = [
   { href: '/', label: 'الرئيسية', icon: Home },
-  { href: '/about', label: 'عن الموقع', icon: Building2 },
+  { href: '/about', label: 'عن الموقع', icon: AlertCircle },
   { href: '/help', label: 'الأسئلة الشائعة', icon: HelpCircle },
   { href: '/contact', label: 'تواصل معنا', icon: Mail },
 ];

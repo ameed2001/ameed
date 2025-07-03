@@ -1,9 +1,7 @@
 "use client";
 
-import { Quote, User } from 'lucide-react';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const testimonials = [
   {
@@ -53,33 +51,47 @@ const TestimonialsSection = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {testimonials.map((testimonial, index) => (
-            <Card 
-              key={index} 
-              className={cn(
-                "bg-white dark:bg-gray-800/50 shadow-lg rounded-2xl flex flex-col transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2 border-t-4 border-app-gold/50",
-                "h-full" 
-              )}
+            <div
+              key={index}
+              className="group relative w-full h-80 bg-slate-50 flex flex-col items-center justify-center gap-2 text-center rounded-2xl overflow-hidden shadow-lg"
               data-ai-hint={testimonial.dataAiHint}
             >
-              <CardContent className="p-6 text-right flex-grow">
-                <Quote className="h-10 w-10 text-app-gold opacity-30 mb-4 transform scale-x-[-1]" />
-                <p className="text-base leading-relaxed text-gray-700 dark:text-gray-300 italic">
-                  "{testimonial.testimonial}"
-                </p>
-              </CardContent>
-              <CardFooter className="p-6 bg-gray-50 dark:bg-gray-900/50 rounded-b-2xl border-t dark:border-gray-700">
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-12 w-12 border-2 border-app-gold">
-                    <AvatarImage src={`https://placehold.co/100x100.png?text=${testimonial.avatarInitial}`} alt={testimonial.name} />
-                    <AvatarFallback className="bg-app-red text-white">{testimonial.avatarInitial}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-bold text-app-red dark:text-app-gold text-lg">{testimonial.name}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.role}</p>
-                  </div>
-                </div>
-              </CardFooter>
-            </Card>
+              {/* The animated background */}
+              <div className="
+                absolute top-0 left-0 w-full h-24 rounded-t-2xl
+                bg-gradient-to-bl from-amber-300 via-red-400 to-app-red
+                transition-all duration-500
+                group-hover:scale-95 group-hover:h-full group-hover:rounded-b-2xl
+              "></div>
+
+              {/* Avatar */}
+              <div className="
+                relative w-28 h-28 z-10
+                transition-all duration-500
+                group-hover:scale-110 group-hover:-translate-x-14 md:group-hover:-translate-x-16 group-hover:-translate-y-16
+              ">
+                <Avatar className="w-full h-full border-4 border-slate-50">
+                  <AvatarImage src={`https://placehold.co/100x100.png?text=${testimonial.avatarInitial}`} alt={testimonial.name} />
+                  <AvatarFallback className="bg-app-red text-white text-3xl">{testimonial.avatarInitial}</AvatarFallback>
+                </Avatar>
+              </div>
+
+              {/* Text Content */}
+              <div className="z-10 transition-all duration-500 group-hover:-translate-y-10 text-gray-800 group-hover:text-white">
+                <span className="text-2xl font-semibold">{testimonial.name}</span>
+                <p className="text-gray-500 group-hover:text-gray-200">{testimonial.role}</p>
+              </div>
+              
+              {/* Testimonial text shown on hover */}
+              <div className="
+                absolute bottom-6 left-0 w-full p-4
+                text-center text-white
+                opacity-0 z-20 transition-opacity duration-300
+                group-hover:opacity-100 group-hover:delay-200
+              ">
+                <p className="italic text-sm">"{testimonial.testimonial}"</p>
+              </div>
+            </div>
           ))}
         </div>
       </div>

@@ -8,7 +8,7 @@ import { type LoginActionResponse } from '@/types/auth';
 // For now, restoring the hardcoded version.
 
 const ADMIN_EMAIL = "ameed2001@admin.com"; 
-const ADMIN_PASSWORD = "ameed2001"; 
+const ADMIN_PASSWORD = "2792001"; 
 
 export async function adminLoginAction(data: { email: string; password_input: string; }): Promise<LoginActionResponse> {
   console.log("[AdminLoginAction] Attempting admin login for email:", data.email);

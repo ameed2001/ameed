@@ -45,6 +45,17 @@
       "profileImage": "https://placehold.co/100x100.png?text=عم",
       "createdAt": "2025-07-03T15:10:03.436Z",
       "updatedAt": "2025-07-03T15:10:03.436Z"
+    },
+    {
+      "id": "user-1752159330336-v72tm",
+      "name": "Ameed Waleed Samara",
+      "email": "ameed2001@malik.com",
+      "password_hash": "$2a$10$C3e.dgy46sTl0AfWtEp78.q1HwqfPsaB.fHt.0CSHgg5maMgDqSkW",
+      "role": "OWNER",
+      "status": "ACTIVE",
+      "profileImage": "https://placehold.co/100x100.png?text=AM",
+      "createdAt": "2025-07-10T14:55:30.336Z",
+      "updatedAt": "2025-07-10T14:55:30.336Z"
     }
   ],
   "projects": [
@@ -255,6 +266,22 @@
       "message": "Project ID 4 updated. Fields: linkedOwnerEmail, clientName",
       "timestamp": "2025-07-03T15:55:47.768Z",
       "user": "System"
+    },
+    {
+      "id": "log-1752159330337-qfsnz",
+      "action": "USER_REGISTRATION_SUCCESS",
+      "level": "INFO",
+      "message": "User ameed2001@malik.com registered. Role: OWNER, Status: ACTIVE.",
+      "timestamp": "2025-07-10T14:55:30.337Z",
+      "user": "user-1752159330336-v72tm"
+    },
+    {
+      "id": "log-1752159342542-2lid4",
+      "action": "USER_LOGIN_SUCCESS",
+      "level": "INFO",
+      "message": "User logged in: ameed2001@malik.com",
+      "timestamp": "2025-07-10T14:55:42.542Z",
+      "user": "user-1752159330336-v72tm"
     }
   ],
   "roles": [

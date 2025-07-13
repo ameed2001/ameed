@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  Instagram, Facebook
-} from 'lucide-react';
+import { Instagram, Facebook } from 'lucide-react';
 import Notifications from './Notifications';
 import WhatsAppIcon from '../icons/WhatsAppIcon';
 
@@ -18,7 +16,13 @@ const SocialAndClock = () => {
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
-      setTime(now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }));
+      // ثابت العرض للوقت
+      const hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = (hours % 12 || 12).toString().padStart(2, '0');
+      setTime(`${formattedHours}:${minutes}:${seconds} ${ampm}`);
       setDate(now.toLocaleDateString('ar-EG-u-nu-latn', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
     };
     updateDateTime();
@@ -70,10 +74,35 @@ const SocialAndClock = () => {
         {/* Right Side: Time and Date */}
         <div className="flex-1 flex justify-end">
           <div className="bg-slate-800/70 rounded-lg px-4 py-2">
-            <div className="flex items-center gap-4 text-gray-300 font-mono" style={{ direction: 'ltr' }}>
-                <span>{time}</span>
-                <span>-</span>
-                <span>{date}</span>
+            <div className="flex items-center gap-4 text-gray-300" style={{ direction: 'ltr' }}>
+              <div
+                className="w-[140px] text-center font-bold whitespace-nowrap overflow-hidden leading-none flex-shrink-0"
+                style={{
+                  fontFamily: 'Roboto Mono, monospace',
+                  fontVariantNumeric: 'tabular-nums',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                {time}
+              </div>
+              <span
+                style={{
+                  fontFamily: 'Roboto Mono, monospace',
+                  fontVariantNumeric: 'tabular-nums',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                -
+              </span>
+              <span
+                style={{
+                  fontFamily: 'Roboto Mono, monospace',
+                  fontVariantNumeric: 'tabular-nums',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                {date}
+              </span>
             </div>
           </div>
         </div>
@@ -82,9 +111,8 @@ const SocialAndClock = () => {
   );
 };
 
-
 // Main Header Component
-export default function Header() {
+export default function AdminHeader() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const pathname = usePathname();
 

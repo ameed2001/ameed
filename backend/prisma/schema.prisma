@@ -1,2 +1,9 @@
-// This file is intentionally left blank or can be deleted.
-// The project is being converted to use MongoDB directly.
+datasource db {
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
